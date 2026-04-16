@@ -268,3 +268,17 @@ function exporterPDF() {
     pdfMake.createPdf(docDefinition).download('AuditPro_Expertise_' + idRapport + '.pdf');
     setTimeout(() => { btn.innerText = "📥 Télécharger le rapport PDF Officiel"; }, 1000);
 }
+function ajouterAvis() {
+    const nom = document.getElementById('nomAvis').value;
+    const texte = document.getElementById('texteAvis').value;
+    if (!nom || !texte) return alert("Veuillez remplir les champs.");
+
+    const nouvelAvis = document.createElement('div');
+    nouvelAvis.className = 'avis-card';
+    nouvelAvis.style.cssText = 'flex: 1; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;';
+    nouvelAvis.innerHTML = `<div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div><p style="font-size: 14px; font-style: italic; color: #495057;">"${texte}"</p><div style="font-weight: 700; font-size: 14px;">- ${nom}</div>`;
+
+    document.getElementById('listeAvis').prepend(nouvelAvis);
+    document.getElementById('nomAvis').value = '';
+    document.getElementById('texteAvis').value = '';
+}
