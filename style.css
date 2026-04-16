@@ -54,4 +54,27 @@ summary::after { content: '+'; color: #00d632; font-size: 20px; font-weight: nor
 details[open] summary::after { content: '-'; }
 details p { padding: 0 20px 20px 20px; margin: 0; color: #495057; line-height: 1.6; border-top: 1px solid #eee; padding-top: 15px; }
 
-footer { background: #0b1a14; color: #adb5bd; text-align: cen
+footer {
+    background-color: #1a1a1a; /* Un gris très foncé, presque noir */
+    color: #e0e0e0; /* Gris clair pour le texte, plus lisible */
+    padding: 30px 20px; /* Espace intérieur (haut/bas et gauche/droite) */
+    text-align: center; /* Centre tout le texte */
+    width: 100%; /* Prend toute la largeur de l'écran */
+    position: relative; /* S'assure qu'il reste en bas du contenu */
+    border-top: 1px solid #333; /* Une fine ligne de séparation en haut */
+}
+
+footer p {
+    margin: 5px 0; /* Un petit espace entre les lignes de texte */
+    font-size: 0.9em; /* Texte légèrement plus petit pour faire pro */
+}
+
+footer a {
+    color: #2ecc71; /* Vert pour le lien des mentions légales */
+    text-decoration: none; /* Enlève le soulignement par défaut */
+    font-weight: bold;
+}
+
+footer a:hover {
+    text-decoration: underline; /* Souligne quand on passe la souris dessus */
+}
