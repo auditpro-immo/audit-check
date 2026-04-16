@@ -1,48 +1,43 @@
-/* --- Styles généraux pour coller le footer en bas (Nécessaire) --- */
+/* --- Styles généraux --- */
 html, body {
     margin: 0;
     padding: 0;
-    height: 100%;
-    font-family: Arial, sans-serif; /* Mets ta police ici */
+    height: 100%; /* Important pour que le footer reste en bas si la page est courte */
+    font-family: Arial, sans-serif; /* Ou ta police actuelle */
     display: flex;
     flex-direction: column;
 }
 
-/* --- Style pour le contenu principal (force le footer en bas) --- */
+/* --- Style pour le contenu principal (laisse le footer en bas) --- */
 main, .main-content {
     flex: 1 0 auto;
-    width: 100%; /* S'assure que le contenu prend toute la largeur */
-    box-sizing: border-box; /* Évite les problèmes de padding */
+    padding: 20px; /* Un peu d'espace autour de ton contenu */
 }
 
-/* --- Style du footer (EXACTEMENT comme l'image 2) --- */
+/* --- Style du footer (exactement comme l'image 2) --- */
 footer {
     background-color: #1a1a1a; /* Gris très foncé, presque noir */
     color: #ffffff; /* Texte bien blanc */
-    width: 100%; /* Prend toute la largeur de l'écran */
+    padding: 20px 0; /* Espace en haut et en bas */
+    width: 100%; /* Prend toute la largeur */
     text-align: center; /* Centre le texte */
-    
-    /* C'est ici que ça se joue : très petit et fin */
-    padding: 10px 0; /* Un tout petit peu d'espace en haut et en bas */
-    font-size: 11px; /* Texte très petit et discret (comme sur la photo) */
-    
-    flex-shrink: 0; /* Empêche le footer de se réduire */
-    border-top: 1px solid #333; /* Fine ligne de séparation discrète */
-    box-sizing: border-box; /* Évite les débordements */
+    flex-shrink: 0; /* Empêche le footer de rétrécir */
+    font-size: 13px; /* Taille de texte discrète */
+    border-top: 1px solid #333; /* Fine ligne de séparation */
 }
 
-/* Pour que les liens (Mentions Légales, etc.) soient verts et discrets */
+/* Pour que les liens soient verts (Mentions Légales, etc.) */
 footer a {
-    color: #31c071; /* Vert clair exact de la photo */
-    text-decoration: none; /* Pas de soulignement */
-    font-weight: normal; /* Pas de gras, c'est plus discret */
+    color: #31c071; /* Vert clair comme sur la photo */
+    text-decoration: none; /* Pas de soulignement par défaut */
+    font-weight: normal;
 }
 
 footer a:hover {
-    text-decoration: underline; /* Soulignement au survol */
+    text-decoration: underline; /* Souligner au survol */
 }
 
 /* Style pour les paragraphes dans le footer */
 footer p {
-    margin: 2px 0; /* Presque pas d'espace entre les lignes */
+    margin: 3px 0; /* Très peu d'espace entre les lignes */
 }
