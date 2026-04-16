@@ -129,7 +129,8 @@
 
     <section id="avis" class="content-section" style="background-color: #f8f9fa;">
         <h2 class="section-title">Avis de nos investisseurs et professionnels</h2>
-        <div class="avis-grid" style="display: flex; gap: 20px; margin-bottom: 40px;">
+        <div id="listeAvis" class="avis-grid" style="display: flex; gap: 20px; margin-bottom: 40px;">
+           
             <div class="avis-card" style="flex: 1; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;">
                 <div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div>
                 <p style="font-size: 14px; font-style: italic; color: #495057;">"Les conseils détaillés sur l'électricité m'ont permis de justifier une baisse de 8000€ sur mon offre d'achat. Le rapport PDF est ultra pro."</p>
@@ -159,9 +160,9 @@
             </div>
 
         <input type="text" id="nomAvis" placeholder="Votre Prénom & Fonction" class="form-control" style="margin-bottom: 10px;">
-<textarea id="texteAvis" placeholder="Racontez-nous comment le rapport vous a aidé..." class="form-control" style="margin-bottom: 10px;"></textarea>
+<input type="text" id="nomAvis" placeholder="Votre Prénom & Fonction" class="form-control" style="margin-bottom: 10px;">
+<textarea id="texteAvis" placeholder="Racontez-nous comment le rapport vous a aidé..." class="form-control" style="margin-bottom: 10px; height: 100px;"></textarea>
 <button type="button" class="btn-solid" onclick="ajouterAvis()" style="width: 100%;">Publier mon évaluation</button>
-        </div>
     </section>
 
     <section id="faq" class="content-section">
