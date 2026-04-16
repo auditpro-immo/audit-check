@@ -1,55 +1,43 @@
-/* --- 1. BASE ET CENTRAGE --- */
+/* --- Styles généraux --- */
 html, body {
     margin: 0;
     padding: 0;
-    height: 100%;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100%; /* Important pour que le footer reste en bas si la page est courte */
+    font-family: Arial, sans-serif; /* Ou ta police actuelle */
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centre tout le contenu horizontalement */
-    background-color: #ffffff;
 }
 
-/* --- 2. CONTENU PRINCIPAL --- */
-main, .container, section {
+/* --- Style pour le contenu principal (laisse le footer en bas) --- */
+main, .main-content {
     flex: 1 0 auto;
-    width: 100%;
-    max-width: 1000px; /* Largeur max pour que ça ne s'étale pas trop */
-    padding: 40px 20px;
-    box-sizing: border-box;
+    padding: 20px; /* Un peu d'espace autour de ton contenu */
 }
 
-/* --- 3. FIX POUR LES FORMULAIRES (LA POLICE QUE TU VOULAIS) --- */
-textarea, input {
-    font-family: 'Segoe UI', Arial, sans-serif !important;
-    font-size: 14px;
-    margin-bottom: 10px;
-}
-
-/* --- 4. FOOTER (LE BANDEAU NOIR FIN QUE TU VOULAIS) --- */
+/* --- Style du footer (exactement comme l'image 2) --- */
 footer {
-    background-color: #1a1a1a;
-    color: #ffffff;
-    width: 100%; 
-    text-align: center;
-    padding: 15px 0;
-    font-size: 11px;
-    flex-shrink: 0;
-    border-top: 1px solid #333;
+    background-color: #1a1a1a; /* Gris très foncé, presque noir */
+    color: #ffffff; /* Texte bien blanc */
+    padding: 20px 0; /* Espace en haut et en bas */
+    width: 100%; /* Prend toute la largeur */
+    text-align: center; /* Centre le texte */
+    flex-shrink: 0; /* Empêche le footer de rétrécir */
+    font-size: 13px; /* Taille de texte discrète */
+    border-top: 1px solid #333; /* Fine ligne de séparation */
 }
 
+/* Pour que les liens soient verts (Mentions Légales, etc.) */
 footer a {
-    color: #31c071;
-    text-decoration: none;
+    color: #31c071; /* Vert clair comme sur la photo */
+    text-decoration: none; /* Pas de soulignement par défaut */
+    font-weight: normal;
 }
 
-/* --- 5. TITRES ET TEXTES --- */
-h1, h2 {
-    text-align: center;
-    color: #333;
+footer a:hover {
+    text-decoration: underline; /* Souligner au survol */
 }
 
-p, li {
-    line-height: 1.6;
-    color: #555;
+/* Style pour les paragraphes dans le footer */
+footer p {
+    margin: 3px 0; /* Très peu d'espace entre les lignes */
 }
