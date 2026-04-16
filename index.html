@@ -83,9 +83,6 @@
         <p style="text-align:center; color:#495057; margin-bottom:40px; font-size:16px;">
             Attention : un diagnostic périmé peut faire annuler une vente immobilière ou retarder la signature chez le notaire. Voici les durées légales à retenir :
         </p>
-        <input type="text" id="nomAvis" placeholder="Votre Prénom & Fonction" class="form-control" style="margin-bottom: 10px;">
-<textarea id="texteAvis" placeholder="Racontez-nous comment le rapport vous a aidé..." class="form-control" style="margin-bottom: 10px; height: 100px;"></textarea>
-<button type="button" class="btn-solid" onclick="ajouterAvis()" style="width: 100%;">Publier mon évaluation</button>
             </div>
             <div class="info-card">
                 <h3>Plomb (CREP)</h3>
@@ -126,43 +123,35 @@
         </div>
     </section>
 
-    <section id="avis" class="content-section" style="background-color: #f8f9fa;">
-        <h2 class="section-title">Avis de nos investisseurs et professionnels</h2>
-        <div id="listeAvis" class="avis-grid" style="display: flex; gap: 20px; margin-bottom: 40px;">
-           
-            <div class="avis-card" style="flex: 1; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;">
-                <div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div>
-                <p style="font-size: 14px; font-style: italic; color: #495057;">"Les conseils détaillés sur l'électricité m'ont permis de justifier une baisse de 8000€ sur mon offre d'achat. Le rapport PDF est ultra pro."</p>
-                <div style="font-weight: 700; font-size: 14px;">- Marc D. (Investisseur locatif)</div>
-            </div>
-            <div class="avis-card" style="flex: 1; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;">
-                <div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div>
-                <p style="font-size: 14px; font-style: italic; color: #495057;">"Indispensable pour rassurer mes clients acquéreurs. Le chiffrage macro-économique donne immédiatement un ordre d'idée réaliste des travaux."</p>
-                <div style="font-weight: 700; font-size: 14px;">- Sophie L. (Mandataire Immobilier)</div>
-            </div>
-            <div class="avis-card" style="flex: 1; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;">
-                <div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★☆</div>
-                <p style="font-size: 14px; font-style: italic; color: #495057;">"J'ignorais ce qu'était un DGI pour le gaz. L'outil m'a alerté sur l'urgence sécuritaire avant la signature du compromis. Je recommande."</p>
-                <div style="font-weight: 700; font-size: 14px;">- Thomas B. (Acquéreur particulier)</div>
-            </div>
+   <section id="avis" class="content-section" style="background-color: #f8f9fa;">
+    <h2 class="section-title">Avis de nos investisseurs et professionnels</h2>
+    
+    <div id="listeAvis" class="avis-grid" style="display: flex; gap: 20px; margin-bottom: 40px; flex-wrap: wrap;">
+        <div class="avis-card" style="flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;">
+            <div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div>
+            <p style="font-size: 14px; font-style: italic; color: #495057;">"Les conseils détaillés sur l'électricité m'ont permis de justifier une baisse de 8000€ sur mon offre d'achat. Le rapport PDF est ultra pro."</p>
+            <div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- Marc D. (Investisseur locatif)</div>
         </div>
+        <div class="avis-card" style="flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;">
+            <div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div>
+            <p style="font-size: 14px; font-style: italic; color: #495057;">"Indispensable pour rassurer mes clients acquéreurs. Le chiffrage macro-économique donne immédiatement un ordre d'idée réaliste des travaux."</p>
+            <div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- Sophie L. (Mandataire Immobilier)</div>
+        </div>
+        <div class="avis-card" style="flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;">
+            <div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div>
+            <p style="font-size: 14px; font-style: italic; color: #495057;">"J'ignorais ce qu'était un DGI pour le gaz. L'outil m'a alerté sur l'urgence sécuritaire avant la signature du compromis. Je recommande."</p>
+            <div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- Thomas B. (Acquéreur particulier)</div>
+        </div>
+    </div>
 
-        <div class="form-avis" style="background: #f4fbf7; padding: 40px; border-radius: 12px; border: 1px solid #00d632; width: 100%; max-width: 600px; margin: 0 auto; text-align: center;">
-            <h3 style="margin-top:0; color:#0b1a14; text-transform:uppercase;">Vous avez utilisé AuditPro ? Évaluez-nous !</h3>
-            
-            <div class="star-rating" style="display: flex; flex-direction: row-reverse; justify-content: center; gap: 5px; margin-bottom: 20px;">
-                <input type="radio" id="star5" name="rating" value="5" style="display: none;"><label for="star5" title="5 étoiles" style="font-size: 35px; color: #ccc; cursor: pointer;">★</label>
-                <input type="radio" id="star4" name="rating" value="4" style="display: none;"><label for="star4" title="4 étoiles" style="font-size: 35px; color: #ccc; cursor: pointer;">★</label>
-                <input type="radio" id="star3" name="rating" value="3" style="display: none;"><label for="star3" title="3 étoiles" style="font-size: 35px; color: #ccc; cursor: pointer;">★</label>
-                <input type="radio" id="star2" name="rating" value="2" style="display: none;"><label for="star2" title="2 étoiles" style="font-size: 35px; color: #ccc; cursor: pointer;">★</label>
-                <input type="radio" id="star1" name="rating" value="1" style="display: none;"><label for="star1" title="1 étoile" style="font-size: 35px; color: #ccc; cursor: pointer;">★</label>
-            </div>
-
-        <input type="text" id="nomAvis" placeholder="Votre Prénom & Fonction" class="form-control" style="margin-bottom: 10px;">
-<input type="text" id="nomAvis" placeholder="Votre Prénom & Fonction" class="form-control" style="margin-bottom: 10px;">
-<textarea id="texteAvis" placeholder="Racontez-nous comment le rapport vous a aidé..." class="form-control" style="margin-bottom: 10px; height: 100px;"></textarea>
-<button type="button" class="btn-solid" onclick="ajouterAvis()" style="width: 100%;">Publier mon évaluation</button>
-    </section>
+    <div class="form-avis" style="background: #eaf9f0; padding: 40px; border-radius: 12px; border: 1px solid #00d632; max-width: 600px; margin: 0 auto; text-align: center;">
+        <h3 style="margin-top: 0; color: #0b1a14; text-transform: uppercase;">Vous avez utilisé AuditPro ? Évaluez-nous !</h3>
+        <div style="color: #f39c12; font-size: 30px; margin-bottom: 20px;">★★★★★</div>
+        <input type="text" id="nomAvis" placeholder="Votre Prénom & Fonction (ex: Jean, Agent immobilier)" class="form-control" style="margin-bottom: 15px; width: 100%; box-sizing: border-box;">
+        <textarea id="texteAvis" placeholder="Racontez-nous comment le rapport vous a aidé..." class="form-control" style="margin-bottom: 15px; width: 100%; height: 100px; box-sizing: border-box; resize: vertical;"></textarea>
+        <button type="button" class="btn-solid" onclick="ajouterAvis()" style="width: 100%; padding: 15px; font-size: 16px;">Publier mon évaluation</button>
+    </div>
+</section>
 
     <section id="faq" class="content-section">
         <h2 class="section-title">Questions Fréquentes</h2>
