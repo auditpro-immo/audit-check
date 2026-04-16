@@ -102,3 +102,17 @@ footer p {
 .form-avis { 
     margin: 0 auto !important; 
 }
+.info-grid {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 30px !important;
+    margin: 0 auto !important;
+    max-width: 1000px !important;
+}
+
+.info-card {
+    min-width: 300px !important;
+    flex: 1 1 calc(33.333% - 30px) !important;
+    box-sizing: border-box !important;
+}
