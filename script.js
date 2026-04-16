@@ -30,7 +30,7 @@ async function envoyer() {
     formData.append("cp", cpInput);
 
     try {
-        const reponse = await fetch("https://audit-check.onrender.com/scan", { method: "POST", body: formData });
+      const reponse = await fetch("https://audit-check-ktny.onrender.com/scan", { method: "POST", body: formData });
         if (!reponse.ok) throw new Error("Erreur serveur");
         donneesAudit = await reponse.json();
         donneesAudit.cp = cpInput;
