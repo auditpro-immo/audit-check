@@ -16,25 +16,28 @@ main, .main-content {
 
 /* --- Style du footer (exactement comme l'image 2) --- */
 footer {
-    background-color: #1a1a1a; /* Gris très foncé, presque noir */
-    color: #ffffff; /* Texte bien blanc */
-    padding: 20px 0; /* Espace en haut et en bas */
-    width: 100%; /* Prend toute la largeur */
-    text-align: center; /* Centre le texte */
-    flex-shrink: 0; /* Empêche le footer de rétrécir */
-    font-size: 13px; /* Taille de texte discrète */
-    border-top: 1px solid #333; /* Fine ligne de séparation */
+    background-color: #1a1a1a; /* Un gris très foncé, presque noir */
+    color: #e0e0e0; /* Gris clair pour le texte, plus lisible */
+    padding: 30px 20px; /* Espace intérieur (haut/bas et gauche/droite) */
+    text-align: center; /* Centre tout le texte */
+    width: 100%; /* Prend toute la largeur de l'écran */
+    position: relative; /* S'assure qu'il reste en bas du contenu */
+    border-top: 1px solid #333; /* Une fine ligne de séparation en haut */
 }
 
-/* Pour que les liens soient verts (Mentions Légales, etc.) */
+footer p {
+    margin: 5px 0; /* Un petit espace entre les lignes de texte */
+    font-size: 0.9em; /* Texte légèrement plus petit pour faire pro */
+}
+
 footer a {
-    color: #31c071; /* Vert clair comme sur la photo */
-    text-decoration: none; /* Pas de soulignement par défaut */
-    font-weight: normal;
+    color: #2ecc71; /* Vert pour le lien des mentions légales */
+    text-decoration: none; /* Enlève le soulignement par défaut */
+    font-weight: bold;
 }
 
 footer a:hover {
-    text-decoration: underline; /* Souligner au survol */
+    text-decoration: underline; /* Souligne quand on passe la souris dessus */
 }
 
 /* Style pour les paragraphes dans le footer */
