@@ -80,3 +80,24 @@ footer a {
 footer p { 
     margin: 4px 0 !important; /* Espace un tout petit peu les lignes */
 }
+.content-section { 
+    display: flex !important; 
+    flex-direction: column !important; 
+    align-items: center !important; 
+    width: 100% !important; 
+    box-sizing: border-box !important;
+}
+
+.content-section > * { 
+    max-width: 1000px !important; 
+    width: 100% !important; 
+}
+
+.avis-grid, .info-grid { 
+    justify-content: center !important; 
+    margin: 0 auto !important; 
+}
+
+.form-avis, .faq-container { 
+    margin: 0 auto !important; 
+}
