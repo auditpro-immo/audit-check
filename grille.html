@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Grille de Pré-Audit - AuditPro</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; color: #333; }
+  h1 { text-align: center; color: #0b1a14; }
+  h2 { border-bottom: 2px solid #00d632; padding-bottom: 5px; margin-top: 30px; font-size: 18px; }
+  ul { list-style-type: none; padding: 0; }
+  li { margin-bottom: 12px; font-size: 14px; display: flex; justify-content: space-between; border-bottom: 1px dashed #ccc; padding-bottom: 5px; }
+  .checkboxes { font-family: monospace; white-space: nowrap; font-weight: bold; }
+  .print-btn { display: block; width: 250px; margin: 20px auto; padding: 15px; background: #00d632; color: white; text-align: center; text-decoration: none; border-radius: 8px; cursor: pointer; border: none; font-weight: bold; font-size: 16px; }
+  @media print { .print-btn { display: none; } }
+</style>
+</head>
+<body>
+  <button class="print-btn" onclick="window.print()">🖨️ Imprimer la grille</button>
+  <h1>Grille d'Auto-Évaluation Immobilière</h1>
+  <p style="text-align:center; font-size:14px; font-style:italic;">Cochez les cases lors de votre visite, puis scannez cette fiche pour l'analyse AuditPro.</p>
+  
+  <h2>1. DPE (Performance Énergétique & Thermique)</h2>
+  <ul>
+    <li>Murs extérieurs isolés (tapement des fenêtres > 10 cm) ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Combles isolés avec au moins 30 cm d'épaisseur ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Plancher bas isolé par le dessous ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Toutes les fenêtres sont en double/triple vitrage récent ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Présence de volets sur 100% des fenêtres ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Générateur de chauffage récent (< 10 ans) ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Thermostat d'ambiance ET robinets thermostatiques ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Ballon d'eau chaude récent (< 10 ans) et sans rouille ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>VMC hygroréglable active en continu (cuisine, SDB, WC) ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+  </ul>
+
+  <h2>2. Électricité (Sécurité & Conformité)</h2>
+  <ul>
+    <li>Disjoncteur Général (AGCP) facilement accessible ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Tableau équipé d'au moins un interrupteur différentiel 30 mA ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Présence d'un bornier de terre général dans le tableau ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>100% des prises ont une broche métallique de terre ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Salle de bain : présence d'une liaison équipotentielle ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Salle de bain : prises situées à > 60 cm de la douche/baignoire ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Absence de matériel vétuste (fusibles porcelaine, fils tissu) ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Aucun fil dénudé ou domino apparent ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+  </ul>
+
+  <h2>3. Gaz (Sécurité de l'Installation)</h2>
+  <ul>
+    <li>Tuyauterie d'alimentation principale entièrement rigide (cuivre) ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Robinet de coupure générale du gaz visible et manœuvrable ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Pièce chaudière/gazinière : aération basse ET haute libres ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Raccordement final par tuyau flexible inox à embouts vissés ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Absence totale d'anciens tuyaux de gaz en plomb ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>La flamme des appareils de combustion est parfaitement bleue ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+  </ul>
+
+  <h2>4. Amiante, Plomb & Structure</h2>
+  <ul>
+    <li>Absence de dalles de sol plastiques ou faux-plafonds anciens ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Toiture, descentes et conduits sans fibrociment gris ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Peintures des murs, plafonds et menuiseries intactes (zéro écaillement) ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Charpente/boiseries : absence de sciure, petits trous ou galeries ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+    <li>Murs, plafonds et cave : absence d'auréoles ou moisissures ? <span class="checkboxes">[ ] Oui [ ] Non [ ] Inconnu</span></li>
+  </ul>
+</body>
+</html>
