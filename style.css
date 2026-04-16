@@ -60,6 +60,23 @@ details p { padding: 0 20px 20px 20px; margin: 0; color: #495057; line-height: 1
 textarea, input[type="text"], input[type="number"] { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; }
 
 /* Footer propre, noir, fin, tout en bas */
-footer { background-color: #1a1a1a !important; color: #ffffff !important; width: 100% !important; text-align: center !important; padding: 10px 0 !important; font-size: 11px !important; border-top: 1px solid #333 !important; margin-top: auto; }
-footer a { color: #31c071 !important; text-decoration: none !important; }
-footer p { margin: 2px 0 !important; }
+footer { 
+    background-color: #1a1a1a !important; /* Force le noir */
+    color: #ffffff !important; 
+    width: 100% !important; 
+    text-align: center !important; 
+    padding: 15px 0 !important; /* Un peu plus d'espace pour pas faire écrasé */
+    font-size: 11px !important; 
+    border-top: 1px solid #333 !important; 
+    margin-top: auto; 
+    box-sizing: border-box; /* Évite les débordements */
+}
+
+footer a { 
+    color: #31c071 !important; 
+    text-decoration: none !important; 
+}
+
+footer p { 
+    margin: 4px 0 !important; /* Espace un tout petit peu les lignes */
+}
