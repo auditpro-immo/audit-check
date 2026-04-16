@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuditPro Diagnostics | Expertise Immobilière</title>
+    <meta name="google-site-verification" content="s7itt18H_4u74XC1VwqXwtNpiHTrw4m7Y1pwRuzqNNU" />
+    <meta name="description" content="Testez et analysez votre audit immobilier en 2 min. Chiffrage précis des travaux par Intelligence Artificielle.">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">Audit<span>Pro</span></div>
+        <nav>
+            <a href="#audit">L'Analyse</a>
+            <a href="#informations">Informations</a>
+            <a href="#avis">Avis Clients</a>
+            <a href="#faq">Questions Fréquentes</a>
+        </nav>
+        <button class="btn-solid">Nouveau Diagnostic</button>
+    </header>
+
+    <section class="hero" id="audit">
+        <div class="hero-content">
+            <h1>Testez & analysez le potentiel de votre bien en 2 min !</h1>
+            <p>Notre algorithme IA extrait les données de vos diagnostics immobiliers pour chiffrer avec précision vos travaux de conformité.</p>
+            <ul>
+                <li><strong>Analyse intégrale</strong> du dossier PDF (DDT)</li>
+                <li><strong>Checklist complète</strong> (points forts et non-conformités)</li>
+                <li><strong>Rapport PDF certifié</strong> pour la négociation</li>
+            </ul>
+        </div>
+        
+        <div class="form-container">
+            <h2>Votre audit financier gratuit</h2>
+            <div class="form-group">
+                <label>Valeur Vénale Brute (€) *</label>
+                <input type="number" id="prixInitial" class="form-control" placeholder="Ex: 350000">
+            </div>
+            <div class="form-group">
+                <label>Code Postal *</label>
+                <input type="text" id="codePostal" class="form-control" placeholder="Ex: 75001">
+            </div>
+            <div class="form-group">
+                <label>Dossier PDF (DDT) *</label>
+                <input type="file" id="fichierPdf" class="form-control" accept="application/pdf">
+            </div>
+            <button class="btn-submit" id="btnSubmit" onclick="envoyer()">Générer l'audit complet</button>
+        </div>
+    </section>
+
+    <div id="result-wrapper">
+        <div id="contenu-ecran"></div>
+        <div style="text-align: center; margin-top: 40px;">
+            <button class="btn-solid" id="btnExport" style="padding: 16px 40px; font-size: 16px;" onclick="exporterPDF()">📥 Télécharger le rapport PDF Officiel</button>
+        </div>
+    </div>
+
+    <section id="informations" class="content-section">
+        <h2 class="section-title">Les objectifs d'une expertise AuditPro</h2>
+        <div class="info-grid" style="margin-bottom: 80px;">
+            <div class="info-card">
+                <h3>1. Optimiser la rentabilité</h3>
+                <p>Chiffrez les travaux pour mieux négocier et maximiser votre rendement locatif ou votre plus-value à la revente.</p>
+            </div>
+            <div class="info-card">
+                <h3>2. Réduire les risques financiers</h3>
+                <p>Évitez les mauvaises surprises (désamiantage coûteux, traitement mérule) qui plombent un budget après l'achat.</p>
+            </div>
+            <div class="info-card">
+                <h3>3. Assurer la conformité légale</h3>
+                <p>Soyez certain que votre bien respecte les dernières normes de la Loi Climat pour la mise en location.</p>
+            </div>
+        </div>
+
+        <h2 class="section-title">Guide Pratique : Validité des diagnostics (DDT)</h2>
+        <p style="text-align:center; color:#495057; margin-bottom:40px; font-size:16px;">
+            Attention : un diagnostic périmé peut faire annuler une vente immobilière ou retarder la signature chez le notaire. Voici les durées légales à retenir :
+        </p>
+        <div class="info-grid" style="margin-bottom: 80px;">
+            <div class="info-card">
+                <h3>Termites & ERP (Risques)</h3>
+                <p>Validité : <strong>6 mois</strong>.<br>Ce sont les diagnostics qui expirent le plus vite. Ils doivent souvent être refaits juste avant la signature de l'acte authentique.</p>
+            </div>
+            <div class="info-card">
+                <h3>Plomb (CREP)</h3>
+                <p>Validité : <strong>1 an</strong> (si présence de plomb).<br>Si la mesure est négative (aucune trace détectée), la validité devient alors <strong>illimitée</strong> pour les prochaines ventes.</p>
+            </div>
+            <div class="info-card">
+                <h3>Électricité & Gaz</h3>
+                <p>Validité : <strong>3 ans</strong> (pour une vente) ou <strong>6 ans</strong> (pour une location). Obligatoire uniquement si l'installation a plus de 15 ans d'ancienneté.</p>
+            </div>
+            <div class="info-card">
+                <h3>Diagnostic Énergétique (DPE)</h3>
+                <p>Validité : <strong>10 ans</strong>.<br>Attention, suite à la réforme, les DPE réalisés avant juillet 2021 ne sont officiellement plus valables depuis 2025.</p>
+            </div>
+            <div class="info-card">
+                <h3>Amiante (Avant Vente)</h3>
+                <p>Validité : <strong>Illimitée</strong>.<br>Toutefois, cela n'est valable que si le diagnostic a été fait après 2013 et s'il est totalement négatif. S'il est positif, des contrôles réguliers s'imposent.</p>
+            </div>
+            <div class="info-card">
+                <h3>Métrage Loi Carrez</h3>
+                <p>Validité : <strong>Illimitée</strong>.<br>Il reste valable à vie, à condition de ne pas réaliser de travaux modifiant la surface habitable (abattage de cloisons, aménagement de combles).</p>
+            </div>
+        </div>
+
+        <h2 class="section-title">Investisseurs : Le calendrier de la Loi Climat</h2>
+        <div style="background: #f4fbf7; border-left: 5px solid #00d632; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+            <h3 style="margin-top:0; color:#0b1a14; font-size:20px; margin-bottom: 20px;">Rénovation énergétique obligatoire pour la mise en location</h3>
+            <p style="color:#495057; margin-bottom: 25px; font-size: 15px;">
+                La législation française traque désormais les "passoires thermiques". Si vous achetez un bien pour le louer, vous devez impérativement provisionner des travaux d'isolation si le DPE est mauvais, sous peine de <strong>gel des loyers</strong> ou d'<strong>interdiction de location</strong>.
+            </p>
+            <ul style="color: #495057; line-height: 2; margin-bottom: 0; font-size: 16px;">
+                <li><strong>Depuis le 1er janvier 2025 :</strong> Interdiction stricte de louer les logements classés <strong>G</strong>.</li>
+                <li><strong>Au 1er janvier 2028 :</strong> L'interdiction s'étendra à tous les logements classés <strong>F</strong>.</li>
+                <li><strong>Au 1er janvier 2034 :</strong> L'interdiction touchera finalement les logements classés <strong>E</strong>.</li>
+            </ul>
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #dee2e6; color:#0b1a14; font-weight:700; font-size: 15px;">
+                L'avantage AuditPro : Notre algorithme d'audit chiffre instantanément l'enveloppe budgétaire requise pour atteindre au minimum la classe D et sécuriser votre investissement locatif.
+            </div>
+        </div>
+    </section>
+
+    <section id="avis" class="content-section" style="background-color: #f8f9fa;">
+        <h2 class="section-title">Avis de nos investisseurs et professionnels</h2>
+        <div class="avis-grid" style="display: flex; gap: 20px; margin-bottom: 40px;">
+            <div class="avis-card" style="flex: 1; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;">
+                <div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div>
+                <p style="font-size: 14px; font-style: italic; color: #495057;">"Les conseils détaillés sur l'électricité m'ont permis de justifier une baisse de 8000€ sur mon offre d'achat. Le rapport PDF est ultra pro."</p>
+                <div style="font-weight: 700; font-size: 14px;">- Marc D. (Investisseur locatif)</div>
+            </div>
+            <div class="avis-card" style="flex: 1; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;">
+                <div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div>
+                <p style="font-size: 14px; font-style: italic; color: #495057;">"Indispensable pour rassurer mes clients acquéreurs. Le chiffrage macro-économique donne immédiatement un ordre d'idée réaliste des travaux."</p>
+                <div style="font-weight: 700; font-size: 14px;">- Sophie L. (Mandataire Immobilier)</div>
+            </div>
+            <div class="avis-card" style="flex: 1; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;">
+                <div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★☆</div>
+                <p style="font-size: 14px; font-style: italic; color: #495057;">"J'ignorais ce qu'était un DGI pour le gaz. L'outil m'a alerté sur l'urgence sécuritaire avant la signature du compromis. Je recommande."</p>
+                <div style="font-weight: 700; font-size: 14px;">- Thomas B. (Acquéreur particulier)</div>
+            </div>
+        </div>
+
+        <div class="form-avis" style="background: #f4fbf7; padding: 40px; border-radius: 12px; border: 1px solid #00d632; width: 100%; max-width: 600px; margin: 0 auto; text-align: center;">
+            <h3 style="margin-top:0; color:#0b1a14; text-transform:uppercase;">Vous avez utilisé AuditPro ? Évaluez-nous !</h3>
+            
+            <div class="star-rating" style="display: flex; flex-direction: row-reverse; justify-content: center; gap: 5px; margin-bottom: 20px;">
+                <input type="radio" id="star5" name="rating" value="5" style="display: none;"><label for="star5" title="5 étoiles" style="font-size: 35px; color: #ccc; cursor: pointer;">★</label>
+                <input type="radio" id="star4" name="rating" value="4" style="display: none;"><label for="star4" title="4 étoiles" style="font-size: 35px; color: #ccc; cursor: pointer;">★</label>
+                <input type="radio" id="star3" name="rating" value="3" style="display: none;"><label for="star3" title="3 étoiles" style="font-size: 35px; color: #ccc; cursor: pointer;">★</label>
+                <input type="radio" id="star2" name="rating" value="2" style="display: none;"><label for="star2" title="2 étoiles" style="font-size: 35px; color: #ccc; cursor: pointer;">★</label>
+                <input type="radio" id="star1" name="rating" value="1" style="display: none;"><label for="star1" title="1 étoile" style="font-size: 35px; color: #ccc; cursor: pointer;">★</label>
+            </div>
+
+            <input type="text" id="nomAvis" class="form-control" style="margin-bottom: 15px;" placeholder="Votre Prénom & Fonction (ex: Jean, Agent immobilier)">
+            <textarea id="texteAvis" class="form-control" rows="3" placeholder="Racontez-nous comment le rapport vous a aidé..."></textarea>
+            <button class="btn-submit" onclick="soumettreAvis()" style="margin-top: 15px;">Publier mon évaluation</button>
+        </div>
+    </section>
+
+    <section id="faq" class="content-section">
+        <h2 class="section-title">Questions Fréquentes</h2>
+        <div class="faq-container">
+            <details>
+                <summary>Qu'est-ce qu'un audit technique pré-acquisition ?</summary>
+                <p>C'est une analyse stratégique de l'état global d'un bâtiment. Notre audit interprète les données réglementaires pour identifier les risques financiers réels et chiffrer le coût des travaux.</p>
+            </details>
+            <details>
+                <summary>Le rapport a-t-il une valeur légale chez le notaire ?</summary>
+                <p>Non. AuditPro est un outil d'aide à la décision et d'optimisation de la négociation commerciale. Seul le Dossier de Diagnostic Technique (DDT) originel fait foi.</p>
+            </details>
+            <details>
+                <summary>Le PDF de mes diagnostics fait 150 pages, l'outil peut-il l'analyser ?</summary>
+                <p>Oui, absolument. Notre algorithme est conçu pour parcourir des documents extrêmement volumineux en quelques secondes. Il ignore automatiquement les pages d'annexes inutiles pour se concentrer uniquement sur les tableaux de conclusions réglementaires.</p>
+            </details>
+            <details>
+                <summary>Quels sont les diagnostics obligatoires lors d'une vente immobilière ?</summary>
+                <p>Le vendeur doit fournir un DDT complet comprenant : le DPE (performance énergétique), le constat plomb (si construction avant 1949), l'état d'amiante (avant 1997), l'état de l'électricité et du gaz (si les installations ont plus de 15 ans), l'ERP (risques naturels), et parfois l'état parasitaire (termites) selon l'arrêté préfectoral de la commune.</p>
+            </details>
+            <details>
+                <summary>Qu'est-ce qu'une "passoire thermique" (DPE F ou G) ?</summary>
+                <p>C'est un logement extrêmement mal isolé. La Loi Climat a décrété le gel des loyers pour ces biens. Dès 2025, les passoires classées G sont interdites à la location. La classe F suivra en 2028.</p>
+            </details>
+            <details>
+                <summary>Qu'est-ce que l'amiante et le plomb ?</summary>
+                <p>L'amiante est une fibre minérale cancérigène interdite depuis 1997. Le plomb était utilisé dans les peintures avant 1949 ; son écaillement provoque le saturnisme. Le retrait nécessite des experts.</p>
+            </details>
+            <details>
+                <summary>Quelle est la différence entre Termites et Mérule ?</summary>
+                <p>Les termites sont des insectes qui vivent en colonie et dévorent la charpente. La mérule est un champignon destructeur redoutable qui se développe dans l'humidité.</p>
+            </details>
+            <details>
+                <summary>Dois-je obligatoirement faire les travaux si une anomalie est détectée ?</summary>
+                <p>Si vous êtes le vendeur : non, la loi vous oblige seulement à informer l'acheteur (sauf danger grave et imminent extrême sur le gaz). Si vous êtes l'acheteur : libre à vous de les réaliser, mais les banques exigent de plus en plus la mise aux normes électriques ou énergétiques pour vous accorder un prêt immobilier.</p>
+            </details>
+            <details>
+                <summary>L'estimation prend-elle en compte les aides de l'État ?</summary>
+                <p>Non, les montants indiqués dans notre rapport sont des estimations brutes (coût total hors aides). Les aides gouvernementales dépendent de vos revenus fiscaux personnels.</p>
+            </details>
+            <details>
+                <summary>Mes données personnelles sont-elles conservées ?</summary>
+                <p>Absolument pas. Nous appliquons une politique de "Zéro Stockage". Votre PDF est lu en mémoire vive puis détruit instantanément. Aucune donnée n'est sauvegardée.</p>
+            </details>
+        </div>
+    </section>
+
+   <footer>
+        © 2026 AuditPro. Tous droits réservés. | Application d'analyse macro-économique.<br>
+        Ce rapport d'expertise textuelle ne se substitue pas à un acte notarié formel.<br>
+        <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" style="color: #00d632; text-decoration: underline; margin-top: 15px; display: inline-block;">Mentions Légales & Propriété Intellectuelle</a>
+    </footer>
+
+    <div id="modalLegale" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.9); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
+        <div style="background: #fff; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 40px; border-radius: 12px; position: relative; text-align: left;">
+            <button onclick="document.getElementById('modalLegale').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: #cc0000; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">Fermer X</button>
+            
+            <h2 style="color: #0b1a14; border-bottom: 2px solid #00d632; padding-bottom: 10px;">Mentions Légales & Conditions d'Utilisation</h2>
+            
+            <h3 style="font-size: 16px;">1. Propriété Intellectuelle (Protection anti-plagiat)</h3>
+            <p style="font-size: 14px; color: #555;">La structure, le design, le code, l'algorithme et les textes de ce site sont la propriété exclusive d'AuditPro. Toute reproduction, représentation, modification ou copie, totale ou partielle, est strictement interdite sans autorisation écrite expresse, sous peine de poursuites judiciaires (Article L335-2 et suivants du Code de la Propriété Intellectuelle).</p>
+            
+            <h3 style="font-size: 16px;">2. Traitement des Données (RGPD)</h3>
+            <p style="font-size: 14px; color: #555;">Le respect de votre vie privée est total. L'outil fonctionne selon le principe du "Zéro Stockage". Les fichiers PDF sont traités en mémoire vive (RAM) puis détruits instantanément. Aucune donnée n'est conservée.</p>
+            
+            <h3 style="font-size: 16px;">3. Responsabilité</h3>
+            <p style="font-size: 14px; color: #555;">Ce site est un outil d'aide à la décision. Il ne remplace en aucun cas l'expertise légale d'un Notaire ou d'un diagnostiqueur assermenté. L'utilisation des résultats générés se fait sous la seule responsabilité de l'utilisateur.</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <style>
+        /* Code CSS pour rendre le survol des étoiles interactif */
+        .star-rating input:checked ~ label, 
+        .star-rating label:hover, 
+        .star-rating label:hover ~ label { color: #f39c12 !important; }
+    </style>
+</body>
+</html>
