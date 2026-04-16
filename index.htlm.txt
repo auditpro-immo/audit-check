@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>AuditPro Diagnostics | Plateforme Sécurisée</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; color: #333; }
+        header { background: #1a252f; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .badge-secu { background: #27ae60; padding: 8px 12px; border-radius: 5px; font-size: 13px; font-weight: bold; }
+        .container { max-width: 900px; margin: 40px auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .upload-zone { border: 2px dashed #3498db; padding: 40px; text-align: center; border-radius: 8px; background: #f0f8ff; margin-bottom: 20px; }
+        .fichier-btn { margin-bottom: 15px; width: 100%; max-width: 300px; }
+        .input-prix { padding: 12px; margin-bottom: 20px; width: 100%; max-width: 275px; border-radius: 5px; border: 1px solid #bdc3c7; font-size: 15px; }
+        button { background: #3498db; color: white; border: none; padding: 15px 30px; font-size: 16px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; max-width: 300px; }
+        button:hover { background: #2980b9; }
+        .result-section { margin-top: 30px; display: none; border-top: 2px solid #eee; padding-top: 20px; }
+        .card-danger { border-left: 5px solid #e74c3c; background: #fdf2f2; padding: 15px; margin-bottom: 15px; border-radius: 0 5px 5px 0; }
+        .card-success { border-left: 5px solid #27ae60; background: #f2fbf5; padding: 15px; margin-bottom: 15px; border-radius: 0 5px 5px 0; }
+        .loi { font-size: 12px; color: #7f8c8d; font-style: italic; display: block; margin-top: 5px; }
+        .total-box { background: #1a252f; color: white; padding: 15px; text-align: center; border-radius: 5px; margin-bottom: 20px; }
+        footer { background: #2c3e50; color: #bdc3c7; text-align: center; padding: 30px 20px; margin-top: 50px; font-size: 14px; }
+        .contact-info { font-weight: bold; color: #fff; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 style="margin:0;">AuditPro Diagnostics</h1>
+        <span class="badge-secu">🔒 Connexion Chiffrée</span>
+    </header>
+
+    <div class="container">
+        <h2>Intelligence Artificielle d'Analyse Immobilière</h2>
+        <p>Vérification de la conformité légale, estimation des décotes travaux et extraction des atouts du bien.</p>
+        
+        <div class="upload-zone">
+            <input type="number" id="prixInitial" class="input-prix" placeholder="Prix de vente actuel (€)"><br>
+            <input type="file" id="fichierPdf" accept="application/pdf" class="fichier-btn"><br>
+            <button onclick="envoyer()">Générer l'audit financier</button>
+        </div>
+
+        <div id="resultats" class="result-section">
+            <div id="contenu-rapport"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="contact-info">Service Juridique & Assistance : contact@auditpro-diagnostics.fr | Ligne directe : 01 23 45 67 89</div>
+        <p>Conformité RGPD : Aucun document n'est stocké sur nos serveurs. L'analyse est effectuée en mémoire volatile et détruite après traitement.</p>
+    </footer>
+
+    <script>
+        async function envoyer() {
+            const input = document.getElementById('fichierPdf');
+            const prixInput = document.getElementById('prixInitial');
+            const conteneur = document.getElementById('contenu-rapport');
+            const resultSection = document.getElementById('resultats');
+            
+            if (!input.files.length) return alert("Veuillez sélectionner un dossier technique (PDF).");
+            
+            conteneur.innerHTML = "<p><i>Analyse juridique et financière en cours... Veuillez patienter.</i></p>";
+            resultSection.style.display = "block";
+
+            const formData = new FormData();
+            formData.append("fichier", input.files[0]);
+            formData.append("prix", prixInput.value || 0);
+
+            try {
+                const reponse = await fetch("https://audit-check.onrender.com/scan", {
+                    method: "POST",
+                    body: formData
+                });
+                
+                const data = await reponse.json();
+                let html = `<p style="font-size: 11px; color: #27ae60; text-align: right;">${data.securite}</p>`;
+                
+                if (data.anomalies.length > 0) {
+                    html += `
+                    <div class="total-box">
+                        <div style="font-size:14px; opacity:0.8;">VALEUR NETTE ESTIMÉE APRÈS TRAVAUX</div>
+                        <div style="font-size:24px; font-weight:bold;">${data.prix_net.toLocaleString()} €</div>
+                        <div style="font-size:13px; color:#e74c3c;">Décote totale : -${data.total_decote} €</div>
+                    </div>`;
+                    
+                    html += `<h3>⚠️ Points de vigilance (Non-conformités)</h3>`;
+                    data.anomalies.forEach(a => {
+                        html += `<div class="card-danger">
+                            <strong>${a.titre}</strong><br>
+                            <span>${a.detail}</span><br>
+                            <span style="color:#e74c3c; font-weight:bold;">Budget travaux : -${a.cout}€</span>
+                            <span class="loi">Référence légale : ${a.loi}</span>
+                        </div>`;
+                    });
+                } else {
+                    html += `<div class="total-box" style="background:#27ae60;">
+                        <div style="font-size:14px; opacity:0.8;">VALEUR PRÉSERVÉE</div>
+                        <div style="font-size:24px; font-weight:bold;">${data.prix_initial.toLocaleString()} €</div>
+                        <div style="font-size:13px;">Aucun travaux majeurs requis</div>
+                    </div>`;
+                }
+
+                if (data.positives.length > 0) {
+                    html += `<h3>✅ Atouts valorisables</h3>`;
+                    data.positives.forEach(p => {
+                        html += `<div class="card-success">✔️ ${p}</div>`;
+                    });
+                }
+
+                conteneur.innerHTML = html;
+
+            } catch (e) {
+                conteneur.innerHTML = "<span style='color:#e74c3c; font-weight:bold;'>Erreur de connexion au serveur sécurisé.</span>";
+            }
+        }
+    </script>
+</body>
+</html>
