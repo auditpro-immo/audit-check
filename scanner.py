@@ -152,23 +152,26 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
 
 @app.post("/api/analyze-grid")
 async def analyze_grid(request: Request):
-    try:
-        donnees = await request.json()
-        anomalies = []
-        decote = 0
-        
-        # Calcul des travaux
-        if donnees.get("dpe_murs") == "non": decote += 8000; anomalies.append("Murs non isolés (≈ 8000€)")
-        if donnees.get("dpe_vitrage") == "non": decote += 5000; anomalies.append("Menuiseries anciennes (≈ 5000€)")
-        if donnees.get("elec_differentiel") == "non": decote += 1500; anomalies.append("Anomalie électrique (≈ 1500€)")
-        if donnees.get("structure_amiante") == "non": decote += 3000; anomalies.append("Risque amiante (≈ 3000€)")
+    donnees = await request.json()
+    details = []
+    decote = 0
+    
+    if donnees.get("dpe_murs") == "non": decote += 8000; details.append("Murs : Isolation thermique requise (≈ 8000€)")
+    if donnees.get("dpe_combles") == "non": decote += 3000; details.append("Combles : Déperdition thermique majeure (≈ 3000€)")
+    if donnees.get("dpe_vitrage") == "non": decote += 5000; details.append("Menuiseries : Remplacement des vitrages (≈ 5000€)")
+    if donnees.get("elec_differentiel") == "non": decote += 1500; details.append("Électricité : Mise en sécurité du tableau (≈ 1500€)")
+    if donnees.get("elec_prises_terre") == "non": decote += 2500; details.append("Électricité : Création ligne de terre (≈ 2500€)")
+    if donnees.get("structure_amiante") == "non": decote += 3000; details.append("Amiante : Retrait ou confinement nécessaire (≈ 3000€)")
 
-        etat = "Excellent état" if decote == 0 else "Travaux à prévoir"
-        if decote == 0: anomalies.append("Aucun défaut majeur détecté.")
+    etat = "Travaux majeurs" if decote >= 10000 else "Travaux légers" if decote > 0 else "Excellent état"
+    strategie = "Négociation forte justifiée par les devis." if decote > 0 else "Aucun levier de négociation majeur."
 
-        return {
-            "success": True, 
-            "resultat": {"etat": etat, "decote_totale": decote, "details": anomalies}
+    return {
+        "success": True, 
+        "resultat": {
+            "etat": etat, 
+            "decote_totale": decote, 
+            "details": details,
+            "strategie": strategie
         }
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+    }
