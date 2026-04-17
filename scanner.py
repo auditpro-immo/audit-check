@@ -139,7 +139,7 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
     else:
         solutions.append("RÉSULTAT : Le dossier ne révèle aucune non-conformité majeure justifiant une décote financière.")
 
-    return {
+  return {
         "diagnostics": list(checklist.values()), # Renvoie la liste complète de la checklist
         "solutions": solutions,
         "prix_initial": prix,
@@ -149,6 +149,7 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
         "date_audit": datetime.now().strftime("%d/%m/%Y"),
         "securite": "CERTIFICAT RGPD : Analyse en mémoire volatile, destruction immédiate."
     }
+
 @app.post("/api/analyze-grid")
 async def analyze_grid(request: Request):
     try:
