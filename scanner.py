@@ -155,45 +155,39 @@ async def analyze_grid(request: Request):
     donnees = await request.json()
     details = []
     decote = 0
+    malus_dpe = 0
 
-    if donnees.get("dpe_murs") == "non":
-        decote += 8000
-        details.append({
-            "point": "Isolation Murs", 
-            "loi": "Loi Climat & Résilience", 
-            "explication": "L'enveloppe thermique du bâtiment est un élément fondamental. L'absence d'isolation entraîne 25% de déperdition thermique.", 
-            "analyse": "CONSTAT TECHNIQUE :\nAbsence totale ou partielle d'isolation thermique sur les murs donnant sur l'extérieur.\n\nRISQUES ENCOURUS :\nSurconsommation énergétique majeure, étiquette DPE dégradée (classe F/G), interdiction légale de location à court terme, apparition de ponts thermiques et de condensation.\n\nACTIONS REQUISES :\nIsoler les murs (ITI ou ITE) avec un isolant certifié ACERMI (R > 3.7 m².K/W) et refaire les embellissements.", 
-            "provision": "-8 000 €"
-        })
-    if donnees.get("elec_differentiel") == "non" or donnees.get("elec_prises_terre") == "non":
+    # Nouveaux champs (Structure & Époque)
+    epoque = donnees.get("epoque", "")
+    materiau = donnees.get("materiau", "")
+    fissures = donnees.get("fissures", "")
+
+    if epoque == "vieille": malus_dpe += 3
+    if donnees.get("dpe_murs") == "non": 
+        decote += 8000; malus_dpe += 2
+        details.append({"point": "Isolation Murs", "loi": "Loi Climat & Résilience", "explication": "Déperdition thermique majeure.", "analyse": "CONSTAT :\nAbsence d'isolation.\nRISQUES :\nPassoire thermique.\nACTIONS :\nIsoler les murs (ITI/ITE).", "provision": "-8 000 €"})
+    if donnees.get("elec_differentiel") == "non" or donnees.get("elec_prises_terre") == "non": 
         decote += 2500
-        details.append({
-            "point": "Sécurité Électrique", 
-            "loi": "Norme NF C 15-100", 
-            "explication": "La protection des personnes contre les contacts indirects est une obligation légale absolue.", 
-            "analyse": "CONSTAT TECHNIQUE :\nLe tableau de répartition est obsolète. Absence de disjoncteur différentiel 30mA et défaut de continuité de la terre.\n\nRISQUES ENCOURUS :\nDanger Grave et Immédiat (DGI). Risque mortel d'électrisation ou de départ d'incendie par surchauffe des conducteurs.\n\nACTIONS REQUISES :\nRemplacement complet du tableau de protection, création d'une prise de terre et liaison équipotentielle des pièces humides.", 
-            "provision": "-2 500 €"
-        })
-    if donnees.get("structure_amiante") == "non":
+        details.append({"point": "Sécurité Électrique", "loi": "Norme NF C 15-100", "explication": "Protection obligatoire.", "analyse": "CONSTAT :\nTableau obsolète ou absence de terre.\nRISQUES :\nÉlectrisation (DGI).\nACTIONS :\nRénovation du tableau et création de terre.", "provision": "-2 500 €"})
+    if donnees.get("structure_amiante") == "non": 
         decote += 3000
-        details.append({
-            "point": "Risque Amiante", 
-            "loi": "Art. L1334-13", 
-            "explication": "Matériau hautement toxique interdit de construction depuis 1997, causant des pathologies pulmonaires graves.", 
-            "analyse": "CONSTAT TECHNIQUE :\nPrésence suspectée de matériaux de la liste A ou B (dalles de sol, conduits, ou toiture fibrociment).\n\nRISQUES ENCOURUS :\nLibération de fibres cancérigènes lors d'interventions, de perçages ou de dégradation naturelle du bâti.\n\nACTIONS REQUISES :\nFaire réaliser un Diagnostic Amiante Avant Travaux (DAAT). En cas de confirmation, mandater une entreprise certifiée Sous-Section 3 pour confinement ou retrait sécurisé.", 
-            "provision": "-3 000 €"
-        })
+        details.append({"point": "Risque Amiante", "loi": "Art. L1334-13", "explication": "Matériau toxique.", "analyse": "CONSTAT :\nPrésence suspectée.\nRISQUES :\nInhalation de fibres.\nACTIONS :\nDiagnostic et désamiantage.", "provision": "-3 000 €"})
+    
+    if fissures == "oui":
+        decote += 15000
+        details.append({"point": "Structure & Fissures", "loi": "Solidité de l'ouvrage", "explication": "Désordres structurels lourds.", "analyse": "CONSTAT :\nPrésence de lézardes ou fissures profondes.\nRISQUES :\nPéril, effondrement, infiltrations.\nACTIONS :\nÉtude de sol G5 et reprise en sous-œuvre.", "provision": "-15 000 €"})
+    
+    if materiau == "atypique":
+        details.append({"point": "Construction Atypique", "loi": "Assurabilité", "explication": "Matériaux spécifiques (Paille, ossature bois ancienne, terre).", "analyse": "CONSTAT :\nStructure atypique détectée.\nRISQUES :\nSensibilité à l'humidité, difficulté de financement ou d'assurance.\nACTIONS :\nVérifier l'état de conservation et les garanties décennales.", "provision": "0 €"})
 
     if decote == 0:
-        details.append({
-            "point": "Conformité Générale", 
-            "loi": "Normes en vigueur", 
-            "explication": "L'évaluation visuelle indique un niveau de prestation conforme aux exigences de sécurité actuelles.", 
-            "analyse": "CONSTAT TECHNIQUE :\nL'ensemble des points de contrôle visuels (électricité, structure, isolation) ne révèle aucune non-conformité apparente majeure.\n\nRISQUES ENCOURUS :\nMaîtrisés. Le bien présente un profil sécurisant.\n\nACTIONS REQUISES :\nPoursuivre l'entretien régulier des équipements.", 
-            "provision": "0 €"
-        })
+        details.append({"point": "Conformité Générale", "loi": "Normes en vigueur", "explication": "Évaluation visuelle conforme.", "analyse": "CONSTAT :\nAucune anomalie détectée.\nRISQUES :\nMaîtrisés.\nACTIONS :\nEntretien régulier.", "provision": "0 €"})
+
+    lettres_dpe = ["A", "B", "C", "D", "E", "F", "G"]
+    index = min(malus_dpe, 6)
+    dpe_estime = lettres_dpe[index]
 
     etat = "Travaux structurels requis" if decote > 0 else "Conforme et sans travaux"
-    strategie = "L'accumulation d'anomalies techniques justifie pleinement une renégociation du prix de vente. Les chiffrages indiqués constituent un chiffrage macro-économique d'expertise et doivent être utilisés comme levier d'abattement direct lors de la rédaction de l'offre d'achat." if decote > 0 else "Le bien est jugé sain visuellement. La marge de négociation technique est quasi nulle."
+    strategie = "L'accumulation d'anomalies justifie une renégociation du prix." if decote > 0 else "La marge de négociation technique est nulle."
 
-    return {"success": True, "resultat": {"etat": etat, "decote_totale": decote, "details": details, "strategie": strategie}}
+    return {"success": True, "resultat": {"etat": etat, "decote_totale": decote, "details": details, "strategie": strategie, "dpe": dpe_estime}}
