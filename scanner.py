@@ -128,19 +128,19 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
             })
             total_decote += c
 
-    # Génération de la stratégie d'expertise
+  # Génération de la stratégie d'expertise
     if securite_critique:
         solutions.append("ALERTE SÉCURITÉ : Plusieurs Danger Graves Immédiats (DGI) ou périls structurels détectés. La mise en sécurité est la priorité absolue avant signature.")
     if bloquant_location:
-        solutions.append("MISE EN LOCATION IMPOSSIBLE : Le bien est classé F ou G (passoire). Il sera interdit à la location dès 2028 (G dès 2025). Une rénovation globale est indispensable pour pérenniser l'actif.")
+        solutions.append("MISE EN LOCATION IMPOSSIBLE : Le bien est classé F ou G (passoire). Il sera interdit à la location dès 2028 (G dès 2025). Une rénovation globale est requise.")
     if total_decote > 0:
-        solutions.append("STRATÉGIE DE NÉGOCIATION : Le montant total des provisions (chiffrage macro-économique d'expertise) constitue un levier de négociation commercial de -{} € sur la valeur vénale.".format(format(total_decote, ',')))
+        solutions.append("STRATÉGIE DE NÉGOCIATION : Le montant total des provisions (chiffrage macro-économique d'expertise) constitue un levier de négociation commercial direct.")
         solutions.append("RECOMMANDATION : Mandater des artisans RGE pour établir des devis contradictoires basés sur les actions listées dans l'inventaire.")
     else:
         solutions.append("RÉSULTAT : Le dossier ne révèle aucune non-conformité majeure justifiant une décote financière.")
 
-  return {
-        "diagnostics": list(checklist.values()), # Renvoie la liste complète de la checklist
+    return {
+        "diagnostics": list(checklist.values()),
         "solutions": solutions,
         "prix_initial": prix,
         "total_decote": total_decote,
