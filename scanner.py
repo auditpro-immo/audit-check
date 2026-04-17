@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
 import pdfplumber
 import re
@@ -149,15 +149,10 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
         "date_audit": datetime.now().strftime("%d/%m/%Y"),
         "securite": "CERTIFICAT RGPD : Analyse en mémoire volatile, destruction immédiate."
     }
-    @app.route('/api/analyze-grid', methods=['POST'])
-def analyze_grid():
+   @app.post("/api/analyze-grid")
+async def analyze_grid(request: Request):
     try:
-        donnees = request.json
-        # L'intégration de l'IA pour ces données se fera ici
-        return jsonify({
-            "success": True,
-            "message": "Grille reçue avec succès",
-            "donnees": donnees
-        })
+        donnees = await request.json()
+        return {"success": True, "message": "Grille reçue avec succès", "donnees": donnees}
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+        return {"success": False, "error": str(e)}
