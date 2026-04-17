@@ -158,24 +158,42 @@ async def analyze_grid(request: Request):
 
     if donnees.get("dpe_murs") == "non":
         decote += 8000
-        details.append({"point": "Isolation des Murs", "loi": "Loi Climat & Résilience", "explication": "L'isolation thermique des murs limite les déperditions de chaleur et améliore le DPE.", "analyse": "Constat : Parois non isolées.\nRisque : Passoire thermique (interdiction de location à terme), factures élevées.\nAction : Réaliser une isolation thermique par l'intérieur (ITI) ou l'extérieur (ITE).", "provision": "-8 000"})
-    if donnees.get("dpe_combles") == "non":
-        decote += 3000
-        details.append({"point": "Isolation des Combles", "loi": "Loi Climat & Résilience", "explication": "La toiture représente jusqu'à 30% des déperditions thermiques d'un bâtiment.", "analyse": "Constat : Épaisseur d'isolant insuffisante ou absente.\nRisque : Déperdition thermique majeure.\nAction : Soufflage d'isolant (R > 7 m².K/W).", "provision": "-3 000"})
-    if donnees.get("dpe_vitrage") == "non":
-        decote += 5000
-        details.append({"point": "Menuiseries Extérieures", "loi": "RT Existant", "explication": "Les fenêtres doivent assurer une rupture de pont thermique adéquate.", "analyse": "Constat : Simple vitrage ou double vitrage obsolète.\nRisque : Ponts thermiques, condensation.\nAction : Remplacement par double vitrage à isolation renforcée.", "provision": "-5 000"})
+        details.append({
+            "point": "Isolation Murs", 
+            "loi": "Loi Climat & Résilience", 
+            "explication": "L'enveloppe thermique du bâtiment est un élément fondamental. L'absence d'isolation entraîne 25% de déperdition thermique.", 
+            "analyse": "CONSTAT TECHNIQUE :\nAbsence totale ou partielle d'isolation thermique sur les murs donnant sur l'extérieur.\n\nRISQUES ENCOURUS :\nSurconsommation énergétique majeure, étiquette DPE dégradée (classe F/G), interdiction légale de location à court terme, apparition de ponts thermiques et de condensation.\n\nACTIONS REQUISES :\nIsoler les murs (ITI ou ITE) avec un isolant certifié ACERMI (R > 3.7 m².K/W) et refaire les embellissements.", 
+            "provision": "-8 000 €"
+        })
     if donnees.get("elec_differentiel") == "non" or donnees.get("elec_prises_terre") == "non":
         decote += 2500
-        details.append({"point": "Sécurité Électrique", "loi": "Norme NF C 15-100", "explication": "Le disjoncteur différentiel 30mA et la terre protègent contre l'électrisation.", "analyse": "Constat : Absence de protection différentielle ou de mise à la terre.\nRisque : Danger Grave et Immédiat (DGI).\nAction : Mise en sécurité du tableau et création de ligne de terre.", "provision": "-2 500"})
+        details.append({
+            "point": "Sécurité Électrique", 
+            "loi": "Norme NF C 15-100", 
+            "explication": "La protection des personnes contre les contacts indirects est une obligation légale absolue.", 
+            "analyse": "CONSTAT TECHNIQUE :\nLe tableau de répartition est obsolète. Absence de disjoncteur différentiel 30mA et défaut de continuité de la terre.\n\nRISQUES ENCOURUS :\nDanger Grave et Immédiat (DGI). Risque mortel d'électrisation ou de départ d'incendie par surchauffe des conducteurs.\n\nACTIONS REQUISES :\nRemplacement complet du tableau de protection, création d'une prise de terre et liaison équipotentielle des pièces humides.", 
+            "provision": "-2 500 €"
+        })
     if donnees.get("structure_amiante") == "non":
         decote += 3000
-        details.append({"point": "Risque Amiante", "loi": "Code Santé Publique (Art. L1334-13)", "explication": "L'amiante est un matériau cancérigène interdit de construction depuis 1997.", "analyse": "Constat : Matériaux suspects détectés.\nRisque : Inhalation de fibres en cas de travaux.\nAction : Diagnostic Amiante Avant Travaux (DAAT) requis.", "provision": "-3 000"})
+        details.append({
+            "point": "Risque Amiante", 
+            "loi": "Art. L1334-13", 
+            "explication": "Matériau hautement toxique interdit de construction depuis 1997, causant des pathologies pulmonaires graves.", 
+            "analyse": "CONSTAT TECHNIQUE :\nPrésence suspectée de matériaux de la liste A ou B (dalles de sol, conduits, ou toiture fibrociment).\n\nRISQUES ENCOURUS :\nLibération de fibres cancérigènes lors d'interventions, de perçages ou de dégradation naturelle du bâti.\n\nACTIONS REQUISES :\nFaire réaliser un Diagnostic Amiante Avant Travaux (DAAT). En cas de confirmation, mandater une entreprise certifiée Sous-Section 3 pour confinement ou retrait sécurisé.", 
+            "provision": "-3 000 €"
+        })
 
     if decote == 0:
-        details.append({"point": "État Général", "loi": "Conforme", "explication": "Les points de contrôle visuels standards sont respectés.", "analyse": "Constat : Aucune anomalie majeure détectée lors de l'évaluation visuelle.", "provision": "0"})
+        details.append({
+            "point": "Conformité Générale", 
+            "loi": "Normes en vigueur", 
+            "explication": "L'évaluation visuelle indique un niveau de prestation conforme aux exigences de sécurité actuelles.", 
+            "analyse": "CONSTAT TECHNIQUE :\nL'ensemble des points de contrôle visuels (électricité, structure, isolation) ne révèle aucune non-conformité apparente majeure.\n\nRISQUES ENCOURUS :\nMaîtrisés. Le bien présente un profil sécurisant.\n\nACTIONS REQUISES :\nPoursuivre l'entretien régulier des équipements.", 
+            "provision": "0 €"
+        })
 
-    etat = "Travaux majeurs requis" if decote >= 10000 else "Interventions techniques à prévoir" if decote > 0 else "Excellent état technique"
-    strategie = "Décote justifiée. Les provisions estimées doivent être utilisées comme argument technique lors de la négociation financière." if decote > 0 else "Le dossier ne présente pas d'arguments techniques justifiant une décote."
+    etat = "Travaux structurels requis" if decote > 0 else "Conforme et sans travaux"
+    strategie = "L'accumulation d'anomalies techniques justifie pleinement une renégociation du prix de vente. Les chiffrages indiqués constituent un chiffrage macro-économique d'expertise et doivent être utilisés comme levier d'abattement direct lors de la rédaction de l'offre d'achat." if decote > 0 else "Le bien est jugé sain visuellement. La marge de négociation technique est quasi nulle."
 
     return {"success": True, "resultat": {"etat": etat, "decote_totale": decote, "details": details, "strategie": strategie}}
