@@ -100,15 +100,19 @@ function afficherEcran() {
             <th style="width: 45%;">Analyse de l'Expert & Préconisations</th>
             <th style="text-align: right; width: 15%;">Provision</th>
         </tr>
-      ${donneesAudit.diagnostics.map(a => `
+     ${donneesAudit.diagnostics.map(a => `
 <tr style="border-bottom: 1px solid #ecf0f1;">
-    <td style="padding: 15px;"><b>${a.titre}</b><br><span style="font-size:11px; color:#6c757d;">${a.loi}</span></td>
-    <td style="padding: 15px; color: ${a.cout > 0 ? '#cc0000' : '#000000'}; font-weight: bold;">${a.cout > 0 ? 'Anomalie' : 'Conforme'}</td>
+    <td style="padding: 15px; border-left: 4px solid ${a.cout > 0 ? '#cc0000' : '#00d632'};">
+        <b>${a.titre}</b><br><span style="font-size:11px; color:#6c757d;">${a.loi}</span>
+    </td>
+    <td style="padding: 15px; color: ${a.cout > 0 ? '#cc0000' : '#000000'}; font-weight: bold;">
+        ${a.cout > 0 ? 'Anomalie' : 'Conforme'}
+    </td>
     <td style="padding: 15px; font-size: 13px; color: #333; line-height: 1.5;">
         <b>Constat :</b> ${a.detail}<br>
-        ${a.cout > 0 ? `<b>Action :</b> ${a.action}` : ''}
+        ${a.cout > 0 ? `<b>Action requise :</b> ${a.action}` : ''}
     </td>
-    <td style="padding: 15px; font-weight:bold; color: #000; text-align: right; font-size: 16px;">
+    <td style="padding: 15px; font-weight:bold; color: #000000; text-align: right; font-size: 16px;">
         ${a.cout > 0 ? `-${formatNumber(a.cout)} €` : '0 €'}
     </td>
 </tr>`).join('')}
