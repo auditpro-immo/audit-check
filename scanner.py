@@ -156,22 +156,23 @@ async def analyze_grid(request: Request):
     details = []
     decote = 0
     
-    if donnees.get("dpe_murs") == "non": decote += 8000; details.append("Murs : Isolation thermique requise (≈ 8000€)")
-    if donnees.get("dpe_combles") == "non": decote += 3000; details.append("Combles : Déperdition thermique majeure (≈ 3000€)")
-    if donnees.get("dpe_vitrage") == "non": decote += 5000; details.append("Menuiseries : Remplacement des vitrages (≈ 5000€)")
-    if donnees.get("elec_differentiel") == "non": decote += 1500; details.append("Électricité : Mise en sécurité du tableau (≈ 1500€)")
-    if donnees.get("elec_prises_terre") == "non": decote += 2500; details.append("Électricité : Création ligne de terre (≈ 2500€)")
-    if donnees.get("structure_amiante") == "non": decote += 3000; details.append("Amiante : Retrait ou confinement nécessaire (≈ 3000€)")
+    if donnees.get("dpe_murs") == "non": 
+        decote += 8000
+        details.append({"point": "Isolation Murs", "statut": "Anomalie", "loi": "Loi Climat & Résilience", "analyse": "Constat : Absence d'isolation thermique des murs.\nRisques : Inconfort thermique, factures élevées, interdiction progressive de louer.\nAction : Isoler les murs périphériques (ITI/ITE).", "provision": -8000})
+    if donnees.get("dpe_vitrage") == "non": 
+        decote += 5000
+        details.append({"point": "Menuiseries", "statut": "Anomalie", "loi": "RT Existant", "analyse": "Constat : Présence de simple vitrage ou vitrage obsolète.\nRisques : Déperdition thermique, ponts froids.\nAction : Remplacement par double vitrage performant.", "provision": -5000})
+    if donnees.get("elec_differentiel") == "non" or donnees.get("elec_prises_terre") == "non": 
+        decote += 2500
+        details.append({"point": "Électricité", "statut": "Anomalie", "loi": "Norme NF C 15-100", "analyse": "Constat : Absence de protection différentielle 30mA ou absence de terre.\nRisques : Électrisation, incendie (DGI).\nAction : Rénovation du tableau et création de terre.", "provision": -2500})
+    if donnees.get("structure_amiante") == "non": 
+        decote += 3000
+        details.append({"point": "Amiante", "statut": "Anomalie", "loi": "Art. L1334-13", "analyse": "Constat : Présence suspectée de matériaux amiantés.\nRisques : Inhalation de fibres cancérigènes.\nAction : Diagnostic amiante avant travaux (DAAT) et désamiantage SS3.", "provision": -3000})
+
+    if decote == 0:
+        details.append({"point": "État Général", "statut": "Conforme", "loi": "-", "analyse": "Aucune anomalie majeure déclarée.", "provision": 0})
 
     etat = "Travaux majeurs" if decote >= 10000 else "Travaux légers" if decote > 0 else "Excellent état"
-    strategie = "Négociation forte justifiée par les devis." if decote > 0 else "Aucun levier de négociation majeur."
+    strategie = "Négociation forte justifiée par l'anticipation des lois Climat et des mises en sécurité." if decote > 0 else "Aucun levier de négociation."
 
-    return {
-        "success": True, 
-        "resultat": {
-            "etat": etat, 
-            "decote_totale": decote, 
-            "details": details,
-            "strategie": strategie
-        }
-    }
+    return {"success": True, "resultat": {"etat": etat, "decote_totale": decote, "details": details, "strategie": strategie}}
