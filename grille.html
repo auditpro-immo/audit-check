@@ -202,56 +202,72 @@
             const res = await response.json();
             if(res.success) {
                 let rows = res.resultat.details.map(d => `
-                    <tr style="border-bottom: 1px solid #ddd;">
-                        <td style="padding: 12px; font-weight: bold; color: #333;">${d.point}<br><span style="font-size: 11px; color: #777; font-weight: normal;">Réf : ${d.loi}</span></td>
-                        <td style="padding: 12px; font-size: 12px; color: #555; font-style: italic;">${d.explication}</td>
-                        <td style="padding: 12px; font-size: 13px; color: #222; white-space: pre-line;">${d.analyse}</td>
-                        <td style="padding: 12px; font-weight: bold; color: #333; text-align: right; white-space: nowrap;">${d.provision} €</td>
+                    <tr style="border-bottom: 1px solid #ecf0f1;">
+                        <td style="padding: 20px 0; vertical-align: top; width: 25%;">
+                            <strong style="color: #0c1c24; font-size: 15px;">${d.point}</strong><br>
+                            <span style="font-size: 12px; color: #7f8c8d; display: block; margin-top: 4px;">Réf : ${d.loi}</span>
+                            <p style="font-size: 11px; color: #95a5a6; margin-top: 8px; line-height: 1.4; font-style: italic;">${d.explication}</p>
+                        </td>
+                        <td style="padding: 20px 15px; font-size: 13px; color: #34495e; line-height: 1.6; white-space: pre-line; vertical-align: top; width: 60%;">
+                            ${d.analyse}
+                        </td>
+                        <td style="padding: 20px 0; font-weight: 700; color: #e74c3c; text-align: right; vertical-align: top; white-space: nowrap; font-size: 15px; width: 15%;">
+                            ${d.provision}
+                        </td>
                     </tr>
                 `).join('');
 
-                let html = `<div id="reportArea" style="background: white; padding: 40px; margin-top: 20px; border: 1px solid #ccc; font-family: 'Times New Roman', serif; color: #000;">
-                    <div style="border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 25px; text-align: center;">
-                        <h1 style="font-size: 22px; text-transform: uppercase; letter-spacing: 1px; margin: 0;">Rapport d'Expertise Technique Préalable</h1>
-                        <p style="font-size: 13px; color: #555; margin-top: 5px;">Document de synthèse réglementaire et financière</p>
+                let html = `<div id="reportArea" style="background: white; padding: 40px; margin-top: 20px; border: 1px solid #e0e0e0; font-family: 'Montserrat', sans-serif; color: #2c3e50; text-align: left;">
+                    
+                    <div style="border-bottom: 3px solid #00d632; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
+                        <div>
+                            <h1 style="font-size: 22px; font-weight: 700; margin: 0; color: #0c1c24; text-transform: uppercase;">Rapport d'Expertise Technique</h1>
+                            <p style="font-size: 13px; color: #7f8c8d; margin-top: 5px;">Analyse réglementaire détaillée et chiffrage des non-conformités</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p style="font-size: 14px; font-weight: 800; color: #0c1c24; margin: 0;">AUDITPRO AI</p>
+                            <p style="font-size: 11px; color: #7f8c8d; margin: 0;">Document certifié généré automatiquement</p>
+                        </div>
                     </div>
                     
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 30px; padding: 15px; background: #f8f9fa; border: 1px solid #e9ecef;">
-                        <div><strong style="font-size: 12px; text-transform: uppercase; color: #555;">Conclusion de l'audit</strong><br><span style="font-size: 16px; font-weight: bold;">${res.resultat.etat}</span></div>
-                        <div style="text-align: right;"><strong style="font-size: 12px; text-transform: uppercase; color: #555;">Provision globale estimée</strong><br><span style="font-size: 18px; font-weight: bold;">${res.resultat.decote_totale} €</span></div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 40px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                        <div><strong style="font-size: 12px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">Conclusion de l'audit</strong><br><span style="font-size: 18px; font-weight: 700; color: #0c1c24;">${res.resultat.etat}</span></div>
+                        <div style="text-align: right;"><strong style="font-size: 12px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">Provision globale estimée</strong><br><span style="font-size: 22px; font-weight: 700; color: #e74c3c;">${res.resultat.decote_totale} €</span></div>
                     </div>
 
-                    <table style="width: 100%; border-collapse: collapse; text-align: left; margin-bottom: 30px; font-size: 13px;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; margin-bottom: 40px;">
                         <thead>
-                            <tr style="background: #f1f3f5; border-bottom: 2px solid #000;">
-                                <th style="padding: 10px;">Domaine visé</th>
-                                <th style="padding: 10px;">Définition technique</th>
-                                <th style="padding: 10px;">Constat & Action requise</th>
-                                <th style="padding: 10px; text-align: right;">Chiffrage</th>
+                            <tr style="border-bottom: 2px solid #0c1c24;">
+                                <th style="padding: 12px 0; color: #0c1c24; font-size: 13px; text-transform: uppercase;">Domaine Visé</th>
+                                <th style="padding: 12px 15px; color: #0c1c24; font-size: 13px; text-transform: uppercase;">Constats, Risques & Actions</th>
+                                <th style="padding: 12px 0; text-align: right; color: #0c1c24; font-size: 13px; text-transform: uppercase;">Chiffrage</th>
                             </tr>
                         </thead>
                         <tbody>${rows}</tbody>
                     </table>
 
-                    <div style="border-top: 1px solid #000; padding-top: 15px;">
-                        <strong style="font-size: 13px; text-transform: uppercase;">Note de stratégie commerciale</strong>
-                        <p style="font-size: 13px; margin-top: 5px;">${res.resultat.strategie}</p>
+                    <div style="background: #e8f8f5; padding: 20px; border-left: 5px solid #00d632; border-radius: 4px;">
+                        <strong style="font-size: 14px; text-transform: uppercase; color: #00d632;">Avis d'Expert & Stratégie Commerciale</strong>
+                        <p style="font-size: 13px; margin-top: 10px; line-height: 1.6; color: #34495e;">${res.resultat.strategie}</p>
+                        <p style="font-size: 10px; color: #95a5a6; margin-top: 15px; font-style: italic; text-align: justify;">Avertissement juridique : Ce document constitue une pré-évaluation basée sur des données déclaratives et des ratios standards de la profession. Il ne remplace en aucun cas un Diagnostic de Performance Énergétique (DPE) opposable, ni un audit légal réalisé par un diagnostiqueur certifié.</p>
                     </div>
+
                 </div>
-                <button id="downloadPdfBtn" style="width: 100%; padding: 15px; background: #212529; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 20px; font-family: 'Montserrat', sans-serif;">TÉLÉCHARGER LE RAPPORT (FICHIER PDF)</button>`;
+                <button id="downloadPdfBtn" style="width: 100%; padding: 18px; background: #0c1c24; color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer; margin-top: 25px; font-family: 'Montserrat', sans-serif;">TÉLÉCHARGER LE RAPPORT COMPLET (PDF)</button>`;
                 
                 this.style.display = 'none';
                 this.insertAdjacentHTML('afterend', html);
 
                 document.getElementById('downloadPdfBtn').addEventListener('click', function() {
                     const element = document.getElementById('reportArea');
-                    html2pdf().set({
+                    const opt = {
                         margin: 10,
                         filename: 'AuditPro_Rapport_Expertise.pdf',
-                        image: { type: 'jpeg', quality: 0.98 },
-                        html2canvas: { scale: 2 },
+                        image: { type: 'jpeg', quality: 1 },
+                        html2canvas: { scale: 3, useCORS: true },
                         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                    }).from(element).save();
+                    };
+                    html2pdf().set(opt).from(element).save();
                 });
             }
         } catch (error) {
