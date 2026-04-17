@@ -15,15 +15,16 @@
     h1 { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 32px; color: #0c1c24; text-align: center; margin-bottom: 30px; }
     .audit-section { background-color: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); }
     .audit-section h3 { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; color: #0c1c24; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #00d632; }
-    .audit-item { background-color: white; border: 1px solid #eee; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
-    .question-text { font-weight: 600; font-size: 16px; margin-bottom: 15px; color: #0c1c24; }
-    .options-group { display: flex; gap: 15px; justify-content: flex-end; }
-    .option-button { display: flex; align-items: center; gap: 8px; background-color: white; border: 1px solid #dcdcdc; color: #555; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; }
+    .audit-item { background-color: white; border: 1px solid #eee; border-radius: 10px; padding: 15px 20px; margin-bottom: 15px; }
+    .question-text { font-weight: 600; font-size: 15px; margin-bottom: 12px; color: #0c1c24; }
+    .options-group { display: flex; gap: 10px; justify-content: flex-start; flex-wrap: wrap; }
+    .option-button { display: flex; align-items: center; gap: 8px; background-color: white; border: 1px solid #dcdcdc; color: #555; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; }
     .option-button input { display: none; }
     .option-button.oui input:checked + .option-label { color: #00d632; border-bottom: 2px solid #00d632; }
     .option-button.non input:checked + .option-label { color: #e74c3c; border-bottom: 2px solid #e74c3c; }
     .option-button.inconnu input:checked + .option-label { color: #bdc3c7; border-bottom: 2px solid #bdc3c7; }
-    .submit-btn { display: block; width: 100%; padding: 15px; background: #00d632; color: white; text-align: center; border-radius: 8px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+    .submit-btn { display: block; width: 100%; padding: 18px; background: #00d632; color: white; text-align: center; border-radius: 8px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 20px; transition: background 0.3s; }
+    .submit-btn:hover { background: #00b329; }
 </style>
 </head>
 <body>
@@ -38,42 +39,151 @@
         <form id="auditForm">
             <section class="audit-section">
                 <h3>1. DPE (Performance Énergétique & Thermique)</h3>
-                <div class="audit-item">
-                    <p class="question-text">Murs extérieurs isolés (tapement des fenêtres > 10 cm) ?</p>
+                <div class="audit-item"><p class="question-text">Murs extérieurs isolés (tapement des fenêtres > 10 cm) ?</p>
                     <div class="options-group">
-                        <label class="option-button oui"><input type="radio" name="isolation_murs" value="oui" required><span class="option-label">✔ Oui</span></label>
-                        <label class="option-button non"><input type="radio" name="isolation_murs" value="non"><span class="option-label">✘ Non</span></label>
-                        <label class="option-button inconnu"><input type="radio" name="isolation_murs" value="inconnu"><span class="option-label">❓ Inconnu</span></label>
+                        <label class="option-button oui"><input type="radio" name="dpe_murs" value="oui" required><span class="option-label">✔ Oui</span></label>
+                        <label class="option-button non"><input type="radio" name="dpe_murs" value="non"><span class="option-label">✘ Non</span></label>
+                        <label class="option-button inconnu"><input type="radio" name="dpe_murs" value="inconnu"><span class="option-label">❓ Inconnu</span></label>
                     </div>
                 </div>
-                <div class="audit-item">
-                    <p class="question-text">Combles isolés avec au moins 30 cm d'épaisseur ?</p>
+                <div class="audit-item"><p class="question-text">Combles isolés avec au moins 30 cm d'épaisseur ?</p>
                     <div class="options-group">
-                        <label class="option-button oui"><input type="radio" name="isolation_combles" value="oui" required><span class="option-label">✔ Oui</span></label>
-                        <label class="option-button non"><input type="radio" name="isolation_combles" value="non"><span class="option-label">✘ Non</span></label>
-                        <label class="option-button inconnu"><input type="radio" name="isolation_combles" value="inconnu"><span class="option-label">❓ Inconnu</span></label>
+                        <label class="option-button oui"><input type="radio" name="dpe_combles" value="oui" required><span class="option-label">✔ Oui</span></label>
+                        <label class="option-button non"><input type="radio" name="dpe_combles" value="non"><span class="option-label">✘ Non</span></label>
+                        <label class="option-button inconnu"><input type="radio" name="dpe_combles" value="inconnu"><span class="option-label">❓ Inconnu</span></label>
                     </div>
                 </div>
-                <div class="audit-item">
-                    <p class="question-text">Plancher bas isolé par le dessous ?</p>
+                <div class="audit-item"><p class="question-text">Plancher bas isolé par le dessous ?</p>
                     <div class="options-group">
-                        <label class="option-button oui"><input type="radio" name="isolation_plancher" value="oui" required><span class="option-label">✔ Oui</span></label>
-                        <label class="option-button non"><input type="radio" name="isolation_plancher" value="non"><span class="option-label">✘ Non</span></label>
-                        <label class="option-button inconnu"><input type="radio" name="isolation_plancher" value="inconnu"><span class="option-label">❓ Inconnu</span></label>
+                        <label class="option-button oui"><input type="radio" name="dpe_plancher" value="oui" required><span class="option-label">✔ Oui</span></label>
+                        <label class="option-button non"><input type="radio" name="dpe_plancher" value="non"><span class="option-label">✘ Non</span></label>
+                        <label class="option-button inconnu"><input type="radio" name="dpe_plancher" value="inconnu"><span class="option-label">❓ Inconnu</span></label>
+                    </div>
+                </div>
+                <div class="audit-item"><p class="question-text">Toutes les fenêtres sont en double/triple vitrage récent ?</p>
+                    <div class="options-group">
+                        <label class="option-button oui"><input type="radio" name="dpe_vitrage" value="oui" required><span class="option-label">✔ Oui</span></label>
+                        <label class="option-button non"><input type="radio" name="dpe_vitrage" value="non"><span class="option-label">✘ Non</span></label>
+                        <label class="option-button inconnu"><input type="radio" name="dpe_vitrage" value="inconnu"><span class="option-label">❓ Inconnu</span></label>
+                    </div>
+                </div>
+                <div class="audit-item"><p class="question-text">Générateur de chauffage récent (< 10 ans) ?</p>
+                    <div class="options-group">
+                        <label class="option-button oui"><input type="radio" name="dpe_chauffage" value="oui" required><span class="option-label">✔ Oui</span></label>
+                        <label class="option-button non"><input type="radio" name="dpe_chauffage" value="non"><span class="option-label">✘ Non</span></label>
+                        <label class="option-button inconnu"><input type="radio" name="dpe_chauffage" value="inconnu"><span class="option-label">❓ Inconnu</span></label>
+                    </div>
+                </div>
+                <div class="audit-item"><p class="question-text">Ballon d'eau chaude récent (< 10 ans) et sans rouille ?</p>
+                    <div class="options-group">
+                        <label class="option-button oui"><input type="radio" name="dpe_ballon" value="oui" required><span class="option-label">✔ Oui</span></label>
+                        <label class="option-button non"><input type="radio" name="dpe_ballon" value="non"><span class="option-label">✘ Non</span></label>
+                        <label class="option-button inconnu"><input type="radio" name="dpe_ballon" value="inconnu"><span class="option-label">❓ Inconnu</span></label>
+                    </div>
+                </div>
+                <div class="audit-item"><p class="question-text">VMC hygroréglable active en continu (cuisine, SDB, WC) ?</p>
+                    <div class="options-group">
+                        <label class="option-button oui"><input type="radio" name="dpe_vmc" value="oui" required><span class="option-label">✔ Oui</span></label>
+                        <label class="option-button non"><input type="radio" name="dpe_vmc" value="non"><span class="option-label">✘ Non</span></label>
+                        <label class="option-button inconnu"><input type="radio" name="dpe_vmc" value="inconnu"><span class="option-label">❓ Inconnu</span></label>
                     </div>
                 </div>
             </section>
 
-            <button type="submit" class="submit-btn">Générer mon pré-audit</button>
+            <section class="audit-section">
+                <h3>2. Électricité (Sécurité & Conformité)</h3>
+                <div class="audit-item"><p class="question-text">Disjoncteur Général facilement accessible ?</p>
+                    <div class="options-group">
+                        <label class="option-button oui"><input type="radio" name="elec_disjoncteur" value="oui" required><span class="option-label">✔ Oui</span></label>
+                        <label class="option-button non"><input type="radio" name="elec_disjoncteur" value="non"><span class="option-label">✘ Non</span></label>
+                        <label class="option-button inconnu"><input type="radio" name="elec_disjoncteur" value="inconnu"><span class="option-label">❓ Inconnu</span></label>
+                    </div>
+                </div>
+                <div class="audit-item"><p class="question-text">Tableau équipé d'au moins un interrupteur différentiel 30 mA ?</p>
+                    <div class="options-group">
+                        <label class="option-button oui"><input type="radio" name="elec_differentiel" value="oui" required><span class="option-label">✔ Oui</span></label>
+                        <label class="option-button non"><input type="radio" name="elec_differentiel" value="non"><span class="option-label">✘ Non</span></label>
+                        <label class="option-button inconnu"><input type="radio" name="elec_differentiel" value="inconnu"><span class="option-label">❓ Inconnu</span></label>
+                    </div>
+                </div>
+                <div class="audit-item"><p class="question-text">100% des prises ont une broche métallique de terre ?</p>
+                    <div class="options-group">
+                        <label class="option-button oui"><input type="radio" name="elec_prises_terre" value="oui" required><span class="option-label">✔ Oui</span></label>
+                        <label class="option-button non"><input type="radio" name="elec_prises_terre" value="non"><span class="option-label">✘ Non</span></label>
+                        <label class="option-button inconnu"><input type="radio" name="elec_prises_terre" value="inconnu"><span class="option-label">❓ Inconnu</span></label>
+                    </div>
+                </div>
+                <div class="audit-item"><p class="question-text">Absence de matériel vétuste (fusibles porcelaine, fils tissu) ou de fils dénudés ?</p>
+                    <div class="options-group">
+                        <label class="option-button oui"><input type="radio" name="elec_vetuste" value="oui" required><span class="option-label">✔ Oui (Absence)</span></label>
+                        <label class="option-button non"><input type="radio" name="elec_vetuste" value="non"><span class="option-label">✘ Non (Présence)</span></label>
+                        <label class="option-button inconnu"><input type="radio" name="elec_vetuste" value="inconnu"><span class="option-label">❓ Inconnu</span></label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="audit-section">
+                <h3>3. Gaz (Sécurité de l'Installation)</h3>
+                <div class="audit-item"><p class="question-text">Robinet de coupure générale du gaz visible et manœuvrable ?</p>
+                    <div class="options-group">
+                        <label class="option-button oui"><input type="radio" name="gaz_coupure" value="oui" required><span class="option-label">✔ Oui</span></label>
+                        <label class="option-button non"><input type="radio" name="gaz_coupure" value="non"><span class="option-label">✘ Non</span></label>
+                        <label class="option-button inconnu"><input type="radio" name="gaz_coupure" value="inconnu"><span class="option-label">❓ Inconnu</span></label>
+                    </div>
+                </div>
+                <div class="audit-item"><p class="question-text">Pièce avec chaudière/gazinière : aération basse ET haute libres ?</p>
+                    <div class="options-group">
+                        <label class="option-button oui"><input type="radio" name="gaz_aeration" value="oui" required><span class="option-label">✔ Oui</span></label>
+                        <label class="option-button non"><input type="radio" name="gaz_aeration" value="non"><span class="option-label">✘ Non</span></label>
+                        <label class="option-button inconnu"><input type="radio" name="gaz_aeration" value="inconnu"><span class="option-label">❓ Inconnu</span></label>
+                    </div>
+                </div>
+                <div class="audit-item"><p class="question-text">Absence totale d'anciens tuyaux de gaz en plomb ou de tuyaux périmés ?</p>
+                    <div class="options-group">
+                        <label class="option-button oui"><input type="radio" name="gaz_plomb_perime" value="oui" required><span class="option-label">✔ Oui (Absence)</span></label>
+                        <label class="option-button non"><input type="radio" name="gaz_plomb_perime" value="non"><span class="option-label">✘ Non (Présence)</span></label>
+                        <label class="option-button inconnu"><input type="radio" name="gaz_plomb_perime" value="inconnu"><span class="option-label">❓ Inconnu</span></label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="audit-section">
+                <h3>4. Amiante, Plomb & Structure</h3>
+                <div class="audit-item"><p class="question-text">Absence de dalles de sol plastiques, faux-plafonds anciens ou toiture en fibrociment ?</p>
+                    <div class="options-group">
+                        <label class="option-button oui"><input type="radio" name="structure_amiante" value="oui" required><span class="option-label">✔ Oui (Absence)</span></label>
+                        <label class="option-button non"><input type="radio" name="structure_amiante" value="non"><span class="option-label">✘ Non (Présence)</span></label>
+                        <label class="option-button inconnu"><input type="radio" name="structure_amiante" value="inconnu"><span class="option-label">❓ Inconnu</span></label>
+                    </div>
+                </div>
+                <div class="audit-item"><p class="question-text">Peintures des murs, plafonds et menuiseries intactes (zéro écaillement) ?</p>
+                    <div class="options-group">
+                        <label class="option-button oui"><input type="radio" name="structure_plomb" value="oui" required><span class="option-label">✔ Oui</span></label>
+                        <label class="option-button non"><input type="radio" name="structure_plomb" value="non"><span class="option-label">✘ Non</span></label>
+                        <label class="option-button inconnu"><input type="radio" name="structure_plomb" value="inconnu"><span class="option-label">❓ Inconnu</span></label>
+                    </div>
+                </div>
+                <div class="audit-item"><p class="question-text">Murs, plafonds et cave : absence d'auréoles, moisissures ou charpente abîmée ?</p>
+                    <div class="options-group">
+                        <label class="option-button oui"><input type="radio" name="structure_humidite_insectes" value="oui" required><span class="option-label">✔ Oui (Absence)</span></label>
+                        <label class="option-button non"><input type="radio" name="structure_humidite_insectes" value="non"><span class="option-label">✘ Non (Présence)</span></label>
+                        <label class="option-button inconnu"><input type="radio" name="structure_humidite_insectes" value="inconnu"><span class="option-label">❓ Inconnu</span></label>
+                    </div>
+                </div>
+            </section>
+
+            <button type="submit" class="submit-btn">Lancer l'analyse de ma grille par l'IA</button>
         </form>
     </div>
-<script>
+
+    <script>
         document.getElementById('auditForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const formData = new FormData(this);
             const data = Object.fromEntries(formData.entries());
             
             try {
+                // Remplacement de l'alerte de test par l'envoi vers ton serveur
                 const response = await fetch('https://audit-check-ktny.onrender.com/api/analyze-grid', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -82,13 +192,13 @@
                 
                 const result = await response.json();
                 if(result.success) {
-                    alert("Données envoyées avec succès à l'IA !");
-                    console.log("Réponse du serveur :", result);
+                    alert("Grille envoyée ! L'IA va analyser vos réponses.");
+                    console.log("Réponse de l'IA :", result);
                 } else {
-                    alert("Erreur du serveur : " + result.error);
+                    alert("Erreur lors de l'analyse : " + result.error);
                 }
             } catch (error) {
-                alert("Erreur de connexion au serveur.");
+                alert("Erreur de connexion au serveur d'analyse.");
                 console.error(error);
             }
         });
