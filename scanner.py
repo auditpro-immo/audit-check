@@ -155,24 +155,27 @@ async def analyze_grid(request: Request):
     donnees = await request.json()
     details = []
     decote = 0
-    
-    if donnees.get("dpe_murs") == "non": 
+
+    if donnees.get("dpe_murs") == "non":
         decote += 8000
-        details.append({"point": "Isolation Murs", "statut": "Anomalie", "loi": "Loi Climat & Résilience", "analyse": "Constat : Absence d'isolation thermique des murs.\nRisques : Inconfort thermique, factures élevées, interdiction progressive de louer.\nAction : Isoler les murs périphériques (ITI/ITE).", "provision": -8000})
-    if donnees.get("dpe_vitrage") == "non": 
-        decote += 5000
-        details.append({"point": "Menuiseries", "statut": "Anomalie", "loi": "RT Existant", "analyse": "Constat : Présence de simple vitrage ou vitrage obsolète.\nRisques : Déperdition thermique, ponts froids.\nAction : Remplacement par double vitrage performant.", "provision": -5000})
-    if donnees.get("elec_differentiel") == "non" or donnees.get("elec_prises_terre") == "non": 
-        decote += 2500
-        details.append({"point": "Électricité", "statut": "Anomalie", "loi": "Norme NF C 15-100", "analyse": "Constat : Absence de protection différentielle 30mA ou absence de terre.\nRisques : Électrisation, incendie (DGI).\nAction : Rénovation du tableau et création de terre.", "provision": -2500})
-    if donnees.get("structure_amiante") == "non": 
+        details.append({"point": "Isolation des Murs", "loi": "Loi Climat & Résilience", "explication": "L'isolation thermique des murs limite les déperditions de chaleur et améliore le DPE.", "analyse": "Constat : Parois non isolées.\nRisque : Passoire thermique (interdiction de location à terme), factures élevées.\nAction : Réaliser une isolation thermique par l'intérieur (ITI) ou l'extérieur (ITE).", "provision": "-8 000"})
+    if donnees.get("dpe_combles") == "non":
         decote += 3000
-        details.append({"point": "Amiante", "statut": "Anomalie", "loi": "Art. L1334-13", "analyse": "Constat : Présence suspectée de matériaux amiantés.\nRisques : Inhalation de fibres cancérigènes.\nAction : Diagnostic amiante avant travaux (DAAT) et désamiantage SS3.", "provision": -3000})
+        details.append({"point": "Isolation des Combles", "loi": "Loi Climat & Résilience", "explication": "La toiture représente jusqu'à 30% des déperditions thermiques d'un bâtiment.", "analyse": "Constat : Épaisseur d'isolant insuffisante ou absente.\nRisque : Déperdition thermique majeure.\nAction : Soufflage d'isolant (R > 7 m².K/W).", "provision": "-3 000"})
+    if donnees.get("dpe_vitrage") == "non":
+        decote += 5000
+        details.append({"point": "Menuiseries Extérieures", "loi": "RT Existant", "explication": "Les fenêtres doivent assurer une rupture de pont thermique adéquate.", "analyse": "Constat : Simple vitrage ou double vitrage obsolète.\nRisque : Ponts thermiques, condensation.\nAction : Remplacement par double vitrage à isolation renforcée.", "provision": "-5 000"})
+    if donnees.get("elec_differentiel") == "non" or donnees.get("elec_prises_terre") == "non":
+        decote += 2500
+        details.append({"point": "Sécurité Électrique", "loi": "Norme NF C 15-100", "explication": "Le disjoncteur différentiel 30mA et la terre protègent contre l'électrisation.", "analyse": "Constat : Absence de protection différentielle ou de mise à la terre.\nRisque : Danger Grave et Immédiat (DGI).\nAction : Mise en sécurité du tableau et création de ligne de terre.", "provision": "-2 500"})
+    if donnees.get("structure_amiante") == "non":
+        decote += 3000
+        details.append({"point": "Risque Amiante", "loi": "Code Santé Publique (Art. L1334-13)", "explication": "L'amiante est un matériau cancérigène interdit de construction depuis 1997.", "analyse": "Constat : Matériaux suspects détectés.\nRisque : Inhalation de fibres en cas de travaux.\nAction : Diagnostic Amiante Avant Travaux (DAAT) requis.", "provision": "-3 000"})
 
     if decote == 0:
-        details.append({"point": "État Général", "statut": "Conforme", "loi": "-", "analyse": "Aucune anomalie majeure déclarée.", "provision": 0})
+        details.append({"point": "État Général", "loi": "Conforme", "explication": "Les points de contrôle visuels standards sont respectés.", "analyse": "Constat : Aucune anomalie majeure détectée lors de l'évaluation visuelle.", "provision": "0"})
 
-    etat = "Travaux majeurs" if decote >= 10000 else "Travaux légers" if decote > 0 else "Excellent état"
-    strategie = "Négociation forte justifiée par l'anticipation des lois Climat et des mises en sécurité." if decote > 0 else "Aucun levier de négociation."
+    etat = "Travaux majeurs requis" if decote >= 10000 else "Interventions techniques à prévoir" if decote > 0 else "Excellent état technique"
+    strategie = "Décote justifiée. Les provisions estimées doivent être utilisées comme argument technique lors de la négociation financière." if decote > 0 else "Le dossier ne présente pas d'arguments techniques justifiant une décote."
 
     return {"success": True, "resultat": {"etat": etat, "decote_totale": decote, "details": details, "strategie": strategie}}
