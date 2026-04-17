@@ -223,6 +223,32 @@
             
             const res = await response.json();
             if(res.success) {
+                
+                // --- GÉNÉRATION DE LA FLÈCHE DPE OFFICIELLE ---
+                let dpeLettre = res.resultat.dpe || "D";
+                // Couleurs officielles du DPE
+                let dpeColors = {
+                    "A": "#00923E", 
+                    "B": "#52B153", 
+                    "C": "#A5D700", 
+                    "D": "#FDF200", 
+                    "E": "#F39611", 
+                    "F": "#EB3223", 
+                    "G": "#D30F1F"
+                };
+                let bgColor = dpeColors[dpeLettre] || "#000";
+                // Texte noir pour le jaune/vert clair (C et D), texte blanc pour le reste
+                let textColor = (dpeLettre === "D" || dpeLettre === "C") ? "#000" : "#fff";
+
+                let badgeDPE = `
+                <div style="display: flex; justify-content: center; margin-top: 8px;">
+                    <svg width="90" height="40" viewBox="0 0 90 40">
+                        <polygon points="0,0 70,0 90,20 70,40 0,40" fill="${bgColor}" stroke="#333" stroke-width="1"/>
+                        <text x="40" y="28" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="${textColor}" text-anchor="middle">${dpeLettre}</text>
+                    </svg>
+                </div>`;
+                // ----------------------------------------------
+
                 let rows = res.resultat.details.map(d => {
                     let isAnomalie = d.provision !== "0 €";
                     return `
@@ -255,7 +281,7 @@
                     
                     <div style="display: flex; justify-content: space-between; margin-bottom: 40px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
                         <div><strong style="font-size: 12px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">Conclusion de l'audit</strong><br><span style="font-size: 18px; font-weight: 700; color: #000;">${res.resultat.etat}</span></div>
-                        <div style="text-align: center;"><strong style="font-size: 12px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">DPE Simulé</strong><br><span style="font-size: 22px; font-weight: 700; color: #000;">CLASSE ${res.resultat.dpe}</span></div>
+                        <div style="text-align: center;"><strong style="font-size: 12px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">DPE Simulé</strong><br>${badgeDPE}</div>
                         <div style="text-align: right;"><strong style="font-size: 12px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">Provision globale estimée</strong><br><span style="font-size: 22px; font-weight: 700; color: #000;">${res.resultat.decote_totale} €</span></div>
                     </div>
 
