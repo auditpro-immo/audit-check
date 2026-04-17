@@ -157,37 +157,39 @@ async def analyze_grid(request: Request):
     decote = 0
     malus_dpe = 0
 
-    # Nouveaux champs (Structure & Époque)
     epoque = donnees.get("epoque", "")
     materiau = donnees.get("materiau", "")
     fissures = donnees.get("fissures", "")
 
     if epoque == "vieille": malus_dpe += 3
+
     if donnees.get("dpe_murs") == "non": 
         decote += 8000; malus_dpe += 2
-        details.append({"point": "Isolation Murs", "loi": "Loi Climat & Résilience", "explication": "Déperdition thermique majeure.", "analyse": "CONSTAT :\nAbsence d'isolation.\nRISQUES :\nPassoire thermique.\nACTIONS :\nIsoler les murs (ITI/ITE).", "provision": "-8 000 €"})
+        details.append({"point": "Isolation Murs", "loi": "Loi Climat & Résilience", "analyse": "CONSTAT DÉTAILLÉ :\nL'analyse révèle une absence totale ou une grave insuffisance d'isolation thermique sur les murs extérieurs.\n\nRISQUES IDENTIFIÉS :\n- Déperdition de chaleur massive (jusqu'à 25%).\n- Risque de classement en 'Passoire Thermique' (DPE F ou G).\n- Interdiction légale de mise en location à court terme.\n- Apparition de ponts thermiques, condensation et moisissures.\n\nACTIONS DE MISE EN CONFORMITÉ :\nRéaliser d'urgence une Isolation Thermique par l'Intérieur (ITI) ou par l'Extérieur (ITE) avec un isolant certifié ACERMI.", "provision": "-8 000 €"})
+    
     if donnees.get("elec_differentiel") == "non" or donnees.get("elec_prises_terre") == "non": 
         decote += 2500
-        details.append({"point": "Sécurité Électrique", "loi": "Norme NF C 15-100", "explication": "Protection obligatoire.", "analyse": "CONSTAT :\nTableau obsolète ou absence de terre.\nRISQUES :\nÉlectrisation (DGI).\nACTIONS :\nRénovation du tableau et création de terre.", "provision": "-2 500 €"})
+        details.append({"point": "Sécurité Électrique", "loi": "Norme NF C 15-100", "analyse": "CONSTAT DÉTAILLÉ :\nL'installation électrique présente des vétustés critiques. Absence de protection différentielle 30mA ou absence de raccordement à la terre.\n\nRISQUES IDENTIFIÉS :\n- Danger Grave et Immédiat (DGI).\n- Risque mortel d'électrisation par contact indirect.\n- Risque élevé de départ de feu ou de court-circuit.\n\nACTIONS DE MISE EN CONFORMITÉ :\nRemplacement intégral du tableau de répartition, ajout de disjoncteurs différentiels 30mA, et création de la ligne de terre.", "provision": "-2 500 €"})
+    
     if donnees.get("structure_amiante") == "non": 
         decote += 3000
-        details.append({"point": "Risque Amiante", "loi": "Art. L1334-13", "explication": "Matériau toxique.", "analyse": "CONSTAT :\nPrésence suspectée.\nRISQUES :\nInhalation de fibres.\nACTIONS :\nDiagnostic et désamiantage.", "provision": "-3 000 €"})
+        details.append({"point": "Risque Amiante", "loi": "Art. L1334-13", "analyse": "CONSTAT DÉTAILLÉ :\nPrésence fortement suspectée de matériaux contenant de l'amiante dans les revêtements, conduits ou toitures.\n\nRISQUES IDENTIFIÉS :\n- Matériau hautement cancérigène (interdit depuis 1997).\n- Libération de fibres toxiques dans l'air ambiant en cas de travaux.\n\nACTIONS DE MISE EN CONFORMITÉ :\nMissionner un expert pour un Diagnostic Amiante Avant Travaux (DAAT). Recours obligatoire à une entreprise de désamiantage spécialisée (Sous-section 3) si confirmation.", "provision": "-3 000 €"})
     
     if fissures == "oui":
         decote += 15000
-        details.append({"point": "Structure & Fissures", "loi": "Solidité de l'ouvrage", "explication": "Désordres structurels lourds.", "analyse": "CONSTAT :\nPrésence de lézardes ou fissures profondes.\nRISQUES :\nPéril, effondrement, infiltrations.\nACTIONS :\nÉtude de sol G5 et reprise en sous-œuvre.", "provision": "-15 000 €"})
+        details.append({"point": "Structure & Fissures", "loi": "Solidité de l'Ouvrage", "analyse": "CONSTAT DÉTAILLÉ :\nObservation de fissures profondes, traversantes ou en escalier sur les façades ou les murs porteurs du bâtiment.\n\nRISQUES IDENTIFIÉS :\n- Mouvement de terrain ou affaissement des fondations.\n- Infiltrations d'eau au cœur de la structure.\n- Péril grave, instabilité pouvant mener à un effondrement partiel.\n\nACTIONS DE MISE EN CONFORMITÉ :\nÉtude géotechnique des sols (G5) exigée. Travaux de reprise en sous-œuvre (micropieux, injection de résine) à budgéter d'urgence.", "provision": "-15 000 €"})
     
     if materiau == "atypique":
-        details.append({"point": "Construction Atypique", "loi": "Assurabilité", "explication": "Matériaux spécifiques (Paille, ossature bois ancienne, terre).", "analyse": "CONSTAT :\nStructure atypique détectée.\nRISQUES :\nSensibilité à l'humidité, difficulté de financement ou d'assurance.\nACTIONS :\nVérifier l'état de conservation et les garanties décennales.", "provision": "0 €"})
+        details.append({"point": "Construction Atypique", "loi": "Critères d'Assurabilité", "analyse": "CONSTAT DÉTAILLÉ :\nLe bâtiment utilise des matériaux de construction dits 'non conventionnels' (ossature bois ancienne, terre crue, paille, torchis).\n\nRISQUES IDENTIFIÉS :\n- Forte vulnérabilité aux attaques parasitaires et à l'humidité prolongée.\n- Difficulté majeure pour obtenir un financement bancaire classique ou une assurance habitation sans surprime.\n\nACTIONS DE MISE EN CONFORMITÉ :\nFaire vérifier l'étanchéité totale de la toiture. Demander les attestations de garanties décennales si la construction a moins de 10 ans.", "provision": "0 €"})
 
     if decote == 0:
-        details.append({"point": "Conformité Générale", "loi": "Normes en vigueur", "explication": "Évaluation visuelle conforme.", "analyse": "CONSTAT :\nAucune anomalie détectée.\nRISQUES :\nMaîtrisés.\nACTIONS :\nEntretien régulier.", "provision": "0 €"})
+        details.append({"point": "Conformité Générale", "loi": "Normes en vigueur", "analyse": "CONSTAT DÉTAILLÉ :\nL'évaluation technique préliminaire ne révèle aucune anomalie visuelle majeure. Les éléments structurels et de sécurité semblent conformes aux standards actuels.\n\nRISQUES IDENTIFIÉS :\nRisques techniques maîtrisés. Le bien présente un profil sécurisant pour un acquéreur.\n\nACTIONS RECOMMANDÉES :\nMaintenir l'entretien régulier et conserver l'ensemble des factures de maintenance.", "provision": "0 €"})
 
     lettres_dpe = ["A", "B", "C", "D", "E", "F", "G"]
     index = min(malus_dpe, 6)
     dpe_estime = lettres_dpe[index]
 
-    etat = "Travaux structurels requis" if decote > 0 else "Conforme et sans travaux"
-    strategie = "L'accumulation d'anomalies justifie une renégociation du prix." if decote > 0 else "La marge de négociation technique est nulle."
+    etat = "Vigilance : Travaux Lourds Requis" if decote > 0 else "Excellent État Technique"
+    strategie = "Stratégie de Négociation : Les désordres relevés sont critiques et nécessitent une intervention rapide. Les montants provisionnés constituent une base solide et légitime pour demander une révision à la baisse du prix de vente." if decote > 0 else "Le bien est sain. Il justifie son prix de marché, la marge de négociation technique est quasi inexistante."
 
     return {"success": True, "resultat": {"etat": etat, "decote_totale": decote, "details": details, "strategie": strategie, "dpe": dpe_estime}}
