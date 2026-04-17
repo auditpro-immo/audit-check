@@ -211,6 +211,11 @@
         e.preventDefault();
         const btn = document.querySelector('.submit-btn');
         btn.innerText = "Génération du rapport d'expertise en cours...";
+        btn.disabled = true; 
+
+        // ANTI-DOUBLON : Supprime l'ancien rapport de l'écran s'il y en a déjà un
+        const oldContainer = document.getElementById('finalReportContainer');
+        if (oldContainer) oldContainer.remove();
         
         const data = Object.fromEntries(new FormData(this).entries());
         
@@ -224,20 +229,10 @@
             const res = await response.json();
             if(res.success) {
                 
-                // --- GÉNÉRATION DE LA FLÈCHE DPE OFFICIELLE ---
+                // FLÈCHE DPE OFFICIELLE
                 let dpeLettre = res.resultat.dpe || "D";
-                // Couleurs officielles du DPE
-                let dpeColors = {
-                    "A": "#00923E", 
-                    "B": "#52B153", 
-                    "C": "#A5D700", 
-                    "D": "#FDF200", 
-                    "E": "#F39611", 
-                    "F": "#EB3223", 
-                    "G": "#D30F1F"
-                };
+                let dpeColors = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F" };
                 let bgColor = dpeColors[dpeLettre] || "#000";
-                // Texte noir pour le jaune/vert clair (C et D), texte blanc pour le reste
                 let textColor = (dpeLettre === "D" || dpeLettre === "C") ? "#000" : "#fff";
 
                 let badgeDPE = `
@@ -247,83 +242,100 @@
                         <text x="40" y="28" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="${textColor}" text-anchor="middle">${dpeLettre}</text>
                     </svg>
                 </div>`;
-                // ----------------------------------------------
-
+                
                 let rows = res.resultat.details.map(d => {
                     let isAnomalie = d.provision !== "0 €";
+                    
+                    // Mise en forme du texte venant de Python avec des couleurs et du gras
+                    let formatedAnalyse = d.analyse
+                        .replace(/CONSTAT DÉTAILLÉ :/g, '<br><b style="color:#000;">CONSTAT DÉTAILLÉ :</b><br>')
+                        .replace(/RISQUES IDENTIFIÉS :/g, '<br><b style="color:#cc0000;">RISQUES IDENTIFIÉS :</b><br>')
+                        .replace(/ACTIONS DE MISE EN CONFORMITÉ :/g, '<br><b style="color:#2980b9;">ACTIONS DE MISE EN CONFORMITÉ :</b><br>')
+                        .replace(/ACTIONS RECOMMANDÉES :/g, '<br><b style="color:#2980b9;">ACTIONS RECOMMANDÉES :</b><br>')
+                        .replace(/\n/g, '<br>');
+
+                    // "avoid-break" empêche le PDF de couper la ligne en deux
                     return `
-                    <tr style="border-bottom: 1px solid #ecf0f1; page-break-inside: avoid;">
-                        <td style="padding: 20px 15px; border-left: 4px solid ${isAnomalie ? '#cc0000' : '#00d632'}; vertical-align: top; width: 25%;">
-                            <strong style="color: #000; font-size: 15px;">${d.point}</strong><br>
-                            <span style="font-size: 12px; color: #7f8c8d; display: block; margin-top: 4px;">Réf : ${d.loi}</span>
+                    <tr class="avoid-break" style="border-bottom: 1px solid #ecf0f1;">
+                        <td style="padding: 25px 15px; border-left: 5px solid ${isAnomalie ? '#cc0000' : '#00d632'} !important; vertical-align: top; width: 25%;">
+                            <strong style="color: #000; font-size: 16px;">${d.point}</strong><br>
+                            <span style="font-size: 12px; color: #7f8c8d; display: block; margin-top: 6px;">Réf : ${d.loi}</span>
                         </td>
-                        <td style="padding: 20px 15px; font-size: 13px; color: #000; line-height: 1.6; white-space: pre-line; vertical-align: top; width: 60%;">
-                            ${d.analyse.replace(/CONSTAT :/g, '<b>CONSTAT :</b>').replace(/RISQUES :/g, '<b>RISQUES :</b>').replace(/ACTIONS :/g, '<b>ACTIONS :</b>')}
+                        <td style="padding: 25px 15px; font-size: 13px; color: #333; line-height: 1.8; vertical-align: top; width: 60%; text-align: justify;">
+                            ${formatedAnalyse}
                         </td>
-                        <td style="padding: 20px 15px; font-weight: 700; color: #000; text-align: right; vertical-align: top; white-space: nowrap; font-size: 15px; width: 15%;">
+                        <td style="padding: 25px 15px; font-weight: 800; color: #000; text-align: right; vertical-align: top; white-space: nowrap; font-size: 16px; width: 15%;">
                             ${d.provision}
                         </td>
                     </tr>`;
                 }).join('');
 
-                let html = `<div id="reportArea" style="background: white; padding: 40px; margin-top: 20px; border: 1px solid #e0e0e0; font-family: 'Montserrat', sans-serif; color: #000; text-align: left;">
-                    
-                    <div style="border-bottom: 3px solid #000; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
-                        <div>
-                            <h1 style="font-size: 22px; font-weight: 700; margin: 0; color: #000; text-transform: uppercase;">Rapport d'Expertise Technique</h1>
-                            <p style="font-size: 13px; color: #7f8c8d; margin-top: 5px;">Analyse réglementaire détaillée et chiffrage des non-conformités</p>
+                let html = `
+                <div id="finalReportContainer">
+                    <div id="reportArea" style="background: white; padding: 40px; margin-top: 30px; border: 1px solid #e0e0e0; font-family: 'Montserrat', sans-serif; color: #000; text-align: left;">
+                        
+                        <div style="border-bottom: 3px solid #000; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
+                            <div>
+                                <h1 style="font-size: 24px; font-weight: 800; margin: 0; color: #000; text-transform: uppercase;">Rapport d'Expertise Technique</h1>
+                                <p style="font-size: 14px; color: #7f8c8d; margin-top: 5px;">Analyse réglementaire approfondie et chiffrage des non-conformités</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <p style="font-size: 16px; font-weight: 900; color: #000; margin: 0;">AUDITPRO AI</p>
+                                <p style="font-size: 11px; color: #7f8c8d; margin: 0;">Document certifié généré automatiquement</p>
+                            </div>
                         </div>
-                        <div style="text-align: right;">
-                            <p style="font-size: 14px; font-weight: 800; color: #000; margin: 0;">AUDITPRO AI</p>
-                            <p style="font-size: 11px; color: #7f8c8d; margin: 0;">Document certifié généré automatiquement</p>
+                        
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 40px; padding: 25px; background: #f8f9fa; border-radius: 8px; border: 1px solid #eee;">
+                            <div style="width: 30%;"><strong style="font-size: 12px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">Conclusion de l'audit</strong><br><span style="font-size: 18px; font-weight: 800; color: #000;">${res.resultat.etat}</span></div>
+                            <div style="width: 30%; text-align: center;"><strong style="font-size: 12px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">DPE Simulé</strong><br>${badgeDPE}</div>
+                            <div style="width: 30%; text-align: right;"><strong style="font-size: 12px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">Provision globale estimée</strong><br><span style="font-size: 24px; font-weight: 900; color: #000;">${res.resultat.decote_totale} €</span></div>
                         </div>
-                    </div>
-                    
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 40px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
-                        <div><strong style="font-size: 12px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">Conclusion de l'audit</strong><br><span style="font-size: 18px; font-weight: 700; color: #000;">${res.resultat.etat}</span></div>
-                        <div style="text-align: center;"><strong style="font-size: 12px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">DPE Simulé</strong><br>${badgeDPE}</div>
-                        <div style="text-align: right;"><strong style="font-size: 12px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">Provision globale estimée</strong><br><span style="font-size: 22px; font-weight: 700; color: #000;">${res.resultat.decote_totale} €</span></div>
-                    </div>
 
-                    <table style="width: 100%; border-collapse: collapse; text-align: left; margin-bottom: 40px;">
-                        <thead>
-                            <tr style="border-bottom: 2px solid #000;">
-                                <th style="padding: 12px 15px; color: #000; font-size: 13px; text-transform: uppercase;">Domaine Visé</th>
-                                <th style="padding: 12px 15px; color: #000; font-size: 13px; text-transform: uppercase;">Constats, Risques & Actions</th>
-                                <th style="padding: 12px 15px; text-align: right; color: #000; font-size: 13px; text-transform: uppercase;">Chiffrage</th>
-                            </tr>
-                        </thead>
-                        <tbody>${rows}</tbody>
-                    </table>
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; margin-bottom: 40px;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #000;">
+                                    <th style="padding: 15px; color: #000; font-size: 14px; text-transform: uppercase; font-weight: 800;">Domaine Visé</th>
+                                    <th style="padding: 15px; color: #000; font-size: 14px; text-transform: uppercase; font-weight: 800;">Constats, Risques & Actions Détaillées</th>
+                                    <th style="padding: 15px; text-align: right; color: #000; font-size: 14px; text-transform: uppercase; font-weight: 800;">Chiffrage</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>
 
-                    <div style="background: #f8f9fa; padding: 20px; border-left: 5px solid #000; border-radius: 4px; page-break-inside: avoid;">
-                        <strong style="font-size: 14px; text-transform: uppercase; color: #000;">Avis d'Expert & Stratégie Commerciale</strong>
-                        <p style="font-size: 13px; margin-top: 10px; line-height: 1.6; color: #000;">${res.resultat.strategie}</p>
-                        <p style="font-size: 10px; color: #95a5a6; margin-top: 15px; font-style: italic; text-align: justify;">Avertissement juridique : Ce document constitue une pré-évaluation basée sur des données déclaratives et des ratios standards de la profession. Il ne remplace en aucun cas un Diagnostic de Performance Énergétique (DPE) opposable, ni un audit légal réalisé par un diagnostiqueur certifié.</p>
-                        <p style="font-size: 11px; color: #555; margin-top: 10px;"><strong>Sources Officielles :</strong> Ministère de la Transition Écologique (Loi Climat & Résilience), Légifrance (Code de la Construction et de l'Habitation), Normes AFNOR (NF C 15-100, NF P 45-500).</p>
+                        <div class="avoid-break" style="background: #f8f9fa; padding: 25px; border-left: 5px solid #000; border-radius: 4px; margin-top: 20px;">
+                            <strong style="font-size: 15px; text-transform: uppercase; color: #000; font-weight: 800;">Avis d'Expert & Stratégie Commerciale</strong>
+                            <p style="font-size: 14px; margin-top: 10px; line-height: 1.6; color: #000; text-align: justify;">${res.resultat.strategie}</p>
+                            <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+                            <p style="font-size: 11px; color: #7f8c8d; font-style: italic; text-align: justify; line-height: 1.4;">Avertissement juridique : Ce document constitue une pré-évaluation basée sur des données déclaratives et des ratios standards de la profession. Il ne remplace en aucun cas un Diagnostic de Performance Énergétique (DPE) opposable, ni un audit légal réalisé par un diagnostiqueur certifié.</p>
+                            <p style="font-size: 12px; color: #555; margin-top: 10px; line-height: 1.5;"><strong>Sources Officielles :</strong> Ministère de la Transition Écologique (Loi Climat & Résilience), Légifrance (Code de la Construction et de l'Habitation), Normes AFNOR (NF C 15-100, NF P 45-500).</p>
+                        </div>
+
                     </div>
-
-                </div>
-                <button id="downloadPdfBtn" style="width: 100%; padding: 18px; background: #000; color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer; margin-top: 25px; font-family: 'Montserrat', sans-serif;">TÉLÉCHARGER LE RAPPORT COMPLET (PDF)</button>`;
+                    <button id="downloadPdfBtn" style="width: 100%; padding: 20px; background: #000; color: white; border: none; border-radius: 8px; font-weight: 800; font-size: 18px; cursor: pointer; margin-top: 25px; font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 1px;">TÉLÉCHARGER LE RAPPORT EXPERT (PDF)</button>
+                </div>`;
                 
                 this.style.display = 'none';
                 this.insertAdjacentHTML('afterend', html);
 
+                // CORRECTION DU PDF POUR QU'IL NE COUPE PLUS LES TABLEAUX
                 document.getElementById('downloadPdfBtn').addEventListener('click', function() {
                     const element = document.getElementById('reportArea');
                     const opt = {
-                        margin: [15, 10, 15, 10],
+                        margin: [10, 10, 10, 10], // Marges réduites
                         filename: 'AuditPro_Rapport_Expertise.pdf',
                         image: { type: 'jpeg', quality: 1 },
                         html2canvas: { scale: 2, useCORS: true },
                         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                        pagebreak: { mode: 'css', avoid: '.avoid-break' } // <--- C'EST ÇA QUI RÉPARE LA PAGE 2 VIDE !
                     };
                     html2pdf().set(opt).from(element).save();
                 });
             }
         } catch (error) {
             alert("Erreur serveur.");
+        } finally {
+            // Réactive le bouton une fois fini
+            btn.disabled = false;
             btn.innerText = "Lancer l'analyse de ma grille par l'IA";
         }
     });
