@@ -172,6 +172,27 @@
                 </div>
             </section>
 
+            <section class="audit-section">
+                <h3>5. Bâti & Structure Générale</h3>
+                <div class="audit-item"><p class="question-text">Époque de construction du bâtiment ?</p>
+                    <div class="options-group">
+                        <label class="option-button"><input type="radio" name="epoque" value="vieille" required><span class="option-label">Avant 1974 (Ancienne)</span></label>
+                        <label class="option-button"><input type="radio" name="epoque" value="recente"><span class="option-label">Après 1974 (Récente)</span></label>
+                    </div>
+                </div>
+                <div class="audit-item"><p class="question-text">Matériau de construction atypique (Paille, torchis, ossature bois ancienne) ?</p>
+                    <div class="options-group">
+                        <label class="option-button oui"><input type="radio" name="materiau" value="atypique" required><span class="option-label">✔ Oui</span></label>
+                        <label class="option-button non"><input type="radio" name="materiau" value="classique"><span class="option-label">✘ Non (Classique)</span></label>
+                    </div>
+                </div>
+                <div class="audit-item"><p class="question-text">Présence de fissures profondes (lézardes) sur les façades ?</p>
+                    <div class="options-group">
+                        <label class="option-button non"><input type="radio" name="fissures" value="oui" required><span class="option-label">✘ Oui (Présence)</span></label>
+                        <label class="option-button oui"><input type="radio" name="fissures" value="non"><span class="option-label">✔ Non (Absence)</span></label>
+                    </div>
+                </div>
+            </section>
             <button type="submit" class="submit-btn">Lancer l'analyse de ma grille par l'IA</button>
         </form>
     </div>
