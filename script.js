@@ -100,18 +100,18 @@ function afficherEcran() {
             <th style="width: 45%;">Analyse de l'Expert & Préconisations</th>
             <th style="text-align: right; width: 15%;">Provision</th>
         </tr>
-        ${donneesAudit.diagnostics.map(a => `
-        <tr style="border-left: 4px solid ${a.cout > 0 ? '#cc0000' : '#00d632'};">
-            <td><b>${a.titre}</b><br><span style="font-size:11px; color:#6c757d;">${a.loi}</span></td>
-            <td class="${a.cout > 0 ? 'status-anomalie' : 'status-conforme'}">${a.cout > 0 ? 'Anomalie' : 'Conforme'}</td>
-            <td style="font-size: 13px; color: #495057; line-height: 1.5;">
-                <b>Constat :</b> ${a.detail}<br>
-                ${a.cout > 0 ? `<span style="color:#cc0000;"><b>Action requise :</b> ${a.action}</span>` : `<span style="color:#00d632;">Point fort. Installation saine.</span>`}
-            </td>
-            <td style="color:#cc0000; font-weight:bold; text-align: right; font-size: 16px;">
-                ${a.cout > 0 ? `-${formatNumber(a.cout)} €` : '0 €'}
-            </td>
-        </tr>`).join('')}
+      ${donneesAudit.diagnostics.map(a => `
+<tr style="border-bottom: 1px solid #ecf0f1;">
+    <td style="padding: 15px;"><b>${a.titre}</b><br><span style="font-size:11px; color:#6c757d;">${a.loi}</span></td>
+    <td style="padding: 15px; color: ${a.cout > 0 ? '#cc0000' : '#000000'}; font-weight: bold;">${a.cout > 0 ? 'Anomalie' : 'Conforme'}</td>
+    <td style="padding: 15px; font-size: 13px; color: #333; line-height: 1.5;">
+        <b>Constat :</b> ${a.detail}<br>
+        ${a.cout > 0 ? `<b>Action :</b> ${a.action}` : ''}
+    </td>
+    <td style="padding: 15px; font-weight:bold; color: #000; text-align: right; font-size: 16px;">
+        ${a.cout > 0 ? `-${formatNumber(a.cout)} €` : '0 €'}
+    </td>
+</tr>`).join('')}
     </table>
 
     <div style="font-size: 10px; color: #adb5bd; text-align: justify; border-top: 1px solid #eaeaea; padding-top: 15px;">
@@ -160,16 +160,25 @@ function exporterPDF() {
         ]
     ];
 
-    donneesAudit.diagnostics.forEach(a => {
-        let color = (a.cout > 0) ? '#cc0000' : '#00d632'; 
-        tableBody.push([
-            { text: a.titre + '\n' + a.loi, color: color, bold: true, fontSize: 10 },
-            { text: (a.cout > 0) ? 'Anomalie' : 'Conforme', color: color, bold: true, fontSize: 10 },
-            { text: 'Constat : ' + a.detail + '\n' + ((a.cout > 0) ? 'Action : ' + a.action : 'Point fort de l\'installation.'), fontSize: 10, color: '#444', lineHeight: 1.3 },
-            { text: (a.cout > 0) ? '-' + formatNumber(a.cout) + ' €' : '0 €', color: '#cc0000', bold: true, alignment: 'right', fontSize: 12 }
-        ]);
-    });
+   donneesAudit.diagnostics.forEach(a => {
+    let isAnomalie = a.cout > 0;
+    
+    let analyseCell = [
+        { text: 'Constat : ', bold: true },
+        { text: a.detail }
+    ];
+    if (isAnomalie) {
+        analyseCell.push({ text: '\nAction : ', bold: true });
+        analyseCell.push({ text: a.action });
+    }
 
+    tableBody.push([
+        { text: a.titre + '\n' + a.loi, color: '#000000', bold: true, fontSize: 10 },
+        { text: isAnomalie ? 'Anomalie' : 'Conforme', color: isAnomalie ? '#cc0000' : '#000000', bold: true, fontSize: 10 },
+        { text: analyseCell, fontSize: 10, color: '#333' },
+        { text: isAnomalie ? '-' + formatNumber(a.cout) + ' €' : '0 €', color: '#000000', bold: true, alignment: 'right', fontSize: 12 }
+    ]);
+});
     let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
     let chartBlock = [];
     if (anomalies.length > 0) {
