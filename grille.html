@@ -176,7 +176,7 @@
         </form>
     </div>
 
-    <script>
+   <script>
         document.getElementById('auditForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = document.querySelector('.submit-btn');
@@ -193,20 +193,48 @@
                 
                 const res = await response.json();
                 if(res.success) {
-                    let html = `<div style="background: white; padding: 30px; border-radius: 12px; margin-top: 20px; border: 2px solid #00d632;">
-                        <h2 style="color: #0c1c24; margin-bottom: 15px;">Bilan de l'Expertise</h2>
-                        <p><strong>Statut :</strong> ${res.resultat.etat}</p>
-                        <p style="margin-top: 10px;"><strong>Décote estimée (Travaux) :</strong> <br><span style="color: #e74c3c; font-size: 32px; font-weight: bold;">${res.resultat.decote_totale} €</span></p>
-                        <ul style="margin-top: 20px; color: #555; line-height: 1.8;">`;
-                    res.resultat.details.forEach(d => html += `<li>${d}</li>`);
-                    html += `</ul></div>`;
+                    let html = `
+                    <div style="background: white; padding: 30px; border-radius: 12px; margin-top: 20px; border: 2px solid #00d632; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                        <h2 style="color: #0c1c24; border-bottom: 2px solid #00d632; padding-bottom: 10px; margin-bottom: 20px;">Rapport d'Expertise Détaillé</h2>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <div>
+                                <p style="margin: 0; color: #555; font-size: 14px;">Statut de l'Analyse</p>
+                                <p style="margin: 0; font-weight: bold; font-size: 18px; color: ${res.resultat.decote_totale > 0 ? '#e74c3c' : '#00d632'};">${res.resultat.etat}</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <p style="margin: 0; color: #555; font-size: 14px;">Décote Financière (Travaux)</p>
+                                <p style="margin: 0; font-weight: bold; font-size: 24px; color: #e74c3c;">${res.resultat.decote_totale} €</p>
+                            </div>
+                        </div>
+
+                        <h3 style="color: #0c1c24; font-size: 18px; margin-bottom: 10px;">Détail des Non-Conformités & Estimations</h3>
+                        <ul style="color: #555; line-height: 1.8; margin-bottom: 20px; padding-left: 20px;">`;
                     
-                    this.style.display = 'none'; // Cache les questions
-                    this.insertAdjacentHTML('afterend', html); // Affiche le résultat
+                    if(res.resultat.details.length > 0) {
+                        res.resultat.details.forEach(d => html += `<li style="margin-bottom: 5px;">${d}</li>`);
+                    } else {
+                        html += `<li>Aucune anomalie détectée.</li>`;
+                    }
+
+                    html += `</ul>
+                        <div style="background: #eafaf1; border-left: 4px solid #00d632; padding: 15px; border-radius: 4px;">
+                            <h3 style="color: #00d632; font-size: 16px; margin-bottom: 5px; margin-top: 0;">Stratégie Recommandée</h3>
+                            <p style="margin: 0; color: #333; font-size: 14px;">${res.resultat.strategie}</p>
+                        </div>
+                        
+                        <button onclick="window.print()" style="margin-top: 25px; padding: 12px 20px; background: #0c1c24; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%;">Télécharger ce rapport en PDF</button>
+                    </div>`;
+                    
+                    this.style.display = 'none'; 
+                    this.insertAdjacentHTML('afterend', html); 
+                } else {
+                    alert("Erreur de l'IA : " + res.error);
+                    btn.innerText = "Lancer l'analyse de ma grille par l'IA";
                 }
             } catch (error) {
-                alert("Erreur serveur.");
-                btn.innerText = "Générer mon pré-audit";
+                alert("Erreur de connexion.");
+                btn.innerText = "Lancer l'analyse de ma grille par l'IA";
             }
         });
     </script>
