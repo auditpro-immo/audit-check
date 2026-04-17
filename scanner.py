@@ -154,6 +154,21 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
 async def analyze_grid(request: Request):
     try:
         donnees = await request.json()
-        return {"success": True, "message": "Grille reçue avec succès", "donnees": donnees}
+        anomalies = []
+        decote = 0
+        
+        # Calcul des travaux
+        if donnees.get("dpe_murs") == "non": decote += 8000; anomalies.append("Murs non isolés (≈ 8000€)")
+        if donnees.get("dpe_vitrage") == "non": decote += 5000; anomalies.append("Menuiseries anciennes (≈ 5000€)")
+        if donnees.get("elec_differentiel") == "non": decote += 1500; anomalies.append("Anomalie électrique (≈ 1500€)")
+        if donnees.get("structure_amiante") == "non": decote += 3000; anomalies.append("Risque amiante (≈ 3000€)")
+
+        etat = "Excellent état" if decote == 0 else "Travaux à prévoir"
+        if decote == 0: anomalies.append("Aucun défaut majeur détecté.")
+
+        return {
+            "success": True, 
+            "resultat": {"etat": etat, "decote_totale": decote, "details": anomalies}
+        }
     except Exception as e:
         return {"success": False, "error": str(e)}
