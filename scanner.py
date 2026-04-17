@@ -149,7 +149,7 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
         "date_audit": datetime.now().strftime("%d/%m/%Y"),
         "securite": "CERTIFICAT RGPD : Analyse en mémoire volatile, destruction immédiate."
     }
-   @app.post("/api/analyze-grid")
+    @app.post("/api/analyze-grid")
 async def analyze_grid(request: Request):
     try:
         donnees = await request.json()
