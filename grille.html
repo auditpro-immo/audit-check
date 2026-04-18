@@ -194,6 +194,67 @@
                     </div>
                 </div>
             </section>
+            <section class="audit-section">
+                <h3>6. Plomberie & Assainissement</h3>
+                <div class="audit-item"><p class="question-text">Raccordement au tout-à-l'égout confirmé (assainissement collectif) ?</p>
+                    <div class="options-group">
+                        <label class="option-button oui"><input type="radio" name="assainissement" value="oui" required><span class="option-label">✔ Oui</span></label>
+                        <label class="option-button non"><input type="radio" name="assainissement" value="non"><span class="option-label">✘ Non (Fosse)</span></label>
+                    </div>
+                </div>
+                <div class="audit-item"><p class="question-text">Traces de fuites actives, humidité sous éviers ou corrosion sur tuyaux ?</p>
+                    <div class="options-group">
+                        <label class="option-button oui"><input type="radio" name="fuites_plomberie" value="non" required><span class="option-label">✔ Non (Sain)</span></label>
+                        <label class="option-button non"><input type="radio" name="fuites_plomberie" value="oui"><span class="option-label">✘ Oui (Fuites)</span></label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="audit-section">
+                <h3>7. Toiture & Charpente</h3>
+                <div class="audit-item"><p class="question-text">La toiture semble-t-elle affaissée, ondulée ou manque-t-il des tuiles ?</p>
+                    <div class="options-group">
+                        <label class="option-button oui"><input type="radio" name="etat_toiture" value="non" required><span class="option-label">✔ Non (Bon état)</span></label>
+                        <label class="option-button non"><input type="radio" name="etat_toiture" value="oui"><span class="option-label">✘ Oui (Dégradée)</span></label>
+                    </div>
+                </div>
+                <div class="audit-item"><p class="question-text">Présence de sciure ou trous dans les poutres (Termites/Capricornes) ?</p>
+                    <div class="options-group">
+                        <label class="option-button oui"><input type="radio" name="parasites_bois" value="non" required><span class="option-label">✔ Non (Sain)</span></label>
+                        <label class="option-button non"><input type="radio" name="parasites_bois" value="oui"><span class="option-label">✘ Oui (Parasites)</span></label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="audit-section">
+                <h3>8. Chauffage & Énergie</h3>
+                <div class="audit-item"><p class="question-text">Le système de chauffage principal est-il vétuste (vieille chaudière, vieux radiateurs) ?</p>
+                    <div class="options-group">
+                        <label class="option-button non"><input type="radio" name="chauffage_vetuste" value="oui" required><span class="option-label">✘ Oui (Vétuste)</span></label>
+                        <label class="option-button oui"><input type="radio" name="chauffage_vetuste" value="non"><span class="option-label">✔ Non (Récent)</span></label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="audit-section">
+                <h3>9. Menuiseries & Ouvertures</h3>
+                <div class="audit-item"><p class="question-text">Les fenêtres sont-elles encore en simple vitrage ou en bois pourri ?</p>
+                    <div class="options-group">
+                        <label class="option-button non"><input type="radio" name="vitrage_simple" value="oui" required><span class="option-label">✘ Oui (Simple vitrage)</span></label>
+                        <label class="option-button oui"><input type="radio" name="vitrage_simple" value="non"><span class="option-label">✔ Non (Double vitrage)</span></label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="audit-section">
+                <h3>10. Extérieurs & Balcons</h3>
+                <div class="audit-item"><p class="question-text">Les garde-corps (balcons, terrasses) présentent-ils des signes de fragilité ou rouille ?</p>
+                    <div class="options-group">
+                        <label class="option-button non"><input type="radio" name="garde_corps_hs" value="oui" required><span class="option-label">✘ Oui (Détériorés)</span></label>
+                        <label class="option-button oui"><input type="radio" name="garde_corps_hs" value="non"><span class="option-label">✔ Non (Solides)</span></label>
+                    </div>
+                </div>
+            </section>
             <button type="submit" class="submit-btn">Lancer l'analyse de ma grille par l'IA</button>
         </form>
     </div>
