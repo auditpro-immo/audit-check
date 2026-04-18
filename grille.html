@@ -213,7 +213,6 @@
         btn.innerText = "Génération du rapport d'expertise en cours...";
         btn.disabled = true; 
 
-        // ANTI-DOUBLON : Supprime l'ancien rapport de l'écran s'il y en a déjà un
         const oldContainer = document.getElementById('finalReportContainer');
         if (oldContainer) oldContainer.remove();
         
@@ -229,7 +228,6 @@
             const res = await response.json();
             if(res.success) {
                 
-                // FLÈCHE DPE OFFICIELLE
                 let dpeLettre = res.resultat.dpe || "D";
                 let dpeColors = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F" };
                 let bgColor = dpeColors[dpeLettre] || "#000";
@@ -246,17 +244,17 @@
                 let rows = res.resultat.details.map(d => {
                     let isAnomalie = d.provision !== "0 €";
                     
-                    // Mise en forme du texte venant de Python avec des couleurs et du gras
                     let formatedAnalyse = d.analyse
                         .replace(/CONSTAT DÉTAILLÉ :/g, '<br><b style="color:#000;">CONSTAT DÉTAILLÉ :</b><br>')
                         .replace(/RISQUES IDENTIFIÉS :/g, '<br><b style="color:#cc0000;">RISQUES IDENTIFIÉS :</b><br>')
+                        .replace(/ACTIONS & CHIFFRAGE PRÉCIS :/g, '<br><b style="color:#2980b9;">ACTIONS & CHIFFRAGE PRÉCIS :</b><br>')
                         .replace(/ACTIONS DE MISE EN CONFORMITÉ :/g, '<br><b style="color:#2980b9;">ACTIONS DE MISE EN CONFORMITÉ :</b><br>')
                         .replace(/ACTIONS RECOMMANDÉES :/g, '<br><b style="color:#2980b9;">ACTIONS RECOMMANDÉES :</b><br>')
                         .replace(/\n/g, '<br>');
 
-                    // "avoid-break" empêche le PDF de couper la ligne en deux
+                    // CORRECTION : J'ai retiré le code qui empêchait la ligne de se couper pour laisser l'outil respirer
                     return `
-                    <tr class="avoid-break" style="border-bottom: 1px solid #ecf0f1;">
+                    <tr style="border-bottom: 1px solid #ecf0f1;">
                         <td style="padding: 25px 15px; border-left: 5px solid ${isAnomalie ? '#cc0000' : '#00d632'} !important; vertical-align: top; width: 25%;">
                             <strong style="color: #000; font-size: 16px;">${d.point}</strong><br>
                             <span style="font-size: 12px; color: #7f8c8d; display: block; margin-top: 6px;">Réf : ${d.loi}</span>
@@ -302,7 +300,7 @@
                             <tbody>${rows}</tbody>
                         </table>
 
-                        <div class="avoid-break" style="background: #f8f9fa; padding: 25px; border-left: 5px solid #000; border-radius: 4px; margin-top: 20px;">
+                        <div style="background: #f8f9fa; padding: 25px; border-left: 5px solid #000; border-radius: 4px; margin-top: 20px;">
                             <strong style="font-size: 15px; text-transform: uppercase; color: #000; font-weight: 800;">Avis d'Expert & Stratégie Commerciale</strong>
                             <p style="font-size: 14px; margin-top: 10px; line-height: 1.6; color: #000; text-align: justify;">${res.resultat.strategie}</p>
                             <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
@@ -317,24 +315,40 @@
                 this.style.display = 'none';
                 this.insertAdjacentHTML('afterend', html);
 
-                // CORRECTION DU PDF POUR QU'IL NE COUPE PLUS LES TABLEAUX
+                // --- CORRECTION DU BUG PDF : PAGE BLANCHE ET DÉCALAGE ---
                 document.getElementById('downloadPdfBtn').addEventListener('click', function() {
+                    // 1. Remonter tout en haut de la page corrige le bug de la 1ère page blanche
+                    window.scrollTo(0, 0); 
+                    
                     const element = document.getElementById('reportArea');
                     const opt = {
-                        margin: [10, 10, 10, 10], // Marges réduites
+                        margin: 15, // Marge simple et uniforme
                         filename: 'AuditPro_Rapport_Expertise.pdf',
                         image: { type: 'jpeg', quality: 1 },
-                        html2canvas: { scale: 2, useCORS: true },
-                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                        pagebreak: { mode: 'css', avoid: '.avoid-break' } // <--- C'EST ÇA QUI RÉPARE LA PAGE 2 VIDE !
+                        html2canvas: { 
+                            scale: 2, 
+                            useCORS: true,
+                            scrollY: 0 // 2. Force le PDF à démarrer tout en haut sans décalage
+                        },
+                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                        // 3. Plus de 'pagebreak' complexe, on laisse l'outil gérer naturellement
                     };
-                    html2pdf().set(opt).from(element).save();
+                    
+                    // Masquer le bouton pendant le téléchargement
+                    const btnPdf = this;
+                    btnPdf.innerText = "Génération du PDF en cours...";
+                    btnPdf.disabled = true;
+
+                    html2pdf().set(opt).from(element).save().then(() => {
+                        // Remettre le bouton à la normale
+                        btnPdf.innerText = "TÉLÉCHARGER LE RAPPORT EXPERT (PDF)";
+                        btnPdf.disabled = false;
+                    });
                 });
             }
         } catch (error) {
             alert("Erreur serveur.");
         } finally {
-            // Réactive le bouton une fois fini
             btn.disabled = false;
             btn.innerText = "Lancer l'analyse de ma grille par l'IA";
         }
