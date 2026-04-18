@@ -158,38 +158,68 @@ async def analyze_grid(request: Request):
     malus_dpe = 0
 
     epoque = donnees.get("epoque", "")
-    materiau = donnees.get("materiau", "")
     fissures = donnees.get("fissures", "")
+    assainissement = donnees.get("assainissement", "")
+    etat_toiture = donnees.get("etat_toiture", "")
+    parasites_bois = donnees.get("parasites_bois", "")
+    fuites_plomberie = donnees.get("fuites_plomberie", "")
+    chauffage_vetuste = donnees.get("chauffage_vetuste", "")
+    vitrage_simple = donnees.get("vitrage_simple", "")
+    garde_corps_hs = donnees.get("garde_corps_hs", "")
 
-    if epoque == "vieille": malus_dpe += 3
+    if epoque == "vieille": malus_dpe += 2
 
     if donnees.get("dpe_murs") == "non": 
         decote += 8000; malus_dpe += 2
-        details.append({"point": "Isolation Murs", "loi": "Loi Climat & Résilience", "analyse": "CONSTAT DÉTAILLÉ :\nAbsence ou insuffisance d'isolation thermique.\n\nRISQUES IDENTIFIÉS :\nDéperdition thermique, ponts thermiques, risque de 'Passoire Thermique'.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Gros œuvre : Isolation par l'intérieur (ITI) ou extérieur (ITE) -> env. 7 500 €.\n- Finitions : Reprise des enduits et peinture -> env. 500 €.\n- Petit bonus valorisation : Calfeutrage des menuiseries (joints mousse/silicone) pour env. 150 € afin de couper les courants d'air mineurs et rassurer l'acheteur.", "provision": "-8 000 €"})
-    
-    if donnees.get("elec_differentiel") == "non" or donnees.get("elec_prises_terre") == "non": 
+        details.append({"point": "Isolation Murs", "loi": "Loi Climat & Résilience", "analyse": "CONSTAT DÉTAILLÉ :\nAbsence ou insuffisance critique d'isolation.\n\nRISQUES IDENTIFIÉS :\nDéperdition thermique, inconfort, condensation, statut de Passoire Thermique.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Gros œuvre : Isolation (ITI/ITE) -> env. 7 500 €.\n- Finitions : Reprise peinture/placo -> env. 500 €.", "provision": "-8 000 €"})
+    else:
+        details.append({"point": "Isolation Murs", "loi": "Loi Climat & Résilience", "analyse": "CONSTAT DÉTAILLÉ :\nL'isolation semble fonctionnelle.\n\nACTIONS RECOMMANDÉES :\n- Entretien : Vérification des bouches VMC (env. 100 €) pour garantir un bon DPE.", "provision": "0 €"})
+
+    if donnees.get("elec_differentiel") == "non" or donnees.get("elec_prises_terre") == "non" or donnees.get("elec_vetuste") == "oui": 
         decote += 2500
-        details.append({"point": "Sécurité Électrique", "loi": "Norme NF C 15-100", "analyse": "CONSTAT DÉTAILLÉ :\nVétusté électrique critique (absence de 30mA ou de terre).\n\nRISQUES IDENTIFIÉS :\nDanger Grave et Immédiat (DGI), électrisation, incendie.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Gros œuvre : Remplacement du tableau électrique -> env. 1 000 €.\n- Gros œuvre : Création et tirage de la ligne de terre -> env. 1 500 €.\n- Petit bonus valorisation : Remplacement des prises et interrupteurs jaunis par des modèles modernes (env. 15 €/unité) pour moderniser visuellement le bien à moindre coût.", "provision": "-2 500 €"})
-    
+        details.append({"point": "Sécurité Électrique", "loi": "Norme NF C 15-100", "analyse": "CONSTAT DÉTAILLÉ :\nInstallation obsolète (absence de 30mA ou de terre).\n\nRISQUES IDENTIFIÉS :\nDanger Grave et Immédiat (DGI), risque d'électrisation, court-circuit.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Sécurisation : Remplacement du tableau -> env. 1 000 €.\n- Mise à la terre : Création de la liaison -> env. 1 500 €.", "provision": "-2 500 €"})
+
+    if chauffage_vetuste == "oui":
+        decote += 12000; malus_dpe += 2
+        details.append({"point": "Chauffage", "loi": "Transition Énergétique", "analyse": "CONSTAT DÉTAILLÉ :\nGénérateur de chaleur obsolète ou très énergivore.\n\nRISQUES IDENTIFIÉS :\nFactures explosives, pannes, très mauvais DPE.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Remplacement : Installation Pompe à Chaleur (PAC) -> env. 12 000 €.", "provision": "-12 000 €"})
+
+    if vitrage_simple == "oui":
+        decote += 6000; malus_dpe += 1
+        details.append({"point": "Menuiseries", "loi": "Performance Thermique", "analyse": "CONSTAT DÉTAILLÉ :\nSimple vitrage ou menuiseries bois très dégradées.\n\nRISQUES IDENTIFIÉS :\nPonts thermiques, infiltration d'air, mauvaise isolation phonique.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Remplacement : Pose double vitrage PVC/Alu (base 6 fenêtres) -> env. 6 000 €.", "provision": "-6 000 €"})
+
     if donnees.get("structure_amiante") == "non": 
         decote += 3000
-        details.append({"point": "Risque Amiante", "loi": "Art. L1334-13", "analyse": "CONSTAT DÉTAILLÉ :\nPrésence suspectée d'amiante (conduits, toiture, dalles).\n\nRISQUES IDENTIFIÉS :\nLibération de fibres cancérigènes.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Essentiel : Diagnostic Amiante Avant Travaux (DAAT) -> env. 500 €.\n- Gros œuvre : Confinement ou retrait par entreprise SS3 -> env. 2 500 €.\n- Alternative mineure : Encapsulage (peinture spécifique) sur petites surfaces non dégradées au lieu d'un retrait complet -> env. 400 €.", "provision": "-3 000 €"})
+        details.append({"point": "Amiante", "loi": "Code Santé Publique", "analyse": "CONSTAT DÉTAILLÉ :\nMatériaux suspects identifiés.\n\nRISQUES IDENTIFIÉS :\nLibération de fibres cancérigènes.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Étude : Diagnostic DAAT -> env. 500 €.\n- Désamiantage : Retrait par entreprise SS3 -> env. 2 500 €.", "provision": "-3 000 €"})
     
     if fissures == "oui":
         decote += 15000
-        details.append({"point": "Structure & Fissures", "loi": "Solidité de l'Ouvrage", "analyse": "CONSTAT DÉTAILLÉ :\nFissures structurelles profondes.\n\nRISQUES IDENTIFIÉS :\nAffaissement, infiltrations, péril imminent.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Gros œuvre : Étude de sol géotechnique (G5) -> env. 2 000 €.\n- Gros œuvre : Reprise en sous-œuvre (micropieux/résine) -> env. 13 000 €.\n- Petit bonus valorisation : Traitement des micro-fissures superficielles (non structurelles) avec enduit fibré et peinture élastomère -> env. 800 € pour éviter d'effrayer les visiteurs.", "provision": "-15 000 €"})
+        details.append({"point": "Structure & Fissures", "loi": "Garantie de Solidité", "analyse": "CONSTAT DÉTAILLÉ :\nFissures structurelles actives sur murs porteurs.\n\nRISQUES IDENTIFIÉS :\nAffaissement, infiltrations, péril.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Ingénierie : Étude de sols (G5) -> env. 2 000 €.\n- Consolidation : Reprise en sous-œuvre -> env. 13 000 €.", "provision": "-15 000 €"})
     
-    if materiau == "atypique":
-        details.append({"point": "Construction Atypique", "loi": "Critères d'Assurabilité", "analyse": "CONSTAT DÉTAILLÉ :\nMatériaux non conventionnels (ossature bois ancienne, terre, paille).\n\nRISQUES IDENTIFIÉS :\nVulnérabilité à l'humidité, difficulté d'assurance.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Essentiel : Vérification structurelle par un expert bois/terre -> diagnostic à env. 800 €.\n- Petit bonus valorisation : Application d'un traitement hydrofuge de surface sur les soubassements pour prévenir les remontées capillaires -> env. 600 €.", "provision": "0 €"})
+    if etat_toiture == "oui":
+        decote += 12000
+        details.append({"point": "Toiture", "loi": "Clos et Couvert", "analyse": "CONSTAT DÉTAILLÉ :\nCouverture très dégradée.\n\nRISQUES IDENTIFIÉS :\nInfiltrations, pourrissement charpente.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Rénovation : Remaniement complet (base 100m²) -> env. 12 000 €.", "provision": "-12 000 €"})
 
-    if decote == 0:
-        details.append({"point": "Conformité & Améliorations", "loi": "Normes en vigueur", "analyse": "CONSTAT DÉTAILLÉ :\nAucun défaut structurel ou sécuritaire majeur détecté.\n\nRISQUES IDENTIFIÉS :\nProfil sécurisant. Risques techniques maîtrisés.\n\nACTIONS & CHIFFRAGE PRÉCIS (VALORISATION) :\n- Petit œuvre : Relamping complet en LED (env. 200 €) pour améliorer la note du DPE.\n- Petit œuvre : Réfection des joints silicone (pièces humides) et réglage des charnières de menuiseries (env. 150 €) pour garantir un effet 'clés en main' sans défaut visuel.", "provision": "0 €"})
+    if parasites_bois == "oui":
+        decote += 3500
+        details.append({"point": "Parasites Bois", "loi": "Loi Termites", "analyse": "CONSTAT DÉTAILLÉ :\nIndices xylophages (termites/capricornes) dans les bois.\n\nRISQUES IDENTIFIÉS :\nDestruction de la capacité portante.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Traitement : Bûchage et injection curative -> env. 3 500 €.", "provision": "-3 500 €"})
+
+    if assainissement == "non":
+        decote += 8000
+        details.append({"point": "Assainissement", "loi": "SPANC", "analyse": "CONSTAT DÉTAILLÉ :\nFosse septique obsolète ou non raccordé.\n\nRISQUES IDENTIFIÉS :\nPollution, obligation de mise aux normes sous 1 an.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Remplacement : Micro-station ou fosse toutes eaux -> env. 8 000 €.", "provision": "-8 000 €"})
+
+    if fuites_plomberie == "oui":
+        decote += 2500
+        details.append({"point": "Plomberie", "loi": "Normes DTU", "analyse": "CONSTAT DÉTAILLÉ :\nFuites actives ou vétusté globale.\n\nRISQUES IDENTIFIÉS :\nDégâts des eaux imminents.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Réfection : Remplacement alimentations/évacuations -> env. 2 500 €.", "provision": "-2 500 €"})
+
+    if garde_corps_hs == "oui":
+        decote += 1500
+        details.append({"point": "Sécurité Extérieure", "loi": "Réglementation Chutes", "analyse": "CONSTAT DÉTAILLÉ :\nGarde-corps instables ou rouillés.\n\nRISQUES IDENTIFIÉS :\nRisque de chute, responsabilité pénale.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Sécurisation : Nouveaux garde-corps normés -> env. 1 500 €.", "provision": "-1 500 €"})
 
     lettres_dpe = ["A", "B", "C", "D", "E", "F", "G"]
     index = min(malus_dpe, 6)
     dpe_estime = lettres_dpe[index]
 
     etat = "Vigilance : Travaux Lourds Requis" if decote > 0 else "Excellent État Technique"
-    strategie = "Stratégie : Utilisez les chiffrages détaillés ci-dessus (ex: coût exact du tableau électrique) pour justifier point par point votre négociation." if decote > 0 else "Stratégie : Bien sain. Effectuez les petites améliorations cosmétiques (joints, LED) suggérées pour provoquer le coup de cœur et vendre au prix fort."
+    strategie = f"Bilan d'Expertise : Volume total chiffré à {decote} €. Ce rapport est un levier massif pour négocier." if decote > 0 else "Bilan d'Expertise : Bien sain. Il justifie un prix en fourchette haute."
 
     return {"success": True, "resultat": {"etat": etat, "decote_totale": decote, "details": details, "strategie": strategie, "dpe": dpe_estime}}
