@@ -116,3 +116,30 @@ footer p {
     flex: 1 1 calc(33.333% - 30px) !important;
     box-sizing: border-box !important;
 }
+@media (max-width: 768px) {
+    header { 
+        flex-wrap: wrap; 
+        padding: 10px; 
+    }
+    header .logo { 
+        order: 1; 
+    }
+    header .btn-solid { 
+        order: 2; 
+        padding: 8px 12px; 
+        font-size: 13px; 
+    }
+    header nav {
+        order: 3;
+        width: 100%;
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+        margin-top: 15px;
+        padding-bottom: 5px;
+        gap: 15px;
+    }
+    header nav::-webkit-scrollbar { 
+        display: none; 
+    }
+}
