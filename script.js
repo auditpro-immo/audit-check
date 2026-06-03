@@ -8,12 +8,11 @@ const formatNumber = (num) => {
     return Number(num).toLocaleString('fr-FR').replace(/[\u202F\u00A0]/g, ' ');
 };
 
-// SYSTÈME DE NOTIFICATIONS (TOASTS SANS EMOJIS)
+// SYSTÈME DE NOTIFICATIONS (SANS EMOJIS)
 function showToast(message, type = "success") {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    // Remplacement des emojis par un indicateur texte propre
     let prefix = type === "success" ? "SUCCÈS : " : "ERREUR : ";
     toast.innerHTML = `<strong>${prefix}</strong> ${message}`;
     
@@ -189,7 +188,9 @@ function afficherEcran() {
     }
 }
 
-// GESTION DU PDF PREMIUM (SANS EMOJIS)
+// ==============================================================================
+// GESTION DU NOUVEAU PDF PREMIUM (Correction du grand blanc)
+// ==============================================================================
 function exporterPDF() {
     if (!donneesAudit) return;
     
@@ -236,14 +237,33 @@ function exporterPDF() {
     });
 
     let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
-    let chartBlock = [];
+    
+    // NOUVELLE MISE EN PAGE : Stratégie à gauche, Graphique à droite !
+    let strategyContainer = {
+        table: {
+            widths: ['*'],
+            body: [ [ { ul: listSolutions, fontSize: 10, lineHeight: 1.6, color: '#333333', margin: [10, 10, 10, 10] } ] ]
+        },
+        layout: { hLineWidth: () => 0, vLineWidth: (i) => i === 0 ? 4 : 0, vLineColor: () => '#00d632', fillColor: () => '#f4fbf7' }
+    };
+
+    let strategyRow = {
+        columns: [
+            { width: anomalies.length > 0 ? '55%' : '100%', stack: [strategyContainer] }
+        ],
+        margin: [0, 0, 0, 30]
+    };
+
     if (anomalies.length > 0) {
         let chartCanvas = document.getElementById('coutChart');
         if (chartCanvas) {
-            chartBlock = [
-                { text: 'RÉPARTITION DU BUDGET DE RÉNOVATION', style: 'sectionTitle', alignment: 'center', margin: [0, 40, 0, 20] },
-                { image: chartCanvas.toDataURL('image/png', 1.0), width: 220, alignment: 'center', margin: [0, 0, 0, 30] }
-            ];
+            strategyRow.columns.push({
+                width: '45%',
+                stack: [
+                    { text: 'RÉPARTITION DU BUDGET', fontSize: 10, bold: true, alignment: 'center', color: '#0b1a14', margin: [0, 0, 0, 10] },
+                    { image: chartCanvas.toDataURL('image/png', 1.0), width: 180, alignment: 'center' }
+                ]
+            });
         }
     }
     
@@ -369,23 +389,9 @@ function exporterPDF() {
             ...rentaBlock,
             
             { text: (loyerMensuelSaisi > 0 ? '3.' : '2.') + ' STRATÉGIE & PLAN D\'ACTION', style: 'sectionTitle' },
-            {
-                table: {
-                    widths: ['*'],
-                    body: [
-                        [ { ul: listSolutions, fontSize: 10, lineHeight: 1.6, color: '#333333', margin: [10, 10, 10, 10] } ]
-                    ]
-                },
-                layout: {
-                    hLineWidth: () => 0, vLineWidth: (i) => i === 0 ? 4 : 0,
-                    vLineColor: () => '#00d632',
-                    fillColor: () => '#f4fbf7'
-                },
-                margin: [0, 0, 0, 30]
-            },
             
-            ...chartBlock,
-            { text: '', pageBreak: 'after' },
+            // On affiche le conteneur scindé (Texte à gauche, Graphique à droite) et plus de saut de page gâché !
+            strategyRow,
 
             { text: (loyerMensuelSaisi > 0 ? '4.' : '3.') + ' INVENTAIRE DÉTAILLÉ DES POINTS DE CONTRÔLE (DDT)', style: 'sectionTitle' },
             {
@@ -433,7 +439,7 @@ function exporterPDF() {
     setTimeout(() => { btn.innerText = "Télécharger le rapport PDF Officiel"; }, 1500);
 }
 
-// Fonction Avis avec Toasts (Sans Emojis)
+// Fonction Avis (sans Emojis)
 function ajouterAvis() {
     const nom = document.getElementById('nomAvis').value;
     const texte = document.getElementById('texteAvis').value;
