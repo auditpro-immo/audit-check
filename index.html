@@ -29,6 +29,7 @@
     </header>
 
 <main>
+    <!-- ONGLET 1 : L'Analyse -->
     <div id="audit-tab" class="tab-content active">
         <section class="hero" id="audit">
             <div class="hero-content">
@@ -74,6 +75,7 @@
         </div>
     </div>
 
+    <!-- ONGLET 2 : Informations -->
     <div id="informations-tab" class="tab-content">
         <section id="informations" class="content-section">
             
@@ -145,6 +147,7 @@
         </section>
     </div>
 
+    <!-- ONGLET 3 : Avis Clients -->
     <div id="avis-tab" class="tab-content">
        <section id="avis" class="content-section" style="background-color: #f8f9fa;">
         <h2 class="section-title">Avis de nos investisseurs et professionnels</h2>
@@ -172,6 +175,7 @@
     </section>
     </div>
 
+    <!-- ONGLET 4 : FAQ COMPLÈTE -->
     <div id="faq-tab" class="tab-content">
         <section id="faq" class="content-section">
             <h2 class="section-title">Questions Fréquentes</h2>
@@ -240,6 +244,7 @@
         </section>
     </div>
 
+    <!-- ONGLET 5 : CONTACT -->
     <div id="contact-tab" class="tab-content">
         <section id="contact" class="content-section" style="text-align: center;">
             <h2 class="section-title">Nous Contacter</h2>
@@ -259,17 +264,30 @@
        <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" style="color: #00d632; text-decoration: underline; margin-top: 15px; display: inline-block;">Mentions Légales & Propriété Intellectuelle</a>
     </footer>
 
+    <!-- Mentions Légales Modale -->
     <div id="modalLegale" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.9); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
         <div style="background: #fff; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 40px; border-radius: 12px; position: relative; text-align: left;">
             <button onclick="document.getElementById('modalLegale').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: #cc0000; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">Fermer X</button>
             <h2 style="color: #0b1a14; border-bottom: 2px solid #00d632; padding-bottom: 10px;">Mentions Légales & Conditions d'Utilisation</h2>
-            <h3 style="font-size: 16px;">1. Traitement des Données (RGPD)</h3>
-            <p style="font-size: 14px; color: #555;">Le respect de votre vie privée est total. L'outil fonctionne selon le principe du "Zéro Stockage". Les fichiers PDF sont traités en mémoire vive (RAM) puis détruits instantanément.</p>
+            
+            <h3 style="font-size: 16px; margin-top: 20px;">1. Édition et Hébergement</h3>
+            <p style="font-size: 14px; color: #555;">Le site <strong>AuditPro</strong> est un outil indépendant. L'interface publique est hébergée par GitHub Pages (GitHub Inc.) et le moteur d'intelligence artificielle (Backend d'analyse) est hébergé sur les serveurs sécurisés de Render.</p>
+
+            <h3 style="font-size: 16px; margin-top: 20px;">2. Traitement des Données (RGPD)</h3>
+            <p style="font-size: 14px; color: #555;">Le respect de votre vie privée est absolu. L'outil fonctionne selon le principe strict du "Zéro Stockage". Les fichiers PDF chargés sont traités temporairement en mémoire vive (RAM) par notre algorithme, puis sont <strong>détruits instantanément</strong>. Aucune donnée, adresse ou information liée au bien immobilier n'est conservée ou partagée.</p>
+            
+            <h3 style="font-size: 16px; margin-top: 20px;">3. Propriété Intellectuelle</h3>
+            <p style="font-size: 14px; color: #555;">L'architecture du site, son design, ainsi que l'algorithme d'analyse et de chiffrage sont la propriété exclusive du créateur d'AuditPro. Toute reproduction, copie ou ingénierie inverse (reverse engineering) non autorisée est strictement interdite.</p>
+
+            <h3 style="font-size: 16px; margin-top: 20px;">4. Limites de Responsabilité (Avertissement)</h3>
+            <p style="font-size: 14px; color: #555;"><strong>AuditPro est un outil d'assistance à la négociation et de simulation macro-économique.</strong> Les chiffrages proposés sont des estimations statistiques basées sur la surface détectée et les ratios standards de la profession en cours. En aucun cas ces documents ne se substituent à l'expertise d'un Notaire, d'un diagnostiqueur immobilier certifié, ni à un devis réglementaire établi par un artisan RGE. L'éditeur décline toute responsabilité quant aux décisions financières ou immobilières prises sur la seule base de ces rapports automatisés.</p>
         </div>
     </div>
 
+    <!-- Conteneur des notifications (Toasts) -->
     <div id="toast-container"></div>
 
+    <!-- Écran de chargement plein écran -->
     <div id="loading-overlay">
         <div class="spinner"></div>
         <h3 style="color: white; margin-top: 25px; font-family: 'Segoe UI', sans-serif;">Analyse en cours...</h3>
