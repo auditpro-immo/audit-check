@@ -20,32 +20,53 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return {"status": "API AuditPro opérationnelle", "version": "1.0", "message": "Moteur d'IA prêt à recevoir des requêtes."}
+    return {"status": "API AuditPro-Immo opérationnelle", "version": "1.1", "message": "Moteur d'IA prêt."}
 
 def get_modulateur_marche(cp: str):
-    # Base d'inflation mise à jour (calculée depuis début 2024)
     mois_ecoules = (datetime.now().year - 2024) * 12 + datetime.now().month
     inflation = 1.0 + (mois_ecoules * 0.0025)
     
-    coeff_region = 1.0
+    indice = 1.0
+    ville = "Secteur Standard Français"
+    impact = "Marché équilibré. Les coûts de rénovation et de mise aux normes suivent strictement les moyennes nationales du bâtiment, sans surcote logistique particulière."
+    
     if cp:
-        # 1. ÎLE-DE-FRANCE : Hyper-tension, accès chantiers complexes, tarifs maximaux
         if cp.startswith(("75", "92", "93", "94", "77", "78", "91", "95")): 
-            coeff_region = 1.35
+            indice = 1.35
+            ville = "Île-de-France (Région Parisienne)"
+            impact = "Zone d'extrême tension immobilière. Les contraintes lourdes de livraison des matériaux, les frais d'accès/stationnement des chantiers et la pénurie d'artisans majorent réglementairement le prix global des devis de 35%."
             
-        # 2. GRANDES MÉTROPOLES / ZONES TENDUES : Forte demande (Rennes, Lyon, Marseille, Bordeaux, Nantes, Lille, Toulouse, Nice)
-        elif cp.startswith(("35", "69", "13", "33", "44", "59", "31", "06")): 
-            coeff_region = 1.18
+        elif cp.startswith("35"): 
+            indice = 1.18
+            ville = "Rennes (Secteur Ille-et-Vilaine)"
+            impact = "Métropole régionale en forte croissance économique. La très haute demande locative et le durcissement du calendrier de la Loi Climat créent un goulot d'étranglement sur le carnet de commandes des artisans qualifiés RGE, haussant le coût des interventions de 18%."
             
-        # 3. SECTEURS INTERMÉDIAIRES DYNAMIQUES : Zones littorales, grands axes ou périphéries actives
-        elif cp.startswith(("34", "67", "49", "56", "29", "74", "38", "14", "37", "45", "76")): 
-            coeff_region = 1.08
+        elif cp.startswith("69"): 
+            indice = 1.18
+            ville = "Lyon (Métropole Lyonnaise)"
+            impact = "Grande métropole à forte tension foncière. Les réglementations environnementales urbaines et le coût élevé de la main-d'œuvre locale appliquent une hausse de 18% sur l'enveloppe de rénovation thermique."
             
-        # 4. ZONES RURALES / FAIBLE DENSITÉ : Main-d'œuvre locale plus accessible
+        elif cp.startswith("33"): 
+            indice = 1.18
+            ville = "Bordeaux (Secteur Gironde)"
+            impact = "Bassin de vie très attractif. La forte demande sur la réhabilitation du bâti ancien en pierre de taille engendre une surcote systématique sur les prestations de rénovation (+18%)."
+            
+        elif cp.startswith("44"): 
+            indice = 1.18
+            ville = "Nantes (Secteur Loire-Atlantique)"
+            impact = "Dynamisme démographique de l'arc Atlantique très soutenu. Les entreprises générales du bâtiment affichent des délais longs et des tarifs indexés en hausse (+18%)."
+            
         elif cp.startswith(("23", "36", "15", "48", "52", "55", "09", "58", "04", "05", "46", "70")): 
-            coeff_region = 0.82
+            indice = 0.82
+            ville = "Secteur Rural / Zone à faible densité"
+            impact = "Zone à faible tension concurrentielle. La disponibilité de proximité des corps de métier locaux et l'absence de contraintes de transport permettent d'abaisser significativement l'enveloppe globale des travaux (-18%)."
             
-    return round(inflation * coeff_region, 2)
+        elif cp.startswith(("34", "67", "49", "56", "29", "74", "38", "14", "37", "45", "76")): 
+            indice = 1.08
+            ville = "Zone Régionale Intermédiaire"
+            impact = "Secteur provincial actif. Légère tension économique constatée sur les devis (+8%) liée à l'attractivité du littoral ou à la proximité des grands axes de transport."
+            
+    return round(inflation * indice, 2), ville, impact
 
 def extraire_surface(texte: str) -> float:
     pattern = r"(?:surface|carrez|habitable)[\s\w:]*?(\d{2,3}(?:[.,]\d{1,2})?)\s*(?:m2|m²|metres carres|mètres carrés)"
@@ -72,7 +93,7 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
     
     solutions = []
     total_decote = 0
-    indice = get_modulateur_marche(cp)
+    indice, nom_ville, texte_impact = get_modulateur_marche(cp)
     securite_critique = False
     bloquant_location = False
     
@@ -159,7 +180,7 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
         total_decote += c
 
     if securite_critique:
-        solutions.append("ALERTE SÉCURITÉ : La maison presents des dangers immédiats (électricité, gaz ou mérule). Vous devrez faire des travaux avant même d'y habiter.")
+        solutions.append("ALERTE SÉCURITÉ : La maison présente des dangers immédiats (électricité, gaz ou mérule). Vous devrez faire des travaux avant même d'y habiter.")
     if bloquant_location:
         solutions.append("MISE EN LOCATION IMPOSSIBLE : Le bien est classé F ou G. La loi interdit de le louer en l'état. Vous devrez faire une rénovation thermique massive.")
     if total_decote > 0:
@@ -174,7 +195,9 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
         "prix_initial": prix,
         "total_decote": total_decote,
         "prix_net": prix - total_decote,
-        "analyse_secteur": f"Ajusté selon la réalité économique locale (Indice {indice})",
+        "analyse_secteur": f"Rapport d'indice local : {indice}",
+        "localisation_exacte": nom_ville,
+        "impact_marche": texte_impact,
         "date_audit": datetime.now().strftime("%d/%m/%Y"),
         "securite": "Vos données sont privées : Le PDF a été supprimé de nos serveurs."
     }
@@ -208,7 +231,7 @@ async def analyze_grid(request: Request):
         decote += 2500
         details.append({"point": "Sécurité Électrique", "loi": "Norme NF C 15-100", "analyse": "CONSTAT DÉTAILLÉ :\nL'électricité est vieille. En clair, il n'y a pas les sécurités modernes de base.\n\nRISQUES IDENTIFIÉS :\nFort danger d'électrocution si un appareil ménager a un défaut.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Faire changer le tableau et ajouter des prises de terre -> env. 2 500 €.", "provision": "-2 500 €"})
 
-    if chauffage_vetuste == "oui":
+    if heating_vetuste == "oui" or chauffage_vetuste == "oui":
         decote += 12000; malus_dpe += 2
         details.append({"point": "Chauffage", "loi": "Transition Énergétique", "analyse": "CONSTAT DÉTAILLÉ :\nLa chaudière ou les radiateurs sont d'une ancienne génération.\n\nRISQUES IDENTIFIÉS :\nRisque de panne en plein hiver et consommation de gaz/fioul très chère.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Acheter et faire poser une Pompe à Chaleur moderne -> env. 12 000 €.", "provision": "-12 000 €"})
 
