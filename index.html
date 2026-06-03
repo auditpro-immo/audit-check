@@ -43,18 +43,22 @@
             
             <div class="form-container">
                 <h2>Votre audit financier gratuit</h2>
-               <div class="form-group">
-    <label>Prix affiché du bien (€) *</label>
-    <input type="number" id="prixInitial" class="form-control" placeholder="Ex : 350000 (sans les espaces)">
-</div>
+                <div class="form-group">
+                    <label>Prix affiché du bien (€) *</label>
+                    <input type="number" id="prixInitial" class="form-control" placeholder="Ex : 350000 (sans espaces)">
+                </div>
+                <div class="form-group">
+                    <label>Loyer mensuel estimé (€) *Optionnel</label>
+                    <input type="number" id="loyerMensuel" class="form-control" placeholder="Ex : 850">
+                </div>
                 <div class="form-group">
                     <label>Code Postal *</label>
-                    <input type="text" id="codePostal" class="form-control" placeholder="Ex: 75001">
+                    <input type="text" id="codePostal" class="form-control" placeholder="Ex : 75001">
                 </div>
                 <div class="form-group">
                     <label>Dossier PDF (DDT) *</label>
                     <div id="drop-zone" class="drop-zone">
-                        <span class="drop-zone-text">📂 Glissez-déposez votre PDF ici ou cliquez pour parcourir</span>
+                        <span class="drop-zone-text">📂 Glissez-déposez votre PDF ici ou cliquez</span>
                         <input type="file" id="fichierPdf" class="drop-zone-input" accept="application/pdf">
                     </div>
                 </div>
@@ -154,11 +158,6 @@
                 <p style="font-size: 14px; font-style: italic; color: #495057;">"Indispensable pour rassurer mes clients acquéreurs. Le chiffrage macro-économique donne immédiatement un ordre d'idée réaliste des travaux."</p>
                 <div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- Sophie L. (Mandataire Immobilier)</div>
             </div>
-            <div class="avis-card" style="flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;">
-                <div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div>
-                <p style="font-size: 14px; font-style: italic; color: #495057;">"J'ignorais ce qu'était un DGI pour le gaz. L'outil m'a alerté sur l'urgence sécuritaire avant la signature du compromis. Je recommande."</p>
-                <div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- Thomas B. (Acquéreur particulier)</div>
-            </div>
         </div>
 
         <div class="form-avis" style="background: #eaf9f0; padding: 40px; border-radius: 12px; border: 1px solid #00d632; max-width: 600px; margin: 0 auto; text-align: center;">
@@ -184,36 +183,8 @@
                     <p>Non. AuditPro est un outil d'aide à la décision et d'optimisation de la négociation commerciale. Seul le Dossier de Diagnostic Technique (DDT) originel fait foi.</p>
                 </details>
                 <details>
-                    <summary>Le PDF de mes diagnostics fait 150 pages, l'outil peut-il l'analyser ?</summary>
-                    <p>Oui, absolument. Notre algorithme est conçu pour parcourir des documents extrêmement volumineux en quelques secondes. Il ignore automatiquement les pages d'annexes inutiles pour se concentrer uniquement sur les tableaux de conclusions réglementaires.</p>
-                </details>
-                <details>
-                    <summary>Quels sont les diagnostics obligatoires lors d'une vente immobilière ?</summary>
-                    <p>Le vendeur doit fournir un DDT complet comprenant : le DPE (performance énergétique), le constat plomb (si construction avant 1949), l'état d'amiante (avant 1997), l'état de l'électricité et du gaz (si les installations ont plus de 15 ans), l'ERP (risques naturels), et parfois l'état parasitaire (termites) selon l'arrêté préfectoral de la commune.</p>
-                </details>
-                <details>
                     <summary>Qu'est-ce qu'une "passoire thermique" (DPE F ou G) ?</summary>
                     <p>C'est un logement extrêmement mal isolé. La Loi Climat a décrété le gel des loyers pour ces biens. Dès 2025, les passoires classées G sont interdites à la location. La classe F suivra en 2028.</p>
-                </details>
-                <details>
-                    <summary>Qu'est-ce que l'amiante et le plomb ?</summary>
-                    <p>L'amiante est une fibre minérale cancérigène interdite depuis 1997. Le plomb était utilisé dans les peintures avant 1949 ; son écaillement provoque le saturnisme. Le retrait nécessite des experts.</p>
-                </details>
-                <details>
-                    <summary>Quelle est la différence entre Termites et Mérule ?</summary>
-                    <p>Les termites sont des insectes qui vivent en colonie et dévorent la charpente. La mérule est un champignon destructeur redoutable qui se développe dans l'humidité.</p>
-                </details>
-                <details>
-                    <summary>Dois-je obligatoirement faire les travaux si une anomalie est détectée ?</summary>
-                    <p>Si vous êtes le vendeur : non, la loi vous oblige seulement à informer l'acheteur (sauf danger grave et imminent extrême sur le gaz). Si vous êtes l'acheteur : libre à vous de les réaliser, mais les banques exigent de plus en plus la mise aux normes électriques ou énergétiques pour vous accorder un prêt immobilier.</p>
-                </details>
-                <details>
-                    <summary>L'estimation prend-elle en compte les aides de l'État ?</summary>
-                    <p>Non, les montants indiqués dans notre rapport sont des estimations brutes (coût total hors aides). Les aides gouvernementales dépendent de vos revenus fiscaux personnels.</p>
-                </details>
-                <details>
-                    <summary>Mes données personnelles sont-elles conservées ?</summary>
-                    <p>Absolument pas. Nous appliquons une politique de "Zéro Stockage". Votre PDF est lu en mémoire vive puis détruit instantanément. Aucune donnée n'est sauvegardée.</p>
                 </details>
             </div>
         </section>
@@ -224,12 +195,9 @@
             <h2 class="section-title">Nous Contacter</h2>
             <div style="background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 600px; margin: 0 auto; border-top: 4px solid #00d632;">
                 <p style="font-size: 16px; color: #495057; margin-bottom: 30px;">Une question sur un audit ? Un problème lors de la génération de votre rapport PDF ? N'hésitez pas à nous envoyer un e-mail à l'adresse ci-dessous :</p>
-                
                 <div style="font-size: 22px; font-weight: 800; color: #0b1a14; margin-bottom: 30px; background: #eaf9f0; padding: 15px; border-radius: 8px; border: 1px solid #00d632;">
                     contact.auditpro.immo@gmail.com
                 </div>
-                
-                <p style="font-size: 14px; color: #6c757d;">Nous vous répondrons dans les plus brefs délais.</p>
             </div>
         </section>
     </div>
@@ -244,36 +212,20 @@
     <div id="modalLegale" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.9); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
         <div style="background: #fff; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 40px; border-radius: 12px; position: relative; text-align: left;">
             <button onclick="document.getElementById('modalLegale').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: #cc0000; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">Fermer X</button>
-            
             <h2 style="color: #0b1a14; border-bottom: 2px solid #00d632; padding-bottom: 10px;">Mentions Légales & Conditions d'Utilisation</h2>
-            
-            <h3 style="font-size: 16px;">1. Propriété Intellectuelle (Protection anti-plagiat)</h3>
-            <p style="font-size: 14px; color: #555;">La structure, le design, le code, l'algorithme et les textes de ce site sont la propriété exclusive d'AuditPro. Toute reproduction, représentation, modification ou copie, totale ou partielle, est strictement interdite sans autorisation écrite expresse, sous peine de poursuites judiciaires (Article L335-2 et suivants du Code de la Propriété Intellectuelle).</p>
-            
-            <h3 style="font-size: 16px;">2. Traitement des Données (RGPD)</h3>
-            <p style="font-size: 14px; color: #555;">Le respect de votre vie privée est total. L'outil fonctionne selon le principe du "Zéro Stockage". Les fichiers PDF sont traités en mémoire vive (RAM) puis détruits instantanément. Aucune donnée n'est conservée.</p>
-            
-            <h3 style="font-size: 16px;">3. Responsabilité</h3>
-            <p style="font-size: 14px; color: #555;">Ce site est un outil d'aide à la décision. Il ne remplace en aucun cas l'expertise légale d'un Notaire ou d'un diagnostiqueur assermenté. L'utilisation des résultats générés se fait sous la seule responsabilité de l'utilisateur.</p>
-            <h3 style="font-size: 16px; margin-top: 15px;">4. Sources Officielles et Réglementaires</h3>
-            <p style="font-size: 14px; color: #555; line-height: 1.6;">
-                Les analyses s'appuient strictement sur les référentiels nationaux :<br>
-                • <strong>Ministère de la Transition Écologique :</strong> Loi Climat & Résilience, DPE, ERP.<br>
-                • <strong>Légifrance & Service-Public.fr :</strong> Code de la Construction, Code de la Santé Publique (Plomb, Amiante).<br>
-                • <strong>Normes AFNOR :</strong> NF C 15-100 (Électricité) et NF P 45-500 (Gaz).<br>
-                • <strong>ADEME :</strong> Préconisations de rénovation énergétique.<br>
-                • <strong>Géorisques (BRGM) :</strong> Cartographie des risques naturels et technologiques.<br>
-                • <strong>Observatoire National Termites :</strong> Zones d'infestation.
-            </p>
+            <h3 style="font-size: 16px;">1. Traitement des Données (RGPD)</h3>
+            <p style="font-size: 14px; color: #555;">Le respect de votre vie privée est total. L'outil fonctionne selon le principe du "Zéro Stockage". Les fichiers PDF sont traités en mémoire vive (RAM) puis détruits instantanément.</p>
         </div>
     </div>
 
+    <div id="toast-container"></div>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <h3 style="color: white; margin-top: 25px; font-family: 'Segoe UI', sans-serif;">Analyse IA en cours...</h3>
+        <p style="color: #00d632; font-weight: bold;">Extraction et chiffrage des données du DDT</p>
+    </div>
+
     <script src="script.js"></script>
-    <style>
-     /* Code CSS pour rendre le survol des étoiles interactif */
-        .star-rating input:checked ~ label, 
-        .star-rating label:hover, 
-        .star-rating label:hover ~ label { color: #f39c12 !important; }
-    </style>
 </body>
 </html>
