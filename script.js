@@ -8,16 +8,17 @@ const formatNumber = (num) => {
     return Number(num).toLocaleString('fr-FR').replace(/[\u202F\u00A0]/g, ' ');
 };
 
-// --- NOUVEAU : SYSTÈME DE NOTIFICATIONS (TOASTS) ---
+// SYSTÈME DE NOTIFICATIONS (TOASTS SANS EMOJIS)
 function showToast(message, type = "success") {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    toast.innerHTML = type === "success" ? `✅ ${message}` : `⚠️ ${message}`;
+    // Remplacement des emojis par un indicateur texte propre
+    let prefix = type === "success" ? "SUCCÈS : " : "ERREUR : ";
+    toast.innerHTML = `<strong>${prefix}</strong> ${message}`;
     
     container.appendChild(toast);
     
-    // Fait disparaître le Toast après 4 secondes
     setTimeout(() => {
         toast.style.animation = "fadeOut 0.4s forwards";
         setTimeout(() => toast.remove(), 400);
@@ -31,13 +32,11 @@ async function envoyer() {
     const loyerInput = document.getElementById('loyerMensuel').value || 0;
     const cpInput = document.getElementById('codePostal').value || "Non renseigné";
     
-    // 1. Remplacement des alerts basiques par nos Toasts !
     if (prixInput <= 0) return showToast("Veuillez indiquer le prix de vente du bien.", "error");
     if (!input.files.length) return showToast("Veuillez charger le diagnostic technique au format PDF.", "error");
     
     loyerMensuelSaisi = Number(loyerInput);
 
-    // 2. Affichage du bel écran de chargement (Overlay)
     document.getElementById('loading-overlay').style.display = "flex";
 
     const formData = new FormData();
@@ -52,25 +51,23 @@ async function envoyer() {
         donneesAudit.cp = cpInput;
         idRapport = "AUDIT-" + Math.floor(Math.random() * 90000 + 10000);
         
-        // Cache l'écran de chargement
         document.getElementById('loading-overlay').style.display = "none";
         
-        showToast("Audit généré avec succès !");
+        showToast("Audit généré avec succès.");
         document.getElementById('result-wrapper').style.display = "block";
         document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
         afficherEcran();
 
     } catch (e) {
         document.getElementById('loading-overlay').style.display = "none";
-        showToast("Erreur de connexion à l'Intelligence Artificielle.", "error");
+        showToast("Impossible de se connecter au moteur d'analyse.", "error");
     }
 }
 
-// Affichage HTML
+// Affichage HTML sur le site
 function afficherEcran() {
     let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
     
-    // --- NOUVEAU : CALCUL DE RENTABILITÉ ---
     let kpiRentabiliteHtml = "";
     if (loyerMensuelSaisi > 0) {
         let prixInitial = Number(document.getElementById('prixInitial').value);
@@ -79,7 +76,7 @@ function afficherEcran() {
         let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
 
         kpiRentabiliteHtml = `
-        <h3 style="text-transform: uppercase; font-size: 16px; color: #0b1a14; margin-top: 30px; margin-bottom: 15px;">📊 Simulation de Rentabilité Locative</h3>
+        <h3 style="text-transform: uppercase; font-size: 16px; color: #0b1a14; margin-top: 30px; margin-bottom: 15px;">Simulation de Rentabilité Locative</h3>
         <div class="kpi-grid" style="margin-bottom: 40px;">
             <div class="kpi-box" style="background: #eaf9f0; border-color: #00d632;">
                 <div class="kpi-label">Loyer Annuel Estimé</div>
@@ -109,7 +106,7 @@ function afficherEcran() {
         </div>
     </div>
     
-    <h3 style="text-transform: uppercase; font-size: 16px; color: #0b1a14; margin-bottom: 15px;">💰 Valorisation Vénale Conseillée</h3>
+    <h3 style="text-transform: uppercase; font-size: 16px; color: #0b1a14; margin-bottom: 15px;">Valorisation Vénale Conseillée</h3>
     <div class="kpi-grid">
         <div class="kpi-box">
             <div class="kpi-label">Valeur Vénale Initiale</div>
@@ -140,14 +137,13 @@ function afficherEcran() {
         <div class="chart-container"><canvas id="coutChart"></canvas></div>`;
     }
 
-    // Le wrapper table-responsive est ici pour le mobile
     html += `
     <h3 style="text-transform: uppercase; font-size: 16px; color: #0b1a14; margin-bottom: 15px;">Checklist Intégrale des Non-Conformités et Points Forts</h3>
     <div class="table-responsive">
         <table>
             <tr>
                 <th style="width: 25%;">Point Réglementaire</th>
-                <th style="width: 15%;">Statut</th>
+                <th style="width: 15%; text-align: center;">Statut</th>
                 <th style="width: 45%;">Analyse de l'Expert & Préconisations</th>
                 <th style="text-align: right; width: 15%;">Provision</th>
             </tr>
@@ -156,8 +152,8 @@ function afficherEcran() {
             <td style="padding: 15px; border-left: 4px solid ${a.cout > 0 ? '#cc0000' : '#00d632'};">
                 <b>${a.titre}</b><br><span style="font-size:11px; color:#6c757d;">${a.loi}</span>
             </td>
-            <td style="padding: 15px; color: ${a.cout > 0 ? '#cc0000' : '#000000'}; font-weight: bold;">
-                ${a.cout > 0 ? 'Anomalie' : 'Conforme'}
+            <td style="padding: 15px; color: ${a.cout > 0 ? '#cc0000' : '#000000'}; font-weight: bold; text-align: center;">
+                ${a.cout > 0 ? 'ANOMALIE' : 'CONFORME'}
             </td>
             <td style="padding: 15px; font-size: 13px; color: #333; line-height: 1.5;">
                 <b>Constat :</b> ${a.detail}<br>
@@ -193,43 +189,50 @@ function afficherEcran() {
     }
 }
 
-// Export du PDF complet
+// GESTION DU PDF PREMIUM (SANS EMOJIS)
 function exporterPDF() {
     if (!donneesAudit) return;
     
     const btn = document.getElementById('btnExport');
-    btn.innerText = "⏳ Génération PDF natif en cours...";
+    btn.innerText = "Génération PDF en cours...";
     
     let prixInitFormate = formatNumber(document.getElementById('prixInitial').value) + ' €';
     let decoteFormate = '-' + formatNumber(donneesAudit.total_decote) + ' €';
     let prixNetFormate = formatNumber(donneesAudit.prix_net) + ' €';
 
     let listSolutions = [];
-    donneesAudit.solutions.forEach(s => { listSolutions.push({ text: s, margin: [0, 0, 0, 8] }); });
+    donneesAudit.solutions.forEach(s => { listSolutions.push({ text: s, margin: [0, 5, 0, 5] }); });
 
     let tableBody = [
         [
-            { text: 'Point Réglementaire', style: 'tableHeader' },
-            { text: 'Statut', style: 'tableHeader' },
-            { text: 'Analyse & Préconisations', style: 'tableHeader' },
-            { text: 'Provision', style: 'tableHeader', alignment: 'right' }
+            { text: 'POINT RÉGLEMENTAIRE', style: 'tableHeader' },
+            { text: 'STATUT', style: 'tableHeader', alignment: 'center' },
+            { text: 'ANALYSE DE L\'EXPERT & PRÉCONISATIONS', style: 'tableHeader' },
+            { text: 'PROVISION', style: 'tableHeader', alignment: 'right' }
         ]
     ];
 
-   donneesAudit.diagnostics.forEach(a => {
-    let isAnomalie = a.cout > 0;
-    let analyseCell = [ { text: 'Constat : ', bold: true }, { text: a.detail } ];
-    if (isAnomalie) {
-        analyseCell.push({ text: '\nAction : ', bold: true });
-        analyseCell.push({ text: a.action });
-    }
+    donneesAudit.diagnostics.forEach(a => {
+        let isAnomalie = a.cout > 0;
+        let statusText = isAnomalie ? 'ANOMALIE' : 'CONFORME';
+        let statusColor = isAnomalie ? '#cc0000' : '#00d632';
+        
+        let analyseCell = [
+            { text: 'Constat : ', bold: true, color: '#333' },
+            { text: a.detail, color: '#555' }
+        ];
+        
+        if (isAnomalie) {
+            analyseCell.push({ text: '\nAction requise : ', bold: true, color: '#0b1a14' });
+            analyseCell.push({ text: a.action, color: '#555' });
+        }
 
-    tableBody.push([
-        { text: a.titre + '\n' + a.loi, color: '#000000', bold: true, fontSize: 10 },
-        { text: isAnomalie ? 'Anomalie' : 'Conforme', color: isAnomalie ? '#cc0000' : '#000000', bold: true, fontSize: 10 },
-        { text: analyseCell, fontSize: 10, color: '#333' },
-        { text: isAnomalie ? '-' + formatNumber(a.cout) + ' €' : '0 €', color: '#000000', bold: true, alignment: 'right', fontSize: 12 }
-    ]);
+        tableBody.push([
+            { text: a.titre + '\n\n', bold: true, fontSize: 10, color: '#0b1a14' },
+            { text: statusText, bold: true, fontSize: 9, color: statusColor, alignment: 'center', margin: [0, 5, 0, 0] },
+            { text: analyseCell, fontSize: 9, lineHeight: 1.4 },
+            { text: isAnomalie ? '-' + formatNumber(a.cout) + ' €' : '0 €', bold: true, fontSize: 12, color: isAnomalie ? '#cc0000' : '#0b1a14', alignment: 'right' }
+        ]);
     });
 
     let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
@@ -238,13 +241,12 @@ function exporterPDF() {
         let chartCanvas = document.getElementById('coutChart');
         if (chartCanvas) {
             chartBlock = [
-                { text: 'RÉPARTITION DU BUDGET DE RÉNOVATION', style: 'sectionTitle', alignment: 'center', margin: [0, 20, 0, 15] },
-                { image: chartCanvas.toDataURL('image/png', 1.0), width: 300, alignment: 'center', margin: [0, 0, 0, 30] }
+                { text: 'RÉPARTITION DU BUDGET DE RÉNOVATION', style: 'sectionTitle', alignment: 'center', margin: [0, 40, 0, 20] },
+                { image: chartCanvas.toDataURL('image/png', 1.0), width: 220, alignment: 'center', margin: [0, 0, 0, 30] }
             ];
         }
     }
     
-    // Ajout bloc PDF Rentabilité
     let rentaBlock = [];
     if (loyerMensuelSaisi > 0) {
         let prixInitial = Number(document.getElementById('prixInitial').value);
@@ -253,62 +255,139 @@ function exporterPDF() {
         let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
         
         rentaBlock = [
-            { text: '1.BIS SIMULATION DE RENTABILITÉ', style: 'sectionTitle' },
+            { text: '2. SIMULATION DE RENTABILITÉ LOCATIVE', style: 'sectionTitle' },
             {
                 table: {
                     widths: ['*', '*', '*'],
                     body: [
-                        [ { text: 'Loyer Annuel', style: 'kpiLabel' }, { text: 'Renta. Brute (Sans Travaux)', style: 'kpiLabel' }, { text: 'Renta. Réelle (Avec Travaux)', style: 'kpiLabelDark' } ],
-                        [ { text: formatNumber(loyerMensuelSaisi * 12) + ' €', style: 'kpiValue' }, { text: rentaInitiale.toFixed(2) + ' %', style: 'kpiValue' }, { text: rentaFinale.toFixed(2) + ' %', style: 'kpiValueDark' } ]
+                        [ 
+                            { text: 'Loyer Annuel Estimé', style: 'kpiHeader' }, 
+                            { text: 'Renta. Brute (Sans Travaux)', style: 'kpiHeader' }, 
+                            { text: 'Renta. Réelle (Avec Travaux)', style: 'kpiHeaderGreen' } 
+                        ],
+                        [ 
+                            { text: formatNumber(loyerMensuelSaisi * 12) + ' €', style: 'kpiValue' }, 
+                            { text: rentaInitiale.toFixed(2) + ' %', style: 'kpiValue' }, 
+                            { text: rentaFinale.toFixed(2) + ' %', style: 'kpiValueGreen' } 
+                        ]
                     ]
                 },
-                layout: 'noBorders',
-                margin: [0, 0, 0, 20]
+                layout: {
+                    hLineWidth: () => 0, vLineWidth: () => 0,
+                    fillColor: function (rowIndex, node, columnIndex) {
+                        if (rowIndex === 0) return '#f8f9fa';
+                        if (rowIndex === 1) return '#ffffff';
+                        return null;
+                    },
+                    paddingLeft: () => 15, paddingRight: () => 15, paddingTop: () => 15, paddingBottom: () => 15
+                },
+                margin: [0, 0, 0, 30]
             }
         ];
     }
 
     let docDefinition = {
         pageSize: 'A4',
-        pageMargins: [ 40, 40, 40, 60 ],
+        pageMargins: [ 40, 70, 40, 60 ],
+        defaultStyle: { font: 'Roboto', color: '#333333' },
+        
+        header: function(currentPage) {
+            if (currentPage > 1) {
+                return {
+                    columns: [
+                        { text: 'AUDITPRO', bold: true, color: '#00d632', fontSize: 13 },
+                        { text: 'Réf. ' + idRapport + ' | ' + donneesAudit.cp, alignment: 'right', color: '#888888', fontSize: 9, margin: [0, 4, 0, 0] }
+                    ],
+                    margin: [40, 25, 40, 0]
+                };
+            }
+        },
+        
         footer: function(currentPage, pageCount) {
             return {
                 columns: [
-                    { text: 'AuditPro Diagnostics © 2026', fontSize: 8, color: '#888', alignment: 'left', margin: [40, 10] },
-                    { text: 'Page ' + currentPage.toString() + ' sur ' + pageCount, fontSize: 8, color: '#888', alignment: 'right', margin: [40, 10] }
-                ]
+                    { text: 'Document certifié AuditPro IA © 2026', fontSize: 8, color: '#999999' },
+                    { text: 'Page ' + currentPage.toString() + ' sur ' + pageCount, alignment: 'right', fontSize: 8, color: '#999999' }
+                ],
+                margin: [40, 20, 40, 0]
             };
         },
+        
         content: [
-            {
-                columns: [
-                    { text: 'AUDITPRO', style: 'header', width: '50%' },
-                    { text: 'Réf. Dossier : ' + idRapport + '\nÉdité le : ' + donneesAudit.date_audit + '\nLocalisation : ' + donneesAudit.cp, alignment: 'right', style: 'meta', width: '50%' }
-                ]
-            },
-            { text: 'Dossier d\'Expertise Technique et Synthèse Financière', style: 'subheader' },
+            { text: 'AUDITPRO', fontSize: 44, bold: true, color: '#0b1a14', alignment: 'center', margin: [0, 80, 0, 0] },
+            { text: 'L\'expertise immobilière propulsée par l\'IA', fontSize: 14, color: '#00d632', alignment: 'center', margin: [0, 5, 0, 50] },
+            { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 120, y2: 0, lineWidth: 3, lineColor: '#00d632' }], alignment: 'center', margin: [0, 0, 0, 50] },
             
+            { text: 'RAPPORT D\'EXPERTISE TECHNIQUE', fontSize: 26, bold: true, color: '#0b1a14', alignment: 'center', margin: [0, 0, 0, 15] },
+            { text: 'Analyse réglementaire approfondie & Chiffrage macro-économique des anomalies', fontSize: 12, color: '#666666', alignment: 'center', margin: [0, 0, 0, 80] },
+            
+            {
+                table: {
+                    widths: ['50%', '50%'],
+                    body: [
+                        [ { text: 'DÉTAILS DU DOSSIER', colSpan: 2, style: 'coverTableTitle' }, {} ],
+                        [ { text: 'Référence Unique :', style: 'coverLabel' }, { text: idRapport, style: 'coverValue' } ],
+                        [ { text: 'Date de l\'audit :', style: 'coverLabel' }, { text: donneesAudit.date_audit, style: 'coverValue' } ],
+                        [ { text: 'Secteur géographique :', style: 'coverLabel' }, { text: donneesAudit.cp, style: 'coverValue' } ]
+                    ]
+                },
+                layout: 'lightHorizontalLines',
+                margin: [80, 0, 80, 0]
+            },
+            { text: '', pageBreak: 'after' },
+
             { text: '1. VALORISATION VÉNALE CONSEILLÉE', style: 'sectionTitle' },
             {
                 table: {
                     widths: ['*', '*', '*'],
                     body: [
-                        [ { text: 'Valeur Vénale Initiale', style: 'kpiLabel' }, { text: 'Provisions Travaux', style: 'kpiLabelRed' }, { text: 'Valeur Nette Recommandée', style: 'kpiLabelDark' } ],
-                        [ { text: prixInitFormate, style: 'kpiValue' }, { text: decoteFormate, style: 'kpiValueRed' }, { text: prixNetFormate, style: 'kpiValueDark' } ]
+                        [
+                            { text: 'Valeur Vénale Initiale', style: 'kpiHeader' },
+                            { text: 'Provisions Travaux', style: 'kpiHeaderRed' },
+                            { text: 'Valeur Nette Conseillée', style: 'kpiHeaderDark' }
+                        ],
+                        [
+                            { text: prixInitFormate, style: 'kpiValue' },
+                            { text: decoteFormate, style: 'kpiValueRed' },
+                            { text: prixNetFormate, style: 'kpiValueDark' }
+                        ]
                     ]
                 },
-                layout: 'noBorders'
+                layout: {
+                    hLineWidth: () => 0, vLineWidth: () => 0,
+                    fillColor: function (rowIndex, node, columnIndex) {
+                        if (rowIndex === 0) return (columnIndex === 2) ? '#0b1a14' : '#f8f9fa';
+                        if (rowIndex === 1) return (columnIndex === 2) ? '#0b1a14' : '#ffffff';
+                        return null;
+                    },
+                    paddingLeft: () => 15, paddingRight: () => 15, paddingTop: () => 15, paddingBottom: () => 15
+                },
+                margin: [0, 0, 0, 10]
             },
-            { text: '\nCoefficients économiques appliqués : ' + donneesAudit.analyse_secteur + '\n\n', fontSize: 9, italics: true, color: '#777', alignment: 'center', margin: [0, 0, 0, 20] },
+            { text: 'Coefficients économiques appliqués : ' + donneesAudit.analyse_secteur, fontSize: 8, italics: true, color: '#888', alignment: 'center', margin: [0, 0, 0, 30] },
             
             ...rentaBlock,
             
-            { text: '2. PLAN D\'ACTION & STRATÉGIE', style: 'sectionTitle' },
-            { ul: listSolutions, fontSize: 11, color: '#333', margin: [15, 0, 0, 25] },
+            { text: (loyerMensuelSaisi > 0 ? '3.' : '2.') + ' STRATÉGIE & PLAN D\'ACTION', style: 'sectionTitle' },
+            {
+                table: {
+                    widths: ['*'],
+                    body: [
+                        [ { ul: listSolutions, fontSize: 10, lineHeight: 1.6, color: '#333333', margin: [10, 10, 10, 10] } ]
+                    ]
+                },
+                layout: {
+                    hLineWidth: () => 0, vLineWidth: (i) => i === 0 ? 4 : 0,
+                    vLineColor: () => '#00d632',
+                    fillColor: () => '#f4fbf7'
+                },
+                margin: [0, 0, 0, 30]
+            },
             
             ...chartBlock,
-            
-            { text: '3. CHECKLIST INTÉGRALE DES CONTRÔLES (DDT)', style: 'sectionTitle' },
+            { text: '', pageBreak: 'after' },
+
+            { text: (loyerMensuelSaisi > 0 ? '4.' : '3.') + ' INVENTAIRE DÉTAILLÉ DES POINTS DE CONTRÔLE (DDT)', style: 'sectionTitle' },
             {
                 table: {
                     headerRows: 1,
@@ -316,40 +395,45 @@ function exporterPDF() {
                     body: tableBody
                 },
                 layout: {
-                    hLineWidth: function (i, node) { return (i === 0 || i === node.table.body.length) ? 2 : 1; },
+                    hLineWidth: function (i, node) { return (i === 0 || i === 1 || i === node.table.body.length) ? 2 : 1; },
                     vLineWidth: function (i, node) { return 0; },
-                    hLineColor: function (i, node) { return (i === 0 || i === node.table.body.length) ? '#0b1a14' : '#ddd'; },
-                    paddingTop: function(i, node) { return 12; },
-                    paddingBottom: function(i, node) { return 12; },
-                    fillColor: function (i, node) { return (i > 0 && node.table.body[i][1].text === 'Conforme') ? '#f9fff9' : null; }
+                    hLineColor: function (i, node) { return (i === 0 || i === 1 || i === node.table.body.length) ? '#0b1a14' : '#eeeeee'; },
+                    paddingTop: function(i, node) { return 15; },
+                    paddingBottom: function(i, node) { return 15; },
+                    fillColor: function (i, node) {
+                        if (i === 0) return '#0b1a14';
+                        return (i % 2 === 0) ? '#fafafa' : '#ffffff';
+                    }
                 }
             },
             
-            { text: '\nAVERTISSEMENTS ET LIMITES DE RESPONSABILITÉ JURIDIQUE\n', style: 'footerTitle' },
-            { text: 'Ce rapport est une analyse macro-économique informatisée des données textuelles du Dossier de Diagnostic Technique (DDT). Il est fourni à titre indicatif pour la négociation commerciale. Les montants sont des estimations nationales et ne sauraient remplacer l\'établissement de devis contradictoires par des artisans certifiés RGE. ' + donneesAudit.securite, style: 'footerText' }
+            { text: 'AVERTISSEMENTS ET LIMITES DE RESPONSABILITÉ JURIDIQUE', style: 'footerTitle', margin: [0, 50, 0, 5] },
+            { text: 'Ce rapport est une analyse macro-économique générée informatiquement à partir des données textuelles extraites du Dossier de Diagnostic Technique (DDT). Il est fourni exclusivement à titre d\'aide à la décision et de levier de négociation commerciale. Les chiffrages sont des estimations statistiques nationales ajustées par secteur géographique, et ne peuvent en aucun cas se substituer à la réalisation de devis contradictoires par des entreprises certifiées RGE. ' + donneesAudit.securite, style: 'footerText' }
         ],
         styles: {
-            header: { fontSize: 24, bold: true, color: '#0b1a14' },
-            subheader: { fontSize: 14, color: '#555', marginBottom: 25 },
-            meta: { fontSize: 10, color: '#666', lineHeight: 1.4 },
-            sectionTitle: { fontSize: 13, bold: true, color: '#0b1a14', margin: [0, 20, 0, 10] },
-            kpiLabel: { alignment: 'center', fontSize: 10, color: '#666', bold: true, margin: [0, 10, 0, 5] },
-            kpiLabelRed: { alignment: 'center', fontSize: 10, color: '#cc0000', bold: true, margin: [0, 10, 0, 5] },
-            kpiLabelDark: { alignment: 'center', fontSize: 10, color: '#fff', fillColor: '#0b1a14', bold: true, margin: [0, 10, 0, 5] },
-            kpiValue: { alignment: 'center', fontSize: 16, bold: true, color: '#333', margin: [0, 0, 0, 10] },
-            kpiValueRed: { alignment: 'center', fontSize: 16, bold: true, color: '#cc0000', margin: [0, 0, 0, 10] },
-            kpiValueDark: { alignment: 'center', fontSize: 20, bold: true, color: '#00d632', fillColor: '#0b1a14', margin: [0, 0, 0, 10] },
-            tableHeader: { bold: true, fontSize: 10, color: '#0b1a14', fillColor: '#f8f9fa', margin: [0, 4, 0, 4] },
-            footerTitle: { fontSize: 10, bold: true, color: '#0b1a14', margin: [0, 40, 0, 5] },
-            footerText: { fontSize: 8, color: '#666', alignment: 'justify', lineHeight: 1.4 }
+            coverTableTitle: { fontSize: 12, bold: true, color: '#0b1a14', alignment: 'center', margin: [0, 10, 0, 10], fillColor: '#eaf9f0' },
+            coverLabel: { fontSize: 11, bold: true, color: '#555', alignment: 'right', margin: [0, 10, 10, 10] },
+            coverValue: { fontSize: 11, color: '#000', alignment: 'left', margin: [10, 10, 0, 10] },
+            sectionTitle: { fontSize: 14, bold: true, color: '#0b1a14', margin: [0, 20, 0, 15], textTransform: 'uppercase' },
+            kpiHeader: { alignment: 'center', fontSize: 10, color: '#666', bold: true },
+            kpiHeaderRed: { alignment: 'center', fontSize: 10, color: '#cc0000', bold: true },
+            kpiHeaderDark: { alignment: 'center', fontSize: 10, color: '#ffffff', bold: true },
+            kpiHeaderGreen: { alignment: 'center', fontSize: 10, color: '#00923E', bold: true },
+            kpiValue: { alignment: 'center', fontSize: 18, bold: true, color: '#333' },
+            kpiValueRed: { alignment: 'center', fontSize: 18, bold: true, color: '#cc0000' },
+            kpiValueDark: { alignment: 'center', fontSize: 20, bold: true, color: '#00d632' },
+            kpiValueGreen: { alignment: 'center', fontSize: 20, bold: true, color: '#00923E' },
+            tableHeader: { bold: true, fontSize: 10, color: '#ffffff', alignment: 'left' },
+            footerTitle: { fontSize: 9, bold: true, color: '#0b1a14' },
+            footerText: { fontSize: 8, color: '#888', alignment: 'justify', lineHeight: 1.4 }
         }
     };
 
     pdfMake.createPdf(docDefinition).download('AuditPro_Expertise_' + idRapport + '.pdf');
-    setTimeout(() => { btn.innerText = "📥 Télécharger le rapport PDF Officiel"; }, 1000);
+    setTimeout(() => { btn.innerText = "Télécharger le rapport PDF Officiel"; }, 1500);
 }
 
-// Fonction Avis avec Toasts
+// Fonction Avis avec Toasts (Sans Emojis)
 function ajouterAvis() {
     const nom = document.getElementById('nomAvis').value;
     const texte = document.getElementById('texteAvis').value;
@@ -359,7 +443,7 @@ function ajouterAvis() {
     const nouvelAvis = document.createElement('div');
     nouvelAvis.className = 'avis-card';
     nouvelAvis.style.cssText = 'flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;';
-    nouvelAvis.innerHTML = `<div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div><p style="font-size: 14px; font-style: italic; color: #495057;">"${texte}"</p><div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- ${nom}</div>`;
+    nouvelAvis.innerHTML = `<div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p style="font-size: 14px; font-style: italic; color: #495057;">"${texte}"</p><div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- ${nom}</div>`;
 
     document.getElementById('listeAvis').prepend(nouvelAvis);
 
@@ -374,14 +458,13 @@ function ajouterAvis() {
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // Chargement des avis au démarrage
     const avisSauvegardes = JSON.parse(localStorage.getItem('auditpro_avis')) || [];
     const listeAvis = document.getElementById('listeAvis');
     avisSauvegardes.forEach(avis => {
         const nouvelAvis = document.createElement('div');
         nouvelAvis.className = 'avis-card';
         nouvelAvis.style.cssText = 'flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;';
-        nouvelAvis.innerHTML = `<div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div><p style="font-size: 14px; font-style: italic; color: #495057;">"${avis.texte}"</p><div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- ${avis.nom}</div>`;
+        nouvelAvis.innerHTML = `<div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p style="font-size: 14px; font-style: italic; color: #495057;">"${avis.texte}"</p><div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- ${avis.nom}</div>`;
         listeAvis.prepend(nouvelAvis);
     });
 
@@ -415,7 +498,7 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById('loyerMensuel').value = '';
             document.getElementById('codePostal').value = '';
             document.getElementById('fichierPdf').value = '';
-            document.querySelector('.drop-zone-text').innerHTML = "📂 Glissez-déposez votre PDF ici ou cliquez";
+            document.querySelector('.drop-zone-text').innerHTML = "Glissez-déposez votre PDF ici ou cliquez";
             document.getElementById('drop-zone').style.borderColor = "#ced4da";
             document.getElementById('drop-zone').style.background = "#f8f9fa";
             document.getElementById('result-wrapper').style.display = 'none';
@@ -440,7 +523,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         fileInput.addEventListener('change', function() {
             if (this.files && this.files.length > 0) {
-                dropZoneText.innerHTML = `✅ Fichier prêt : <b style="color:#0b1a14;">${this.files[0].name}</b>`;
+                dropZoneText.innerHTML = `Fichier chargé : <b style="color:#0b1a14;">${this.files[0].name}</b>`;
                 dropZone.style.borderColor = "#00d632";
                 dropZone.style.background = "#eaf9f0";
             }
