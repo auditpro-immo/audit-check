@@ -8,8 +8,14 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
+    allow_origins=[
+        "https://auditpro-immo.github.io", # Sécurité : Autorise uniquement ton site web
+        "http://localhost:5500",           # Sécurité : Autorise ton ordinateur (tests locaux)
+        "http://127.0.0.1:5500"
+    ],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
 )
 
 def get_modulateur_marche(cp: str):
