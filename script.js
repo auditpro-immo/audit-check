@@ -1,28 +1,44 @@
 let donneesAudit = null;
 let idRapport = "";
 let chartInstance = null;
+let loyerMensuelSaisi = 0; // Pour le calcul de rentabilité
 
 // Formatage des prix
 const formatNumber = (num) => {
     return Number(num).toLocaleString('fr-FR').replace(/[\u202F\u00A0]/g, ' ');
 };
 
+// --- NOUVEAU : SYSTÈME DE NOTIFICATIONS (TOASTS) ---
+function showToast(message, type = "success") {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = type === "success" ? `✅ ${message}` : `⚠️ ${message}`;
+    
+    container.appendChild(toast);
+    
+    // Fait disparaître le Toast après 4 secondes
+    setTimeout(() => {
+        toast.style.animation = "fadeOut 0.4s forwards";
+        setTimeout(() => toast.remove(), 400);
+    }, 4000);
+}
+
 // Envoi API
 async function envoyer() {
     const input = document.getElementById('fichierPdf');
     const prixInput = document.getElementById('prixInitial').value || 0;
+    const loyerInput = document.getElementById('loyerMensuel').value || 0;
     const cpInput = document.getElementById('codePostal').value || "Non renseigné";
-    const btnSubmit = document.getElementById('btnSubmit');
-    const resultWrapper = document.getElementById('result-wrapper');
-    const conteneur = document.getElementById('contenu-ecran');
     
-    if (!input.files.length) return alert("Veuillez charger le diagnostic technique au format PDF.");
+    // 1. Remplacement des alerts basiques par nos Toasts !
+    if (prixInput <= 0) return showToast("Veuillez indiquer le prix de vente du bien.", "error");
+    if (!input.files.length) return showToast("Veuillez charger le diagnostic technique au format PDF.", "error");
     
-    btnSubmit.innerText = "Analyse IA avancée en cours (jusqu'à 60s)...";
-    btnSubmit.disabled = true;
-    resultWrapper.style.display = "block";
-    conteneur.innerHTML = "<div style='text-align:center; padding: 40px;'><h3>Extraction en cours...</h3><p>Veuillez patienter.</p></div>";
-    resultWrapper.scrollIntoView({ behavior: 'smooth' });
+    loyerMensuelSaisi = Number(loyerInput);
+
+    // 2. Affichage du bel écran de chargement (Overlay)
+    document.getElementById('loading-overlay').style.display = "flex";
 
     const formData = new FormData();
     formData.append("fichier", input.files[0]);
@@ -30,25 +46,55 @@ async function envoyer() {
     formData.append("cp", cpInput);
 
     try {
-      const reponse = await fetch("https://audit-check-ktny.onrender.com/scan", { method: "POST", body: formData });
+        const reponse = await fetch("https://audit-check-ktny.onrender.com/scan", { method: "POST", body: formData });
         if (!reponse.ok) throw new Error("Erreur serveur");
         donneesAudit = await reponse.json();
         donneesAudit.cp = cpInput;
         idRapport = "AUDIT-" + Math.floor(Math.random() * 90000 + 10000);
         
-        btnSubmit.innerText = "Générer l'audit complet";
-        btnSubmit.disabled = false;
+        // Cache l'écran de chargement
+        document.getElementById('loading-overlay').style.display = "none";
+        
+        showToast("Audit généré avec succès !");
+        document.getElementById('result-wrapper').style.display = "block";
+        document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
         afficherEcran();
+
     } catch (e) {
-        conteneur.innerHTML = "<div style='text-align:center; padding:40px;'><h3 style='color:#cc0000;'>Erreur de connexion</h3></div>";
-        btnSubmit.innerText = "Générer l'audit complet";
-        btnSubmit.disabled = false;
+        document.getElementById('loading-overlay').style.display = "none";
+        showToast("Erreur de connexion à l'Intelligence Artificielle.", "error");
     }
 }
 
 // Affichage HTML
 function afficherEcran() {
     let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
+    
+    // --- NOUVEAU : CALCUL DE RENTABILITÉ ---
+    let kpiRentabiliteHtml = "";
+    if (loyerMensuelSaisi > 0) {
+        let prixInitial = Number(document.getElementById('prixInitial').value);
+        let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitial) * 100;
+        let coutTotalReel = prixInitial + donneesAudit.total_decote;
+        let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
+
+        kpiRentabiliteHtml = `
+        <h3 style="text-transform: uppercase; font-size: 16px; color: #0b1a14; margin-top: 30px; margin-bottom: 15px;">📊 Simulation de Rentabilité Locative</h3>
+        <div class="kpi-grid" style="margin-bottom: 40px;">
+            <div class="kpi-box" style="background: #eaf9f0; border-color: #00d632;">
+                <div class="kpi-label">Loyer Annuel Estimé</div>
+                <div class="kpi-value" style="color: #0b1a14;">${formatNumber(loyerMensuelSaisi * 12)} €</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-label">Renta. Brute (Sans Travaux)</div>
+                <div class="kpi-value">${rentaInitiale.toFixed(2)} %</div>
+            </div>
+            <div class="kpi-box main" style="background: #00d632; color: #0b1a14;">
+                <div class="kpi-label" style="color: #0b1a14;">Renta. Réelle (Avec Travaux)</div>
+                <div class="kpi-value">${rentaFinale.toFixed(2)} %</div>
+            </div>
+        </div>`;
+    }
     
     let html = `
     <div style="border-bottom: 3px solid #0b1a14; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
@@ -63,6 +109,7 @@ function afficherEcran() {
         </div>
     </div>
     
+    <h3 style="text-transform: uppercase; font-size: 16px; color: #0b1a14; margin-bottom: 15px;">💰 Valorisation Vénale Conseillée</h3>
     <div class="kpi-grid">
         <div class="kpi-box">
             <div class="kpi-label">Valeur Vénale Initiale</div>
@@ -78,6 +125,8 @@ function afficherEcran() {
         </div>
     </div>
     
+    ${kpiRentabiliteHtml}
+    
     <div style="background: #f8f9fa; border-left: 4px solid #00d632; padding: 20px; border-radius: 4px; margin-bottom: 40px;">
         <h3 style="margin-top: 0; font-size: 16px; text-transform: uppercase; color: #0b1a14;">Plan d'Action & Stratégie d'Expertise</h3>
         <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #495057; line-height: 1.6;">
@@ -91,32 +140,35 @@ function afficherEcran() {
         <div class="chart-container"><canvas id="coutChart"></canvas></div>`;
     }
 
+    // Le wrapper table-responsive est ici pour le mobile
     html += `
     <h3 style="text-transform: uppercase; font-size: 16px; color: #0b1a14; margin-bottom: 15px;">Checklist Intégrale des Non-Conformités et Points Forts</h3>
-    <table>
-        <tr>
-            <th style="width: 25%;">Point Réglementaire</th>
-            <th style="width: 15%;">Statut</th>
-            <th style="width: 45%;">Analyse de l'Expert & Préconisations</th>
-            <th style="text-align: right; width: 15%;">Provision</th>
-        </tr>
-     ${donneesAudit.diagnostics.map(a => `
-<tr style="border-bottom: 1px solid #ecf0f1;">
-    <td style="padding: 15px; border-left: 4px solid ${a.cout > 0 ? '#cc0000' : '#00d632'};">
-        <b>${a.titre}</b><br><span style="font-size:11px; color:#6c757d;">${a.loi}</span>
-    </td>
-    <td style="padding: 15px; color: ${a.cout > 0 ? '#cc0000' : '#000000'}; font-weight: bold;">
-        ${a.cout > 0 ? 'Anomalie' : 'Conforme'}
-    </td>
-    <td style="padding: 15px; font-size: 13px; color: #333; line-height: 1.5;">
-        <b>Constat :</b> ${a.detail}<br>
-        ${a.cout > 0 ? `<b>Action requise :</b> ${a.action}` : ''}
-    </td>
-    <td style="padding: 15px; font-weight:bold; color: #000000; text-align: right; font-size: 16px;">
-        ${a.cout > 0 ? `-${formatNumber(a.cout)} €` : '0 €'}
-    </td>
-</tr>`).join('')}
-    </table>
+    <div class="table-responsive">
+        <table>
+            <tr>
+                <th style="width: 25%;">Point Réglementaire</th>
+                <th style="width: 15%;">Statut</th>
+                <th style="width: 45%;">Analyse de l'Expert & Préconisations</th>
+                <th style="text-align: right; width: 15%;">Provision</th>
+            </tr>
+         ${donneesAudit.diagnostics.map(a => `
+        <tr style="border-bottom: 1px solid #ecf0f1;">
+            <td style="padding: 15px; border-left: 4px solid ${a.cout > 0 ? '#cc0000' : '#00d632'};">
+                <b>${a.titre}</b><br><span style="font-size:11px; color:#6c757d;">${a.loi}</span>
+            </td>
+            <td style="padding: 15px; color: ${a.cout > 0 ? '#cc0000' : '#000000'}; font-weight: bold;">
+                ${a.cout > 0 ? 'Anomalie' : 'Conforme'}
+            </td>
+            <td style="padding: 15px; font-size: 13px; color: #333; line-height: 1.5;">
+                <b>Constat :</b> ${a.detail}<br>
+                ${a.cout > 0 ? `<b>Action requise :</b> ${a.action}` : ''}
+            </td>
+            <td style="padding: 15px; font-weight:bold; color: #000000; text-align: right; font-size: 16px;">
+                ${a.cout > 0 ? `-${formatNumber(a.cout)} €` : '0 €'}
+            </td>
+        </tr>`).join('')}
+        </table>
+    </div>
 
     <div style="font-size: 10px; color: #adb5bd; text-align: justify; border-top: 1px solid #eaeaea; padding-top: 15px;">
         <b>MENTIONS LÉGALES :</b> Ce document est généré informatiquement par algorithme (modulateur: ${donneesAudit.analyse_secteur}). Il ne se substitue pas à un devis d'artisan certifié RGE ni à un acte notarié. ${donneesAudit.securite}
@@ -141,7 +193,7 @@ function afficherEcran() {
     }
 }
 
-// Export du PDF complet professionnel
+// Export du PDF complet
 function exporterPDF() {
     if (!donneesAudit) return;
     
@@ -166,11 +218,7 @@ function exporterPDF() {
 
    donneesAudit.diagnostics.forEach(a => {
     let isAnomalie = a.cout > 0;
-    
-    let analyseCell = [
-        { text: 'Constat : ', bold: true },
-        { text: a.detail }
-    ];
+    let analyseCell = [ { text: 'Constat : ', bold: true }, { text: a.detail } ];
     if (isAnomalie) {
         analyseCell.push({ text: '\nAction : ', bold: true });
         analyseCell.push({ text: a.action });
@@ -182,7 +230,8 @@ function exporterPDF() {
         { text: analyseCell, fontSize: 10, color: '#333' },
         { text: isAnomalie ? '-' + formatNumber(a.cout) + ' €' : '0 €', color: '#000000', bold: true, alignment: 'right', fontSize: 12 }
     ]);
-});
+    });
+
     let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
     let chartBlock = [];
     if (anomalies.length > 0) {
@@ -193,6 +242,30 @@ function exporterPDF() {
                 { image: chartCanvas.toDataURL('image/png', 1.0), width: 300, alignment: 'center', margin: [0, 0, 0, 30] }
             ];
         }
+    }
+    
+    // Ajout bloc PDF Rentabilité
+    let rentaBlock = [];
+    if (loyerMensuelSaisi > 0) {
+        let prixInitial = Number(document.getElementById('prixInitial').value);
+        let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitial) * 100;
+        let coutTotalReel = prixInitial + donneesAudit.total_decote;
+        let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
+        
+        rentaBlock = [
+            { text: '1.BIS SIMULATION DE RENTABILITÉ', style: 'sectionTitle' },
+            {
+                table: {
+                    widths: ['*', '*', '*'],
+                    body: [
+                        [ { text: 'Loyer Annuel', style: 'kpiLabel' }, { text: 'Renta. Brute (Sans Travaux)', style: 'kpiLabel' }, { text: 'Renta. Réelle (Avec Travaux)', style: 'kpiLabelDark' } ],
+                        [ { text: formatNumber(loyerMensuelSaisi * 12) + ' €', style: 'kpiValue' }, { text: rentaInitiale.toFixed(2) + ' %', style: 'kpiValue' }, { text: rentaFinale.toFixed(2) + ' %', style: 'kpiValueDark' } ]
+                    ]
+                },
+                layout: 'noBorders',
+                margin: [0, 0, 0, 20]
+            }
+        ];
     }
 
     let docDefinition = {
@@ -220,21 +293,15 @@ function exporterPDF() {
                 table: {
                     widths: ['*', '*', '*'],
                     body: [
-                        [
-                            { text: 'Valeur Vénale Initiale', style: 'kpiLabel' },
-                            { text: 'Provisions Travaux', style: 'kpiLabelRed' },
-                            { text: 'Valeur Nette Recommandée', style: 'kpiLabelDark' }
-                        ],
-                        [
-                            { text: prixInitFormate, style: 'kpiValue' },
-                            { text: decoteFormate, style: 'kpiValueRed' },
-                            { text: prixNetFormate, style: 'kpiValueDark' }
-                        ]
+                        [ { text: 'Valeur Vénale Initiale', style: 'kpiLabel' }, { text: 'Provisions Travaux', style: 'kpiLabelRed' }, { text: 'Valeur Nette Recommandée', style: 'kpiLabelDark' } ],
+                        [ { text: prixInitFormate, style: 'kpiValue' }, { text: decoteFormate, style: 'kpiValueRed' }, { text: prixNetFormate, style: 'kpiValueDark' } ]
                     ]
                 },
                 layout: 'noBorders'
             },
-            { text: '\nCoefficients économiques appliqués : ' + donneesAudit.analyse_secteur + '\n\n', fontSize: 9, italics: true, color: '#777', alignment: 'center' },
+            { text: '\nCoefficients économiques appliqués : ' + donneesAudit.analyse_secteur + '\n\n', fontSize: 9, italics: true, color: '#777', alignment: 'center', margin: [0, 0, 0, 20] },
+            
+            ...rentaBlock,
             
             { text: '2. PLAN D\'ACTION & STRATÉGIE', style: 'sectionTitle' },
             { ul: listSolutions, fontSize: 11, color: '#333', margin: [15, 0, 0, 25] },
@@ -282,17 +349,13 @@ function exporterPDF() {
     setTimeout(() => { btn.innerText = "📥 Télécharger le rapport PDF Officiel"; }, 1000);
 }
 
-
-// --- NOUVEAU SYSTÈME DE SAUVEGARDE DES AVIS (LocalStorage) ---
+// Fonction Avis avec Toasts
 function ajouterAvis() {
     const nom = document.getElementById('nomAvis').value;
     const texte = document.getElementById('texteAvis').value;
     
-    if (!nom || !texte) {
-        return alert("Veuillez remplir votre nom et votre avis.");
-    }
+    if (!nom || !texte) return showToast("Veuillez remplir votre nom et votre avis.", "error");
 
-    // 1. Ajouter l'avis visuellement sur la page
     const nouvelAvis = document.createElement('div');
     nouvelAvis.className = 'avis-card';
     nouvelAvis.style.cssText = 'flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;';
@@ -300,24 +363,18 @@ function ajouterAvis() {
 
     document.getElementById('listeAvis').prepend(nouvelAvis);
 
-    // 2. Sauvegarder l'avis dans la mémoire du navigateur (LocalStorage)
     const avisSauvegardes = JSON.parse(localStorage.getItem('auditpro_avis')) || [];
     avisSauvegardes.push({ nom: nom, texte: texte });
     localStorage.setItem('auditpro_avis', JSON.stringify(avisSauvegardes));
 
-    // 3. Vider le formulaire et confirmer
     document.getElementById('nomAvis').value = '';
     document.getElementById('texteAvis').value = '';
-    alert("Merci ! Votre avis a bien été publié et sauvegardé.");
+    showToast("Votre avis a bien été publié !");
 }
 
-
-// ==========================================================================
-// MOTEUR DES ONGLETS, CHARGEMENT & GESTION DU DRAG AND DROP
-// ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
     
-    // --- 0. Chargement des avis sauvegardés au démarrage ---
+    // Chargement des avis au démarrage
     const avisSauvegardes = JSON.parse(localStorage.getItem('auditpro_avis')) || [];
     const listeAvis = document.getElementById('listeAvis');
     avisSauvegardes.forEach(avis => {
@@ -328,7 +385,6 @@ document.addEventListener("DOMContentLoaded", () => {
         listeAvis.prepend(nouvelAvis);
     });
 
-    // --- 1. Logique des onglets dynamiques ---
     const liensMenu = document.querySelectorAll('nav a[href^="#"]');
     const blocsOnglets = document.querySelectorAll('.tab-content');
     const btnNouveauDiag = document.querySelector('header .btn-solid');
@@ -356,9 +412,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (btnNouveauDiag) {
         btnNouveauDiag.addEventListener('click', () => {
             document.getElementById('prixInitial').value = '';
+            document.getElementById('loyerMensuel').value = '';
             document.getElementById('codePostal').value = '';
             document.getElementById('fichierPdf').value = '';
-            document.querySelector('.drop-zone-text').innerHTML = "📂 Glissez-déposez votre PDF ici ou cliquez pour parcourir";
+            document.querySelector('.drop-zone-text').innerHTML = "📂 Glissez-déposez votre PDF ici ou cliquez";
             document.getElementById('drop-zone').style.borderColor = "#ced4da";
             document.getElementById('drop-zone').style.background = "#f8f9fa";
             document.getElementById('result-wrapper').style.display = 'none';
@@ -367,7 +424,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // --- 2. Logique de la zone de Drag & Drop ---
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('fichierPdf');
     const dropZoneText = document.querySelector('.drop-zone-text');
@@ -377,18 +433,10 @@ document.addEventListener("DOMContentLoaded", () => {
             dropZone.addEventListener(eventName, preventDefaults, false);
         });
 
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
 
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
-        });
+        ['dragenter', 'dragover'].forEach(eventName => { dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false); });
+        ['dragleave', 'drop'].forEach(eventName => { dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false); });
 
         fileInput.addEventListener('change', function() {
             if (this.files && this.files.length > 0) {
