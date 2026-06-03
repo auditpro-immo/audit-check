@@ -282,27 +282,53 @@ function exporterPDF() {
     setTimeout(() => { btn.innerText = "📥 Télécharger le rapport PDF Officiel"; }, 1000);
 }
 
+
+// --- NOUVEAU SYSTÈME DE SAUVEGARDE DES AVIS (LocalStorage) ---
 function ajouterAvis() {
     const nom = document.getElementById('nomAvis').value;
     const texte = document.getElementById('texteAvis').value;
-    if (!nom || !texte) return alert("Veuillez remplir les champs.");
+    
+    if (!nom || !texte) {
+        return alert("Veuillez remplir votre nom et votre avis.");
+    }
 
+    // 1. Ajouter l'avis visuellement sur la page
     const nouvelAvis = document.createElement('div');
     nouvelAvis.className = 'avis-card';
-    nouvelAvis.style.cssText = 'flex: 1; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;';
-    nouvelAvis.innerHTML = `<div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div><p style="font-size: 14px; font-style: italic; color: #495057;">"${texte}"</p><div style="font-weight: 700; font-size: 14px;">- ${nom}</div>`;
+    nouvelAvis.style.cssText = 'flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;';
+    nouvelAvis.innerHTML = `<div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div><p style="font-size: 14px; font-style: italic; color: #495057;">"${texte}"</p><div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- ${nom}</div>`;
 
     document.getElementById('listeAvis').prepend(nouvelAvis);
+
+    // 2. Sauvegarder l'avis dans la mémoire du navigateur (LocalStorage)
+    const avisSauvegardes = JSON.parse(localStorage.getItem('auditpro_avis')) || [];
+    avisSauvegardes.push({ nom: nom, texte: texte });
+    localStorage.setItem('auditpro_avis', JSON.stringify(avisSauvegardes));
+
+    // 3. Vider le formulaire et confirmer
     document.getElementById('nomAvis').value = '';
     document.getElementById('texteAvis').value = '';
+    alert("Merci ! Votre avis a bien été publié et sauvegardé.");
 }
 
+
 // ==========================================================================
-// MOTEUR DES ONGLETS & GESTION DU DRAG AND DROP
+// MOTEUR DES ONGLETS, CHARGEMENT & GESTION DU DRAG AND DROP
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
     
-    // 1. Logique des onglets dynamiques
+    // --- 0. Chargement des avis sauvegardés au démarrage ---
+    const avisSauvegardes = JSON.parse(localStorage.getItem('auditpro_avis')) || [];
+    const listeAvis = document.getElementById('listeAvis');
+    avisSauvegardes.forEach(avis => {
+        const nouvelAvis = document.createElement('div');
+        nouvelAvis.className = 'avis-card';
+        nouvelAvis.style.cssText = 'flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;';
+        nouvelAvis.innerHTML = `<div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div><p style="font-size: 14px; font-style: italic; color: #495057;">"${avis.texte}"</p><div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- ${avis.nom}</div>`;
+        listeAvis.prepend(nouvelAvis);
+    });
+
+    // --- 1. Logique des onglets dynamiques ---
     const liensMenu = document.querySelectorAll('nav a[href^="#"]');
     const blocsOnglets = document.querySelectorAll('.tab-content');
     const btnNouveauDiag = document.querySelector('header .btn-solid');
@@ -341,7 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 2. Logique de la zone de Drag & Drop
+    // --- 2. Logique de la zone de Drag & Drop ---
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('fichierPdf');
     const dropZoneText = document.querySelector('.drop-zone-text');
