@@ -24,7 +24,45 @@ function showToast(message, type = "success") {
     }, 4000);
 }
 
-// Envoi API
+// Fonction DÉMO pour les utilisateurs sans PDF
+function lancerDemo() {
+    document.getElementById('prixInitial').value = 245000;
+    document.getElementById('loyerMensuel').value = 950;
+    document.getElementById('codePostal').value = 35000;
+    
+    loyerMensuelSaisi = 950;
+    idRapport = "DEMO-" + Math.floor(Math.random() * 90000 + 10000);
+    
+    // Données fictives simulant une maison avec des travaux à Rennes
+    donneesAudit = {
+        cp: "35000",
+        date_audit: new Date().toLocaleDateString('fr-FR'),
+        prix_initial: 245000,
+        total_decote: 24500,
+        prix_net: 220500,
+        analyse_secteur: "Ajusté selon les prix de votre région (Indice 1.05)",
+        securite: "Vos données sont privées : Le PDF a été supprimé de nos serveurs.",
+        solutions: [
+            "ALERTE SÉCURITÉ : La maison présente des dangers immédiats (électricité). Vous devrez faire des travaux avant d'y habiter.",
+            "MISE EN LOCATION IMPOSSIBLE : Le bien est classé F. La loi interdit de le louer en l'état. Vous devrez faire une rénovation thermique.",
+            "STRATÉGIE DE NÉGOCIATION : Montrez ce document au vendeur. Le total de 24 500 € de travaux est un argument massif pour baisser le prix."
+        ],
+        diagnostics: [
+            {titre: "Électricité (Sécurité des personnes)", cout: 4500, loi: "Norme NF C 15-100", detail: "Matériel ancien et absence de mise à la terre. En clair : grand risque d'électrocution.", action: "Faire venir un électricien pour remplacer le tableau électrique et tirer des lignes de terre."},
+            {titre: "Gaz (Risque de fuite)", cout: 0, loi: "Norme NF P 45-500", detail: "La tuyauterie de gaz ne présente aucun défaut d'étanchéité.", action: "Pensez simplement à faire entretenir la chaudière chaque année."},
+            {titre: "Amiante (Matériaux toxiques)", cout: 4000, loi: "Art. L1334-13", detail: "Présence d'amiante dans les conduits. En clair : l'amiante est cancérigène si on perce ces matériaux.", action: "Une entreprise spécialisée devra retirer l'amiante en toute sécurité avant d'engager d'autres travaux."},
+            {titre: "DPE (Consommation d'énergie)", cout: 16000, loi: "Loi Climat & Résilience", detail: "Logement classé F (Passoire thermique). En clair : vos factures de chauffage seront très élevées car la chaleur s'échappe.", action: "Rénovation globale indispensable (isolation des murs/toit + nouvelle chaudière)."},
+            {titre: "Plomb (Peintures anciennes)", cout: 0, loi: "Art. L1334-1", detail: "Les peintures sont saines et sans danger pour les enfants.", action: "Aucune action nécessaire."}
+        ]
+    };
+    
+    showToast("Mode Démo activé : Analyse simulée avec succès.");
+    document.getElementById('result-wrapper').style.display = "block";
+    document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
+    afficherEcran();
+}
+
+// Envoi API réel
 async function envoyer() {
     const input = document.getElementById('fichierPdf');
     const prixInput = document.getElementById('prixInitial').value || 0;
