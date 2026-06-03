@@ -18,6 +18,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# NOUVEAU : Route d'accueil pour éviter les erreurs 404 sur Render
+@app.get("/")
+def read_root():
+    return {"status": "API AuditPro opérationnelle", "version": "1.0", "message": "Moteur d'IA prêt à recevoir des requêtes."}
+
 def get_modulateur_marche(cp: str):
     mois_ecoules = (datetime.now().year - 2024) * 12 + datetime.now().month
     inflation = 1.0 + (mois_ecoules * 0.002)
