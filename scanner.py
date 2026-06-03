@@ -23,13 +23,28 @@ def read_root():
     return {"status": "API AuditPro opérationnelle", "version": "1.0", "message": "Moteur d'IA prêt à recevoir des requêtes."}
 
 def get_modulateur_marche(cp: str):
+    # Base d'inflation mise à jour (calculée depuis début 2024)
     mois_ecoules = (datetime.now().year - 2024) * 12 + datetime.now().month
-    inflation = 1.0 + (mois_ecoules * 0.002)
+    inflation = 1.0 + (mois_ecoules * 0.0025)
+    
     coeff_region = 1.0
     if cp:
-        if cp.startswith(("75", "92", "94", "93")): coeff_region = 1.25
-        elif cp.startswith(("06", "69", "13", "33")): coeff_region = 1.15
-        elif cp.startswith(("23", "36", "15", "48")): coeff_region = 0.85
+        # 1. ÎLE-DE-FRANCE : Hyper-tension, accès chantiers complexes, tarifs maximaux
+        if cp.startswith(("75", "92", "93", "94", "77", "78", "91", "95")): 
+            coeff_region = 1.35
+            
+        # 2. GRANDES MÉTROPOLES / ZONES TENDUES : Forte demande (Rennes, Lyon, Marseille, Bordeaux, Nantes, Lille, Toulouse, Nice)
+        elif cp.startswith(("35", "69", "13", "33", "44", "59", "31", "06")): 
+            coeff_region = 1.18
+            
+        # 3. SECTEURS INTERMÉDIAIRES DYNAMIQUES : Zones littorales, grands axes ou périphéries actives
+        elif cp.startswith(("34", "67", "49", "56", "29", "74", "38", "14", "37", "45", "76")): 
+            coeff_region = 1.08
+            
+        # 4. ZONES RURALES / FAIBLE DENSITÉ : Main-d'œuvre locale plus accessible
+        elif cp.startswith(("23", "36", "15", "48", "52", "55", "09", "58", "04", "05", "46", "70")): 
+            coeff_region = 0.82
+            
     return round(inflation * coeff_region, 2)
 
 def extraire_surface(texte: str) -> float:
@@ -45,7 +60,6 @@ def extraire_surface(texte: str) -> float:
 
 @app.post("/scan")
 async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: str = Form("")):
-    # Textes hyper vulgarisés pour que M. et Mme Tout-le-Monde comprennent l'impact
     checklist = {
         "elec": {"titre": "Électricité (Sécurité des personnes)", "statut": "Conforme", "cout": 0, "loi": "Norme NF C 15-100", "detail": "L'installation électrique semble sûre et conforme aux normes de base.", "action": "Aucune action nécessaire dans l'immédiat."},
         "gaz": {"titre": "Gaz (Risque de fuite)", "statut": "Conforme", "cout": 0, "loi": "Norme NF P 45-500", "detail": "La tuyauterie de gaz ne présente aucun défaut d'étanchéité.", "action": "Pensez simplement à faire entretenir la chaudière chaque année."},
@@ -145,7 +159,7 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
         total_decote += c
 
     if securite_critique:
-        solutions.append("ALERTE SÉCURITÉ : La maison présente des dangers immédiats (électricité, gaz ou mérule). Vous devrez faire des travaux avant même d'y habiter.")
+        solutions.append("ALERTE SÉCURITÉ : La maison presents des dangers immédiats (électricité, gaz ou mérule). Vous devrez faire des travaux avant même d'y habiter.")
     if bloquant_location:
         solutions.append("MISE EN LOCATION IMPOSSIBLE : Le bien est classé F ou G. La loi interdit de le louer en l'état. Vous devrez faire une rénovation thermique massive.")
     if total_decote > 0:
@@ -160,7 +174,7 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
         "prix_initial": prix,
         "total_decote": total_decote,
         "prix_net": prix - total_decote,
-        "analyse_secteur": f"Ajusté selon les prix de votre région (Indice {indice})",
+        "analyse_secteur": f"Ajusté selon la réalité économique locale (Indice {indice})",
         "date_audit": datetime.now().strftime("%d/%m/%Y"),
         "securite": "Vos données sont privées : Le PDF a été supprimé de nos serveurs."
     }
@@ -184,9 +198,6 @@ async def analyze_grid(request: Request):
 
     if epoque == "vieille": malus_dpe += 2
 
-    # L'astuce ici est de garder les mots majuscules identiques pour ne pas casser le design du PDF de la grille, 
-    # mais en ajoutant une explication simple juste après.
-    
     if donnees.get("dpe_murs") == "non": 
         decote += 8000; malus_dpe += 2
         details.append({"point": "Isolation Murs", "loi": "Loi Climat & Résilience", "analyse": "CONSTAT DÉTAILLÉ :\nAbsence d'isolation. En clair, les murs laissent totalement s'échapper la chaleur.\n\nRISQUES IDENTIFIÉS :\nFactures d'énergie colossales et sensation de froid en hiver.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Isoler les murs (par l'intérieur ou l'extérieur) -> env. 8 000 €.", "provision": "-8 000 €"})
@@ -231,7 +242,7 @@ async def analyze_grid(request: Request):
 
     if garde_corps_hs == "oui":
         decote += 1500
-        details.append({"point": "Sécurité Extérieure", "loi": "Réglementation Chutes", "analyse": "CONSTAT DÉTAILLÉ :\nLes rambardes des balcons ou de l'escalier bougent ou sont rouillées.\n\nRISQUES IDENTIFIÉS :\nUn enfant ou un invité pourrait tomber.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Un serrurier devra poser de nouvelles rambardes solides -> env. 1 500 €.", "provision": "-1 500 €"})
+        details.append({"point": "Sécurité Extérieure", "loi": "Réglementation Chutes", "analyse": "CONSTAT DÉTAILLÉ :\nLes rambardes des balcons ou de l'escalier bougent ou sont rouillés.\n\nRISQUES IDENTIFIÉS :\nUn enfant ou un invité pourrait tomber.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Un serrurier devra poser de nouvelles rambardes solides -> env. 1 500 €.", "provision": "-1 500 €"})
 
     lettres_dpe = ["A", "B", "C", "D", "E", "F", "G"]
     index = min(malus_dpe, 6)
