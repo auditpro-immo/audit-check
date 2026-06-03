@@ -3,12 +3,10 @@ let idRapport = "";
 let chartInstance = null;
 let loyerMensuelSaisi = 0;
 
-// Formatage des prix
 const formatNumber = (num) => {
     return Number(num).toLocaleString('fr-FR').replace(/[\u202F\u00A0]/g, ' ');
 };
 
-// SYSTÈME DE NOTIFICATIONS 
 function showToast(message, type = "success") {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
@@ -24,7 +22,6 @@ function showToast(message, type = "success") {
     }, 4000);
 }
 
-// Fonction DÉMO pour les utilisateurs sans PDF
 function lancerDemo() {
     document.getElementById('prixInitial').value = 245000;
     document.getElementById('loyerMensuel').value = 950;
@@ -33,14 +30,15 @@ function lancerDemo() {
     loyerMensuelSaisi = 950;
     idRapport = "DEMO-" + Math.floor(Math.random() * 90000 + 10000);
     
-    // Données fictives simulant une maison avec des travaux à Rennes
     donneesAudit = {
         cp: "35000",
+        localisation_exacte: "Rennes (Secteur Ille-et-Vilaine)",
+        impact_marche: "Métropole régionale en forte croissance économique. La forte demande sur le locatif et le durcissement de la Loi Climat créent une pression sur les artisans certifiés RGE, majorant les devis locaux de 18%.",
         date_audit: new Date().toLocaleDateString('fr-FR'),
         prix_initial: 245000,
         total_decote: 24500,
         prix_net: 220500,
-        analyse_secteur: "Ajusté selon les prix de votre région (Indice 1.05)",
+        analyse_secteur: "Indice de marché local : 1.18",
         securite: "Vos données sont privées : Le PDF a été supprimé de nos serveurs.",
         solutions: [
             "ALERTE SÉCURITÉ : La maison présente des dangers immédiats (électricité). Vous devrez faire des travaux avant d'y habiter.",
@@ -48,7 +46,7 @@ function lancerDemo() {
             "STRATÉGIE DE NÉGOCIATION : Montrez ce document au vendeur. Le total de 24 500 € de travaux est un argument massif pour baisser le prix."
         ],
         diagnostics: [
-            {titre: "Électricité (Sécurité des personnes)", cout: 4500, loi: "Norme NF C 15-100", detail: "Matériel ancien et absence de mise à la terre. En clair : grand risque d'électrocution.", action: "Faire venir un électricien pour remplacer le tableau électrique et tirer des lignes de terre."},
+            {titre: "Électricité (Sécurité des personnes)", cout: 4500, loi: "Norme NF C 15-100", detail: "Matériel ancien et absence de mise à la terre. En clair : grand risque d'électrocution.", action: "Faire changer le tableau électrique et tirer des lignes de terre."},
             {titre: "Gaz (Risque de fuite)", cout: 0, loi: "Norme NF P 45-500", detail: "La tuyauterie de gaz ne présente aucun défaut d'étanchéité.", action: "Pensez simplement à faire entretenir la chaudière chaque année."},
             {titre: "Amiante (Matériaux toxiques)", cout: 4000, loi: "Art. L1334-13", detail: "Présence d'amiante dans les conduits. En clair : l'amiante est cancérigène si on perce ces matériaux.", action: "Une entreprise spécialisée devra retirer l'amiante en toute sécurité avant d'engager d'autres travaux."},
             {titre: "DPE (Consommation d'énergie)", cout: 16000, loi: "Loi Climat & Résilience", detail: "Logement classé F (Passoire thermique). En clair : vos factures de chauffage seront très élevées car la chaleur s'échappe.", action: "Rénovation globale indispensable (isolation des murs/toit + nouvelle chaudière)."},
@@ -62,18 +60,16 @@ function lancerDemo() {
     afficherEcran();
 }
 
-// Envoi API réel
 async function envoyer() {
     const input = document.getElementById('fichierPdf');
     const prixInput = document.getElementById('prixInitial').value || 0;
     const loyerInput = document.getElementById('loyerMensuel').value || 0;
-    const cpInput = document.getElementById('codePostal').value || "Non renseigné";
+    const cpInput = document.getElementById('codePostal').value || "";
     
     if (prixInput <= 0) return showToast("Veuillez indiquer le prix de vente affiché du bien.", "error");
     if (!input.files.length) return showToast("Veuillez charger le diagnostic au format PDF.", "error");
     
     loyerMensuelSaisi = Number(loyerInput);
-
     document.getElementById('loading-overlay').style.display = "flex";
 
     const formData = new FormData();
@@ -89,7 +85,6 @@ async function envoyer() {
         idRapport = "AUDIT-" + Math.floor(Math.random() * 90000 + 10000);
         
         document.getElementById('loading-overlay').style.display = "none";
-        
         showToast("Audit généré avec succès.");
         document.getElementById('result-wrapper').style.display = "block";
         document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
@@ -101,7 +96,6 @@ async function envoyer() {
     }
 }
 
-// Affichage HTML sur le site
 function afficherEcran() {
     let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
     
@@ -134,13 +128,18 @@ function afficherEcran() {
     <div style="border-bottom: 3px solid #0b1a14; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
         <div>
             <h2 style="font-size: 28px; color: #0b1a14; font-weight: 800; margin: 0;">Bilan Financier & Travaux</h2>
-            <div style="font-size: 15px; color: #6c757d; margin-top: 5px; font-weight: 600;">Checklist simplifiée pour les acquéreurs</div>
+            <div style="font-size: 15px; color: #6c757d; margin-top: 5px; font-weight: 600;">Cible : ${donneesAudit.localisation_exacte}</div>
         </div>
         <div style="text-align: right; font-size: 13px; color: #6c757d;">
             <b>Réf. Dossier :</b> ${idRapport}<br>
             <b>Date :</b> ${donneesAudit.date_audit}<br>
-            <b>Secteur :</b> ${donneesAudit.cp}
+            <b>Code Postal :</b> ${donneesAudit.cp}
         </div>
+    </div>
+    
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 6px; margin-bottom: 30px; border: 1px solid #ced4da;">
+        <h4 style="margin: 0 0 8px 0; color: #0b1a14; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px;">Contexte économique local</h4>
+        <p style="margin: 0; font-size: 14px; color: #495057; line-height: 1.5;">${donneesAudit.impact_marche}</p>
     </div>
     
     <h3 style="text-transform: uppercase; font-size: 16px; color: #0b1a14; margin-bottom: 15px;">Proposition d'offre d'achat conseillée</h3>
@@ -161,7 +160,7 @@ function afficherEcran() {
     
     ${kpiRentabiliteHtml}
     
-    <div style="background: #f8f9fa; border-left: 4px solid #00d632; padding: 20px; border-radius: 4px; margin-bottom: 40px;">
+    <div style="background: #f4fbf7; border-left: 4px solid #00d632; padding: 20px; border-radius: 4px; margin-bottom: 40px;">
         <h3 style="margin-top: 0; font-size: 16px; text-transform: uppercase; color: #0b1a14;">Plan d'Action & Stratégie d'Achat</h3>
         <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #495057; line-height: 1.6;">
             ${donneesAudit.solutions.map(s => `<li style="margin-bottom:8px;">${s}</li>`).join('')}
@@ -204,7 +203,7 @@ function afficherEcran() {
     </div>
 
     <div style="font-size: 10px; color: #adb5bd; text-align: justify; border-top: 1px solid #eaeaea; padding-top: 15px;">
-        <b>MENTIONS LÉGALES :</b> Ce document est une aide à la négociation (modulateur: ${donneesAudit.analyse_secteur}). Il ne remplace pas le devis d'un artisan certifié RGE ni un acte notarié. ${donneesAudit.securite}
+        <b>MENTIONS LÉGALES :</b> Ce document est une aide à la négociation (${donneesAudit.analyse_secteur}). Il ne remplace pas le devis d'un artisan certifié RGE ni un acte notarié. ${donneesAudit.securite}
     </div>`;
 
     document.getElementById('contenu-ecran').innerHTML = html;
@@ -226,7 +225,6 @@ function afficherEcran() {
     }
 }
 
-// GESTION DU PDF PREMIUM 
 function exporterPDF() {
     if (!donneesAudit) return;
     
@@ -374,7 +372,7 @@ function exporterPDF() {
             { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 120, y2: 0, lineWidth: 3, lineColor: '#00d632' }], alignment: 'center', margin: [0, 0, 0, 50] },
             
             { text: 'BILAN FINANCIER & OFFRE D\'ACHAT', fontSize: 26, bold: true, color: '#0b1a14', alignment: 'center', margin: [0, 0, 0, 15] },
-            { text: 'Analyse simplifiée du diagnostic immobilier pour anticiper vos coûts', fontSize: 12, color: '#666666', alignment: 'center', margin: [0, 0, 0, 80] },
+            { text: 'Analyse géographique et technique du diagnostic pour anticiper vos coûts', fontSize: 12, color: '#666666', alignment: 'center', margin: [0, 0, 0, 80] },
             
             {
                 table: {
@@ -383,7 +381,7 @@ function exporterPDF() {
                         [ { text: 'DÉTAILS DE L\'ÉTUDE', colSpan: 2, style: 'coverTableTitle' }, {} ],
                         [ { text: 'Numéro de dossier :', style: 'coverLabel' }, { text: idRapport, style: 'coverValue' } ],
                         [ { text: 'Date de l\'analyse :', style: 'coverLabel' }, { text: donneesAudit.date_audit, style: 'coverValue' } ],
-                        [ { text: 'Zone géographique :', style: 'coverLabel' }, { text: donneesAudit.cp, style: 'coverValue' } ]
+                        [ { text: 'Cible géographique :', style: 'coverLabel' }, { text: donneesAudit.localisation_exacte, style: 'coverValue' } ]
                     ]
                 },
                 layout: 'lightHorizontalLines',
@@ -419,12 +417,30 @@ function exporterPDF() {
                 },
                 margin: [0, 0, 0, 10]
             },
-            { text: 'Ajustement économique appliqué : ' + donneesAudit.analyse_secteur, fontSize: 8, italics: true, color: '#888', alignment: 'center', margin: [0, 0, 0, 30] },
             
+            // AJOUT DU BLOC CONTEXTE CONSTRUIRE SUR MESURE DANS LE PDF POUR ÉVITER LES PAGES BLANCHES
+            {
+                table: {
+                    widths: ['*'],
+                    body: [
+                        [
+                            {
+                                stack: [
+                                    { text: 'CONTEXTE ÉCONOMIQUE DE LA COMMUNE', fontSize: 9, bold: true, color: '#0b1a14', margin: [0, 0, 0, 4] },
+                                    { text: donneesAudit.impact_marche, fontSize: 9, color: '#495057', lineHeight: 1.4 }
+                                ],
+                                margin: [10, 10, 10, 10]
+                            }
+                        ]
+                    ]
+                },
+                layout: { hLineWidth: () => 1, vLineWidth: () => 1, hLineColor: () => '#ced4da', vLineColor: () => '#ced4da' },
+                margin: [0, 0, 0, 20]
+            },
+
             ...rentaBlock,
             
             { text: (loyerMensuelSaisi > 0 ? '3.' : '2.') + ' STRATÉGIE & PLAN D\'ACTION', style: 'sectionTitle' },
-            
             strategyRow,
 
             { text: (loyerMensuelSaisi > 0 ? '4.' : '3.') + ' DÉTAILS DES POINTS CONTRÔLÉS PAR LE DIAGNOSTIC', style: 'sectionTitle' },
@@ -448,7 +464,7 @@ function exporterPDF() {
             },
             
             { text: 'À PROPOS DE CE DOCUMENT', style: 'footerTitle', margin: [0, 50, 0, 5] },
-            { text: 'Ce document est une aide à la lecture des diagnostics complexes. Les budgets indiqués sont des moyennes nationales estimées. Avant tout achat ou travaux, demandez toujours confirmation à un artisan certifié RGE. ' + donneesAudit.securite, style: 'footerText' }
+            { text: 'Ce document est une aide à la lecture des diagnostics complexes. Les budgets indiqués sont des moyennes nationales calculées selon un ratio régional (' + donneesAudit.analyse_secteur + '). Avant tout achat, demandez confirmation à un artisan certifié RGE. ' + donneesAudit.securite, style: 'footerText' }
         ],
         styles: {
             coverTableTitle: { fontSize: 12, bold: true, color: '#0b1a14', alignment: 'center', margin: [0, 10, 0, 10], fillColor: '#eaf9f0' },
@@ -473,7 +489,6 @@ function exporterPDF() {
     setTimeout(() => { btn.innerText = "Télécharger le rapport PDF Officiel"; }, 1500);
 }
 
-// Fonction Avis
 function ajouterAvis() {
     const nom = document.getElementById('nomAvis').value;
     const texte = document.getElementById('texteAvis').value;
