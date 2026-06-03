@@ -19,11 +19,18 @@ main { flex: 1; }
 .form-container h2 { margin: 0 0 20px 0; font-size: 22px; color: #0b1a14; }
 .form-group { margin-bottom: 20px; }
 .form-group label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 8px; }
-.form-control { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; background: #f8f9fa; }
+.form-control { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; background: #f8f9fa; font-size: 14px; }
 .btn-submit { background: #00d632; color: #0b1a14; border: none; padding: 16px; width: 100%; font-size: 16px; font-weight: 800; border-radius: 6px; cursor: pointer; }
 
 #result-wrapper { max-width: 1050px; margin: 60px auto; display: none; padding: 0 20px; box-sizing: border-box; }
 #contenu-ecran { background: #fff; padding: 50px; border-radius: 8px; border: 1px solid #eee; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+
+/* SYSTÈME DE SOUS-ONGLETS INTERNES AU RAPPORT SAAS */
+.report-tabs { display: flex; border-bottom: 2px solid #ced4da; margin-bottom: 30px; gap: 10px; }
+.report-tab-btn { background: none; border: none; padding: 12px 20px; font-size: 14px; font-weight: 700; color: #6c757d; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s; }
+.report-tab-btn.active { color: #00d632; border-bottom-color: #00d632; }
+.report-pane { display: none; }
+.report-pane.active { display: block; }
 
 .kpi-grid { display: flex; justify-content: space-between; margin-bottom: 40px; gap: 20px; }
 .kpi-box { flex: 1; padding: 25px; border-radius: 8px; text-align: center; border: 1px solid #eaeaea; box-sizing: border-box; }
@@ -33,19 +40,16 @@ main { flex: 1; }
 
 .chart-container { width: 100%; max-width: 350px; margin: 0 auto 40px; }
 
-/* Wrapper tableau pour mobile */
 .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 40px; }
 table { width: 100%; border-collapse: collapse; min-width: 600px; }
 th, td { border: 1px solid #dee2e6; padding: 16px; text-align: left; vertical-align: top; }
 th { background-color: #f8f9fa; text-transform: uppercase; font-size: 12px; font-weight: 700; }
-.status-conforme { color: #00d632; font-weight: bold; }
-.status-anomalie { color: #cc0000; font-weight: bold; }
 
 .content-section { padding: 80px 50px; max-width: 1200px; margin: 0 auto; border-bottom: 1px solid #eaeaea; box-sizing: border-box; }
 .section-title { font-size: 32px; color: #0b1a14; margin-bottom: 40px; text-align: center; font-weight: 800; }
 
-.info-grid, .avis-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; margin: 0 auto; max-width: 1000px; }
-.info-card, .avis-card { flex: 1 1 calc(33.333% - 30px); min-width: 300px; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border-top: 4px solid #00d632; box-sizing: border-box; }
+.info-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; margin: 0 auto; max-width: 1000px; }
+.info-card { flex: 1 1 calc(33.333% - 30px); min-width: 300px; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border-top: 4px solid #00d632; box-sizing: border-box; }
 .info-card h3 { margin-top: 0; color: #0b1a14; font-size: 18px; }
 .info-card p { font-size: 14px; color: #555; line-height: 1.6; margin: 0; }
 
@@ -54,29 +58,24 @@ details { background: #fff; border: 1px solid #dee2e6; border-radius: 8px; margi
 details:hover { border-color: #00d632; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 summary { font-weight: 700; padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; list-style: none; }
 summary::-webkit-details-marker { display: none; }
-summary::after { content: '+'; color: #00d632; font-size: 20px; font-weight: normal; }
+summary::after { content: '+'; color: #00d632; font-size: 20px; }
 details[open] summary::after { content: '-'; }
 details p { padding: 0 20px 20px 20px; margin: 0; color: #495057; line-height: 1.6; border-top: 1px solid #eee; padding-top: 15px; }
 
-textarea, input[type="text"], input[type="number"] { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; }
+footer { background-color: #1a1a1a; color: #ffffff; text-align: center; padding: 25px 0; font-size: 11px; border-top: 1px solid #333; margin-top: auto; line-height: 1.6; }
+footer a { color: #00d632; text-decoration: none; }
 
-footer { background-color: #1a1a1a !important; color: #ffffff !important; width: 100% !important; text-align: center !important; padding: 15px 0 !important; font-size: 11px !important; border-top: 1px solid #333 !important; margin-top: auto; box-sizing: border-box; }
-footer a { color: #31c071 !important; text-decoration: none !important; }
-
-/* --- SYSTÈME D'ONGLETS --- */
 .tab-content { display: none; width: 100%; }
 .tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
 nav a.active { color: #00d632 !important; border-bottom: 2px solid #00d632; padding-bottom: 6px; }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* --- ZONE DRAG & DROP --- */
 .drop-zone { width: 100%; padding: 30px 20px; border: 2px dashed #ced4da; border-radius: 8px; text-align: center; background: #f8f9fa; cursor: pointer; transition: all 0.3s ease; box-sizing: border-box; position: relative; }
 .drop-zone:hover, .drop-zone.dragover { background: #eaf9f0; border-color: #00d632; color: #00d632; }
 .drop-zone-text { font-size: 14px; font-weight: 600; color: #6c757d; pointer-events: none; }
 .drop-zone-input { position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer; }
 
-/* --- NOUVEAU : TOAST NOTIFICATIONS --- */
 #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
 .toast { background: #212529; color: #fff; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-weight: 600; font-size: 14px; opacity: 0; transform: translateX(100%); animation: slideIn 0.4s forwards; }
 .toast.success { border-left: 5px solid #00d632; }
@@ -84,27 +83,22 @@ nav a.active { color: #00d632 !important; border-bottom: 2px solid #00d632; padd
 @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
 @keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } }
 
-/* --- NOUVEAU : ÉCRAN DE CHARGEMENT --- */
 #loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.95); z-index: 10000; flex-direction: column; justify-content: center; align-items: center; }
 .spinner { width: 60px; height: 60px; border: 6px solid rgba(0, 214, 50, 0.2); border-top-color: #00d632; border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* --- VERSION MOBILE --- */
+/* TENSION COMMERCIALE SCRIPT GENERATOR BOX */
+.script-box { background: #f4fbf7; border: 1px dashed #00d632; padding: 20px; border-radius: 6px; font-family: 'Courier New', Courier, monospace; font-size: 14px; line-height: 1.6; color: #1a3c2d; white-space: pre-wrap; margin-top: 15px; position: relative; }
+.btn-copy { position: absolute; top: 10px; right: 10px; background: #0b1a14; color: #fff; border: none; padding: 5px 10px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+
 @media (max-width: 768px) {
     header { flex-wrap: wrap; padding: 15px 20px; }
-    header .logo { order: 1; }
-    header .btn-solid { order: 2; padding: 8px 12px; font-size: 13px; }
-    header nav { order: 3; width: 100%; display: flex; overflow-x: auto; white-space: nowrap; margin-top: 15px; padding-bottom: 5px; gap: 15px; }
+    header nav { order: 3; width: 100%; display: flex; overflow-x: auto; margin-top: 15px; padding-bottom: 5px; gap: 15px; }
     header nav::-webkit-scrollbar { display: none; }
     .hero { flex-direction: column; padding: 40px 20px; text-align: center; }
     .hero-content { max-width: 100%; margin-bottom: 40px; }
-    .hero-content h1 { font-size: 32px; }
-    .hero-content ul { text-align: left; display: inline-block; padding-left: 0; list-style-position: inside; }
     .form-container { max-width: 100%; padding: 25px 20px; }
     .kpi-grid { flex-direction: column; gap: 15px; }
-    .kpi-box { width: 100%; }
     #contenu-ecran { padding: 25px 15px; }
-    .content-section { padding: 50px 20px; }
-    .info-card, .avis-card { flex: 1 1 100%; min-width: 100%; margin-bottom: 15px; }
-    .info-grid, .avis-grid { gap: 15px; }
+    .info-card { flex: 1 1 100%; min-width: 100%; }
 }
