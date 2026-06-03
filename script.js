@@ -281,6 +281,7 @@ function exporterPDF() {
     pdfMake.createPdf(docDefinition).download('AuditPro_Expertise_' + idRapport + '.pdf');
     setTimeout(() => { btn.innerText = "📥 Télécharger le rapport PDF Officiel"; }, 1000);
 }
+
 function ajouterAvis() {
     const nom = document.getElementById('nomAvis').value;
     const texte = document.getElementById('texteAvis').value;
@@ -295,3 +296,80 @@ function ajouterAvis() {
     document.getElementById('nomAvis').value = '';
     document.getElementById('texteAvis').value = '';
 }
+
+// ==========================================================================
+// MOTEUR DES ONGLETS & GESTION DU DRAG AND DROP
+// ==========================================================================
+document.addEventListener("DOMContentLoaded", () => {
+    
+    // 1. Logique des onglets dynamiques
+    const liensMenu = document.querySelectorAll('nav a[href^="#"]');
+    const blocsOnglets = document.querySelectorAll('.tab-content');
+    const btnNouveauDiag = document.querySelector('header .btn-solid');
+
+    function changerOnglet(targetId) {
+        liensMenu.forEach(lien => lien.classList.remove('active'));
+        blocsOnglets.forEach(onglet => onglet.classList.remove('active'));
+
+        const lienActif = document.querySelector(`nav a[href="${targetId}"]`);
+        if (lienActif) lienActif.classList.add('active');
+
+        const ongletCible = document.getElementById(`${targetId.substring(1)}-tab`);
+        if (ongletCible) ongletCible.classList.add('active');
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    liensMenu.forEach(lien => {
+        lien.addEventListener('click', function(e) {
+            e.preventDefault();
+            changerOnglet(this.getAttribute('href'));
+        });
+    });
+
+    if (btnNouveauDiag) {
+        btnNouveauDiag.addEventListener('click', () => {
+            document.getElementById('prixInitial').value = '';
+            document.getElementById('codePostal').value = '';
+            document.getElementById('fichierPdf').value = '';
+            document.querySelector('.drop-zone-text').innerHTML = "📂 Glissez-déposez votre PDF ici ou cliquez pour parcourir";
+            document.getElementById('drop-zone').style.borderColor = "#ced4da";
+            document.getElementById('drop-zone').style.background = "#f8f9fa";
+            document.getElementById('result-wrapper').style.display = 'none';
+            document.getElementById('contenu-ecran').innerHTML = '';
+            changerOnglet('#audit');
+        });
+    }
+
+    // 2. Logique de la zone de Drag & Drop
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('fichierPdf');
+    const dropZoneText = document.querySelector('.drop-zone-text');
+
+    if (dropZone && fileInput) {
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+        });
+
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files.length > 0) {
+                dropZoneText.innerHTML = `✅ Fichier prêt : <b style="color:#0b1a14;">${this.files[0].name}</b>`;
+                dropZone.style.borderColor = "#00d632";
+                dropZone.style.background = "#eaf9f0";
+            }
+        });
+    }
+});
