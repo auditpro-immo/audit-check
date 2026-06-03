@@ -3,11 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuditPro Diagnostics | Expertise Immobilière</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <title>AuditPro-Immo | L'outil d'expertise et de chiffrage immobilier par IA</title>
+    
+    <!-- OPTIMISATION SEO GOOGLE -->
+    <meta name="description" content="AuditPro-Immo : Testez et analysez les diagnostics de votre bien immobilier en 2 min. Chiffrage précis des travaux de rénovation et de mise aux normes par Intelligence Artificielle.">
+    <meta name="keywords" content="auditpro-immo, auditpro, immobilier, chiffrage travaux, DPE, passoire thermique, investissement locatif, expertise, diagnostic">
+    <meta name="author" content="AuditPro">
+    <meta name="robots" content="index, follow">
     <meta name="google-site-verification" content="s7itt18H_4u74XC1VwqXWtNpiHTrw4m7Y1pwRuzqNNU" />
-    <meta name="description" content="Testez et analysez votre audit immobilier en 2 min. Chiffrage précis des travaux par Intelligence Artificielle.">
+    
+    <!-- OPTIMISATION RÉSEAUX SOCIAUX (Open Graph) -->
+    <meta property="og:title" content="AuditPro-Immo | Expertise Immobilière">
+    <meta property="og:description" content="Générez un bilan d'achat chiffré basé sur le DDT de votre bien grâce à l'Intelligence Artificielle.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://auditpro-immo.github.io/audit-check/">
+    
+    <!-- FAVICON PROFESSIONNEL (Généré en code SVG direct) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230b1a14'/><text x='50' y='70' font-size='65' font-family='Arial' font-weight='bold' fill='%2300d632' text-anchor='middle'>A</text></svg>">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -25,7 +39,7 @@
             <a href="#faq">Questions Fréquentes</a>
             <a href="#contact">Contact</a>
         </nav>
-        <button class="btn-solid">Nouveau Diagnostic</button>
+        <button class="btn-solid" onclick="document.querySelector('nav a[href=\'#audit\']').click();">Nouveau Diagnostic</button>
     </header>
 
 <main>
@@ -64,6 +78,11 @@
                     </div>
                 </div>
                 <button class="btn-submit" id="btnSubmit" onclick="envoyer()">Générer l'audit complet</button>
+                
+                <!-- NOUVEAU : LE BOUTON DÉMO -->
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="#" onclick="lancerDemo(); return false;" style="color: #6c757d; font-size: 13px; text-decoration: underline; font-weight: 600; transition: color 0.3s;" onmouseover="this.style.color='#0b1a14'" onmouseout="this.style.color='#6c757d'">Je n'ai pas de PDF, tester avec un exemple</a>
+                </div>
             </div>
         </section>
 
@@ -259,9 +278,9 @@
 </main>
 
    <footer>
-       © 2026 AuditPro. Tous droits réservés. | Application d'analyse macro-économique.<br>
+       © 2026 AuditPro-Immo. Tous droits réservés. | Application certifiée d'analyse immobilière.<br>
        Ce rapport d'expertise textuelle ne se substitue pas à un acte notarié formel.<br>
-       <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" style="color: #00d632; text-decoration: underline; margin-top: 15px; display: inline-block;">Mentions Légales & Propriété Intellectuelle</a>
+       <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" style="color: #00d632; text-decoration: underline; margin-top: 15px; display: inline-block;">Politique de confidentialité (RGPD) & Mentions Légales</a>
     </footer>
 
     <!-- Mentions Légales Modale -->
@@ -271,7 +290,7 @@
             <h2 style="color: #0b1a14; border-bottom: 2px solid #00d632; padding-bottom: 10px;">Mentions Légales & Conditions d'Utilisation</h2>
             
             <h3 style="font-size: 16px; margin-top: 20px;">1. Édition et Hébergement</h3>
-            <p style="font-size: 14px; color: #555;">Le site <strong>AuditPro</strong> est un outil indépendant. L'interface publique est hébergée par GitHub Pages (GitHub Inc.) et le moteur d'intelligence artificielle (Backend d'analyse) est hébergé sur les serveurs sécurisés de Render.</p>
+            <p style="font-size: 14px; color: #555;">Le site <strong>AuditPro-Immo</strong> est un outil indépendant. L'interface publique est hébergée par GitHub Pages (GitHub Inc.) et le moteur d'intelligence artificielle (Backend d'analyse) est hébergé sur les serveurs sécurisés de Render.</p>
 
             <h3 style="font-size: 16px; margin-top: 20px;">2. Traitement des Données (RGPD)</h3>
             <p style="font-size: 14px; color: #555;">Le respect de votre vie privée est absolu. L'outil fonctionne selon le principe strict du "Zéro Stockage". Les fichiers PDF chargés sont traités temporairement en mémoire vive (RAM) par notre algorithme, puis sont <strong>détruits instantanément</strong>. Aucune donnée, adresse ou information liée au bien immobilier n'est conservée ou partagée.</p>
