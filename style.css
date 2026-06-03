@@ -143,3 +143,43 @@ footer p {
         display: none; 
     }
 }
+
+/* ==========================================================================
+   SYSTÈME D'ONGLETS ET DRAG & DROP
+   ========================================================================== */
+.tab-content { display: none; width: 100%; }
+.tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+nav a.active { color: #00d632 !important; border-bottom: 2px solid #00d632; padding-bottom: 6px; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.drop-zone {
+    width: 100%;
+    padding: 30px 20px;
+    border: 2px dashed #ced4da;
+    border-radius: 8px;
+    text-align: center;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    position: relative;
+}
+.drop-zone:hover, .drop-zone.dragover {
+    background: #eaf9f0;
+    border-color: #00d632;
+    color: #00d632;
+}
+.drop-zone-text { font-size: 14px; font-weight: 600; color: #6c757d; pointer-events: none; }
+.drop-zone-input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+}
