@@ -1,19 +1,19 @@
 let donneesAudit = null;
 let idRapport = "";
 let chartInstance = null;
-let loyerMensuelSaisi = 0; // Pour le calcul de rentabilité
+let loyerMensuelSaisi = 0;
 
 // Formatage des prix
 const formatNumber = (num) => {
     return Number(num).toLocaleString('fr-FR').replace(/[\u202F\u00A0]/g, ' ');
 };
 
-// SYSTÈME DE NOTIFICATIONS (SANS EMOJIS)
+// SYSTÈME DE NOTIFICATIONS 
 function showToast(message, type = "success") {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    let prefix = type === "success" ? "SUCCÈS : " : "ERREUR : ";
+    let prefix = type === "success" ? "SUCCÈS : " : "ATTENTION : ";
     toast.innerHTML = `<strong>${prefix}</strong> ${message}`;
     
     container.appendChild(toast);
@@ -31,8 +31,8 @@ async function envoyer() {
     const loyerInput = document.getElementById('loyerMensuel').value || 0;
     const cpInput = document.getElementById('codePostal').value || "Non renseigné";
     
-    if (prixInput <= 0) return showToast("Veuillez indiquer le prix de vente du bien.", "error");
-    if (!input.files.length) return showToast("Veuillez charger le diagnostic technique au format PDF.", "error");
+    if (prixInput <= 0) return showToast("Veuillez indiquer le prix de vente affiché du bien.", "error");
+    if (!input.files.length) return showToast("Veuillez charger le diagnostic au format PDF.", "error");
     
     loyerMensuelSaisi = Number(loyerInput);
 
@@ -95,8 +95,8 @@ function afficherEcran() {
     let html = `
     <div style="border-bottom: 3px solid #0b1a14; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
         <div>
-            <h2 style="font-size: 28px; color: #0b1a14; font-weight: 800; margin: 0;">Dossier d'Expertise Technique</h2>
-            <div style="font-size: 15px; color: #6c757d; margin-top: 5px; font-weight: 600;">Checklist Exhaustive & Synthèse Financière</div>
+            <h2 style="font-size: 28px; color: #0b1a14; font-weight: 800; margin: 0;">Bilan Financier & Travaux</h2>
+            <div style="font-size: 15px; color: #6c757d; margin-top: 5px; font-weight: 600;">Checklist simplifiée pour les acquéreurs</div>
         </div>
         <div style="text-align: right; font-size: 13px; color: #6c757d;">
             <b>Réf. Dossier :</b> ${idRapport}<br>
@@ -105,18 +105,18 @@ function afficherEcran() {
         </div>
     </div>
     
-    <h3 style="text-transform: uppercase; font-size: 16px; color: #0b1a14; margin-bottom: 15px;">Valorisation Vénale Conseillée</h3>
+    <h3 style="text-transform: uppercase; font-size: 16px; color: #0b1a14; margin-bottom: 15px;">Proposition d'offre d'achat conseillée</h3>
     <div class="kpi-grid">
         <div class="kpi-box">
-            <div class="kpi-label">Valeur Vénale Initiale</div>
+            <div class="kpi-label">Prix de vente affiché</div>
             <div class="kpi-value">${formatNumber(document.getElementById('prixInitial').value)} €</div>
         </div>
         <div class="kpi-box">
-            <div class="kpi-label" style="color: #cc0000;">Décote Technique Totale</div>
+            <div class="kpi-label" style="color: #cc0000;">Coût total des travaux</div>
             <div class="kpi-value" style="color: #cc0000;">-${formatNumber(donneesAudit.total_decote)} €</div>
         </div>
         <div class="kpi-box main">
-            <div class="kpi-label">Valeur Nette Conseillée</div>
+            <div class="kpi-label">Prix d'achat conseillé</div>
             <div class="kpi-value">${formatNumber(donneesAudit.prix_net)} €</div>
         </div>
     </div>
@@ -124,7 +124,7 @@ function afficherEcran() {
     ${kpiRentabiliteHtml}
     
     <div style="background: #f8f9fa; border-left: 4px solid #00d632; padding: 20px; border-radius: 4px; margin-bottom: 40px;">
-        <h3 style="margin-top: 0; font-size: 16px; text-transform: uppercase; color: #0b1a14;">Plan d'Action & Stratégie d'Expertise</h3>
+        <h3 style="margin-top: 0; font-size: 16px; text-transform: uppercase; color: #0b1a14;">Plan d'Action & Stratégie d'Achat</h3>
         <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #495057; line-height: 1.6;">
             ${donneesAudit.solutions.map(s => `<li style="margin-bottom:8px;">${s}</li>`).join('')}
         </ul>
@@ -132,31 +132,31 @@ function afficherEcran() {
 
     if (anomalies.length > 0) {
         html += `
-        <h3 style="text-align: center; text-transform: uppercase; font-size: 16px; color: #0b1a14; margin-bottom: 20px;">Répartition du Budget de Rénovation</h3>
+        <h3 style="text-align: center; text-transform: uppercase; font-size: 16px; color: #0b1a14; margin-bottom: 20px;">Répartition du Budget Travaux</h3>
         <div class="chart-container"><canvas id="coutChart"></canvas></div>`;
     }
 
     html += `
-    <h3 style="text-transform: uppercase; font-size: 16px; color: #0b1a14; margin-bottom: 15px;">Checklist Intégrale des Non-Conformités et Points Forts</h3>
+    <h3 style="text-transform: uppercase; font-size: 16px; color: #0b1a14; margin-bottom: 15px;">Détails des points contrôlés par le diagnostic</h3>
     <div class="table-responsive">
         <table>
             <tr>
-                <th style="width: 25%;">Point Réglementaire</th>
-                <th style="width: 15%; text-align: center;">Statut</th>
-                <th style="width: 45%;">Analyse de l'Expert & Préconisations</th>
-                <th style="text-align: right; width: 15%;">Provision</th>
+                <th style="width: 25%;">Domaine Contrôlé</th>
+                <th style="width: 15%; text-align: center;">État</th>
+                <th style="width: 45%;">Explication & Solution</th>
+                <th style="text-align: right; width: 15%;">Budget estimé</th>
             </tr>
          ${donneesAudit.diagnostics.map(a => `
         <tr style="border-bottom: 1px solid #ecf0f1;">
             <td style="padding: 15px; border-left: 4px solid ${a.cout > 0 ? '#cc0000' : '#00d632'};">
-                <b>${a.titre}</b><br><span style="font-size:11px; color:#6c757d;">${a.loi}</span>
+                <b>${a.titre}</b>
             </td>
             <td style="padding: 15px; color: ${a.cout > 0 ? '#cc0000' : '#000000'}; font-weight: bold; text-align: center;">
                 ${a.cout > 0 ? 'ANOMALIE' : 'CONFORME'}
             </td>
             <td style="padding: 15px; font-size: 13px; color: #333; line-height: 1.5;">
-                <b>Constat :</b> ${a.detail}<br>
-                ${a.cout > 0 ? `<b>Action requise :</b> ${a.action}` : ''}
+                <b>Ce que cela signifie :</b> ${a.detail}<br>
+                ${a.cout > 0 ? `<b>Solution prévue :</b> ${a.action}` : ''}
             </td>
             <td style="padding: 15px; font-weight:bold; color: #000000; text-align: right; font-size: 16px;">
                 ${a.cout > 0 ? `-${formatNumber(a.cout)} €` : '0 €'}
@@ -166,7 +166,7 @@ function afficherEcran() {
     </div>
 
     <div style="font-size: 10px; color: #adb5bd; text-align: justify; border-top: 1px solid #eaeaea; padding-top: 15px;">
-        <b>MENTIONS LÉGALES :</b> Ce document est généré informatiquement par algorithme (modulateur: ${donneesAudit.analyse_secteur}). Il ne se substitue pas à un devis d'artisan certifié RGE ni à un acte notarié. ${donneesAudit.securite}
+        <b>MENTIONS LÉGALES :</b> Ce document est une aide à la négociation (modulateur: ${donneesAudit.analyse_secteur}). Il ne remplace pas le devis d'un artisan certifié RGE ni un acte notarié. ${donneesAudit.securite}
     </div>`;
 
     document.getElementById('contenu-ecran').innerHTML = html;
@@ -188,9 +188,7 @@ function afficherEcran() {
     }
 }
 
-// ==============================================================================
-// GESTION DU NOUVEAU PDF PREMIUM (Correction du grand blanc)
-// ==============================================================================
+// GESTION DU PDF PREMIUM 
 function exporterPDF() {
     if (!donneesAudit) return;
     
@@ -206,10 +204,10 @@ function exporterPDF() {
 
     let tableBody = [
         [
-            { text: 'POINT RÉGLEMENTAIRE', style: 'tableHeader' },
-            { text: 'STATUT', style: 'tableHeader', alignment: 'center' },
-            { text: 'ANALYSE DE L\'EXPERT & PRÉCONISATIONS', style: 'tableHeader' },
-            { text: 'PROVISION', style: 'tableHeader', alignment: 'right' }
+            { text: 'DOMAINE CONTRÔLÉ', style: 'tableHeader' },
+            { text: 'ÉTAT', style: 'tableHeader', alignment: 'center' },
+            { text: 'EXPLICATION & SOLUTION PROPOSÉE', style: 'tableHeader' },
+            { text: 'BUDGET', style: 'tableHeader', alignment: 'right' }
         ]
     ];
 
@@ -219,12 +217,12 @@ function exporterPDF() {
         let statusColor = isAnomalie ? '#cc0000' : '#00d632';
         
         let analyseCell = [
-            { text: 'Constat : ', bold: true, color: '#333' },
+            { text: 'Ce que cela signifie : ', bold: true, color: '#333' },
             { text: a.detail, color: '#555' }
         ];
         
         if (isAnomalie) {
-            analyseCell.push({ text: '\nAction requise : ', bold: true, color: '#0b1a14' });
+            analyseCell.push({ text: '\nSolution prévue : ', bold: true, color: '#0b1a14' });
             analyseCell.push({ text: a.action, color: '#555' });
         }
 
@@ -238,7 +236,6 @@ function exporterPDF() {
 
     let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
     
-    // NOUVELLE MISE EN PAGE : Stratégie à gauche, Graphique à droite !
     let strategyContainer = {
         table: {
             widths: ['*'],
@@ -326,7 +323,7 @@ function exporterPDF() {
         footer: function(currentPage, pageCount) {
             return {
                 columns: [
-                    { text: 'Document certifié AuditPro IA © 2026', fontSize: 8, color: '#999999' },
+                    { text: 'Bilan d\'achat simplifié généré par AuditPro IA © 2026', fontSize: 8, color: '#999999' },
                     { text: 'Page ' + currentPage.toString() + ' sur ' + pageCount, alignment: 'right', fontSize: 8, color: '#999999' }
                 ],
                 margin: [40, 20, 40, 0]
@@ -335,20 +332,20 @@ function exporterPDF() {
         
         content: [
             { text: 'AUDITPRO', fontSize: 44, bold: true, color: '#0b1a14', alignment: 'center', margin: [0, 80, 0, 0] },
-            { text: 'L\'expertise immobilière propulsée par l\'IA', fontSize: 14, color: '#00d632', alignment: 'center', margin: [0, 5, 0, 50] },
+            { text: 'L\'expertise immobilière traduite simplement', fontSize: 14, color: '#00d632', alignment: 'center', margin: [0, 5, 0, 50] },
             { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 120, y2: 0, lineWidth: 3, lineColor: '#00d632' }], alignment: 'center', margin: [0, 0, 0, 50] },
             
-            { text: 'RAPPORT D\'EXPERTISE TECHNIQUE', fontSize: 26, bold: true, color: '#0b1a14', alignment: 'center', margin: [0, 0, 0, 15] },
-            { text: 'Analyse réglementaire approfondie & Chiffrage macro-économique des anomalies', fontSize: 12, color: '#666666', alignment: 'center', margin: [0, 0, 0, 80] },
+            { text: 'BILAN FINANCIER & OFFRE D\'ACHAT', fontSize: 26, bold: true, color: '#0b1a14', alignment: 'center', margin: [0, 0, 0, 15] },
+            { text: 'Analyse simplifiée du diagnostic immobilier pour anticiper vos coûts', fontSize: 12, color: '#666666', alignment: 'center', margin: [0, 0, 0, 80] },
             
             {
                 table: {
                     widths: ['50%', '50%'],
                     body: [
-                        [ { text: 'DÉTAILS DU DOSSIER', colSpan: 2, style: 'coverTableTitle' }, {} ],
-                        [ { text: 'Référence Unique :', style: 'coverLabel' }, { text: idRapport, style: 'coverValue' } ],
-                        [ { text: 'Date de l\'audit :', style: 'coverLabel' }, { text: donneesAudit.date_audit, style: 'coverValue' } ],
-                        [ { text: 'Secteur géographique :', style: 'coverLabel' }, { text: donneesAudit.cp, style: 'coverValue' } ]
+                        [ { text: 'DÉTAILS DE L\'ÉTUDE', colSpan: 2, style: 'coverTableTitle' }, {} ],
+                        [ { text: 'Numéro de dossier :', style: 'coverLabel' }, { text: idRapport, style: 'coverValue' } ],
+                        [ { text: 'Date de l\'analyse :', style: 'coverLabel' }, { text: donneesAudit.date_audit, style: 'coverValue' } ],
+                        [ { text: 'Zone géographique :', style: 'coverLabel' }, { text: donneesAudit.cp, style: 'coverValue' } ]
                     ]
                 },
                 layout: 'lightHorizontalLines',
@@ -356,15 +353,15 @@ function exporterPDF() {
             },
             { text: '', pageBreak: 'after' },
 
-            { text: '1. VALORISATION VÉNALE CONSEILLÉE', style: 'sectionTitle' },
+            { text: '1. PROPOSITION D\'OFFRE D\'ACHAT CONSEILLÉE', style: 'sectionTitle' },
             {
                 table: {
                     widths: ['*', '*', '*'],
                     body: [
                         [
-                            { text: 'Valeur Vénale Initiale', style: 'kpiHeader' },
-                            { text: 'Provisions Travaux', style: 'kpiHeaderRed' },
-                            { text: 'Valeur Nette Conseillée', style: 'kpiHeaderDark' }
+                            { text: 'Prix de vente affiché', style: 'kpiHeader' },
+                            { text: 'Coût total des travaux', style: 'kpiHeaderRed' },
+                            { text: 'Prix d\'achat conseillé', style: 'kpiHeaderDark' }
                         ],
                         [
                             { text: prixInitFormate, style: 'kpiValue' },
@@ -384,16 +381,15 @@ function exporterPDF() {
                 },
                 margin: [0, 0, 0, 10]
             },
-            { text: 'Coefficients économiques appliqués : ' + donneesAudit.analyse_secteur, fontSize: 8, italics: true, color: '#888', alignment: 'center', margin: [0, 0, 0, 30] },
+            { text: 'Ajustement économique appliqué : ' + donneesAudit.analyse_secteur, fontSize: 8, italics: true, color: '#888', alignment: 'center', margin: [0, 0, 0, 30] },
             
             ...rentaBlock,
             
             { text: (loyerMensuelSaisi > 0 ? '3.' : '2.') + ' STRATÉGIE & PLAN D\'ACTION', style: 'sectionTitle' },
             
-            // On affiche le conteneur scindé (Texte à gauche, Graphique à droite) et plus de saut de page gâché !
             strategyRow,
 
-            { text: (loyerMensuelSaisi > 0 ? '4.' : '3.') + ' INVENTAIRE DÉTAILLÉ DES POINTS DE CONTRÔLE (DDT)', style: 'sectionTitle' },
+            { text: (loyerMensuelSaisi > 0 ? '4.' : '3.') + ' DÉTAILS DES POINTS CONTRÔLÉS PAR LE DIAGNOSTIC', style: 'sectionTitle' },
             {
                 table: {
                     headerRows: 1,
@@ -413,8 +409,8 @@ function exporterPDF() {
                 }
             },
             
-            { text: 'AVERTISSEMENTS ET LIMITES DE RESPONSABILITÉ JURIDIQUE', style: 'footerTitle', margin: [0, 50, 0, 5] },
-            { text: 'Ce rapport est une analyse macro-économique générée informatiquement à partir des données textuelles extraites du Dossier de Diagnostic Technique (DDT). Il est fourni exclusivement à titre d\'aide à la décision et de levier de négociation commerciale. Les chiffrages sont des estimations statistiques nationales ajustées par secteur géographique, et ne peuvent en aucun cas se substituer à la réalisation de devis contradictoires par des entreprises certifiées RGE. ' + donneesAudit.securite, style: 'footerText' }
+            { text: 'À PROPOS DE CE DOCUMENT', style: 'footerTitle', margin: [0, 50, 0, 5] },
+            { text: 'Ce document est une aide à la lecture des diagnostics complexes. Les budgets indiqués sont des moyennes nationales estimées. Avant tout achat ou travaux, demandez toujours confirmation à un artisan certifié RGE. ' + donneesAudit.securite, style: 'footerText' }
         ],
         styles: {
             coverTableTitle: { fontSize: 12, bold: true, color: '#0b1a14', alignment: 'center', margin: [0, 10, 0, 10], fillColor: '#eaf9f0' },
@@ -435,11 +431,11 @@ function exporterPDF() {
         }
     };
 
-    pdfMake.createPdf(docDefinition).download('AuditPro_Expertise_' + idRapport + '.pdf');
+    pdfMake.createPdf(docDefinition).download('AuditPro_Bilan_Achat_' + idRapport + '.pdf');
     setTimeout(() => { btn.innerText = "Télécharger le rapport PDF Officiel"; }, 1500);
 }
 
-// Fonction Avis (sans Emojis)
+// Fonction Avis
 function ajouterAvis() {
     const nom = document.getElementById('nomAvis').value;
     const texte = document.getElementById('texteAvis').value;
