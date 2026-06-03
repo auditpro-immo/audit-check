@@ -19,7 +19,7 @@ main { flex: 1; }
 .form-container h2 { margin: 0 0 20px 0; font-size: 22px; color: #0b1a14; }
 .form-group { margin-bottom: 20px; }
 .form-group label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 8px; }
-.form-control { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; background: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+.form-control { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; background: #f8f9fa; }
 .btn-submit { background: #00d632; color: #0b1a14; border: none; padding: 16px; width: 100%; font-size: 16px; font-weight: 800; border-radius: 6px; cursor: pointer; }
 
 #result-wrapper { max-width: 1050px; margin: 60px auto; display: none; padding: 0 20px; box-sizing: border-box; }
@@ -33,7 +33,7 @@ main { flex: 1; }
 
 .chart-container { width: 100%; max-width: 350px; margin: 0 auto 40px; }
 
-/* Conteneur pour rendre le tableau défilable sur mobile */
+/* Wrapper tableau pour mobile */
 .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 40px; }
 table { width: 100%; border-collapse: collapse; min-width: 600px; }
 th, td { border: 1px solid #dee2e6; padding: 16px; text-align: left; vertical-align: top; }
@@ -62,52 +62,49 @@ textarea, input[type="text"], input[type="number"] { font-family: 'Segoe UI', Ta
 
 footer { background-color: #1a1a1a !important; color: #ffffff !important; width: 100% !important; text-align: center !important; padding: 15px 0 !important; font-size: 11px !important; border-top: 1px solid #333 !important; margin-top: auto; box-sizing: border-box; }
 footer a { color: #31c071 !important; text-decoration: none !important; }
-footer p { margin: 4px 0 !important; }
 
-/* ==========================================================================
-   SYSTÈME D'ONGLETS ET DRAG & DROP
-   ========================================================================== */
+/* --- SYSTÈME D'ONGLETS --- */
 .tab-content { display: none; width: 100%; }
 .tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
 nav a.active { color: #00d632 !important; border-bottom: 2px solid #00d632; padding-bottom: 6px; }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+/* --- ZONE DRAG & DROP --- */
 .drop-zone { width: 100%; padding: 30px 20px; border: 2px dashed #ced4da; border-radius: 8px; text-align: center; background: #f8f9fa; cursor: pointer; transition: all 0.3s ease; box-sizing: border-box; position: relative; }
 .drop-zone:hover, .drop-zone.dragover { background: #eaf9f0; border-color: #00d632; color: #00d632; }
 .drop-zone-text { font-size: 14px; font-weight: 600; color: #6c757d; pointer-events: none; }
 .drop-zone-input { position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer; }
 
+/* --- NOUVEAU : TOAST NOTIFICATIONS --- */
+#toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+.toast { background: #212529; color: #fff; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-weight: 600; font-size: 14px; opacity: 0; transform: translateX(100%); animation: slideIn 0.4s forwards; }
+.toast.success { border-left: 5px solid #00d632; }
+.toast.error { border-left: 5px solid #cc0000; }
+@keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+@keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } }
 
-/* ==========================================================================
-   VERSION MOBILE (SMARTPHONES ET PETITES TABLETTES)
-   ========================================================================== */
+/* --- NOUVEAU : ÉCRAN DE CHARGEMENT --- */
+#loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.95); z-index: 10000; flex-direction: column; justify-content: center; align-items: center; }
+.spinner { width: 60px; height: 60px; border: 6px solid rgba(0, 214, 50, 0.2); border-top-color: #00d632; border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* --- VERSION MOBILE --- */
 @media (max-width: 768px) {
     header { flex-wrap: wrap; padding: 15px 20px; }
     header .logo { order: 1; }
     header .btn-solid { order: 2; padding: 8px 12px; font-size: 13px; }
     header nav { order: 3; width: 100%; display: flex; overflow-x: auto; white-space: nowrap; margin-top: 15px; padding-bottom: 5px; gap: 15px; }
     header nav::-webkit-scrollbar { display: none; }
-
-    /* La section d'accueil s'empile (Texte en haut, formulaire en bas) */
     .hero { flex-direction: column; padding: 40px 20px; text-align: center; }
     .hero-content { max-width: 100%; margin-bottom: 40px; }
     .hero-content h1 { font-size: 32px; }
     .hero-content ul { text-align: left; display: inline-block; padding-left: 0; list-style-position: inside; }
-    
     .form-container { max-width: 100%; padding: 25px 20px; }
-
-    /* Les boîtes de résultats (KPI) s'empilent au lieu de s'écraser */
     .kpi-grid { flex-direction: column; gap: 15px; }
     .kpi-box { width: 100%; }
-
     #contenu-ecran { padding: 25px 15px; }
     .content-section { padding: 50px 20px; }
-    
-    /* Les cartes infos et avis prennent toute la largeur */
     .info-card, .avis-card { flex: 1 1 100%; min-width: 100%; margin-bottom: 15px; }
     .info-grid, .avis-grid { gap: 15px; }
 }
