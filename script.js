@@ -4,155 +4,136 @@ let chartInstance = null;
 let loyerMensuelSaisi = 0;
 let profilActuel = "particulier";
 
+// VARIABLES MARQUE BLANCHE
 let agenceNom = localStorage.getItem('auditpro_agence_nom') || 'AuditPro';
-let agenceCouleur = localStorage.getItem('auditpro_agence_couleur') || '#00d632';
+let agenceCouleur = localStorage.getItem('auditpro_agence_couleur') || '#10b981'; 
 let agenceLogoBase64 = localStorage.getItem('auditpro_agence_logo') || null;
 
 function entrerSurLeSite(profil) {
     document.getElementById('welcome-portal').style.display = 'none';
     document.getElementById('main-app').style.display = 'block';
-    setTimeout(() => { document.getElementById('main-app').style.opacity = '1'; }, 50);
+    setTimeout(() => document.getElementById('main-app').style.opacity = '1', 50);
     changerProfilInterne(profil);
 }
 
 function changerProfilInterne(profil) {
     profilActuel = profil;
-    document.querySelectorAll('.profile-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('btn-' + profil).classList.add('active');
     
-    if(profil === "professionnel") {
+    if(profil === 'professionnel') {
         document.getElementById('nav-pro').style.display = 'inline-block';
-        document.getElementById('hero-badge').innerText = "Espace Professionnels (B2B)";
+        document.getElementById('hero-badge').innerText = 'Espace Pro';
     } else {
         document.getElementById('nav-pro').style.display = 'none';
-        document.getElementById('hero-badge').innerText = "Espace Particulier (B2C)";
+        document.getElementById('hero-badge').innerText = 'Espace Particulier';
     }
 }
 
-document.getElementById('logoUploadInput').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            agenceLogoBase64 = e.target.result;
-        }
-        reader.readAsDataURL(file);
-    }
+document.getElementById('logoUploadInput').addEventListener('change', function(e) {
+    const reader = new FileReader();
+    reader.onload = (ev) => { agenceLogoBase64 = ev.target.result; }
+    reader.readAsDataURL(e.target.files[0]);
 });
 
 function appliquerCouleurMarqueBlanche() {
     document.getElementById('header-logo-color').style.color = agenceCouleur;
-    document.querySelectorAll('.btn-dynamic-color').forEach(btn => btn.style.backgroundColor = agenceCouleur);
-    document.querySelectorAll('.text-dynamic-color').forEach(txt => txt.style.color = agenceCouleur);
+    document.querySelectorAll('.btn-dynamic-color').forEach(b => b.style.backgroundColor = agenceCouleur);
+    document.querySelectorAll('.text-dynamic-color').forEach(t => t.style.color = agenceCouleur);
     document.querySelectorAll('.border-dynamic-color').forEach(b => b.style.borderColor = agenceCouleur);
+    document.querySelectorAll('.border-dynamic-top, .card-pro, .info-card, .avis-card').forEach(b => b.style.borderTopColor = agenceCouleur);
     document.querySelector('.form-container').style.borderTopColor = agenceCouleur;
-    document.querySelectorAll('.btn-pdf').forEach(btn => btn.style.backgroundColor = agenceCouleur);
+    
+    const activeBtn = document.querySelector('.profile-btn.active');
+    if(activeBtn) { activeBtn.style.color = agenceCouleur; activeBtn.style.borderColor = agenceCouleur; }
 }
 
 function sauvegarderParametresPro() {
-    if (!localStorage.getItem('auditpro_cookies')) return showToast("Acceptez les cookies pour sauvegarder.", "error");
-    agenceNom = document.getElementById('nomAgenceInput').value.trim() || "AuditPro";
+    agenceNom = document.getElementById('nomAgenceInput').value || 'AuditPro';
     agenceCouleur = document.getElementById('couleurAgenceInput').value;
     localStorage.setItem('auditpro_agence_nom', agenceNom);
     localStorage.setItem('auditpro_agence_couleur', agenceCouleur);
     if(agenceLogoBase64) localStorage.setItem('auditpro_agence_logo', agenceLogoBase64);
     appliquerCouleurMarqueBlanche();
-    chargerHistorique(); 
-    showToast("Paramètres sauvegardés !");
+    chargerHistorique();
+    showToast("Paramètres sauvegardés localement.");
 }
 
 function reinitialiserMarqueBlanche() {
     localStorage.clear();
-    agenceNom = 'AuditPro';
-    agenceCouleur = '#00d632'; 
+    agenceNom = 'AuditPro'; 
+    agenceCouleur = '#10b981'; 
     agenceLogoBase64 = null;
     document.getElementById('nomAgenceInput').value = '';
-    document.getElementById('couleurAgenceInput').value = '#00d632';
+    document.getElementById('couleurAgenceInput').value = '#10b981';
+    document.getElementById('logo-preview').style.display = 'none';
     appliquerCouleurMarqueBlanche();
     chargerHistorique();
     showToast("Réinitialisation effectuée.");
 }
 
-function accepterCookies() {
-    localStorage.setItem('auditpro_cookies', 'true');
-    document.getElementById('cookie-banner').style.display = 'none';
-}
-
-// CORRECTION ABSOLUE DE L'HISTORIQUE (Les boutons fonctionnent à 100%)
+// CORRECTION BUG PAGE BLANCHE (HISTORIQUE)
 function chargerHistorique() {
     const table = document.getElementById('historiqueTableBody');
-    if(!table) return;
-    const hist = JSON.parse(localStorage.getItem('auditpro_hist_v5')) || [];
-    table.innerHTML = '';
+    const hist = JSON.parse(localStorage.getItem('auditpro_hist_v4')) || [];
+    table.innerHTML = hist.length ? '' : '<tr><td colspan="4" style="text-align:center; padding:20px">Aucun dossier.</td></tr>';
     
-    if(hist.length === 0) {
-        table.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #666; padding: 20px;">Aucun dossier généré.</td></tr>';
-        return;
-    }
-    
-    hist.reverse().forEach((dossier, index) => {
-        let realIndex = hist.length - 1 - index;
+    hist.reverse().forEach((d, i) => {
+        let idx = hist.length - 1 - i;
         table.innerHTML += `
-            <tr class="history-row">
-                <td>${dossier.date}</td>
-                <td><strong>${dossier.ville}</strong></td>
-                <td>${formatNumber(dossier.prixInitial)} €</td>
-                <td style="text-align: right;">
-                    <button class="btn-voir" onclick="voirHistorique(${realIndex})">Voir</button>
-                    <button class="btn-pdf" style="background-color:${agenceCouleur}; color:#fff;" onclick="pdfHistorique(${realIndex})">PDF</button>
-                </td>
-            </tr>
-        `;
+        <tr class="history-row">
+            <td>${d.date}</td>
+            <td><strong>${d.ville}</strong></td>
+            <td>${formatNumber(d.prix)} €</td>
+            <td style="text-align:right">
+                <button type="button" class="btn-voir" onclick="voirHistorique(${idx})">Voir</button>
+                <button type="button" class="btn-pdf" onclick="telechargerHistorique(${idx})" style="background:${agenceCouleur}">PDF</button>
+            </td>
+        </tr>`;
     });
 }
 
-// OUVRE LE DOSSIER DANS L'ECRAN (Onglet Le Diagnostic)
-window.voirHistorique = function(index) {
-    const hist = JSON.parse(localStorage.getItem('auditpro_hist_v5')) || [];
-    const dossier = hist[index];
-    donneesAudit = dossier.data;
-    idRapport = dossier.id;
-    loyerMensuelSaisi = dossier.loyer || 0;
+// LE BOUTON VOIR OUVRE DÉSORMAIS L'ÉCRAN (SANS BUG)
+function voirHistorique(idx) {
+    const d = JSON.parse(localStorage.getItem('auditpro_hist_v4'))[idx];
+    donneesAudit = d.data; 
+    idRapport = d.id;
+    loyerMensuelSaisi = d.loyer || 0;
     
-    document.getElementById('prixInitial').value = formatNumber(dossier.prixInitial);
+    document.getElementById('prixInitial').value = formatNumber(d.prix);
     if(loyerMensuelSaisi > 0) document.getElementById('loyerMensuel').value = formatNumber(loyerMensuelSaisi);
     
     document.querySelector('nav a[href="#audit"]').click();
-    document.getElementById('result-wrapper').style.display = "block";
+    document.getElementById('result-wrapper').style.display = 'block';
     document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
     afficherEcran();
-    showToast("Dossier chargé avec succès.");
-};
+    showToast("Le dossier a été chargé à l'écran.");
+}
 
-// TELECHARGE LE DOSSIER DIRECTEMENT EN PDF
-window.pdfHistorique = function(index) {
-    const hist = JSON.parse(localStorage.getItem('auditpro_hist_v5')) || [];
-    const dossier = hist[index];
-    donneesAudit = dossier.data;
-    idRapport = dossier.id;
-    loyerMensuelSaisi = dossier.loyer || 0;
+// LE BOUTON PDF TELECHARGE DIRECTEMENT
+function telechargerHistorique(idx) {
+    voirHistorique(idx); 
     showToast("Génération du PDF en cours...");
-    exporterPDF('download');
-};
+    setTimeout(() => exporterPDF('download'), 800);
+}
 
 function ajouterAuHistorique(ville, prixInitial, donneesCompletes) {
-    if (!localStorage.getItem('auditpro_cookies')) return;
-    const hist = JSON.parse(localStorage.getItem('auditpro_hist_v5')) || [];
+    const hist = JSON.parse(localStorage.getItem('auditpro_hist_v4')) || [];
     hist.push({
         id: "AUDIT-" + Math.floor(Math.random() * 90000 + 10000),
         date: new Date().toLocaleDateString('fr-FR'),
         ville: ville,
-        prixInitial: prixInitial,
+        prix: prixInitial,
         data: donneesCompletes,
         loyer: loyerMensuelSaisi
     });
-    localStorage.setItem('auditpro_hist_v5', JSON.stringify(hist));
+    localStorage.setItem('auditpro_hist_v4', JSON.stringify(hist));
     chargerHistorique();
 }
 
 function viderHistorique() {
-    if(confirm("Êtes-vous sûr de vouloir supprimer tout l'historique ?")) {
-        localStorage.removeItem('auditpro_hist_v5');
+    if(confirm("Supprimer l'historique ?")) {
+        localStorage.removeItem('auditpro_hist_v4');
         chargerHistorique();
         showToast("Historique effacé.");
     }
@@ -170,6 +151,7 @@ function showToast(message, type = "success") {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     if(type === "success") { toast.style.borderLeftColor = agenceCouleur; }
+    else { toast.style.borderLeftColor = '#cc0000'; }
     toast.innerHTML = `<strong>${type === "success" ? "SUCCÈS :" : "ATTENTION :"}</strong> ${message}`;
     container.appendChild(toast);
     setTimeout(() => { toast.remove(); }, 4000);
@@ -191,6 +173,11 @@ function switchReportTab(tabId) {
     document.getElementById(tabId).classList.add('active');
 }
 
+function copierScript(idElement) {
+    const texte = document.getElementById(idElement).innerText;
+    navigator.clipboard.writeText(texte).then(() => { showToast("Données copiées dans le presse-papier."); });
+}
+
 function lancerDemo() {
     document.getElementById('prixInitial').value = "450 000";
     document.getElementById('loyerMensuel').value = "1 200";
@@ -206,7 +193,6 @@ function lancerDemo() {
         prix_initial: 450000,
         total_decote: 28700,
         prix_net: 421300,
-        analyse_secteur: "Indice de marché local : 1.18",
         diagnostics: [
             {titre: "Électricité", cout: 4500, loi: "NF C 15-100", detail: "Défaut de mise à la terre.", action: "Mise en sécurité du tableau."},
             {titre: "DPE", cout: 20000, loi: "Loi Climat", detail: "Logement classé F.", action: "Isolation et installation Pompe à Chaleur."},
@@ -265,6 +251,8 @@ function afficherEcran() {
     let prixInitialClean = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
     if(prixInitialClean === 0 && donneesAudit.prix_initial > 0) prixInitialClean = donneesAudit.prix_initial;
     
+    let defautsFormate = anomalies.length > 0 ? anomalies.map(a => "- " + a.titre).join('\n') : "- Aucun défaut technique majeur justifiant une décote.";
+    
     let html = `
     <div style="border-bottom: 3px solid #0b1a14; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
         <div>
@@ -279,10 +267,10 @@ function afficherEcran() {
     <div class="report-tabs">
         <button class="report-tab-btn active" onclick="switchReportTab('paneFinancier')" style="color: ${agenceCouleur}; border-bottom-color: ${agenceCouleur};">1. Synthèse Financière</button>
         <button class="report-tab-btn" onclick="switchReportTab('paneTechnique')">2. Bilan Technique (DDT)</button>
+        <button class="report-tab-btn" onclick="switchReportTab('paneStrategie')">3. Données d'Appui</button>
     </div>
     
     <div id="paneFinancier" class="report-pane active">
-        <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-bottom: 15px;">Évaluation de la Balance Financière</h3>
         <div class="kpi-grid">
             <div class="kpi-box">
                 <div class="kpi-label">Prix de vente initial</div>
@@ -322,6 +310,22 @@ function afficherEcran() {
                 </tr>`).join('')}
             </table>
         </div>
+    </div>
+
+    <div id="paneStrategie" class="report-pane">
+        <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-bottom: 10px;">Données Factuelles pour la Transaction</h3>
+        <p style="font-size: 14px; color: #495057; margin-bottom: 15px; text-align: left;">Copiez ces éléments factuels générés par le système pour appuyer votre argumentation :</p>
+        <div class="script-box" style="border-left-color: ${agenceCouleur}; font-style: normal; font-family: 'Inter', sans-serif;">
+            <button class="btn-copy" onclick="copierScript('texteScript')">Copier les données</button>
+            <div id="texteScript">SYNTHÈSE FACTUELLE DU DOSSIER :
+
+> DONNÉES FINANCIÈRES :
+- Écart technique calculé : ${formatNumber(donneesAudit.total_decote)} €
+- Valeur nette recommandée pour positionnement : ${formatNumber(donneesAudit.prix_net)} €
+
+> POINTS TECHNIQUES MAJEURS (ISSU DU DDT) :
+${defautsFormate}</div>
+        </div>
     </div>`;
 
     document.getElementById('contenu-ecran').innerHTML = html;
@@ -343,11 +347,9 @@ function afficherEcran() {
     }
 }
 
-// PDF MCKINSEY STYLE : SOBRE, DENSIFIÉ ET CLINIQUE (ZÉRO FLUO)
+// MOTEUR PDF ELITE (MCKINSEY STYLE)
 function exporterPDF(action = 'download') {
     if (!donneesAudit) return;
-    const btn = document.getElementById('btnExport');
-    if(btn) btn.innerText = "Édition du PDF en cours...";
     
     let prixInitFormate = formatNumber(document.getElementById('prixInitial').value.replace(/\s+/g, '')) + ' €';
     let decoteFormate = '-' + formatNumber(donneesAudit.total_decote) + ' €';
@@ -355,10 +357,10 @@ function exporterPDF(action = 'download') {
 
     let tableBody = [
         [
-            { text: 'DOMAINE CONTRÔLÉ', style: 'tableHeader' },
-            { text: 'ÉTAT', style: 'tableHeader', alignment: 'center' },
-            { text: 'DÉTAILS TECHNIQUES', style: 'tableHeader' },
-            { text: 'BUDGET', style: 'tableHeader', alignment: 'right' }
+            { text: 'DOMAINE CONTRÔLÉ', style: 'th' },
+            { text: 'ÉTAT', style: 'th', alignment: 'center' },
+            { text: 'DÉTAILS TECHNIQUES', style: 'th' },
+            { text: 'BUDGET', style: 'th', alignment: 'right' }
         ]
     ];
 
@@ -375,141 +377,82 @@ function exporterPDF(action = 'download') {
     });
 
     let logoBlock = agenceLogoBase64 
-        ? { image: agenceLogoBase64, fit: [140, 50], alignment: 'left' }
-        : { text: agenceNom.toUpperCase(), fontSize: 24, bold: true, color: '#1a1a1a', alignment: 'left', letterSpacing: 1 };
+        ? { image: agenceLogoBase64, fit: [120, 50], alignment: 'left' }
+        : { text: agenceNom.toUpperCase(), fontSize: 22, bold: true, color: agenceCouleur, alignment: 'left' };
 
-    let headerTop = {
-        columns: [
-            { width: '40%', stack: [logoBlock] },
-            {
-                width: '60%',
-                table: {
-                    widths: ['*', '*'],
-                    body: [
-                        [ { text: 'DÉTAILS DU DOSSIER', colSpan: 2, style: 'coverTableTitle' }, {} ],
-                        [ { text: 'Identifiant Unique :', style: 'coverLabel' }, { text: idRapport, style: 'coverValue' } ],
-                        [ { text: 'Date de l\'évaluation :', style: 'coverLabel' }, { text: donneesAudit.date_audit, style: 'coverValue' } ],
-                        [ { text: 'Localisation :', style: 'coverLabel' }, { text: donneesAudit.localisation_exacte, style: 'coverValue' } ]
-                    ]
-                },
-                layout: 'lightHorizontalLines'
-            }
+    const docDefinition = {
+        pageSize: 'A4', pageMargins: [40, 50, 40, 50],
+        content: [
+            { columns: [
+                logoBlock,
+                { table: { widths:['*', '*'], body:[ 
+                    [{text:'ID Dossier :', fontSize:8, color:'#888', alignment:'right'}, {text:idRapport, fontSize:8, bold:true, alignment:'left'}],
+                    [{text:'Date :', fontSize:8, color:'#888', alignment:'right'}, {text:donneesAudit.date_audit, fontSize:8, bold:true, alignment:'left'}],
+                    [{text:'Secteur :', fontSize:8, color:'#888', alignment:'right'}, {text:donneesAudit.localisation_exacte, fontSize:8, bold:true, alignment:'left'}]
+                ]}, layout:'noBorders', width:'*' }
+            ], margin:[0,0,0,30]},
+            
+            { text: 'RAPPORT D\'EXPERTISE TECHNIQUE ET FINANCIÈRE', fontSize: 14, bold: true, alignment: 'center', margin: [0, 0, 0, 30] },
+            
+            { table: { widths: ['*', '*', '*'], body: [ 
+                [{text:'VALEUR INITIALE', style:'lbl'}, {text:'ENVELOPPE TRAVAUX', style:'lbl'}, {text:'VALEUR NETTE CONSEILLÉE', style:'lbl'}],
+                [{text:prixInitFormate, style:'val'}, {text:decoteFormate, color:'#cc0000', style:'val'}, {text:prixNetFormate, color:agenceCouleur, style:'val'}]
+            ]}, layout: 'lightHorizontalLines', margin: [0, 0, 0, 30] },
+            
+            { text: 'DÉTAILS DES NON-CONFORMITÉS DÉTECTÉES', fontSize: 11, bold: true, margin: [0, 0, 0, 10] },
+            { table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody }, layout: { hLineWidth:()=>0.5, vLineWidth:()=>0, hLineColor:()=>'#eee' } },
+            
+            { text: 'ANALYSE RÉGLEMENTAIRE ET MÉTHODOLOGIE', fontSize: 11, bold: true, margin: [0, 40, 0, 10] },
+            { text: 'Ce document synthétise les données réglementaires du DDT (Art. L271-4 du CCH). Les coûts sont calculés sur une base macro-économique locale. Toute anomalie critique doit être confirmée par un artisan certifié RGE.', fontSize: 9, color: '#555', alignment: 'justify' }
         ],
-        margin: [0, 0, 0, 40]
+        styles: {
+            th: { fillColor: '#000', color: '#fff', bold: true, fontSize: 8, margin: [0, 5, 0, 5] },
+            lbl: { fontSize: 8, color: '#888', alignment: 'center' },
+            val: { fontSize: 18, bold: true, alignment: 'center', margin: [0, 5, 0, 5] }
+        }
     };
-    
-    let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
-    let chartBlock = [];
-    if (anomalies.length > 0) {
-        let chartCanvas = document.getElementById('coutChart');
-        if (chartCanvas) {
-            chartBlock = [
-                { text: 'RÉPARTITION DU BUDGET TRAVAUX', fontSize: 11, bold: true, alignment: 'center', color: '#1a1a1a', margin: [0, 30, 0, 15] },
-                { image: chartCanvas.toDataURL('image/png', 1.0), fit: [200, 200], alignment: 'center', margin: [0, 0, 0, 30] }
-            ];
-        }
-    }
 
-    try {
-        let docDefinition = {
-            pageSize: 'A4',
-            pageMargins: [ 40, 60, 40, 60 ],
-            header: function(currentPage) {
-                if (currentPage > 1) {
-                    return {
-                        columns: [
-                            { text: agenceNom.toUpperCase() + ' - DOSSIER TECHNIQUE', bold: true, color: '#888', fontSize: 9 },
-                            { text: 'Réf. ' + idRapport, alignment: 'right', color: '#888', fontSize: 9 }
-                        ], margin: [40, 20, 40, 0]
-                    };
-                }
-            },
-            footer: function(currentPage, pageCount) {
-                return {
-                    columns: [
-                        { text: 'Rapport d\'analyse financière macro-économique standardisé', fontSize: 8, color: '#aaa' },
-                        { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#aaa' }
-                    ], margin: [40, 20, 40, 0]
-                };
-            },
-            content: [
-                headerTop,
-                { text: 'RAPPORT D\'ANALYSE TECHNIQUE & FINANCIÈRE', fontSize: 16, color: '#1a1a1a', bold:true, alignment: 'center', margin: [0, 0, 0, 15] },
-                { text: 'Synthèse Exécutive : Ce document regroupe les données extraites du Dossier de Diagnostic Technique (DDT). Il présente une évaluation objective des coûts de remise aux normes pour sécuriser et justifier la transaction immobilière face aux exigences réglementaires.', fontSize: 10, color: '#555', alignment: 'justify', margin: [0, 0, 0, 40], italics: true },
-                
-                { text: '1. SYNTHÈSE DES VALORISATIONS', style: 'sectionTitle' },
-                {
-                    table: {
-                        widths: ['*', '*', '*'],
-                        body: [
-                            [ { text: 'Prix de Vente Initial', style: 'kpiHeader' }, { text: 'Enveloppe Travaux', style: 'kpiHeaderRed' }, { text: 'Valeur Nette Recommandée', style: 'kpiHeader' } ],
-                            [ { text: prixInitFormate, style: 'kpiValue' }, { text: decoteFormate, style: 'kpiValueRed' }, { text: prixNetFormate, style: 'kpiValueNet', color: agenceCouleur } ]
-                        ]
-                    },
-                    layout: 'lightHorizontalLines',
-                    margin: [0, 0, 0, 20]
-                },
-                
-                {
-                    table: { widths: ['*'], body: [ [ { stack: [ { text: 'CONTEXTE MACRO-ÉCONOMIQUE LOCAL', fontSize: 9, bold: true, color: '#1a1a1a', margin: [0, 0, 0, 4] }, { text: donneesAudit.impact_marche, fontSize: 9, color: '#4a4a4a', lineHeight: 1.4 } ], padding: 10 } ] ] },
-                    layout: { hLineWidth: () => 1, vLineWidth: () => 1, hLineColor: () => '#e0e0e0', vLineColor: () => '#e0e0e0' }, margin: [0, 0, 0, 25]
-                },
-                
-                ...chartBlock,
-                
-                { text: '2. INVENTAIRE TECHNIQUE DÉTAILLÉ (DDT)', style: 'sectionTitle', margin: [0, 20, 0, 10], pageBreak: chartBlock.length > 0 ? 'before' : 'auto' },
-                {
-                    table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody },
-                    layout: { 
-                        hLineWidth: function (i, node) { return (i === 0 || i === 1 || i === node.table.body.length) ? 1 : 1; }, 
-                        vLineWidth: function (i, node) { return 0; }, 
-                        hLineColor: function (i, node) { return (i === 0 || i === node.table.body.length) ? '#1a1a1a' : '#eeeeee'; }, 
-                        paddingTop: function(i, node) { return 10; }, 
-                        paddingBottom: function(i, node) { return 10; } 
-                    }
-                },
-
-                { text: '3. MÉTHODOLOGIE ET IMPACT RÉGLEMENTAIRE', style: 'sectionTitle', margin: [0, 40, 0, 10] },
-                { text: 'L\'estimation des travaux s\'appuie sur une analyse algorithmique des anomalies répertoriées dans le Dossier de Diagnostic Technique (Art. L271-4 du Code de la construction et de l\'habitation). Les tarifs sont pondérés selon l\'indice des coûts de construction local.\n\nIl est rappelé que la responsabilité du vendeur peut être engagée au titre des vices cachés (Art. 1641 du Code civil) si des informations cruciales concernant la structure du bien ou la sécurité des personnes (plomb, amiante, électricité, gaz) venaient à être dissimulées lors de la transaction.', fontSize: 9, color: '#444', lineHeight: 1.5, margin: [0, 0, 0, 40] },
-                
-                { text: 'CLAUSE DE NON-SUBSTITUTION LÉGALE', style: 'footerTitle', margin: [0, 40, 0, 5] },
-                { text: 'Cette simulation statistique a valeur d\'aide indicative pour structurer une transaction immobilière. Les montants chiffrés ne se substituent en aucun cas à la passation de devis contradictoires établis par des artisans certifiés RGE.', style: 'footerText' }
-            ],
-            styles: {
-                coverTableTitle: { fontSize: 10, bold: true, color: '#1a1a1a', alignment: 'center', margin: [0, 6, 0, 6], letterSpacing: 1 },
-                coverLabel: { fontSize: 9, bold: true, color: '#888', alignment: 'right', margin: [0, 2, 10, 2] },
-                coverValue: { fontSize: 9, color: '#1a1a1a', margin: [10, 2, 0, 2], bold: true },
-                sectionTitle: { fontSize: 12, bold: true, color: '#1a1a1a', margin: [0, 25, 0, 15], textTransform: 'uppercase' },
-                kpiHeader: { alignment: 'center', fontSize: 9, color: '#888', bold: true, margin: [0, 5, 0, 5], textTransform: 'uppercase' },
-                kpiHeaderRed: { alignment: 'center', fontSize: 9, color: '#cc0000', bold: true, margin: [0, 5, 0, 5], textTransform: 'uppercase' },
-                kpiValue: { alignment: 'center', fontSize: 16, bold: true, color: '#1a1a1a', margin: [0, 10, 0, 10] },
-                kpiValueRed: { alignment: 'center', fontSize: 16, bold: true, color: '#cc0000', margin: [0, 10, 0, 10] },
-                kpiValueNet: { alignment: 'center', fontSize: 20, bold: true, margin: [0, 10, 0, 10] },
-                tableHeader: { bold: true, fontSize: 9, color: '#ffffff', fillColor: '#1a1a1a', margin: [0, 6, 0, 6] },
-                footerTitle: { fontSize: 9, bold: true, color: '#1a1a1a' },
-                footerText: { fontSize: 8, color: '#666', alignment: 'justify', lineHeight: 1.4 }
-            }
-        };
-
-        let pdf = pdfMake.createPdf(docDefinition);
-        if (action === 'open') {
-            pdf.open();
-        } else {
-            pdf.download(agenceNom + '_Bilan_Technique_' + idRapport + '.pdf');
-        }
-        if(btn) setTimeout(() => { btn.innerText = "Télécharger le rapport PDF Officiel"; }, 1500);
-    } catch(err) {
-        showToast("Erreur lors de la génération du PDF.", "error");
-        if(btn) btn.innerText = "Télécharger le rapport PDF Officiel";
-    }
+    pdfMake.createPdf(docDefinition).download(agenceNom + '_Bilan_Technique_' + idRapport + '.pdf');
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById('nomAgenceInput').value = agenceNom !== 'AuditPro' ? agenceNom : '';
-    document.getElementById('couleurAgenceInput').value = agenceCouleur;
-    appliquerCouleurMarqueBlanche();
+// Initialisation et Event Listeners pour la navigation HTML (FAQ etc)
+document.addEventListener('DOMContentLoaded', () => {
     chargerHistorique();
+    appliquerCouleurMarqueBlanche();
     
+    document.querySelectorAll('.price-input').forEach(input => {
+        input.addEventListener('input', formatInputNumber);
+    });
+
+    const faq = document.getElementById('faq-list');
+    if(faq) {
+        const faqs = [
+            ["1. Qu'est-ce qu'un audit technique pré-acquisition ?", "C'est une analyse détaillée de la santé d'un bâtiment. Notre programme interprète les documents obligatoires du vendeur pour en déduire les risques financiers."],
+            ["2. Le rapport d'AuditPro a-t-il une valeur légale chez le notaire ?", "Non. Le rapport généré est un outil d'aide à la décision visant la transparence commerciale. Chez le notaire, seul le DDT a une valeur juridique."],
+            ["3. Puis-je utiliser ce chiffrage pour discuter du prix de vente ?", "Absolument, c'est l'objectif principal. Vous disposez d'une base objective et neutre pour trouver un accord équitable avec le vendeur."],
+            ["4. L'outil remplace-t-il le devis d'un artisan professionnel ?", "Non. L'application calcule une enveloppe budgétaire moyenne basée sur des statistiques régionales. Il est toujours conseillé de faire des devis."],
+            ["5. Quels sont les diagnostics immobiliers obligatoires ?", "Le DPE, le constat plomb (avant 1949), l'amiante (avant 1997), l'électricité et le gaz (plus de 15 ans), l'ERP, et l'état parasitaire."],
+            ["6. Quelle est la durée de validité du DPE ?", "Un DPE est valable 10 ans. Les DPE réalisés avant juillet 2021 ne sont plus valables."],
+            ["7. Qu'est-ce qu'une passoire thermique ?", "C'est un logement classé F ou G sur le DPE. Il consomme énormément de chauffage."],
+            ["8. Durée de validité des diagnostics Électricité et Gaz ?", "Ils sont valables 3 ans dans le cadre d'une vente immobilière."],
+            ["9. Faut-il refaire le diagnostic Amiante si négatif ?", "Non, sauf s'il a été réalisé avant le 1er avril 2013."],
+            ["10. Quelle est la différence entre l'amiante et le plomb ?", "L'amiante est une fibre cancérigène (respiration). Le plomb est dans les vieilles peintures (saturnisme si ingestion)."],
+            ["11. Qu'est-ce qu'un DGI ?", "Danger Grave et Immédiat. Le diagnostiqueur a l'obligation de condamner l'installation gaz sur le champ."],
+            ["12. Suis-je obligé de faire les travaux si anomalie ?", "Le vendeur n'a aucune obligation (sauf DGI). L'acheteur n'est pas obligé, mais les banques l'exigent souvent pour le prêt."],
+            ["13. Le calcul prend-il en compte MaPrimeRénov' ?", "Non. L'outil vous indique le coût global brut des travaux."],
+            ["14. Le rapport est-il adapté aux tarifs de ma région ?", "Oui. L'algorithme lit le code postal et applique un coefficient multiplicateur local."],
+            ["15. Comment le programme calcule-t-il les prix ?", "Il croise la surface du bien et le type de problème avec le coût moyen au mètre carré pratiqué."],
+            ["16. Mes données sont-elles conservées ?", "Non. Règle stricte du 'Zéro Stockage'. Le PDF est scanné puis détruit. Les historiques sont locaux sur votre navigateur."],
+            ["17. Le programme peut-il lire un PDF de 100 pages ?", "Oui. L'algorithme scanne instantanément le document pour extraire les tableaux de synthèses."],
+            ["18. S'il manque un diagnostic obligatoire ?", "Le notaire bloquera la vente le jour de la signature."],
+            ["19. Fonctionne-t-il pour les locaux commerciaux ?", "Actuellement non. Exclusivement pour l'immobilier d'habitation."],
+            ["20. Un professionnel peut-il utiliser la plateforme ?", "Oui. L'Espace Professionnel permet de justifier factuellement les estimations."]
+        ];
+        faqs.forEach(q => {
+            faq.innerHTML += `<details><summary>${q[0]}</summary><p>${q[1]}</p></details>`;
+        });
+    }
+
     const liensMenu = document.querySelectorAll('nav a[href^="#"]');
     const blocsOnglets = document.querySelectorAll('.tab-content');
 
@@ -522,6 +465,22 @@ document.addEventListener("DOMContentLoaded", () => {
             this.style.color = agenceCouleur;
             this.style.borderBottom = `2px solid ${agenceCouleur}`;
             document.getElementById(`${this.getAttribute('href').substring(1)}-tab`).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     });
+
+    const dropZone = document.getElementById('drop-zone');
+    if (dropZone) {
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+        });
+        dropZone.addEventListener('dragover', () => dropZone.style.background = "#eaf9f0");
+        dropZone.addEventListener('dragleave', () => dropZone.style.background = "#f8f9fa");
+        document.getElementById('fichierPdf').addEventListener('change', function() {
+            if (this.files && this.files.length > 0) {
+                document.querySelector('.drop-zone-text').innerHTML = `Document chargé : <b>${this.files[0].name}</b>`;
+                dropZone.style.borderColor = agenceCouleur;
+            }
+        });
+    }
 });
