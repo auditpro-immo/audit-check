@@ -2,7 +2,7 @@
 
 body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; background-color: #f8f9fa; color: #212529; scroll-behavior: smooth; display: flex; flex-direction: column; min-height: 100vh; }
 
-/* DESIGN PORTAIL D'ACCUEIL - VERSION B2B ÉLÉGANTE */
+/* DESIGN PORTAIL D'ACCUEIL */
 #welcome-portal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0b1a14; z-index: 100000; display: flex; justify-content: center; align-items: center; text-align: center; padding: 20px; box-sizing: border-box; transition: opacity 0.5s ease, visibility 0.5s; }
 .portal-content { max-width: 900px; width: 100%; }
 .portal-logo { font-size: 40px; font-weight: 800; color: #fff; margin-bottom: 25px; letter-spacing: -1px;}
@@ -16,15 +16,24 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans
 .portal-card h3 { color: #0b1a14; font-size: 20px; font-weight: 800; margin-top: 0; margin-bottom: 12px;}
 .portal-card p { color: #555; font-size: 14px; line-height: 1.6; margin-bottom: 30px; }
 .card-action { font-size: 14px; font-weight: 700; color: #00d632; }
-
 .portal-footer { margin-top: 50px; font-size: 12px; color: #6c757d; font-weight: 600;}
 
-/* RESTE DU DESIGN STANDARD */
+/* HEADER & BOUTONS PRINCIPAUX */
 header { background: #0b1a14; color: #fff; padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .logo { font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px;}
 nav a { color: #fff; text-decoration: none; margin: 0 15px; font-size: 14px; font-weight: 600; }
-.btn-solid { background: #00d632; color: #0b1a14; padding: 10px 24px; border-radius: 6px; text-decoration: none; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; font-family: 'Inter', sans-serif;}
-.btn-solid:hover { opacity: 0.9; transform: translateY(-2px); }
+
+/* FIXATION DES BORDS NOIRS DES BOUTONS */
+.btn-solid, .btn-submit { background: #00d632; color: #0b1a14; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 700; border: none !important; outline: none; cursor: pointer; transition: all 0.3s ease; font-family: 'Inter', sans-serif; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
+.btn-solid:hover, .btn-submit:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); }
+.btn-submit { width: 100%; padding: 16px; font-size: 16px; font-weight: 800; }
+
+/* NOUVEAUX BOUTONS DÉMO & EFFACER */
+.btn-demo { background: transparent; color: #6c757d; border: 1px solid #ced4da; padding: 12px 20px; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; font-family: 'Inter', sans-serif; }
+.btn-demo:hover { background: #f8f9fa; color: #0b1a14; border-color: #0b1a14; }
+
+.btn-delete { background: transparent; color: #cc0000; border: 1px solid rgba(204, 0, 0, 0.3); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif; outline: none; }
+.btn-delete:hover { background: #cc0000; color: #fff; border-color: #cc0000; box-shadow: 0 2px 8px rgba(204, 0, 0, 0.2); }
 
 main { flex: 1; }
 
@@ -39,7 +48,6 @@ main { flex: 1; }
 .form-group { margin-bottom: 20px; text-align: left; }
 .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #0b1a14; }
 .form-control { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; background: #f8f9fa; font-size: 14px; font-family: 'Inter', sans-serif;}
-.btn-submit { width: 100%; padding: 16px; font-size: 16px; font-weight: 800; }
 
 .profile-selector { display: flex; background: #f8f9fa; padding: 6px; border-radius: 8px; border: 1px solid #ced4da; gap: 5px; }
 .profile-btn { flex: 1; padding: 12px 10px; border: none; background: transparent; border-radius: 6px; font-weight: 700; font-size: 13px; color: #6c757d; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Inter', sans-serif;}
@@ -96,7 +104,7 @@ footer { background-color: #1a1a1a; color: #ffffff; text-align: center; padding:
 
 #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
 .toast { background: #212529; color: #fff; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-weight: 600; font-size: 14px; opacity: 0; transform: translateX(100%); animation: slideIn 0.4s forwards; }
-.toast.error { border-left: 5px solid #cc0000; }
+.toast.error { border-left: 5px solid #cc0000 !important; }
 @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
 @keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } }
 
