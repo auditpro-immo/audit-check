@@ -45,10 +45,6 @@ function changerProfilInterne(profil) {
         document.getElementById('form-title').innerText = "Configuration de l'analyse";
         document.getElementById('nav-pro').style.display = "none";
     }
-    
-    if(donneesAudit) {
-        afficherEcran(); 
-    }
 }
 
 document.getElementById('logoUploadInput').addEventListener('change', function(event) {
@@ -121,14 +117,13 @@ function sauvegarderParametresPro() {
     
     appliquerCouleurMarqueBlanche();
     
-    if(donneesAudit) {
-        afficherEcran(); 
-    }
+    // Si l'écran des résultats est ouvert, on met à jour les boutons (ex: "Ouvrir", "PDF")
+    chargerHistorique(); 
     
     showToast("Paramètres Agence sauvegardés localement avec succès !");
 }
 
-// CORRECTION DU BUG : REINITIALISATION TOTALE EN DIRECT
+// CORRECTION : LA REINITIALISATION S'APPLIQUE EN DIRECT
 function reinitialiserMarqueBlanche() {
     localStorage.removeItem('auditpro_agence_nom');
     localStorage.removeItem('auditpro_agence_couleur');
@@ -143,13 +138,14 @@ function reinitialiserMarqueBlanche() {
     document.getElementById('logo-preview').style.display = 'none';
     document.getElementById('logo-preview').src = '';
     
-    appliquerCouleurMarqueBlanche(); // Met à jour les boutons, la navbar, etc.
+    appliquerCouleurMarqueBlanche();
+    chargerHistorique(); // Remet les boutons de l'historique en vert
     
     if(donneesAudit) {
-        afficherEcran(); // Met à jour le rapport à l'écran
+        afficherEcran(); // Recharge les couleurs dans le rapport à l'écran
     }
     
-    showToast("L'interface a retrouvé ses couleurs par défaut.");
+    showToast("L'interface a retrouvé ses paramètres par défaut.");
 }
 
 function accepterCookies() {
@@ -170,18 +166,23 @@ function chargerHistorique() {
         return;
     }
     
+    // Ajout des boutons clairs pour "Voir" ou "Télécharger PDF"
     historique.reverse().forEach((dossier, index) => {
         let realIndex = historique.length - 1 - index;
         historiqueTable.innerHTML += `
-            <tr class="history-row" onclick="chargerDossierHistorique(${realIndex})">
+            <tr class="history-row">
                 <td>${dossier.date}</td>
                 <td><strong>${dossier.ville}</strong></td>
                 <td>${formatNumber(dossier.prixInitial)} €</td>
-                <td><button class="btn-solid btn-dynamic-color" style="padding: 6px 12px; font-size: 11px; box-shadow:none; border:none; color:#0b1a14;">Ouvrir</button></td>
+                <td>
+                    <div style="display:flex; gap:5px;">
+                        <button class="btn-voir" onmouseover="this.style.color='${agenceCouleur}'; this.style.borderColor='${agenceCouleur}'" onmouseout="this.style.color='#0b1a14'; this.style.borderColor='#ced4da'" onclick="chargerDossierHistorique(${realIndex})">👁️ Voir</button>
+                        <button class="btn-pdf" style="background-color: ${agenceCouleur}; color: #fff;" onclick="telechargerDirect(${realIndex})">↓ PDF</button>
+                    </div>
+                </td>
             </tr>
         `;
     });
-    appliquerCouleurMarqueBlanche();
 }
 
 function ajouterAuHistorique(ville, prixInitial, donneesCompletes) {
@@ -214,7 +215,19 @@ function chargerDossierHistorique(index) {
     document.getElementById('result-wrapper').style.display = "block";
     document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
     afficherEcran();
-    showToast("Dossier chargé depuis l'historique.");
+    showToast("Dossier chargé à l'écran.");
+}
+
+function telechargerDirect(index) {
+    const historique = JSON.parse(localStorage.getItem('auditpro_historique_v2')) || [];
+    const dossier = historique[index];
+    
+    donneesAudit = dossier.data;
+    idRapport = dossier.id;
+    loyerMensuelSaisi = dossier.loyer || 0;
+    
+    // Régénère le PDF en tâche de fond sans afficher
+    exporterPDF();
 }
 
 function viderHistorique() {
@@ -343,7 +356,7 @@ async function envoyer() {
         "Lecture et structuration du document PDF...",
         "Recherche de données réglementaires...",
         "Calcul des devis moyens pour le département...",
-        "Génération de l'argumentaire stratégique..."
+        "Génération de la synthèse d'évaluation..."
     ];
     let msgIndex = 0;
     const textElement = document.getElementById('loading-text');
@@ -406,7 +419,7 @@ function afficherEcran() {
         </div>`;
     }
 
-    // ON SUPPRIME DEFINITIVEMENT LES ONGLETS STRATEGIE ET ANNONCE POUR GARDER UN OUTIL 100% FACTUEL.
+    // ON CONSERVE UNIQUEMENT L'APPROCHE FACTUELLE
     let html = `
     <div style="border-bottom: 3px solid #0b1a14; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
         <div>
@@ -460,7 +473,7 @@ function afficherEcran() {
                 <tr style="border-bottom: 1px solid #ecf0f1;">
                     <td style="padding: 15px; border-left: 4px solid ${a.cout > 0 ? '#cc0000' : agenceCouleur};"><b>${a.titre}</b></td>
                     <td style="padding: 15px; color: ${a.cout > 0 ? '#cc0000' : '#000000'}; font-weight: bold; text-align: center;">${a.cout > 0 ? 'ANOMALIE' : 'CONFORME'}</td>
-                    <td style="padding: 15px; font-size: 13px; color: #333; line-height: 1.5;"><b>Impact :</b> ${a.detail}<br>${a.cout > 0 ? `<b>Action requise :</b> ${a.action}` : ''}</td>
+                    <td style="padding: 15px; font-size: 13px; color: #333; line-height: 1.5;"><b>Constat :</b> ${a.detail}<br>${a.cout > 0 ? `<b>Action requise :</b> ${a.action}` : ''}</td>
                     <td style="padding: 15px; font-weight:bold; text-align: right; font-size: 16px;">${a.cout > 0 ? `-${formatNumber(a.cout)} €` : '0 €'}</td>
                 </tr>`).join('')}
             </table>
@@ -503,11 +516,11 @@ function afficherEcran() {
     }
 }
 
-// LE NOUVEAU PDF : DESIGN "CABINET DE CONSEIL" 100% PRO
+// LE NOUVEAU PDF : STYLE "CABINET DE CONSEIL" - EPURE, SANS FOND VERT FLASHY
 function exporterPDF() {
     if (!donneesAudit) return;
     const btn = document.getElementById('btnExport');
-    btn.innerText = "Édition du PDF en cours...";
+    if(btn) btn.innerText = "Édition du PDF en cours...";
     
     let prixInitFormate = formatNumber(document.getElementById('prixInitial').value.replace(/\s+/g, '')) + ' €';
     let decoteFormate = '-' + formatNumber(donneesAudit.total_decote) + ' €';
@@ -517,37 +530,38 @@ function exporterPDF() {
         [
             { text: 'DOMAINE CONTRÔLÉ', style: 'tableHeader' },
             { text: 'ÉTAT', style: 'tableHeader', alignment: 'center' },
-            { text: 'DÉTAILS & PRÉCONISATIONS', style: 'tableHeader' },
+            { text: 'DÉTAILS TECHNIQUES', style: 'tableHeader' },
             { text: 'BUDGET', style: 'tableHeader', alignment: 'right' }
         ]
     ];
 
-    donneesAudit.diagnostics.forEach(a => {
+    donneesAudit.diagnostics.forEach((a, index) => {
         let isAnomalie = a.cout > 0;
+        let rowColor = (index % 2 === 0) ? '#fbfbfb' : '#ffffff'; // Alternance gris très clair et blanc
+        
         tableBody.push([
-            { text: a.titre, bold: true, fontSize: 10, color: '#0b1a14' },
-            { text: isAnomalie ? 'ANOMALIE' : 'CONFORME', bold: true, fontSize: 9, color: isAnomalie ? '#cc0000' : '#00d632', alignment: 'center' },
-            { text: `Constat : ${a.detail}\n` + (isAnomalie ? `Action requise : ${a.action}` : ''), fontSize: 9, lineHeight: 1.4, color: '#444444' },
-            { text: isAnomalie ? '-' + formatNumber(a.cout) + ' €' : '0 €', bold: true, fontSize: 11, color: isAnomalie ? '#cc0000' : '#0b1a14', alignment: 'right' }
+            { text: a.titre, bold: true, fontSize: 10, color: '#1a1a1a', fillColor: rowColor },
+            { text: isAnomalie ? 'ANOMALIE' : 'CONFORME', bold: true, fontSize: 9, color: isAnomalie ? '#cc0000' : '#4a4a4a', alignment: 'center', fillColor: rowColor },
+            { text: `Constat : ${a.detail}\n` + (isAnomalie ? `Action requise : ${a.action}` : ''), fontSize: 9, lineHeight: 1.3, color: '#4a4a4a', fillColor: rowColor },
+            { text: isAnomalie ? '-' + formatNumber(a.cout) + ' €' : '0 €', bold: true, fontSize: 11, color: isAnomalie ? '#cc0000' : '#1a1a1a', alignment: 'right', fillColor: rowColor }
         ]);
     });
 
-    // LE LOGO EST PARFAITEMENT CADRÉ AVEC LA FONCTION "fit"
+    // LOGO CADRÉ PARFAITEMENT (fit)
     let headerPDF = [];
     if(agenceLogoBase64) {
-        headerPDF.push({ image: agenceLogoBase64, fit: [180, 60], alignment: 'center', margin: [0, 0, 0, 20] });
+        headerPDF.push({ image: agenceLogoBase64, fit: [150, 50], alignment: 'left', margin: [0, 0, 0, 20] });
     } else {
-        headerPDF.push({ text: agenceNom.toUpperCase(), fontSize: 26, bold: true, color: agenceCouleur, alignment: 'center', margin: [0, 0, 0, 20], letterSpacing: 1 });
+        headerPDF.push({ text: agenceNom.toUpperCase(), fontSize: 24, bold: true, color: agenceCouleur, alignment: 'left', margin: [0, 0, 0, 20], letterSpacing: 1 });
     }
-    headerPDF.push({ text: 'RAPPORT D\'ANALYSE TECHNIQUE & FINANCIÈRE', fontSize: 14, color: '#0b1a14', bold:true, alignment: 'center', margin: [0, 0, 0, 40] });
-
+    
     let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
     let chartBlock = [];
     if (anomalies.length > 0) {
         let chartCanvas = document.getElementById('coutChart');
         if (chartCanvas) {
             chartBlock = [
-                { text: 'RÉPARTITION DU BUDGET TRAVAUX', fontSize: 11, bold: true, alignment: 'center', color: '#0b1a14', margin: [0, 30, 0, 15] },
+                { text: 'RÉPARTITION DU BUDGET TRAVAUX', fontSize: 11, bold: true, alignment: 'center', color: '#1a1a1a', margin: [0, 30, 0, 15] },
                 { image: chartCanvas.toDataURL('image/png', 1.0), fit: [200, 200], alignment: 'center', margin: [0, 0, 0, 30] }
             ];
         }
@@ -561,12 +575,12 @@ function exporterPDF() {
         let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
         
         rentaBlock = [
-            { text: '2. PERFORMANCE RENDEMENT LOCATIF', style: 'sectionTitle', color: agenceCouleur, margin: [0, 20, 0, 10] },
+            { text: '2. PERFORMANCE LOCATIVE ESTIMÉE', style: 'sectionTitle', margin: [0, 20, 0, 10] },
             {
                 table: {
                     widths: ['*', '*', '*'],
                     body: [
-                        [ { text: 'Loyer Annuel Théorique', style: 'kpiHeader' }, { text: 'Rendement Brut', style: 'kpiHeader' }, { text: 'Rendement Net Après Travaux', style: 'kpiHeader' } ],
+                        [ { text: 'Loyer Annuel', style: 'kpiHeader' }, { text: 'Rendement Brut', style: 'kpiHeader' }, { text: 'Rendement Net (Post-Travaux)', style: 'kpiHeader' } ],
                         [ { text: formatNumber(loyerMensuelSaisi * 12) + ' €', style: 'kpiValue' }, { text: rentaInitiale.toFixed(2) + ' %', style: 'kpiValue' }, { text: rentaFinale.toFixed(2) + ' %', style: 'kpiValueNet', color: agenceCouleur } ]
                     ]
                 },
@@ -577,27 +591,29 @@ function exporterPDF() {
 
     let docDefinition = {
         pageSize: 'A4',
-        pageMargins: [ 40, 70, 40, 60 ],
+        pageMargins: [ 40, 60, 40, 60 ],
         header: function(currentPage) {
             if (currentPage > 1) {
                 return {
                     columns: [
-                        { text: agenceNom.toUpperCase() + ' - DOSSIER TECHNIQUE', bold: true, color: agenceCouleur, fontSize: 10 },
+                        { text: agenceNom.toUpperCase() + ' - DOSSIER TECHNIQUE', bold: true, color: '#888', fontSize: 9 },
                         { text: 'Réf. ' + idRapport, alignment: 'right', color: '#888', fontSize: 9 }
-                    ], margin: [40, 25, 40, 0]
+                    ], margin: [40, 20, 40, 0]
                 };
             }
         },
         footer: function(currentPage, pageCount) {
             return {
                 columns: [
-                    { text: 'Rapport d\'analyse financière macro-économique standardisé', fontSize: 8, color: '#999' },
-                    { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#999' }
+                    { text: 'Rapport d\'analyse financière macro-économique standardisé', fontSize: 8, color: '#aaa' },
+                    { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#aaa' }
                 ], margin: [40, 20, 40, 0]
             };
         },
         content: [
             ...headerPDF,
+            { text: 'RAPPORT D\'ANALYSE TECHNIQUE & FINANCIÈRE', fontSize: 16, color: '#1a1a1a', bold:true, alignment: 'center', margin: [0, 10, 0, 30] },
+            
             {
                 table: {
                     widths: ['50%', '50%'],
@@ -611,7 +627,7 @@ function exporterPDF() {
                 layout: 'lightHorizontalLines', margin: [0, 0, 0, 40]
             },
             
-            { text: '1. SYNTHÈSE DES VALORISATIONS', style: 'sectionTitle', color: agenceCouleur },
+            { text: '1. SYNTHÈSE DES VALORISATIONS', style: 'sectionTitle' },
             {
                 table: {
                     widths: ['*', '*', '*'],
@@ -625,46 +641,48 @@ function exporterPDF() {
             },
             
             {
-                table: { widths: ['*'], body: [ [ { stack: [ { text: 'NOTE MACRO-ÉCONOMIQUE LOCALE', fontSize: 9, bold: true, color: '#0b1a14', margin: [0, 0, 0, 4] }, { text: donneesAudit.impact_marche, fontSize: 9, color: '#495057', lineHeight: 1.4 } ], padding: 10 } ] ] },
-                layout: { hLineWidth: () => 1, vLineWidth: () => 1, hLineColor: () => '#ced4da', vLineColor: () => '#ced4da' }, margin: [0, 0, 0, 25]
+                table: { widths: ['*'], body: [ [ { stack: [ { text: 'NOTE MACRO-ÉCONOMIQUE LOCALE', fontSize: 9, bold: true, color: '#1a1a1a', margin: [0, 0, 0, 4] }, { text: donneesAudit.impact_marche, fontSize: 9, color: '#4a4a4a', lineHeight: 1.4 } ], padding: 10 } ] ] },
+                layout: { hLineWidth: () => 1, vLineWidth: () => 1, hLineColor: () => '#e0e0e0', vLineColor: () => '#e0e0e0' }, margin: [0, 0, 0, 25]
             },
             
             ...rentaBlock,
             ...chartBlock,
             
-            { text: '3. INVENTAIRE TECHNIQUE DÉTAILLÉ (DDT)', style: 'sectionTitle', color: agenceCouleur, margin: [0, 20, 0, 10], pageBreak: chartBlock.length > 0 ? 'before' : 'auto' },
+            { text: '3. INVENTAIRE TECHNIQUE DÉTAILLÉ (DDT)', style: 'sectionTitle', margin: [0, 20, 0, 10], pageBreak: chartBlock.length > 0 ? 'before' : 'auto' },
             {
                 table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody },
                 layout: { 
-                    hLineWidth: function (i, node) { return (i === 0 || i === 1 || i === node.table.body.length) ? 2 : 1; }, 
+                    hLineWidth: function (i, node) { return (i === 0 || i === 1 || i === node.table.body.length) ? 1 : 1; }, 
                     vLineWidth: function (i, node) { return 0; }, 
-                    hLineColor: function (i, node) { return (i === 0 || i === 1 || i === node.table.body.length) ? '#0b1a14' : '#eeeeee'; }, 
-                    paddingTop: function(i, node) { return 12; }, 
-                    paddingBottom: function(i, node) { return 12; } 
+                    hLineColor: function (i, node) { return (i === 0 || i === node.table.body.length) ? '#1a1a1a' : '#eeeeee'; }, 
+                    paddingTop: function(i, node) { return 10; }, 
+                    paddingBottom: function(i, node) { return 10; } 
                 }
             },
             
-            { text: 'CLAUSE DE NON-SUBSTITUTION LÉGALE', style: 'footerTitle', margin: [0, 40, 0, 5] },
-            { text: 'Ce document constitue une simulation statistique à valeur d\'aide indicative pour une transaction équitable. Les chiffrages ne se substituent pas à la passation de devis contradictoires par des corps de métier certifiés RGE.', style: 'footerText' }
+            { text: 'MÉTHODOLOGIE ET CLAUSE DE NON-SUBSTITUTION', style: 'footerTitle', margin: [0, 40, 0, 5] },
+            { text: 'Ce document constitue une évaluation macro-économique basée sur l\'analyse sémantique du Dossier de Diagnostic Technique (DDT). Les coûts sont indexés sur les moyennes du bâtiment applicables au code postal renseigné. Cette simulation statistique a valeur d\'aide indicative pour structurer une transaction immobilière. Les montants chiffrés ne se substituent en aucun cas à la passation de devis contradictoires établis par des corps de métier certifiés RGE.', style: 'footerText' }
         ],
         styles: {
-            coverTableTitle: { fontSize: 11, bold: true, color: '#ffffff', alignment: 'center', fillColor: '#0b1a14', margin: [0, 6, 0, 6] },
-            coverLabel: { fontSize: 10, bold: true, color: '#555', alignment: 'right', margin: [0, 4, 10, 4] },
-            coverValue: { fontSize: 10, color: '#0b1a14', margin: [10, 4, 0, 4], bold: true },
-            sectionTitle: { fontSize: 14, bold: true, margin: [0, 25, 0, 15], textTransform: 'uppercase' },
-            kpiHeader: { alignment: 'center', fontSize: 10, color: '#666', bold: true, margin: [0, 5, 0, 5] },
-            kpiHeaderRed: { alignment: 'center', fontSize: 10, color: '#cc0000', bold: true, margin: [0, 5, 0, 5] },
-            kpiValue: { alignment: 'center', fontSize: 18, bold: true, color: '#0b1a14', margin: [0, 10, 0, 10] },
-            kpiValueRed: { alignment: 'center', fontSize: 18, bold: true, color: '#cc0000', margin: [0, 10, 0, 10] },
+            coverTableTitle: { fontSize: 10, bold: true, color: '#1a1a1a', alignment: 'center', margin: [0, 6, 0, 6], letterSpacing: 1 },
+            coverLabel: { fontSize: 9, bold: true, color: '#888', alignment: 'right', margin: [0, 4, 10, 4] },
+            coverValue: { fontSize: 9, color: '#1a1a1a', margin: [10, 4, 0, 4], bold: true },
+            sectionTitle: { fontSize: 13, bold: true, color: '#1a1a1a', margin: [0, 25, 0, 15], textTransform: 'uppercase' },
+            kpiHeader: { alignment: 'center', fontSize: 9, color: '#888', bold: true, margin: [0, 5, 0, 5], textTransform: 'uppercase' },
+            kpiHeaderRed: { alignment: 'center', fontSize: 9, color: '#cc0000', bold: true, margin: [0, 5, 0, 5], textTransform: 'uppercase' },
+            kpiValue: { alignment: 'center', fontSize: 16, bold: true, color: '#1a1a1a', margin: [0, 10, 0, 10] },
+            kpiValueRed: { alignment: 'center', fontSize: 16, bold: true, color: '#cc0000', margin: [0, 10, 0, 10] },
             kpiValueNet: { alignment: 'center', fontSize: 20, bold: true, margin: [0, 10, 0, 10] },
-            tableHeader: { bold: true, fontSize: 10, color: '#ffffff', fillColor: '#0b1a14', margin: [0, 4, 0, 4] },
-            footerTitle: { fontSize: 9, bold: true, color: '#0b1a14' },
-            footerText: { fontSize: 8, color: '#888', alignment: 'justify', lineHeight: 1.3 }
+            tableHeader: { bold: true, fontSize: 9, color: '#1a1a1a', margin: [0, 4, 0, 8] },
+            footerTitle: { fontSize: 9, bold: true, color: '#1a1a1a' },
+            footerText: { fontSize: 8, color: '#666', alignment: 'justify', lineHeight: 1.4 }
         }
     };
 
     pdfMake.createPdf(docDefinition).download(agenceNom + '_Bilan_Technique_' + idRapport + '.pdf');
-    setTimeout(() => { btn.innerText = "Télécharger le rapport PDF Officiel"; }, 1500);
+    if(btn) {
+        setTimeout(() => { btn.innerText = "Télécharger le rapport PDF Officiel"; }, 1500);
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -683,6 +701,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.querySelectorAll('.price-input').forEach(input => {
         input.addEventListener('input', formatInputNumber);
+    });
+
+    const avisSauvegardes = JSON.parse(localStorage.getItem('auditpro_avis')) || [];
+    const listeAvis = document.getElementById('listeAvis');
+    avisSauvegardes.forEach(avis => {
+        const nouvelAvis = document.createElement('div');
+        nouvelAvis.className = 'avis-card';
+        nouvelAvis.innerHTML = `<div style="color: #00d632; font-size: 20px; margin-bottom: 10px;">★★★★★</div><p style="font-size: 14px; font-style: italic; color: #495057;">"${avis.texte}"</p><div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- ${avis.nom}</div>`;
+        listeAvis.prepend(nouvelAvis);
     });
 
     const liensMenu = document.querySelectorAll('nav a[href^="#"]');
