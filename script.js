@@ -4,28 +4,50 @@ let chartInstance = null;
 let loyerMensuelSaisi = 0;
 let profilActuel = "particulier";
 
+// VARIABLES MARQUE BLANCHE
 let agenceNom = localStorage.getItem('auditpro_agence_nom') || 'AuditPro';
 let agenceCouleur = localStorage.getItem('auditpro_agence_couleur') || '#00d632';
 let agenceLogoBase64 = localStorage.getItem('auditpro_agence_logo') || null;
 
 function entrerSurLeSite(profil) {
-    document.getElementById('welcome-portal').style.display = 'none';
-    document.getElementById('main-app').style.display = 'block';
-    setTimeout(() => { document.getElementById('main-app').style.opacity = '1'; }, 50);
-    changerProfilInterne(profil);
+    const portal = document.getElementById('welcome-portal');
+    const mainApp = document.getElementById('main-app');
+    
+    portal.style.opacity = '0';
+    setTimeout(() => {
+        portal.style.display = 'none';
+        mainApp.style.display = 'block';
+        setTimeout(() => { mainApp.style.opacity = '1'; }, 50);
+        changerProfilInterne(profil);
+    }, 500);
 }
 
 function changerProfilInterne(profil) {
     profilActuel = profil;
-    document.querySelectorAll('.profile-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById('btn-' + profil).classList.add('active');
+    document.getElementById('btn-particulier').classList.remove('active');
+    document.getElementById('btn-pro').classList.remove('active');
     
+    let btnActif = document.getElementById('btn-' + (profil === 'particulier' ? 'particulier' : 'pro'));
+    btnActif.classList.add('active');
+    btnActif.style.borderColor = agenceCouleur;
+    btnActif.style.color = agenceCouleur;
+
     if(profil === "professionnel") {
-        document.getElementById('nav-pro').style.display = 'inline-block';
         document.getElementById('hero-badge').innerText = "Espace Professionnels (B2B)";
+        document.getElementById('hero-title').innerText = "Justifiez vos estimations et sécurisez vos transactions.";
+        document.getElementById('hero-desc').innerText = "Notre technologie d'analyse traduit instantanément les PDF de diagnostics en rapports chiffrés. Un outil pensé pour rassurer vos acquéreurs et obtenir l'exclusivité auprès des vendeurs.";
+        document.getElementById('form-title').innerText = "Simulateur pour les agences";
+        document.getElementById('nav-pro').style.display = "inline-block";
     } else {
-        document.getElementById('nav-pro').style.display = 'none';
         document.getElementById('hero-badge').innerText = "Espace Particulier (B2C)";
+        document.getElementById('hero-title').innerText = "Sécurisez votre achat en chiffrant les travaux cachés.";
+        document.getElementById('hero-desc').innerText = "Notre outil analyse l'ensemble des diagnostics obligatoires de la maison que vous visitez. Obtenez en 2 minutes le vrai coût des remises aux normes.";
+        document.getElementById('form-title').innerText = "Configuration de l'analyse";
+        document.getElementById('nav-pro').style.display = "none";
+    }
+    
+    if(donneesAudit) {
+        afficherEcran(); 
     }
 }
 
@@ -35,110 +57,153 @@ document.getElementById('logoUploadInput').addEventListener('change', function(e
         const reader = new FileReader();
         reader.onload = function(e) {
             agenceLogoBase64 = e.target.result;
+            document.getElementById('logo-preview').src = agenceLogoBase64;
+            document.getElementById('logo-preview').style.display = 'block';
         }
         reader.readAsDataURL(file);
     }
 });
 
 function appliquerCouleurMarqueBlanche() {
+    document.getElementById('header-logo-text').innerText = agenceNom === 'AuditPro' ? 'Audit' : agenceNom;
+    document.getElementById('header-logo-color').innerText = agenceNom === 'AuditPro' ? 'Pro' : 'Immo';
     document.getElementById('header-logo-color').style.color = agenceCouleur;
-    document.querySelectorAll('.btn-dynamic-color').forEach(btn => btn.style.backgroundColor = agenceCouleur);
-    document.querySelectorAll('.text-dynamic-color').forEach(txt => txt.style.color = agenceCouleur);
-    document.querySelectorAll('.border-dynamic-color').forEach(b => b.style.borderColor = agenceCouleur);
-    document.querySelector('.form-container').style.borderTopColor = agenceCouleur;
-    document.querySelectorAll('.btn-pdf').forEach(btn => btn.style.backgroundColor = agenceCouleur);
+    
+    document.querySelectorAll('.btn-dynamic-color').forEach(btn => { 
+        btn.style.backgroundColor = agenceCouleur; 
+        btn.style.boxShadow = `0 4px 15px ${agenceCouleur}40`;
+    });
+    
+    document.querySelectorAll('.text-dynamic-color').forEach(txt => { txt.style.color = agenceCouleur; });
+    document.querySelectorAll('.border-dynamic-color').forEach(b => { b.style.borderTopColor = agenceCouleur; });
+    document.querySelectorAll('.border-left-dynamic-color').forEach(b => { b.style.borderLeftColor = agenceCouleur; });
+    document.querySelectorAll('.border-dynamic-color-top').forEach(b => { b.style.borderTopColor = agenceCouleur; });
+    
+    document.querySelectorAll('nav a').forEach(a => {
+        a.style.color = '#fff';
+        a.style.borderBottomColor = 'transparent';
+    });
+    const lienActif = document.querySelector('nav a.active');
+    if (lienActif) {
+        lienActif.style.color = agenceCouleur;
+        lienActif.style.borderBottom = `2px solid ${agenceCouleur}`;
+    }
+    
+    document.querySelectorAll('.profile-btn').forEach(btn => {
+        btn.style.borderColor = 'transparent';
+        btn.style.color = '#6c757d';
+    });
+    const activeBtn = document.querySelector('.profile-btn.active');
+    if(activeBtn) {
+        activeBtn.style.borderColor = agenceCouleur;
+        activeBtn.style.color = agenceCouleur;
+    }
+    
+    const dropIcon = document.querySelector('.drop-icon');
+    if(dropIcon) dropIcon.style.color = agenceCouleur;
+    
+    // Met à jour la couleur des boutons PDF dans l'historique
+    document.querySelectorAll('.btn-pdf').forEach(btn => {
+        btn.style.backgroundColor = agenceCouleur;
+    });
 }
 
 function sauvegarderParametresPro() {
-    if (!localStorage.getItem('auditpro_cookies')) return showToast("Acceptez les cookies pour sauvegarder.", "error");
-    agenceNom = document.getElementById('nomAgenceInput').value.trim() || "AuditPro";
-    agenceCouleur = document.getElementById('couleurAgenceInput').value;
+    if (!localStorage.getItem('auditpro_cookies')) {
+        return showToast("Veuillez accepter la sauvegarde locale (bandeau en bas) pour activer cette fonction.", "error");
+    }
+    const inputNom = document.getElementById('nomAgenceInput').value.trim();
+    const inputCouleur = document.getElementById('couleurAgenceInput').value;
+    
+    agenceNom = inputNom !== "" ? inputNom : "AuditPro";
+    agenceCouleur = inputCouleur;
+    
     localStorage.setItem('auditpro_agence_nom', agenceNom);
     localStorage.setItem('auditpro_agence_couleur', agenceCouleur);
-    if(agenceLogoBase64) localStorage.setItem('auditpro_agence_logo', agenceLogoBase64);
+    if(agenceLogoBase64) {
+        localStorage.setItem('auditpro_agence_logo', agenceLogoBase64);
+    }
+    
     appliquerCouleurMarqueBlanche();
-    chargerHistorique(); 
-    showToast("Paramètres sauvegardés !");
+    chargerHistorique(); // Mets à jour les couleurs des boutons du tableau
+    
+    if(donneesAudit) {
+        afficherEcran(); // Recharge les couleurs dans le rapport actif
+    }
+    
+    showToast("Paramètres Agence sauvegardés localement avec succès !");
 }
 
 function reinitialiserMarqueBlanche() {
-    localStorage.clear();
+    localStorage.removeItem('auditpro_agence_nom');
+    localStorage.removeItem('auditpro_agence_couleur');
+    localStorage.removeItem('auditpro_agence_logo');
+    
     agenceNom = 'AuditPro';
-    agenceCouleur = '#00d632'; 
+    agenceCouleur = '#00d632'; // Le vert de base
     agenceLogoBase64 = null;
+    
     document.getElementById('nomAgenceInput').value = '';
     document.getElementById('couleurAgenceInput').value = '#00d632';
-    appliquerCouleurMarqueBlanche();
-    chargerHistorique();
-    showToast("Réinitialisation effectuée.");
+    document.getElementById('logo-preview').style.display = 'none';
+    document.getElementById('logo-preview').src = '';
+    
+    appliquerCouleurMarqueBlanche(); // Met à jour l'interface immédiatement
+    chargerHistorique(); // Met à jour les couleurs des boutons du tableau
+    
+    if(donneesAudit) {
+        afficherEcran(); // Met à jour le rapport à l'écran
+    }
+    
+    showToast("L'interface a retrouvé ses couleurs par défaut.");
 }
 
 function accepterCookies() {
     localStorage.setItem('auditpro_cookies', 'true');
     document.getElementById('cookie-banner').style.display = 'none';
+    showToast("Mode de sauvegarde locale activé.");
 }
 
-// CORRECTION ABSOLUE DE L'HISTORIQUE (Les boutons fonctionnent à 100%)
 function chargerHistorique() {
-    const table = document.getElementById('historiqueTableBody');
-    if(!table) return;
-    const hist = JSON.parse(localStorage.getItem('auditpro_hist_v5')) || [];
-    table.innerHTML = '';
+    const historiqueTable = document.getElementById('historiqueTableBody');
+    if(!historiqueTable) return;
     
-    if(hist.length === 0) {
-        table.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #666; padding: 20px;">Aucun dossier généré.</td></tr>';
+    const historique = JSON.parse(localStorage.getItem('auditpro_historique_v2')) || [];
+    historiqueTable.innerHTML = '';
+    
+    if(historique.length === 0) {
+        historiqueTable.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #666; padding: 20px;">Aucun dossier généré pour le moment.</td></tr>';
         return;
     }
     
-    hist.reverse().forEach((dossier, index) => {
-        let realIndex = hist.length - 1 - index;
-        table.innerHTML += `
+    // Ajout des boutons clairs pour "Voir" ou "Télécharger PDF"
+    historique.reverse().forEach((dossier, index) => {
+        let realIndex = historique.length - 1 - index;
+        historiqueTable.innerHTML += `
             <tr class="history-row">
                 <td>${dossier.date}</td>
                 <td><strong>${dossier.ville}</strong></td>
                 <td>${formatNumber(dossier.prixInitial)} €</td>
                 <td style="text-align: right;">
-                    <button class="btn-voir" onclick="voirHistorique(${realIndex})">Voir</button>
-                    <button class="btn-pdf" style="background-color:${agenceCouleur}; color:#fff;" onclick="pdfHistorique(${realIndex})">PDF</button>
+                    <div style="display:flex; justify-content:flex-end; gap:5px;">
+                        <button class="btn-voir" onmouseover="this.style.color='${agenceCouleur}'; this.style.borderColor='${agenceCouleur}'" onmouseout="this.style.color='#0b1a14'; this.style.borderColor='#ced4da'" onclick="voirPDFDirect(event, ${realIndex})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Voir
+                        </button>
+                        <button class="btn-pdf" style="background-color: ${agenceCouleur}; color: #fff;" onclick="telechargerDirect(event, ${realIndex})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> PDF
+                        </button>
+                    </div>
                 </td>
             </tr>
         `;
     });
 }
 
-// OUVRE LE DOSSIER DANS L'ECRAN (Onglet Le Diagnostic)
-window.voirHistorique = function(index) {
-    const hist = JSON.parse(localStorage.getItem('auditpro_hist_v5')) || [];
-    const dossier = hist[index];
-    donneesAudit = dossier.data;
-    idRapport = dossier.id;
-    loyerMensuelSaisi = dossier.loyer || 0;
-    
-    document.getElementById('prixInitial').value = formatNumber(dossier.prixInitial);
-    if(loyerMensuelSaisi > 0) document.getElementById('loyerMensuel').value = formatNumber(loyerMensuelSaisi);
-    
-    document.querySelector('nav a[href="#audit"]').click();
-    document.getElementById('result-wrapper').style.display = "block";
-    document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
-    afficherEcran();
-    showToast("Dossier chargé avec succès.");
-};
-
-// TELECHARGE LE DOSSIER DIRECTEMENT EN PDF
-window.pdfHistorique = function(index) {
-    const hist = JSON.parse(localStorage.getItem('auditpro_hist_v5')) || [];
-    const dossier = hist[index];
-    donneesAudit = dossier.data;
-    idRapport = dossier.id;
-    loyerMensuelSaisi = dossier.loyer || 0;
-    showToast("Génération du PDF en cours...");
-    exporterPDF('download');
-};
-
 function ajouterAuHistorique(ville, prixInitial, donneesCompletes) {
     if (!localStorage.getItem('auditpro_cookies')) return;
-    const hist = JSON.parse(localStorage.getItem('auditpro_hist_v5')) || [];
-    hist.push({
+    
+    const historique = JSON.parse(localStorage.getItem('auditpro_historique_v2')) || [];
+    historique.push({
         id: "AUDIT-" + Math.floor(Math.random() * 90000 + 10000),
         date: new Date().toLocaleDateString('fr-FR'),
         ville: ville,
@@ -146,15 +211,51 @@ function ajouterAuHistorique(ville, prixInitial, donneesCompletes) {
         data: donneesCompletes,
         loyer: loyerMensuelSaisi
     });
-    localStorage.setItem('auditpro_hist_v5', JSON.stringify(hist));
+    localStorage.setItem('auditpro_historique_v2', JSON.stringify(historique));
     chargerHistorique();
 }
 
+function chargerDossierHistorique(index) {
+    const historique = JSON.parse(localStorage.getItem('auditpro_historique_v2')) || [];
+    const dossier = historique[index];
+    
+    donneesAudit = dossier.data;
+    idRapport = dossier.id;
+    loyerMensuelSaisi = dossier.loyer || 0;
+    
+    document.getElementById('prixInitial').value = formatNumber(dossier.prixInitial);
+    if(loyerMensuelSaisi > 0) document.getElementById('loyerMensuel').value = formatNumber(loyerMensuelSaisi);
+    
+    document.getElementById('result-wrapper').style.display = "block";
+    document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
+    afficherEcran();
+}
+
+// ACTION : BOUTON VOIR (OUVRE LE PDF DIRECTEMENT)
+function voirPDFDirect(event, index) {
+    event.stopPropagation();
+    chargerDossierHistorique(index);
+    showToast("Ouverture du rapport PDF en cours...");
+    setTimeout(() => {
+        exporterPDF('open'); // Ouvre le PDF dans un nouvel onglet
+    }, 800);
+}
+
+// ACTION : BOUTON PDF (TÉLÉCHARGEMENT DIRECT)
+function telechargerDirect(event, index) {
+    event.stopPropagation();
+    chargerDossierHistorique(index); 
+    showToast("Génération du PDF en cours...");
+    setTimeout(() => {
+        exporterPDF('download'); // Génère le PDF en arrière plan
+    }, 800);
+}
+
 function viderHistorique() {
-    if(confirm("Êtes-vous sûr de vouloir supprimer tout l'historique ?")) {
-        localStorage.removeItem('auditpro_hist_v5');
+    if(confirm("Êtes-vous sûr de vouloir supprimer définitivement tout l'historique de cet appareil ?")) {
+        localStorage.removeItem('auditpro_historique_v2');
         chargerHistorique();
-        showToast("Historique effacé.");
+        showToast("Historique local effacé avec succès.");
     }
 }
 
@@ -162,7 +263,37 @@ const formatNumber = (num) => { return Number(num).toLocaleString('fr-FR').repla
 
 function formatInputNumber(e) {
     let value = e.target.value.replace(/\s+/g, '');
-    if (!isNaN(value) && value !== "") e.target.value = formatNumber(value);
+    if (!isNaN(value) && value !== "") {
+        e.target.value = formatNumber(value);
+    }
+}
+
+function animateValue(obj, start, end, duration, prefix = "") {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        const currentVal = Math.floor(easeProgress * (end - start) + start);
+        obj.innerHTML = prefix + formatNumber(currentVal) + " €";
+        if (progress < 1) { window.requestAnimationFrame(step); } 
+        else { obj.innerHTML = prefix + formatNumber(end) + " €"; }
+    };
+    window.requestAnimationFrame(step);
+}
+
+function animateValuePercent(obj, start, end, duration) {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        const currentVal = easeProgress * (end - start) + start;
+        obj.innerHTML = currentVal.toFixed(2) + " %";
+        if (progress < 1) { window.requestAnimationFrame(step); } 
+        else { obj.innerHTML = end.toFixed(2) + " %"; }
+    };
+    window.requestAnimationFrame(step);
 }
 
 function showToast(message, type = "success") {
@@ -170,9 +301,18 @@ function showToast(message, type = "success") {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     if(type === "success") { toast.style.borderLeftColor = agenceCouleur; }
+    else { toast.style.borderLeftColor = '#cc0000'; }
     toast.innerHTML = `<strong>${type === "success" ? "SUCCÈS :" : "ATTENTION :"}</strong> ${message}`;
     container.appendChild(toast);
-    setTimeout(() => { toast.remove(); }, 4000);
+    setTimeout(() => {
+        toast.style.animation = "fadeOut 0.4s forwards";
+        setTimeout(() => toast.remove(), 400);
+    }, 4000);
+}
+
+function copierScript(idElement) {
+    const texte = document.getElementById(idElement).innerText;
+    navigator.clipboard.writeText(texte).then(() => { showToast("Texte copié dans le presse-papier."); });
 }
 
 function switchReportTab(tabId) {
@@ -195,27 +335,30 @@ function lancerDemo() {
     document.getElementById('prixInitial').value = "450 000";
     document.getElementById('loyerMensuel').value = "1 200";
     document.getElementById('codePostal').value = "35000";
+    
     loyerMensuelSaisi = 1200;
     idRapport = "DEMO-PRO-" + Math.floor(Math.random() * 90000 + 10000);
     
     donneesAudit = {
         cp: "35000",
-        localisation_exacte: "Rennes Métropole",
-        impact_marche: "Secteur en tension. Majoration des coûts liée à la demande sur les artisans RGE.",
+        localisation_exacte: "Rennes (Secteur Ille-et-Vilaine)",
+        impact_marche: "Métropole régionale en forte croissance économique. La forte demande sur le locatif et le durcissement de la Loi Climat créent une tension sur les artisans certifiés RGE, justifiant un ajustement automatique des devis locaux à la hausse (+18%).",
         date_audit: new Date().toLocaleDateString('fr-FR'),
         prix_initial: 450000,
         total_decote: 28700,
         prix_net: 421300,
         analyse_secteur: "Indice de marché local : 1.18",
+        securite: "Vos données sont privées : Le PDF a été supprimé de nos serveurs.",
         diagnostics: [
-            {titre: "Électricité", cout: 4500, loi: "NF C 15-100", detail: "Défaut de mise à la terre.", action: "Mise en sécurité du tableau."},
-            {titre: "DPE", cout: 20000, loi: "Loi Climat", detail: "Logement classé F.", action: "Isolation et installation Pompe à Chaleur."},
-            {titre: "Amiante", cout: 4200, loi: "Santé Publique", detail: "Conduits en amiante-ciment.", action: "Retrait par société spécialisée."},
-            {titre: "Plomb", cout: 0, loi: "Santé Publique", detail: "Aucune trace.", action: "Aucune action."},
-            {titre: "Gaz", cout: 0, loi: "Sécurité", detail: "Installation étanche.", action: "Entretien annuel."}
+            {titre: "Électricité (Sécurité)", cout: 4500, loi: "Norme NF C 15-100", detail: "Défaut de mise à la terre ou matériel ancien identifié.", action: "Mise en sécurité du tableau électrique par un professionnel."},
+            {titre: "DPE (Énergie)", cout: 20000, loi: "Loi Climat & Résilience", detail: "Logement classé F (Passoire thermique). Pertes de chaleur majeures identifiées.", action: "Isolation des combles et installation d'une Pompe à Chaleur."},
+            {titre: "Amiante (Matériaux)", cout: 4200, loi: "Art. L1334-13", detail: "Présence de conduits en amiante-ciment dans la cave.", action: "Retrait et traitement des déchets par une société spécialisée."},
+            {titre: "Plomb (Peintures)", cout: 0, loi: "Art. L1334-1", detail: "Aucune trace de plomb au-dessus des seuils réglementaires détectée.", action: "Aucune intervention nécessaire sur les murs."},
+            {titre: "Gaz (Risque fuite)", cout: 0, loi: "Norme NF P 45-500", detail: "Installation étanche et valves de sécurité fonctionnelles.", action: "Entretien annuel classique de la chaudière suffisant."}
         ]
     };
     
+    showToast("Simulation de Démonstration générée avec succès.");
     document.getElementById('result-wrapper').style.display = "block";
     document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
     afficherEcran();
@@ -235,6 +378,19 @@ async function envoyer() {
     loyerMensuelSaisi = loyerInput;
     document.getElementById('loading-overlay').style.display = "flex";
 
+    const messagesIA = [
+        "Lecture et structuration du document PDF...",
+        "Recherche de données réglementaires...",
+        "Calcul des devis moyens pour le département...",
+        "Génération de la synthèse d'évaluation..."
+    ];
+    let msgIndex = 0;
+    const textElement = document.getElementById('loading-text');
+    const loadInterval = setInterval(() => {
+        textElement.innerText = messagesIA[msgIndex];
+        msgIndex = (msgIndex + 1) % messagesIA.length;
+    }, 1200);
+
     const formData = new FormData();
     formData.append("fichier", input.files[0]);
     formData.append("prix", prixInput);
@@ -247,14 +403,18 @@ async function envoyer() {
         donneesAudit.cp = cpInput;
         idRapport = "AUDIT-" + Math.floor(Math.random() * 90000 + 10000);
         
+        clearInterval(loadInterval);
         document.getElementById('loading-overlay').style.display = "none";
+        
         ajouterAuHistorique(donneesAudit.localisation_exacte, prixInput, donneesAudit);
 
+        showToast("Analyse effectuée avec succès.");
         document.getElementById('result-wrapper').style.display = "block";
         document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
         afficherEcran();
 
     } catch (e) {
+        clearInterval(loadInterval);
         document.getElementById('loading-overlay').style.display = "none";
         showToast("Erreur de traitement serveur.", "error");
     }
@@ -265,6 +425,70 @@ function afficherEcran() {
     let prixInitialClean = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
     if(prixInitialClean === 0 && donneesAudit.prix_initial > 0) prixInitialClean = donneesAudit.prix_initial;
     
+    let kpiRentabiliteHtml = "";
+    if (loyerMensuelSaisi > 0) {
+        let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitialClean) * 100;
+        let coutTotalReel = prixInitialClean + donneesAudit.total_decote;
+        let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
+
+        kpiRentabiliteHtml = `
+        <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-top: 30px; margin-bottom: 15px;">Performance Locative Estimée</h3>
+        <div class="kpi-grid">
+            <div class="kpi-box">
+                <div class="kpi-label">Loyer Annuel Théorique</div>
+                <div class="kpi-value" style="color: #0b1a14;" id="anim-loyer">0 €</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-label">Rendement Brut Hors Travaux</div>
+                <div class="kpi-value" id="anim-renta-brute">0.00 %</div>
+            </div>
+            <div class="kpi-box main" style="background: ${agenceCouleur}; color: #fff;">
+                <div class="kpi-label" style="color: #fff;">Rendement Net (Post-Travaux)</div>
+                <div class="kpi-value" id="anim-renta-nette">0.00 %</div>
+            </div>
+        </div>`;
+    }
+
+    let scriptNegoTxt = "";
+    let titreSectionNego = "";
+    let nomOnglet3 = "";
+    let defautsFormate = anomalies.length > 0 ? anomalies.map(a => "- " + a.titre).join('\n') : "- Aucun défaut technique majeur justifiant une décote.";
+    
+    // ONGLETS FACTUELS : DONNÉES BRUTES ET OBJECTIVES SEULEMENT
+    if (profilActuel === "particulier") {
+        nomOnglet3 = "3. Données d'Appui";
+        titreSectionNego = "Aide à la Décision (Acquéreur)";
+        scriptNegoTxt = `RÉSUMÉ FACTUEL POUR VOTRE DÉCISION :
+
+> VALEURS DE RÉFÉRENCE :
+- Prix affiché par le vendeur : ${formatNumber(prixInitialClean)} €
+- Total estimé des travaux de mise aux normes : ${formatNumber(donneesAudit.total_decote)} €
+- Juste valeur technique du bien : ${formatNumber(donneesAudit.prix_net)} €
+
+> JUSTIFICATION DES TRAVAUX :
+L'enveloppe de travaux s'appuie sur le rapport de diagnostic. Les points suivants nécessitent une mise en sécurité ou une remise aux normes :
+${defautsFormate}
+
+L'évaluation prend également en compte la zone de localisation (${donneesAudit.localisation_exacte}), ce qui permet de justifier la cohérence du budget travaux calculé.`;
+    } else {
+        nomOnglet3 = "3. Données d'Appui";
+        titreSectionNego = "Éléments Factuels pour la Transaction (Professionnel)";
+        scriptNegoTxt = `SYNTHÈSE FACTUELLE DU DOSSIER :
+
+> DONNÉES FINANCIÈRES :
+- Écart technique calculé : ${formatNumber(donneesAudit.total_decote)} €
+- Valeur nette recommandée pour positionnement : ${formatNumber(donneesAudit.prix_net)} €
+
+> POINTS TECHNIQUES MAJEURS (ISSU DU DDT) :
+${defautsFormate}
+
+> IMPACT DU MARCHÉ LOCAL (${donneesAudit.localisation_exacte}) :
+${donneesAudit.impact_marche}
+
+NOTE D'UTILISATION :
+Ces données constituent une base objective. Face au vendeur, elles justifient mathématiquement un ajustement du prix de présentation. Face à l'acquéreur, cette transparence permet d'anticiper le financement global et de sécuriser la vente.`;
+    }
+
     let html = `
     <div style="border-bottom: 3px solid #0b1a14; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
         <div>
@@ -279,6 +503,7 @@ function afficherEcran() {
     <div class="report-tabs">
         <button class="report-tab-btn active" onclick="switchReportTab('paneFinancier')" style="color: ${agenceCouleur}; border-bottom-color: ${agenceCouleur};">1. Synthèse Financière</button>
         <button class="report-tab-btn" onclick="switchReportTab('paneTechnique')">2. Bilan Technique (DDT)</button>
+        <button class="report-tab-btn" onclick="switchReportTab('paneStrategie')">${nomOnglet3}</button>
     </div>
     
     <div id="paneFinancier" class="report-pane active">
@@ -286,17 +511,18 @@ function afficherEcran() {
         <div class="kpi-grid">
             <div class="kpi-box">
                 <div class="kpi-label">Prix de vente initial</div>
-                <div class="kpi-value">${formatNumber(prixInitialClean)} €</div>
+                <div class="kpi-value" id="anim-prix-initial">0 €</div>
             </div>
             <div class="kpi-box">
                 <div class="kpi-label" style="color: #cc0000;">Enveloppe Travaux Globale</div>
-                <div class="kpi-value" style="color: #cc0000;">-${formatNumber(donneesAudit.total_decote)} €</div>
+                <div class="kpi-value" style="color: #cc0000;" id="anim-cout-travaux">-0 €</div>
             </div>
             <div class="kpi-box main" style="background-color: ${agenceCouleur};">
                 <div class="kpi-label" style="color: #fff;">Valeur Nette Recommandée</div>
-                <div class="kpi-value">${formatNumber(donneesAudit.prix_net)} €</div>
+                <div class="kpi-value" id="anim-prix-net">0 €</div>
             </div>
         </div>
+        ${kpiRentabiliteHtml}
         <div style="background: #f8f9fa; padding: 20px; border-radius: 6px; margin-top: 20px; border: 1px solid #ced4da; text-align: left;">
             <h4 style="margin: 0 0 8px 0; color: #0b1a14; text-transform: uppercase; font-size: 12px;">Contexte du secteur géographique</h4>
             <p style="margin: 0; font-size: 14px; color: #495057; line-height: 1.5;">${donneesAudit.impact_marche}</p>
@@ -317,14 +543,40 @@ function afficherEcran() {
                 <tr style="border-bottom: 1px solid #ecf0f1;">
                     <td style="padding: 15px; border-left: 4px solid ${a.cout > 0 ? '#cc0000' : agenceCouleur};"><b>${a.titre}</b></td>
                     <td style="padding: 15px; color: ${a.cout > 0 ? '#cc0000' : '#000000'}; font-weight: bold; text-align: center;">${a.cout > 0 ? 'ANOMALIE' : 'CONFORME'}</td>
-                    <td style="padding: 15px; font-size: 13px; color: #333; line-height: 1.5;"><b>Constat :</b> ${a.detail}<br>${a.cout > 0 ? `<b>Action :</b> ${a.action}` : ''}</td>
+                    <td style="padding: 15px; font-size: 13px; color: #333; line-height: 1.5;"><b>Constat :</b> ${a.detail}<br>${a.cout > 0 ? `<b>Action requise :</b> ${a.action}` : ''}</td>
                     <td style="padding: 15px; font-weight:bold; text-align: right; font-size: 16px;">${a.cout > 0 ? `-${formatNumber(a.cout)} €` : '0 €'}</td>
                 </tr>`).join('')}
             </table>
         </div>
+    </div>
+    
+    <div id="paneStrategie" class="report-pane">
+        <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-bottom: 10px;">${titreSectionNego}</h3>
+        <p style="font-size: 14px; color: #495057; margin-bottom: 15px; text-align: left;">Voici la synthèse chiffrée extraite de l'analyse, prête à appuyer vos arguments :</p>
+        <div class="script-box" style="border-left-color: ${agenceCouleur}; font-style: normal; font-family: 'Inter', sans-serif;">
+            <button class="btn-copy" onclick="copierScript('texteScript')">Copier les données</button>
+            <div id="texteScript">${scriptNegoTxt}</div>
+        </div>
+    </div>
+    
+    <div style="font-size: 10px; color: #adb5bd; text-align: justify; border-top: 1px solid #eaeaea; padding-top: 15px; margin-top: 40px;">
+        <b>CADRE D'APPLICATION :</b> Cette étude est une simulation macro-économique informatisée d'aide à la décision. Document non contractuel.
     </div>`;
 
     document.getElementById('contenu-ecran').innerHTML = html;
+
+    animateValue(document.getElementById('anim-prix-initial'), 0, prixInitialClean, 1500);
+    animateValue(document.getElementById('anim-cout-travaux'), 0, donneesAudit.total_decote, 1500, "-");
+    animateValue(document.getElementById('anim-prix-net'), 0, donneesAudit.prix_net, 1500);
+
+    if (loyerMensuelSaisi > 0) {
+        let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitialClean) * 100;
+        let coutTotalReel = prixInitialClean + donneesAudit.total_decote;
+        let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
+        animateValue(document.getElementById('anim-loyer'), 0, (loyerMensuelSaisi * 12), 1500);
+        animateValuePercent(document.getElementById('anim-renta-brute'), 0, rentaInitiale, 1500);
+        animateValuePercent(document.getElementById('anim-renta-nette'), 0, rentaFinale, 1500);
+    }
 
     if (anomalies.length > 0) {
         const ctx = document.getElementById('coutChart').getContext('2d');
@@ -343,7 +595,7 @@ function afficherEcran() {
     }
 }
 
-// PDF MCKINSEY STYLE : SOBRE, DENSIFIÉ ET CLINIQUE (ZÉRO FLUO)
+// LE NOUVEAU PDF : STYLE "CABINET DE CONSEIL" - EPURE ET SOBRE (SANS VERT FLUO)
 function exporterPDF(action = 'download') {
     if (!donneesAudit) return;
     const btn = document.getElementById('btnExport');
@@ -369,14 +621,15 @@ function exporterPDF(action = 'download') {
         tableBody.push([
             { text: a.titre, bold: true, fontSize: 10, color: '#1a1a1a', fillColor: rowColor, margin: [0, 8, 0, 8] },
             { text: isAnomalie ? 'ANOMALIE' : 'CONFORME', bold: true, fontSize: 9, color: isAnomalie ? '#cc0000' : '#555555', alignment: 'center', fillColor: rowColor, margin: [0, 8, 0, 8] },
-            { text: `Constat : ${a.detail}\n` + (isAnomalie ? `Action requise : ${a.action}` : ''), fontSize: 9, lineHeight: 1.4, color: '#444444', fillColor: rowColor, margin: [0, 8, 0, 8] },
+            { text: `Constat : ${a.detail}\n` + (isAnomalie ? `Action requise : ${a.action}` : ''), fontSize: 9, lineHeight: 1.4, color: '#4a4a4a', fillColor: rowColor, margin: [0, 8, 0, 8] },
             { text: isAnomalie ? '-' + formatNumber(a.cout) + ' €' : '0 €', bold: true, fontSize: 11, color: isAnomalie ? '#cc0000' : '#1a1a1a', alignment: 'right', fillColor: rowColor, margin: [0, 8, 0, 8] }
         ]);
     });
 
+    // LOGO CADRÉ PARFAITEMENT (fit) ALIGNÉ A GAUCHE
     let logoBlock = agenceLogoBase64 
         ? { image: agenceLogoBase64, fit: [140, 50], alignment: 'left' }
-        : { text: agenceNom.toUpperCase(), fontSize: 24, bold: true, color: '#1a1a1a', alignment: 'left', letterSpacing: 1 };
+        : { text: agenceNom.toUpperCase(), fontSize: 24, bold: true, color: agenceCouleur, alignment: 'left', letterSpacing: 1 };
 
     let headerTop = {
         columns: [
@@ -410,6 +663,28 @@ function exporterPDF(action = 'download') {
         }
     }
 
+    let rentaBlock = [];
+    if (loyerMensuelSaisi > 0) {
+        let prixInitial = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
+        let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitial) * 100;
+        let coutTotalReel = prixInitial + donneesAudit.total_decote;
+        let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
+        
+        rentaBlock = [
+            { text: '2. PERFORMANCE LOCATIVE ESTIMÉE', style: 'sectionTitle', color: agenceCouleur, margin: [0, 20, 0, 10] },
+            {
+                table: {
+                    widths: ['*', '*', '*'],
+                    body: [
+                        [ { text: 'Loyer Annuel', style: 'kpiHeader' }, { text: 'Rendement Brut', style: 'kpiHeader' }, { text: 'Rendement Net (Post-Travaux)', style: 'kpiHeader' } ],
+                        [ { text: formatNumber(loyerMensuelSaisi * 12) + ' €', style: 'kpiValue' }, { text: rentaInitiale.toFixed(2) + ' %', style: 'kpiValue' }, { text: rentaFinale.toFixed(2) + ' %', style: 'kpiValueNet', color: agenceCouleur } ]
+                    ]
+                },
+                layout: 'lightHorizontalLines'
+            }
+        ];
+    }
+
     try {
         let docDefinition = {
             pageSize: 'A4',
@@ -435,9 +710,9 @@ function exporterPDF(action = 'download') {
             content: [
                 headerTop,
                 { text: 'RAPPORT D\'ANALYSE TECHNIQUE & FINANCIÈRE', fontSize: 16, color: '#1a1a1a', bold:true, alignment: 'center', margin: [0, 0, 0, 15] },
-                { text: 'Synthèse Exécutive : Ce document regroupe les données extraites du Dossier de Diagnostic Technique (DDT). Il présente une évaluation objective des coûts de remise aux normes pour sécuriser et justifier la transaction immobilière face aux exigences réglementaires.', fontSize: 10, color: '#555', alignment: 'justify', margin: [0, 0, 0, 40], italics: true },
+                { text: 'Ce document synthétise les données extraites du Dossier de Diagnostic Technique (DDT). Il présente une évaluation objective des coûts de remise aux normes pour sécuriser et justifier la transaction immobilière.', fontSize: 10, color: '#555', alignment: 'center', margin: [0, 0, 0, 40], italics: true },
                 
-                { text: '1. SYNTHÈSE DES VALORISATIONS', style: 'sectionTitle' },
+                { text: '1. SYNTHÈSE DES VALORISATIONS', style: 'sectionTitle', color: agenceCouleur },
                 {
                     table: {
                         widths: ['*', '*', '*'],
@@ -455,21 +730,22 @@ function exporterPDF(action = 'download') {
                     layout: { hLineWidth: () => 1, vLineWidth: () => 1, hLineColor: () => '#e0e0e0', vLineColor: () => '#e0e0e0' }, margin: [0, 0, 0, 25]
                 },
                 
+                ...rentaBlock,
                 ...chartBlock,
                 
-                { text: '2. INVENTAIRE TECHNIQUE DÉTAILLÉ (DDT)', style: 'sectionTitle', margin: [0, 20, 0, 10], pageBreak: chartBlock.length > 0 ? 'before' : 'auto' },
+                { text: '3. INVENTAIRE TECHNIQUE DÉTAILLÉ (DDT)', style: 'sectionTitle', color: agenceCouleur, margin: [0, 20, 0, 10], pageBreak: chartBlock.length > 0 ? 'before' : 'auto' },
                 {
                     table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody },
                     layout: { 
                         hLineWidth: function (i, node) { return (i === 0 || i === 1 || i === node.table.body.length) ? 1 : 1; }, 
                         vLineWidth: function (i, node) { return 0; }, 
                         hLineColor: function (i, node) { return (i === 0 || i === node.table.body.length) ? '#1a1a1a' : '#eeeeee'; }, 
-                        paddingTop: function(i, node) { return 10; }, 
-                        paddingBottom: function(i, node) { return 10; } 
+                        paddingTop: function(i, node) { return 8; }, 
+                        paddingBottom: function(i, node) { return 8; } 
                     }
                 },
 
-                { text: '3. MÉTHODOLOGIE ET IMPACT RÉGLEMENTAIRE', style: 'sectionTitle', margin: [0, 40, 0, 10] },
+                { text: '4. MÉTHODOLOGIE ET IMPACT RÉGLEMENTAIRE', style: 'sectionTitle', color: agenceCouleur, margin: [0, 40, 0, 10] },
                 { text: 'L\'estimation des travaux s\'appuie sur une analyse algorithmique des anomalies répertoriées dans le Dossier de Diagnostic Technique (Art. L271-4 du Code de la construction et de l\'habitation). Les tarifs sont pondérés selon l\'indice des coûts de construction local.\n\nIl est rappelé que la responsabilité du vendeur peut être engagée au titre des vices cachés (Art. 1641 du Code civil) si des informations cruciales concernant la structure du bien ou la sécurité des personnes (plomb, amiante, électricité, gaz) venaient à être dissimulées lors de la transaction.', fontSize: 9, color: '#444', lineHeight: 1.5, margin: [0, 0, 0, 40] },
                 
                 { text: 'CLAUSE DE NON-SUBSTITUTION LÉGALE', style: 'footerTitle', margin: [0, 40, 0, 5] },
@@ -492,12 +768,16 @@ function exporterPDF(action = 'download') {
         };
 
         let pdf = pdfMake.createPdf(docDefinition);
+        
         if (action === 'open') {
             pdf.open();
+            if(btn) btn.innerText = "Télécharger le rapport PDF Officiel";
         } else {
             pdf.download(agenceNom + '_Bilan_Technique_' + idRapport + '.pdf');
+            if(btn) {
+                setTimeout(() => { btn.innerText = "Télécharger le rapport PDF Officiel"; }, 1500);
+            }
         }
-        if(btn) setTimeout(() => { btn.innerText = "Télécharger le rapport PDF Officiel"; }, 1500);
     } catch(err) {
         showToast("Erreur lors de la génération du PDF.", "error");
         if(btn) btn.innerText = "Télécharger le rapport PDF Officiel";
@@ -505,23 +785,67 @@ function exporterPDF(action = 'download') {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    if (!localStorage.getItem('auditpro_cookies')) {
+        document.getElementById('cookie-banner').style.display = 'block';
+    }
+
     document.getElementById('nomAgenceInput').value = agenceNom !== 'AuditPro' ? agenceNom : '';
     document.getElementById('couleurAgenceInput').value = agenceCouleur;
+    if(agenceLogoBase64) {
+        document.getElementById('logo-preview').src = agenceLogoBase64;
+        document.getElementById('logo-preview').style.display = 'block';
+    }
     appliquerCouleurMarqueBlanche();
     chargerHistorique();
-    
+
+    document.querySelectorAll('.price-input').forEach(input => {
+        input.addEventListener('input', formatInputNumber);
+    });
+
     const liensMenu = document.querySelectorAll('nav a[href^="#"]');
     const blocsOnglets = document.querySelectorAll('.tab-content');
+
+    function changerOnglet(targetId) {
+        liensMenu.forEach(lien => lien.classList.remove('active'));
+        blocsOnglets.forEach(onglet => onglet.classList.remove('active'));
+
+        const lienActif = document.querySelector(`nav a[href="${targetId}"]`);
+        if (lienActif) {
+            lienActif.classList.add('active');
+            lienActif.style.color = agenceCouleur;
+            lienActif.style.borderBottomColor = agenceCouleur;
+        }
+
+        const ongletCible = document.getElementById(`${targetId.substring(1)}-tab`);
+        if (ongletCible) ongletCible.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
     liensMenu.forEach(lien => {
         lien.addEventListener('click', function(e) {
             e.preventDefault();
-            liensMenu.forEach(l => { l.classList.remove('active'); l.style.color = '#fff'; l.style.borderBottomColor = 'transparent'; });
-            blocsOnglets.forEach(onglet => onglet.classList.remove('active'));
-            this.classList.add('active');
-            this.style.color = agenceCouleur;
-            this.style.borderBottom = `2px solid ${agenceCouleur}`;
-            document.getElementById(`${this.getAttribute('href').substring(1)}-tab`).classList.add('active');
+            liensMenu.forEach(l => { l.style.color = '#fff'; l.style.borderBottomColor = 'transparent'; });
+            changerOnglet(this.getAttribute('href'));
         });
     });
+
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('fichierPdf');
+    const dropZoneText = document.querySelector('.drop-zone-text');
+
+    if (dropZone && fileInput) {
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+        });
+        ['dragenter', 'dragover'].forEach(eventName => { dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false); });
+        ['dragleave', 'drop'].forEach(eventName => { dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false); });
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files.length > 0) {
+                dropZoneText.innerHTML = `Document chargé : <b>${this.files[0].name}</b>`;
+                dropZone.style.borderColor = agenceCouleur;
+                dropZone.style.background = "#f4fbf7";
+                document.querySelector('.drop-icon').style.color = agenceCouleur;
+            }
+        });
+    }
 });
