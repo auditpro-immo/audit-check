@@ -595,12 +595,35 @@ Ces données constituent une base objective. Face au vendeur, elles justifient m
     }
 }
 
-// LE NOUVEAU PDF : STYLE "CABINET DE CONSEIL" - EPURE ET SOBRE (SANS VERT FLUO)
+// LE NOUVEAU PDF : STYLE "CABINET DE CONSEIL" - OPTIMISÉ, DENSE ET DESIGN
 function exporterPDF(action = 'download') {
     if (!donneesAudit) return;
     const btn = document.getElementById('btnExport');
     if(btn) btn.innerText = "Édition du PDF en cours...";
     
+    // --- 1. GÉNÉRATEUR DE BADGE DPE DYNAMIQUE ---
+    function getDpeSvg(lettre) {
+        const dpeColors = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F" };
+        const color = dpeColors[lettre] || "#888888";
+        const textColor = (lettre === "D" || lettre === "C") ? "#000000" : "#ffffff";
+        return `
+        <svg width="100" height="35" viewBox="0 0 100 35" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="0,0 80,0 100,17.5 80,35 0,35" fill="${color}" />
+            <text x="45" y="24" font-family="Helvetica, sans-serif" font-size="18" font-weight="bold" fill="${textColor}" text-anchor="middle">Classe ${lettre}</text>
+        </svg>`;
+    }
+
+    // Extraction de la lettre DPE depuis le rapport
+    let dpeMatch = donneesAudit.diagnostics.find(d => d.titre.toUpperCase().includes("DPE"));
+    let dpeBadgeBlock = {};
+    if (dpeMatch) {
+        let matchLettre = dpeMatch.detail.match(/classé\s([A-G])/i);
+        if (matchLettre) {
+            dpeBadgeBlock = { svg: getDpeSvg(matchLettre[1].toUpperCase()), width: 80, margin: [0, 5, 0, 15] };
+        }
+    }
+
+    // --- 2. PRÉPARATION DES DONNÉES ---
     let prixInitFormate = formatNumber(document.getElementById('prixInitial').value.replace(/\s+/g, '')) + ' €';
     let decoteFormate = '-' + formatNumber(donneesAudit.total_decote) + ' €';
     let prixNetFormate = formatNumber(donneesAudit.prix_net) + ' €';
@@ -609,28 +632,29 @@ function exporterPDF(action = 'download') {
         [
             { text: 'DOMAINE CONTRÔLÉ', style: 'tableHeader' },
             { text: 'ÉTAT', style: 'tableHeader', alignment: 'center' },
-            { text: 'DÉTAILS TECHNIQUES', style: 'tableHeader' },
+            { text: 'DÉTAILS TECHNIQUES & ACTIONS', style: 'tableHeader' },
             { text: 'BUDGET', style: 'tableHeader', alignment: 'right' }
         ]
     ];
 
     donneesAudit.diagnostics.forEach((a, index) => {
         let isAnomalie = a.cout > 0;
-        let rowColor = (index % 2 === 0) ? '#fbfbfb' : '#ffffff'; 
+        let rowColor = (index % 2 === 0) ? '#f8f9fa' : '#ffffff'; 
         
         tableBody.push([
-            { text: a.titre, bold: true, fontSize: 10, color: '#1a1a1a', fillColor: rowColor, margin: [0, 8, 0, 8] },
-            { text: isAnomalie ? 'ANOMALIE' : 'CONFORME', bold: true, fontSize: 9, color: isAnomalie ? '#cc0000' : '#555555', alignment: 'center', fillColor: rowColor, margin: [0, 8, 0, 8] },
-            { text: `Constat : ${a.detail}\n` + (isAnomalie ? `Action requise : ${a.action}` : ''), fontSize: 9, lineHeight: 1.4, color: '#4a4a4a', fillColor: rowColor, margin: [0, 8, 0, 8] },
-            { text: isAnomalie ? '-' + formatNumber(a.cout) + ' €' : '0 €', bold: true, fontSize: 11, color: isAnomalie ? '#cc0000' : '#1a1a1a', alignment: 'right', fillColor: rowColor, margin: [0, 8, 0, 8] }
+            { text: a.titre, bold: true, fontSize: 10, color: '#1a1a1a', fillColor: rowColor, margin: [0, 10, 0, 10] },
+            { text: isAnomalie ? 'ANOMALIE' : 'CONFORME', bold: true, fontSize: 9, color: isAnomalie ? '#cc0000' : '#00d632', alignment: 'center', fillColor: rowColor, margin: [0, 10, 0, 10] },
+            { text: `Constat : ${a.detail}\n` + (isAnomalie ? `Action : ${a.action}` : ''), fontSize: 9, lineHeight: 1.4, color: '#4a4a4a', fillColor: rowColor, margin: [0, 10, 0, 10] },
+            { text: isAnomalie ? '-' + formatNumber(a.cout) + ' €' : '0 €', bold: true, fontSize: 11, color: isAnomalie ? '#cc0000' : '#1a1a1a', alignment: 'right', fillColor: rowColor, margin: [0, 10, 0, 10] }
         ]);
     });
 
-    // LOGO CADRÉ PARFAITEMENT (fit) ALIGNÉ A GAUCHE
+    // Logo ou Nom d'agence
     let logoBlock = agenceLogoBase64 
         ? { image: agenceLogoBase64, fit: [140, 50], alignment: 'left' }
-        : { text: agenceNom.toUpperCase(), fontSize: 24, bold: true, color: agenceCouleur, alignment: 'left', letterSpacing: 1 };
+        : { text: agenceNom.toUpperCase(), fontSize: 22, bold: true, color: agenceCouleur, alignment: 'left', letterSpacing: 1 };
 
+    // En-tête du document
     let headerTop = {
         columns: [
             { width: '40%', stack: [logoBlock] },
@@ -648,21 +672,25 @@ function exporterPDF(action = 'download') {
                 layout: 'lightHorizontalLines'
             }
         ],
-        margin: [0, 0, 0, 40]
+        margin: [0, 0, 0, 30]
     };
-    
+
+    // Extraction du graphique Canvas
     let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
-    let chartBlock = [];
+    let chartImageBlock = {};
     if (anomalies.length > 0) {
         let chartCanvas = document.getElementById('coutChart');
         if (chartCanvas) {
-            chartBlock = [
-                { text: 'RÉPARTITION DU BUDGET TRAVAUX', fontSize: 11, bold: true, alignment: 'center', color: '#1a1a1a', margin: [0, 30, 0, 15] },
-                { image: chartCanvas.toDataURL('image/png', 1.0), fit: [200, 200], alignment: 'center', margin: [0, 0, 0, 30] }
-            ];
+            chartImageBlock = {
+                image: chartCanvas.toDataURL('image/png', 1.0),
+                width: 190,
+                alignment: 'center',
+                margin: [0, 10, 0, 0]
+            };
         }
     }
 
+    // Bloc Rentabilité (Optionnel)
     let rentaBlock = [];
     if (loyerMensuelSaisi > 0) {
         let prixInitial = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
@@ -671,7 +699,7 @@ function exporterPDF(action = 'download') {
         let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
         
         rentaBlock = [
-            { text: '2. PERFORMANCE LOCATIVE ESTIMÉE', style: 'sectionTitle', color: agenceCouleur, margin: [0, 20, 0, 10] },
+            { text: 'PERFORMANCE LOCATIVE ESTIMÉE', style: 'sectionTitle', color: agenceCouleur, margin: [0, 15, 0, 10] },
             {
                 table: {
                     widths: ['*', '*', '*'],
@@ -680,7 +708,8 @@ function exporterPDF(action = 'download') {
                         [ { text: formatNumber(loyerMensuelSaisi * 12) + ' €', style: 'kpiValue' }, { text: rentaInitiale.toFixed(2) + ' %', style: 'kpiValue' }, { text: rentaFinale.toFixed(2) + ' %', style: 'kpiValueNet', color: agenceCouleur } ]
                     ]
                 },
-                layout: 'lightHorizontalLines'
+                layout: 'lightHorizontalLines',
+                margin: [0, 0, 0, 20]
             }
         ];
     }
@@ -688,82 +717,107 @@ function exporterPDF(action = 'download') {
     try {
         let docDefinition = {
             pageSize: 'A4',
-            pageMargins: [ 40, 60, 40, 60 ],
+            pageMargins: [ 50, 50, 40, 50 ], // Marges ajustées pour le design
+            background: function() {
+                // Bandeau vertical décoratif sur la gauche de chaque page
+                return { canvas: [ { type: 'rect', x: 0, y: 0, w: 12, h: 842, color: agenceCouleur } ] };
+            },
             header: function(currentPage) {
                 if (currentPage > 1) {
                     return {
                         columns: [
                             { text: agenceNom.toUpperCase() + ' - DOSSIER TECHNIQUE', bold: true, color: '#888', fontSize: 9 },
                             { text: 'Réf. ' + idRapport, alignment: 'right', color: '#888', fontSize: 9 }
-                        ], margin: [40, 20, 40, 0]
+                        ], margin: [50, 20, 40, 0]
                     };
                 }
             },
             footer: function(currentPage, pageCount) {
                 return {
                     columns: [
-                        { text: 'Rapport d\'analyse financière macro-économique standardisé', fontSize: 8, color: '#aaa' },
-                        { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#aaa' }
-                    ], margin: [40, 20, 40, 0]
+                        { text: 'Document d\'aide à la décision. Ne se substitue pas à l\'expertise d\'un artisan RGE.', fontSize: 8, color: '#aaa', italics: true },
+                        { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#aaa', bold: true }
+                    ], margin: [50, 20, 40, 0]
                 };
             },
             content: [
                 headerTop,
-                { text: 'RAPPORT D\'ANALYSE TECHNIQUE & FINANCIÈRE', fontSize: 16, color: '#1a1a1a', bold:true, alignment: 'center', margin: [0, 0, 0, 15] },
-                { text: 'Ce document synthétise les données extraites du Dossier de Diagnostic Technique (DDT). Il présente une évaluation objective des coûts de remise aux normes pour sécuriser et justifier la transaction immobilière.', fontSize: 10, color: '#555', alignment: 'center', margin: [0, 0, 0, 40], italics: true },
+                { text: 'RAPPORT D\'ANALYSE TECHNIQUE & FINANCIÈRE', fontSize: 18, color: '#1a1a1a', bold: true, margin: [0, 0, 0, 5] },
+                { text: 'Évaluation algorithmique des coûts de remise aux normes basée sur le DDT.', fontSize: 11, color: '#666', margin: [0, 0, 0, 25], italics: true },
                 
-                { text: '1. SYNTHÈSE DES VALORISATIONS', style: 'sectionTitle', color: agenceCouleur },
+                // COLONNES : KPI Financiers (Gauche) / Graphique (Droite)
                 {
-                    table: {
-                        widths: ['*', '*', '*'],
-                        body: [
-                            [ { text: 'Prix de Vente Initial', style: 'kpiHeader' }, { text: 'Enveloppe Travaux', style: 'kpiHeaderRed' }, { text: 'Valeur Nette Recommandée', style: 'kpiHeader' } ],
-                            [ { text: prixInitFormate, style: 'kpiValue' }, { text: decoteFormate, style: 'kpiValueRed' }, { text: prixNetFormate, style: 'kpiValueNet', color: agenceCouleur } ]
-                        ]
-                    },
-                    layout: 'lightHorizontalLines',
-                    margin: [0, 0, 0, 20]
-                },
-                
-                {
-                    table: { widths: ['*'], body: [ [ { stack: [ { text: 'CONTEXTE MACRO-ÉCONOMIQUE LOCAL', fontSize: 9, bold: true, color: '#1a1a1a', margin: [0, 0, 0, 4] }, { text: donneesAudit.impact_marche, fontSize: 9, color: '#4a4a4a', lineHeight: 1.4 } ], padding: 10 } ] ] },
-                    layout: { hLineWidth: () => 1, vLineWidth: () => 1, hLineColor: () => '#e0e0e0', vLineColor: () => '#e0e0e0' }, margin: [0, 0, 0, 25]
+                    columns: [
+                        {
+                            width: '55%',
+                            stack: [
+                                { text: '1. SYNTHÈSE DES VALORISATIONS', style: 'sectionTitle', color: agenceCouleur },
+                                dpeBadgeBlock, // Injection du SVG DPE
+                                {
+                                    table: {
+                                        widths: ['*', '*'],
+                                        body: [
+                                            [ { text: 'Prix de Vente Initial', style: 'kpiHeaderLeft' }, { text: prixInitFormate, style: 'kpiValueLeft' } ],
+                                            [ { text: 'Enveloppe Travaux', style: 'kpiHeaderLeft', color: '#cc0000' }, { text: decoteFormate, style: 'kpiValueLeft', color: '#cc0000' } ],
+                                            [ { text: 'Valeur Nette Estimée', style: 'kpiHeaderLeft', bold: true }, { text: prixNetFormate, style: 'kpiValueNetLeft', color: agenceCouleur } ]
+                                        ]
+                                    },
+                                    layout: { hLineWidth: function() { return 1; }, vLineWidth: function() { return 0; }, hLineColor: function() { return '#eee'; }, paddingBottom: function() { return 8; }, paddingTop: function() { return 8; } },
+                                    margin: [0, 0, 0, 20]
+                                }
+                            ]
+                        },
+                        {
+                            width: '45%',
+                            stack: [
+                                anomalies.length > 0 ? { text: 'RÉPARTITION DU BUDGET', fontSize: 10, bold: true, alignment: 'center', color: '#666', margin: [0, 0, 0, 5] } : {},
+                                chartImageBlock
+                            ]
+                        }
+                    ],
+                    columnGap: 20
                 },
                 
                 ...rentaBlock,
-                ...chartBlock,
+
+                // Contexte Macro dans un encart stylisé
+                {
+                    table: { widths: ['*'], body: [ [ { stack: [ { text: 'CONTEXTE MACRO-ÉCONOMIQUE', fontSize: 10, bold: true, color: '#fff', margin: [0, 0, 0, 4] }, { text: donneesAudit.impact_marche, fontSize: 9, color: '#eef2f5', lineHeight: 1.4 } ], padding: 12, fillColor: '#0b1a14' } ] ] },
+                    layout: 'noBorders', margin: [0, 10, 0, 30]
+                },
                 
-                { text: '3. INVENTAIRE TECHNIQUE DÉTAILLÉ (DDT)', style: 'sectionTitle', color: agenceCouleur, margin: [0, 20, 0, 10], pageBreak: chartBlock.length > 0 ? 'before' : 'auto' },
+                // Le tableau commence ici sans forcément forcer un saut de page, il prendra l'espace vacant
+                { text: '2. INVENTAIRE TECHNIQUE DÉTAILLÉ (DDT)', style: 'sectionTitle', color: agenceCouleur, margin: [0, 10, 0, 10] },
                 {
                     table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody },
                     layout: { 
-                        hLineWidth: function (i, node) { return (i === 0 || i === 1 || i === node.table.body.length) ? 1 : 1; }, 
-                        vLineWidth: function (i, node) { return 0; }, 
-                        hLineColor: function (i, node) { return (i === 0 || i === node.table.body.length) ? '#1a1a1a' : '#eeeeee'; }, 
-                        paddingTop: function(i, node) { return 8; }, 
-                        paddingBottom: function(i, node) { return 8; } 
+                        hLineWidth: function (i, node) { return (i === 0 || i === 1 || i === node.table.body.length) ? 2 : 1; }, 
+                        vLineWidth: function () { return 0; }, 
+                        hLineColor: function (i, node) { return (i === 0 || i === node.table.body.length) ? agenceCouleur : '#e0e0e0'; },
+                        paddingTop: function() { return 6; }, 
+                        paddingBottom: function() { return 6; } 
                     }
                 },
 
-                { text: '4. MÉTHODOLOGIE ET IMPACT RÉGLEMENTAIRE', style: 'sectionTitle', color: agenceCouleur, margin: [0, 40, 0, 10] },
-                { text: 'L\'estimation des travaux s\'appuie sur une analyse algorithmique des anomalies répertoriées dans le Dossier de Diagnostic Technique (Art. L271-4 du Code de la construction et de l\'habitation). Les tarifs sont pondérés selon l\'indice des coûts de construction local.\n\nIl est rappelé que la responsabilité du vendeur peut être engagée au titre des vices cachés (Art. 1641 du Code civil) si des informations cruciales concernant la structure du bien ou la sécurité des personnes (plomb, amiante, électricité, gaz) venaient à être dissimulées lors de la transaction.', fontSize: 9, color: '#444', lineHeight: 1.5, margin: [0, 0, 0, 40] },
-                
-                { text: 'CLAUSE DE NON-SUBSTITUTION LÉGALE', style: 'footerTitle', margin: [0, 40, 0, 5] },
-                { text: 'Cette simulation statistique a valeur d\'aide indicative pour structurer une transaction immobilière. Les montants chiffrés ne se substituent en aucun cas à la passation de devis contradictoires établis par des artisans certifiés RGE.', style: 'footerText' }
+                // Mention Légale en pied de rapport (plus besoin d'une page entière pour ça)
+                { text: 'MÉTHODOLOGIE ET CADRE D\'APPLICATION', fontSize: 10, bold: true, color: '#1a1a1a', margin: [0, 30, 0, 5] },
+                { text: 'L\'estimation s\'appuie sur une analyse des anomalies répertoriées dans le Dossier de Diagnostic Technique (Art. L271-4 du CCH). Les tarifs sont pondérés selon l\'indice régional des coûts de construction. Clause de non-substitution : Cette simulation statistique a valeur d\'aide indicative. Les montants chiffrés ne se substituent en aucun cas à la passation de devis contradictoires établis par des artisans certifiés RGE.', fontSize: 8, color: '#666', alignment: 'justify', lineHeight: 1.4 }
             ],
             styles: {
-                coverTableTitle: { fontSize: 10, bold: true, color: '#1a1a1a', alignment: 'center', margin: [0, 6, 0, 6], letterSpacing: 1 },
+                coverTableTitle: { fontSize: 10, bold: true, color: '#1a1a1a', alignment: 'right', margin: [0, 6, 0, 6], letterSpacing: 1 },
                 coverLabel: { fontSize: 9, bold: true, color: '#888', alignment: 'right', margin: [0, 2, 10, 2] },
                 coverValue: { fontSize: 9, color: '#1a1a1a', margin: [10, 2, 0, 2], bold: true },
-                sectionTitle: { fontSize: 12, bold: true, color: '#1a1a1a', margin: [0, 25, 0, 15], textTransform: 'uppercase' },
+                sectionTitle: { fontSize: 13, bold: true, color: '#1a1a1a', margin: [0, 0, 0, 15], textTransform: 'uppercase' },
+                
+                // Nouveaux styles pour les colonnes
+                kpiHeaderLeft: { fontSize: 10, color: '#555', margin: [0, 5, 0, 5] },
+                kpiValueLeft: { fontSize: 14, bold: true, color: '#1a1a1a', alignment: 'right', margin: [0, 5, 0, 5] },
+                kpiValueNetLeft: { fontSize: 18, bold: true, alignment: 'right', margin: [0, 5, 0, 5] },
+                
                 kpiHeader: { alignment: 'center', fontSize: 9, color: '#888', bold: true, margin: [0, 5, 0, 5], textTransform: 'uppercase' },
-                kpiHeaderRed: { alignment: 'center', fontSize: 9, color: '#cc0000', bold: true, margin: [0, 5, 0, 5], textTransform: 'uppercase' },
                 kpiValue: { alignment: 'center', fontSize: 16, bold: true, color: '#1a1a1a', margin: [0, 10, 0, 10] },
-                kpiValueRed: { alignment: 'center', fontSize: 16, bold: true, color: '#cc0000', margin: [0, 10, 0, 10] },
-                kpiValueNet: { alignment: 'center', fontSize: 20, bold: true, margin: [0, 10, 0, 10] },
-                tableHeader: { bold: true, fontSize: 9, color: '#ffffff', fillColor: '#1a1a1a', margin: [0, 6, 0, 6] },
-                footerTitle: { fontSize: 9, bold: true, color: '#1a1a1a' },
-                footerText: { fontSize: 8, color: '#666', alignment: 'justify', lineHeight: 1.4 }
+                kpiValueNet: { alignment: 'center', fontSize: 18, bold: true, margin: [0, 10, 0, 10] },
+                tableHeader: { bold: true, fontSize: 9, color: '#ffffff', fillColor: agenceCouleur, margin: [0, 8, 0, 8] }
             }
         };
 
@@ -773,7 +827,7 @@ function exporterPDF(action = 'download') {
             pdf.open();
             if(btn) btn.innerText = "Télécharger le rapport PDF Officiel";
         } else {
-            pdf.download(agenceNom + '_Bilan_Technique_' + idRapport + '.pdf');
+            pdf.download(agenceNom.replace(/\s+/g, '_') + '_Bilan_Technique_' + idRapport + '.pdf');
             if(btn) {
                 setTimeout(() => { btn.innerText = "Télécharger le rapport PDF Officiel"; }, 1500);
             }
