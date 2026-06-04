@@ -469,7 +469,7 @@ function afficherEcran() {
 L'enveloppe de travaux s'appuie sur le rapport de diagnostic. Les points suivants nécessitent une mise en sécurité ou une remise aux normes :
 ${defautsFormate}
 
-L'évaluation prend également en compte la zone de localisation (${donneesAudit.localisation_exacte}), ce qui permet de justifier la cohérence du budget travaux calculé.`;
+L'évaluation prend également en compte la zone de localisation (${donneesAudit.localisation_exacte}), ce qui permet de justifyifier la cohérence du budget travaux calculé.`;
     } else {
         nomOnglet3 = "3. Données d'Appui";
         titreSectionNego = "Éléments Factuels pour la Transaction (Professionnel)";
@@ -812,11 +812,11 @@ function exporterPDF(action = 'download') {
                 // Nouveaux styles pour les colonnes
                 kpiHeaderLeft: { fontSize: 10, color: '#555', margin: [0, 5, 0, 5] },
                 kpiValueLeft: { fontSize: 14, bold: true, color: '#1a1a1a', alignment: 'right', margin: [0, 5, 0, 5] },
-                kpiValueNetLeft: { fontSize: 18, bold: true, alignment: 'right', margin: [0, 5, 0, 5] },
+                kpiValueNetLeft: { fontSize: 14, bold: true, alignment: 'right', margin: [0, 5, 0, 5] },
                 
                 kpiHeader: { alignment: 'center', fontSize: 9, color: '#888', bold: true, margin: [0, 5, 0, 5], textTransform: 'uppercase' },
-                kpiValue: { alignment: 'center', fontSize: 16, bold: true, color: '#1a1a1a', margin: [0, 10, 0, 10] },
-                kpiValueNet: { alignment: 'center', fontSize: 18, bold: true, margin: [0, 10, 0, 10] },
+                kpiValue: { alignment: 'center', fontSize: 14, bold: true, color: '#1a1a1a', margin: [0, 10, 0, 10] },
+                kpiValueNet: { alignment: 'center', fontSize: 14, bold: true, margin: [0, 10, 0, 10] },
                 tableHeader: { bold: true, fontSize: 9, color: '#ffffff', fillColor: agenceCouleur, margin: [0, 8, 0, 8] }
             }
         };
