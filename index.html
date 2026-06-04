@@ -27,327 +27,320 @@
 </head>
 <body>
 
-    <div id="welcome-screen">
-        <div class="welcome-container">
-            <div class="welcome-logo">Audit<span>Pro</span></div>
-            <h1 style="color: #fff; margin-bottom: 10px;">Bienvenue sur AuditPro</h1>
-            <p style="color: #ccc; margin-bottom: 40px;">Pour adapter notre analyse et nos recommandations techniques à vos besoins réels, veuillez sélectionner votre profil :</p>
+    <header>
+        <div class="logo">Audit<span>Pro</span></div>
+       <nav>
+            <a href="#audit" class="active">Le Diagnostic</a>
+            <a href="#pro" id="nav-pro" style="display: none;">Solution Agences</a>
+            <a href="#informations">Ressources & Grille</a>
+            <a href="#avis">Avis Clients</a>
+            <a href="#faq">Questions Fréquentes</a>
+            <a href="#contact">Contact</a>
+        </nav>
+        <button class="btn-solid" onclick="document.querySelector('nav a[href=\'#audit\']').click();">Nouveau Diagnostic</button>
+    </header>
+
+<main>
+    <div id="audit-tab" class="tab-content active">
+        <section class="hero" id="audit">
+            <div class="hero-content">
+                <div id="hero-badge" style="display: inline-block; background: #0b1a14; color: #00d632; font-size: 12px; font-weight: bold; padding: 5px 12px; border-radius: 20px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Espace Particulier (B2C)</div>
+                <h1 id="hero-title">Sécurisez votre achat en chiffrant les travaux cachés.</h1>
+                <p id="hero-desc">Notre algorithme extrait, vulgarise et chiffre l'ensemble des travaux de mise aux normes d'un bien immobilier en moins de 2 minutes pour vous aider à prendre la bonne décision.</p>
+                <ul>
+                    <li><strong>Analyse exhaustive</strong> du Dossier de Diagnostics Techniques (DDT)</li>
+                    <li><strong>Calculateur de prix</strong> indexé sur les tarifs de votre région</li>
+                    <li><strong>Générateur d'approche</strong> pour une transaction équitable</li>
+                </ul>
+            </div>
             
-            <div class="profile-cards">
-                <div class="profile-card" onclick="choisirProfil('particulier')">
-                    <h3>👤 Je suis un Particulier</h3>
-                    <p>Je souhaite analyser les diagnostics d'un bien que je visite pour anticiper les travaux et sécuriser mon offre d'achat.</p>
+            <div class="form-container">
+                <h2 id="form-title">Configuration de l'analyse</h2>
+                
+                <div class="form-group" style="margin-bottom: 25px;">
+                    <label>Sélectionnez votre profil d'utilisateur :</label>
+                    <div class="profile-selector">
+                        <button type="button" id="btn-particulier" class="profile-btn active" onclick="choisirProfil('particulier')">
+                            <span>👤</span> Acquéreur
+                        </button>
+                        <button type="button" id="btn-pro" class="profile-btn" onclick="choisirProfil('professionnel')">
+                            <span>🏢</span> Professionnel
+                        </button>
+                    </div>
                 </div>
-                <div class="profile-card" onclick="choisirProfil('professionnel')">
-                    <h3>🏢 Je suis un Professionnel</h3>
-                    <p>Je suis agent, mandataire ou promoteur. Je souhaite justifier mes estimations, rentrer des mandats et rassurer mes clients.</p>
+
+                <div class="form-group">
+                    <label>Prix de vente affiché (€) *</label>
+                    <input type="number" id="prixInitial" class="form-control" placeholder="Ex : 350000 (sans espaces)">
                 </div>
+                <div class="form-group">
+                    <label>Loyer mensuel espéré (€) *Optionnel</label>
+                    <input type="number" id="loyerMensuel" class="form-control" placeholder="Ex : 850">
+                </div>
+                <div class="form-group">
+                    <label>Code Postal de la ville *</label>
+                    <input type="text" id="codePostal" class="form-control" placeholder="Ex : 35000">
+                </div>
+                <div class="form-group">
+                    <label>Dossier PDF (Diagnostics) *</label>
+                    <div id="drop-zone" class="drop-zone">
+                        <span class="drop-zone-text">Glissez-déposez votre PDF ici ou cliquez</span>
+                        <input type="file" id="fichierPdf" class="drop-zone-input" accept="application/pdf">
+                    </div>
+                </div>
+                <button class="btn-submit" id="btnSubmit" onclick="envoyer()">Générer l'audit complet</button>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="#" onclick="lancerDemo(); return false;" style="color: #6c757d; font-size: 13px; text-decoration: underline; font-weight: 600; transition: color 0.3s;" onmouseover="this.style.color='#0b1a14'" onmouseout="this.style.color='#6c757d'">Découvrir l'interface via une démonstration</a>
+                </div>
+            </div>
+        </section>
+
+        <div style="background-color: #0b1a14; padding: 30px 20px; text-align: center; border-bottom: 4px solid #00d632;">
+            <p style="color: #fff; font-size: 18px; margin: 0 0 15px 0; font-weight: 600;">En visite sur le terrain ? Anticipez l'analyse technique sans fichier PDF</p>
+            <a href="grille.html" target="_blank" class="btn-solid" style="display: inline-block; text-decoration: none; background: #fff; color: #0b1a14; border: 2px solid #00d632;">Télécharger la Grille d'Évaluation Physique</a>
+        </div>
+
+        <div id="result-wrapper">
+            <div id="contenu-ecran"></div>
+            <div style="text-align: center; margin-top: 40px;">
+                <button class="btn-solid" id="btnExport" style="padding: 16px 40px; font-size: 16px;" onclick="exporterPDF()">Télécharger le rapport PDF Officiel</button>
             </div>
         </div>
     </div>
 
-    <div id="main-app" style="display: none;">
-        <header>
-            <div class="logo">Audit<span>Pro</span></div>
-           <nav>
-                <a href="#audit" class="active">Le Diagnostic</a>
-                <a href="#pro" id="nav-pro" style="display: none;">Solution Agences</a>
-                <a href="#informations">Ressources & Grille</a>
-                <a href="#avis">Avis Clients</a>
-                <a href="#faq">Questions Fréquentes</a>
-                <a href="#contact">Contact</a>
-            </nav>
-            <button class="btn-solid" onclick="document.querySelector('nav a[href=\'#audit\']').click();">Nouveau Diagnostic</button>
-        </header>
+    <div id="pro-tab" class="tab-content">
+        <section id="pro" class="content-section" style="text-align: center;">
+            <h2 class="section-title">Agents, Mandataires & Promoteurs</h2>
+            <p style="font-size: 18px; color: #495057; max-width: 800px; margin: 0 auto 50px auto; line-height: 1.6;">
+                Transformez la contrainte des diagnostics réglementaires en un argument de vente et de transparence. AuditPro devient le tiers de confiance qui rassure vos acquéreurs et justifie vos estimations auprès des vendeurs.
+            </p>
+            
+            <div class="info-grid" style="margin-bottom: 60px;">
+                <div class="info-card" style="border-top-color: #0b1a14;">
+                    <h3>Validation des Prix de Vente</h3>
+                    <p>Utilisez les rapports de chiffrage comme un élément de preuve irréfutable pour ramener un propriétaire vendeur aux réalités du marché de l'immobilier local et décrocher l'exclusivité.</p>
+                </div>
+                <div class="info-card" style="border-top-color: #0b1a14;">
+                    <h3>Sécurisation du Closing</h3>
+                    <p>Ne laissez plus la découverte d'anomalies électriques ou d'un mauvais DPE faire annuler vos promesses de vente. Anticipez l'enveloppe de travaux pour rassurer l'acquéreur en amont.</p>
+                </div>
+                <div class="info-card" style="border-top-color: #0b1a14;">
+                    <h3>Gain de temps administratif</h3>
+                    <p>Gagnez un temps précieux lors de la prise de mandat en confiant l'analyse de dossiers de diagnostics de plus de 100 pages à notre technologie de scan instantané.</p>
+                </div>
+            </div>
 
-        <main>
-            <div id="audit-tab" class="tab-content active">
-                <section class="hero" id="audit">
-                    <div class="hero-content">
-                        <div id="hero-badge" style="display: inline-block; background: #0b1a14; color: #00d632; font-size: 12px; font-weight: bold; padding: 5px 12px; border-radius: 20px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Espace Particulier</div>
-                        <h1 id="hero-title">Sécurisez votre achat en chiffrant les travaux cachés.</h1>
-                        <p id="hero-desc">Notre algorithme extrait, vulgarise et chiffre l'ensemble des travaux de mise aux normes d'un bien immobilier en moins de 2 minutes pour vous aider à prendre la bonne décision.</p>
-                        <ul>
-                            <li><strong>Analyse exhaustive</strong> du Dossier de Diagnostics Techniques (DDT)</li>
-                            <li><strong>Calculateur de prix</strong> indexé sur les tarifs de votre région</li>
-                            <li><strong>Générateur d'approche</strong> pour une transaction équitable</li>
+            <div style="background: linear-gradient(135deg, #0b1a14 0%, #1a3c2d 100%); padding: 50px; border-radius: 12px; color: #fff; max-width: 900px; margin: 0 auto; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+                    <div style="flex: 1; min-width: 300px;">
+                        <h3 style="color: #00d632; font-size: 24px; margin-top: 0;">Solution AuditPro Premium (En développement)</h3>
+                        <p style="font-size: 15px; line-height: 1.6; color: #eaf9f0; margin-bottom: 20px;">Nous concevons actuellement des fonctionnalités avancées dédiées exclusivement aux professionnels de l'immobilier :</p>
+                        <ul style="color: #fff; font-size: 15px; line-height: 1.8; padding-left: 20px;">
+                            <li><strong>Édition en Marque Blanche :</strong> Intégration complète de l'identité visuelle et du logo de votre agence sur les rapports PDF.</li>
+                            <li><strong>Centralisation Cloud :</strong> Tableau de bord collaboratif pour manager les dossiers de vos collaborateurs.</li>
+                            <li><strong>Interconnexion API :</strong> Couplage de l'outil d'analyse à vos progiciels métiers actuels.</li>
                         </ul>
                     </div>
-                    
-                    <div class="form-container">
-                        <h2 id="form-title">Mon analyse technique</h2>
-                        
-                        <div class="form-group">
-                            <label>Prix de vente affiché (€) *</label>
-                            <input type="number" id="prixInitial" class="form-control" placeholder="Ex : 350000 (sans espaces)">
-                        </div>
-                        <div class="form-group">
-                            <label>Loyer mensuel espéré (€) *Optionnel</label>
-                            <input type="number" id="loyerMensuel" class="form-control" placeholder="Ex : 850">
-                        </div>
-                        <div class="form-group">
-                            <label>Code Postal de la ville *</label>
-                            <input type="text" id="codePostal" class="form-control" placeholder="Ex : 35000">
-                        </div>
-                        <div class="form-group">
-                            <label>Dossier PDF (Diagnostics) *</label>
-                            <div id="drop-zone" class="drop-zone">
-                                <span class="drop-zone-text">Glissez-déposez votre PDF ici ou cliquez</span>
-                                <input type="file" id="fichierPdf" class="drop-zone-input" accept="application/pdf">
-                            </div>
-                        </div>
-                        <button class="btn-submit" id="btnSubmit" onclick="envoyer()">Générer l'audit complet</button>
-                        
-                        <div style="text-align: center; margin-top: 20px;">
-                            <a href="#" onclick="lancerDemo(); return false;" style="color: #6c757d; font-size: 13px; text-decoration: underline; font-weight: 600; transition: color 0.3s;" onmouseover="this.style.color='#0b1a14'" onmouseout="this.style.color='#6c757d'">Découvrir l'interface via une démonstration</a>
-                        </div>
-                    </div>
-                </section>
-
-                <div style="background-color: #0b1a14; padding: 30px 20px; text-align: center; border-bottom: 4px solid #00d632;">
-                    <p style="color: #fff; font-size: 18px; margin: 0 0 15px 0; font-weight: 600;">En visite sur le terrain ? Anticipez l'analyse technique sans fichier PDF</p>
-                    <a href="grille.html" target="_blank" class="btn-solid" style="display: inline-block; text-decoration: none; background: #fff; color: #0b1a14; border: 2px solid #00d632;">Télécharger la Grille d'Évaluation Physique</a>
-                </div>
-
-                <div id="result-wrapper">
-                    <div id="contenu-ecran"></div>
-                    <div style="text-align: center; margin-top: 40px;">
-                        <button class="btn-solid" id="btnExport" style="padding: 16px 40px; font-size: 16px;" onclick="exporterPDF()">Télécharger le rapport PDF Officiel</button>
+                    <div style="background: rgba(255,255,255,0.1); padding: 30px; border-radius: 8px; border: 1px solid rgba(0, 214, 50, 0.3); text-align: center;">
+                        <h4 style="margin: 0 0 15px 0; color: #fff;">Accès Prioritaire Pro</h4>
+                        <p style="font-size: 13px; color: #ccc; margin-bottom: 20px;">Ouvrez un compte Bêta-testeur pour votre agence et bénéficiez d'un accès gratuit prolongé.</p>
+                        <button onclick="ouvrirModalPro()" class="btn-solid" style="display: block; width: 100%;">Rejoindre le programme</button>
                     </div>
                 </div>
             </div>
+        </section>
+    </div>
 
-            <div id="pro-tab" class="tab-content">
-                <section id="pro" class="content-section" style="text-align: center;">
-                    <h2 class="section-title">Agents, Mandataires & Promoteurs</h2>
-                    <p style="font-size: 18px; color: #495057; max-width: 800px; margin: 0 auto 50px auto; line-height: 1.6;">
-                        Transformez la contrainte des diagnostics réglementaires en un argument de vente et de transparence. AuditPro devient le tiers de confiance qui rassure vos acquéreurs et justifie vos estimations auprès des vendeurs.
-                    </p>
-                    
-                    <div class="info-grid" style="margin-bottom: 60px;">
-                        <div class="info-card" style="border-top-color: #0b1a14;">
-                            <h3>Validation des Prix de Vente</h3>
-                            <p>Utilisez les rapports de chiffrage comme un élément de preuve irréfutable pour ramener un propriétaire vendeur aux réalités du marché de l'immobilier local et décrocher l'exclusivité.</p>
-                        </div>
-                        <div class="info-card" style="border-top-color: #0b1a14;">
-                            <h3>Sécurisation du Closing</h3>
-                            <p>Ne laissez plus la découverte d'anomalies électriques ou d'un mauvais DPE faire annuler vos promesses de vente. Anticipez l'enveloppe de travaux pour rassurer l'acquéreur en amont.</p>
-                        </div>
-                        <div class="info-card" style="border-top-color: #0b1a14;">
-                            <h3>Gain de temps administratif</h3>
-                            <p>Gagnez un temps précieux lors de la prise de mandat en confiant l'analyse de dossiers de diagnostics de plus de 100 pages à notre technologie de scan instantané.</p>
-                        </div>
-                    </div>
-
-                    <div style="background: linear-gradient(135deg, #0b1a14 0%, #1a3c2d 100%); padding: 50px; border-radius: 12px; color: #fff; max-width: 900px; margin: 0 auto; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
-                            <div style="flex: 1; min-width: 300px;">
-                                <h3 style="color: #00d632; font-size: 24px; margin-top: 0;">Solution AuditPro Premium (En développement)</h3>
-                                <p style="font-size: 15px; line-height: 1.6; color: #eaf9f0; margin-bottom: 20px;">Nous concevons actuellement des fonctionnalités avancées dédiées exclusivement aux professionnels de l'immobilier :</p>
-                                <ul style="color: #fff; font-size: 15px; line-height: 1.8; padding-left: 20px;">
-                                    <li><strong>Édition en Marque Blanche :</strong> Intégration complète de l'identité visuelle et du logo de votre agence sur les rapports PDF.</li>
-                                    <li><strong>Centralisation Cloud :</strong> Tableau de bord collaboratif pour manager les dossiers de vos collaborateurs.</li>
-                                    <li><strong>Interconnexion API :</strong> Couplage de l'outil d'analyse à vos progiciels métiers actuels.</li>
-                                </ul>
-                            </div>
-                            <div style="background: rgba(255,255,255,0.1); padding: 30px; border-radius: 8px; border: 1px solid rgba(0, 214, 50, 0.3); text-align: center;">
-                                <h4 style="margin: 0 0 15px 0; color: #fff;">Accès Prioritaire Pro</h4>
-                                <p style="font-size: 13px; color: #ccc; margin-bottom: 20px;">Ouvrez un compte Bêta-testeur pour votre agence et bénéficiez d'un accès gratuit prolongé.</p>
-                                <button onclick="ouvrirModalPro()" class="btn-solid" style="display: block; width: 100%;">Rejoindre le programme</button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+    <div id="informations-tab" class="tab-content">
+        <section id="informations" class="content-section">
+            
+            <div style="background-color: #eaf9f0; padding: 40px 20px; text-align: center; border-radius: 12px; margin: 0 auto 60px auto; border: 1px solid #00d632; max-width: 800px;">
+                <h2 style="color: #0b1a14; margin-top: 0;">Outil Pratique : La Grille d'Auto-Évaluation</h2>
+                <p style="color: #495057; font-size: 16px; margin-bottom: 25px;">Imprimez cette fiche de contrôle vierge. Elle vous guidera étape par étape pour inspecter les points critiques d'un bien lors de votre visite sur le terrain, même sans avoir reçu les diagnostics du vendeur.</p>
+                <a href="grille.html" target="_blank" class="btn-solid" style="display: inline-block; text-decoration: none;">Télécharger et imprimer la Grille</a>
             </div>
 
-            <div id="informations-tab" class="tab-content">
-                <section id="informations" class="content-section">
-                    
-                    <div style="background-color: #eaf9f0; padding: 40px 20px; text-align: center; border-radius: 12px; margin: 0 auto 60px auto; border: 1px solid #00d632; max-width: 800px;">
-                        <h2 style="color: #0b1a14; margin-top: 0;">Outil Pratique : La Grille d'Auto-Évaluation</h2>
-                        <p style="color: #495057; font-size: 16px; margin-bottom: 25px;">Imprimez cette fiche de contrôle vierge. Elle vous guidera étape par étape pour inspecter les points critiques d'un bien lors de votre visite sur le terrain, même sans avoir reçu les diagnostics du vendeur.</p>
-                        <a href="grille.html" target="_blank" class="btn-solid" style="display: inline-block; text-decoration: none;">Télécharger et imprimer la Grille</a>
-                    </div>
-
-                    <h2 class="section-title">Actualités & Réglementation Immobilière (2026)</h2>
-                    <div class="info-grid" style="margin-bottom: 60px;">
-                        <div class="info-card">
-                            <h3>Audit Énergétique Obligatoire</h3>
-                            <p>En complément du DPE, la vente d'un logement classé E, F ou G impose un audit énergétique réglementaire. Il détaille les scénarios de travaux nécessaires pour atteindre la classe B et doit être remis dès la première visite.</p>
-                        </div>
-                        <div class="info-card">
-                            <h3>Évolution de MaPrimeRénov'</h3>
-                            <p>Les aides de l'État favorisent désormais les rénovations globales (saut de 2 classes DPE minimum). L'accompagnement par un tiers de confiance "Mon Accompagnateur Rénov'" est devenu obligatoire.</p>
-                        </div>
-                        <div class="info-card">
-                            <h3>Permis de Louer</h3>
-                            <p>De plus en plus de communes exigent un Permis de Louer pour lutter contre l'habitat indigne. Les diagnostics électricité, gaz et plomb sont scrutés à la loupe par les inspecteurs de l'urbanisme.</p>
-                        </div>
-                    </div>
-
-                    <h2 class="section-title">Guide Pratique : Validité des diagnostics (DDT)</h2>
-                    <p style="text-align:center; color:#495057; margin-bottom:40px; font-size:16px;">
-                        Attention : un diagnostic périmé peut faire annuler une vente immobilière ou retarder la signature chez le notaire. Voici les durées légales :
-                    </p>
-                    <div class="info-grid">
-                        <div class="info-card">
-                            <h3>Plomb (CREP)</h3>
-                            <p>Validité : <strong>1 an</strong> (si présence de plomb).<br>Si la mesure est négative (aucune trace), la validité devient alors <strong>illimitée</strong> pour les ventes futures.</p>
-                        </div>
-                        <div class="info-card">
-                            <h3>Électricité & Gaz</h3>
-                            <p>Validité : <strong>3 ans</strong> (pour une vente) ou <strong>6 ans</strong> (pour location). Obligatoire si l'installation a plus de 15 ans d'ancienneté.</p>
-                        </div>
-                        <div class="info-card">
-                            <h3>Diagnostic Énergétique (DPE)</h3>
-                            <p>Validité : <strong>10 ans</strong>.<br>Attention, suite à la réforme, les DPE réalisés avant juillet 2021 ne sont officiellement plus valables.</p>
-                        </div>
-                        <div class="info-card">
-                            <h3>Amiante (Avant Vente)</h3>
-                            <p>Validité : <strong>Illimitée</strong>.<br>Uniquement si le diagnostic a été fait après le 1er avril 2013 et s'il est totalement négatif.</p>
-                        </div>
-                        <div class="info-card">
-                            <h3>Métrage Loi Carrez</h3>
-                            <p>Validité : <strong>Illimitée</strong>.<br>Il reste valable à vie, à condition de ne pas avoir réalisé de travaux modifiant la surface habitable.</p>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            <div id="avis-tab" class="tab-content">
-               <section id="avis" class="content-section" style="background-color: #f8f9fa;">
-                <h2 class="section-title">Avis de nos utilisateurs professionnels et particuliers</h2>
-                
-                <div id="listeAvis" class="avis-grid" style="display: flex; gap: 20px; margin-bottom: 40px; flex-wrap: wrap;">
-                    <div class="avis-card" style="flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;">
-                        <div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div>
-                        <p style="font-size: 14px; font-style: italic; color: #495057;">"L'approche proposée par le rapport est très fine. Cela m'a permis d'aborder la question des travaux d'électricité avec le vendeur de façon très sereine et objective. Résultat : un accord équitable trouvé en 2h."</p>
-                        <div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- Marc D. (Investisseur locatif)</div>
-                    </div>
-                    <div class="avis-card" style="flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;">
-                        <div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div>
-                        <p style="font-size: 14px; font-style: italic; color: #495057;">"Un outil fantastique pour la transparence. Je le présente désormais systématiquement à mes clients acquéreurs. Cela désamorce toutes leurs inquiétudes face au jargon technique des diagnostics."</p>
-                        <div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- Sophie L. (Directrice d'Agence)</div>
-                    </div>
+            <h2 class="section-title">Actualités & Réglementation Immobilière (2026)</h2>
+            <div class="info-grid" style="margin-bottom: 60px;">
+                <div class="info-card">
+                    <h3>Audit Énergétique Obligatoire</h3>
+                    <p>En complément du DPE, la vente d'un logement classé E, F ou G impose un audit énergétique réglementaire. Il détaille les scénarios de travaux nécessaires pour atteindre la classe B et doit être remis dès la première visite.</p>
                 </div>
-
-                <div class="form-avis" style="background: #eaf9f0; padding: 40px; border-radius: 12px; border: 1px solid #00d632; max-width: 600px; margin: 0 auto; text-align: center;">
-                    <h3 style="margin-top: 0; color: #0b1a14; text-transform: uppercase;">Vous avez utilisé AuditPro ? Évaluez-nous !</h3>
-                    <div style="color: #f39c12; font-size: 30px; margin-bottom: 20px;">★★★★★</div>
-                    <input type="text" id="nomAvis" placeholder="Votre Prénom & Fonction (ex: Jean, Agent immobilier)" class="form-control" style="margin-bottom: 15px; width: 100%; box-sizing: border-box;">
-                    <textarea id="texteAvis" placeholder="Racontez-nous comment le rapport vous a aidé dans votre transaction..." class="form-control" style="margin-bottom: 15px; width: 100%; height: 100px; box-sizing: border-box; resize: vertical;"></textarea>
-                    <button type="button" class="btn-solid" onclick="ajouterAvis()" style="width: 100%; padding: 15px; font-size: 16px;">Publier mon évaluation</button>
+                <div class="info-card">
+                    <h3>Évolution de MaPrimeRénov'</h3>
+                    <p>Les aides de l'État favorisent désormais les rénovations globales (saut de 2 classes DPE minimum). L'accompagnement par un tiers de confiance "Mon Accompagnateur Rénov'" est devenu obligatoire.</p>
                 </div>
-            </section>
+                <div class="info-card">
+                    <h3>Permis de Louer</h3>
+                    <p>De plus en plus de communes exigent un Permis de Louer pour lutter contre l'habitat indigne. Les diagnostics électricité, gaz et plomb sont scrutés à la loupe par les inspecteurs de l'urbanisme.</p>
+                </div>
             </div>
 
-            <div id="faq-tab" class="tab-content">
-                <section id="faq" class="content-section">
-                    <h2 class="section-title">Questions Fréquentes (FAQ)</h2>
-                    <div class="faq-container">
-                        <details>
-                            <summary>1. Qu'est-ce qu'un audit technique pré-acquisition ?</summary>
-                            <p>C'est une analyse détaillée de la santé d'un bâtiment. Notre programme interprète les documents obligatoires du vendeur pour en déduire les risques financiers et estimer le budget nécessaire pour la mise aux normes.</p>
-                        </details>
-                        <details>
-                            <summary>2. Le rapport d'AuditPro a-t-il une valeur légale chez le notaire ?</summary>
-                            <p>Non. Le rapport généré est un outil d'aide à la décision visant la transparence commerciale. Chez le notaire, seul le Dossier de Diagnostic Technique (DDT) réalisé physiquement par l'expert certifié a une valeur juridique.</p>
-                        </details>
-                        <details>
-                            <summary>3. Puis-je utiliser ce chiffrage pour discuter du prix de vente ?</summary>
-                            <p>Absolument, c'est l'objectif principal. En présentant un rapport clair chiffrant les anomalies techniques (électricité, isolation, amiante), vous disposez d'une base objective et neutre pour trouver un accord équitable avec le vendeur.</p>
-                        </details>
-                        <details>
-                            <summary>4. L'outil remplace-t-il le devis d'un artisan professionnel ?</summary>
-                            <p>Non. L'application calcule une enveloppe budgétaire moyenne basée sur des statistiques régionales. Avant d'acheter, il est toujours conseillé de faire confirmer ces montants par le devis d'un artisan local certifié RGE.</p>
-                        </details>
-                        <details>
-                            <summary>5. Quels sont les diagnostics immobiliers obligatoires pour vendre ?</summary>
-                            <p>Le vendeur doit fournir : le DPE (énergie), le constat plomb (si construction avant 1949), l'amiante (avant 1997), l'électricité et le gaz (installations de plus de 15 ans), l'ERP (risques naturels), et l'état parasitaire selon la ville.</p>
-                        </details>
-                        <details>
-                            <summary>6. Quelle est la durée de validité du DPE ?</summary>
-                            <p>Un DPE est valable 10 ans. Attention toutefois, depuis le 1er janvier 2025, tous les DPE réalisés avec l'ancienne méthode (avant juillet 2021) ne sont plus valables légalement et doivent être refaits.</p>
-                        </details>
-                        <details>
-                            <summary>7. Qu'est-ce qu'exactement une "passoire thermique" ?</summary>
-                            <p>C'est un logement classé F ou G sur le DPE. Il consomme énormément de chauffage. La loi française interdit progressivement la mise en location de ces biens pour protéger les locataires de la précarité énergétique.</p>
-                        </details>
-                        <details>
-                            <summary>8. Quelle est la durée de validité des diagnostics Électricité et Gaz ?</summary>
-                            <p>Ils sont valables 3 ans dans le cadre d'une vente immobilière. Si vous achetez pour mettre le bien en location, leur durée de validité est étendue à 6 ans pour le contrat de bail.</p>
-                        </details>
-                        <details>
-                            <summary>9. Faut-il refaire le diagnostic Amiante si le résultat précédent était négatif ?</summary>
-                            <p>Non, sa validité est illimitée, MAIS à une seule condition : il doit avoir été réalisé après le 1er avril 2013. Les diagnostics amiante antérieurs à cette date doivent être refaits.</p>
-                        </details>
-                        <details>
-                            <summary>10. Quelle est la différence de risque entre l'amiante et le plomb ?</summary>
-                            <p>L'amiante est une fibre dans les murs/toits qui est cancérigène si on la respire (en perçant le matériau). Le plomb est présent dans les vieilles peintures et provoque le saturnisme si un enfant ingère les écailles qui tombent.</p>
-                        </details>
-                        <details>
-                            <summary>11. Qu'est-ce qu'un DGI (Danger Grave et Immédiat) ?</summary>
-                            <p>C'est le niveau d'alerte maximum, souvent sur le gaz. Si le diagnostiqueur repère un DGI, il a l'obligation légale de condamner l'installation sur le champ. Le gaz ne pourra être rouvert qu'après réparation par un pro.</p>
-                        </details>
-                        <details>
-                            <summary>12. Suis-je obligé de faire les travaux si une anomalie est détectée ?</summary>
-                            <p>Le vendeur n'a aucune obligation de travaux (sauf DGI), il doit juste informer l'acheteur en toute transparence. En tant qu'acheteur, les banques exigent souvent la mise aux normes pour vous accorder le prêt.</p>
-                        </details>
-                        <details>
-                            <summary>13. Le calcul prend-il en compte les aides de l'État (MaPrimeRénov') ?</summary>
-                            <p>Non. L'outil vous indique le coût global brut des travaux. Les aides de l'État étant calculées en fonction de vos revenus fiscaux personnels, c'est à vous de les déduire de l'enveloppe finale estimée par l'application.</p>
-                        </details>
-                        <details>
-                            <summary>14. Le rapport est-il adapté aux tarifs des artisans de ma région ?</summary>
-                            <p>Oui. L'algorithme lit le code postal que vous avez renseigné et applique un coefficient multiplicateur reflétant la tension du marché de la construction dans votre département.</p>
-                        </details>
-                        <details>
-                            <summary>15. Comment le programme calcule-t-il les prix des travaux ?</summary>
-                            <p>Il repère dans le PDF la surface totale du bien (ex: 80m²), identifie le type de problème (ex: toiture abîmée), et multiplie la surface par le coût moyen au mètre carré pratiqué pour ce type de réparation.</p>
-                        </details>
-                        <details>
-                            <summary>16. Mes données personnelles et mon document PDF sont-ils conservés ?</summary>
-                            <p>Absolument pas. Nous appliquons la règle stricte du "Zéro Stockage". Votre PDF est scanné en quelques secondes par la mémoire vive du serveur, puis il est immédiatement et définitivement supprimé. Rien n'est conservé.</p>
-                        </details>
-                        <details>
-                            <summary>17. Le programme peut-il lire un PDF de plus de 100 pages ?</summary>
-                            <p>Oui, c'est toute la force de l'outil. L'algorithme est conçu pour scanner instantanément l'intégralité du document et cibler uniquement les tableaux de synthèses et les mots-clés de conformité, peu importe la longueur.</p>
-                        </details>
-                        <details>
-                            <summary>18. Que se passe-t-il s'il manque un diagnostic obligatoire lors de la vente ?</summary>
-                            <p>Le notaire bloquera généralement la vente. Si elle se fait quand même, l'acheteur pourra plus tard attaquer le vendeur en justice pour "vice caché" s'il découvre un problème (termites, amiante) et demander l'annulation.</p>
-                        </details>
-                        <details>
-                            <summary>19. L'outil fonctionne-t-il pour les locaux commerciaux ou industriels ?</summary>
-                            <p>Actuellement non. Les règles de sécurité (incendie, accès handicapés) et de prix au mètre carré pour les commerces sont très différentes. L'outil est calibré exclusivement pour l'immobilier d'habitation (maisons et appartements).</p>
-                        </details>
-                        <details>
-                            <summary>20. Je suis un professionnel de l'immobilier, puis-je utiliser la plateforme ?</summary>
-                            <p>Oui, l'outil dispose d'un écran de bienvenue avec sélection de profil. En choisissant "Professionnel", l'algorithme générera un discours conçu pour vous aider à rassurer vos acquéreurs et apporter de la valeur à vos mandats.</p>
-                        </details>
-                    </div>
-                </section>
+            <h2 class="section-title">Guide Pratique : Validité des diagnostics (DDT)</h2>
+            <p style="text-align:center; color:#495057; margin-bottom:40px; font-size:16px;">
+                Attention : un diagnostic périmé peut faire annuler une vente immobilière ou retarder la signature chez le notaire. Voici les durées légales :
+            </p>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>Plomb (CREP)</h3>
+                    <p>Validité : <strong>1 an</strong> (si présence de plomb).<br>Si la mesure est négative (aucune trace), la validité devient alors <strong>illimitée</strong> pour les ventes futures.</p>
+                </div>
+                <div class="info-card">
+                    <h3>Électricité & Gaz</h3>
+                    <p>Validité : <strong>3 ans</strong> (pour une vente) ou <strong>6 ans</strong> (pour location). Obligatoire si l'installation a plus de 15 ans d'ancienneté.</p>
+                </div>
+                <div class="info-card">
+                    <h3>Diagnostic Énergétique (DPE)</h3>
+                    <p>Validité : <strong>10 ans</strong>.<br>Attention, suite à la réforme, les DPE réalisés avant juillet 2021 ne sont officiellement plus valables.</p>
+                </div>
+                <div class="info-card">
+                    <h3>Amiante (Avant Vente)</h3>
+                    <p>Validité : <strong>Illimitée</strong>.<br>Uniquement si le diagnostic a été fait après le 1er avril 2013 et s'il est totalement négatif.</p>
+                </div>
+                <div class="info-card">
+                    <h3>Métrage Loi Carrez</h3>
+                    <p>Validité : <strong>Illimitée</strong>.<br>Il reste valable à vie, à condition de ne pas avoir réalisé de travaux modifiant la surface habitable.</p>
+                </div>
             </div>
+        </section>
+    </div>
 
-            <div id="contact-tab" class="tab-content">
-                <section id="contact" class="content-section" style="text-align: center;">
-                    <h2 class="section-title">Nous Contacter</h2>
-                    <div style="background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 600px; margin: 0 auto; border-top: 4px solid #00d632;">
-                        <p style="font-size: 16px; color: #495057; margin-bottom: 30px;">Une question sur l'algorithme ? Une proposition de partenariat commercial ? N'hésitez pas à contacter notre équipe à l'adresse ci-dessous :</p>
-                        <div style="font-size: 22px; font-weight: 800; color: #0b1a14; margin-bottom: 30px; background: #eaf9f0; padding: 15px; border-radius: 8px; border: 1px solid #00d632; user-select: all;">
-                            <span>contact.auditpro.immo</span><span>@</span><span>gmail.com</span>
-                        </div>
-                    </div>
-                </section>
+    <div id="avis-tab" class="tab-content">
+       <section id="avis" class="content-section" style="background-color: #f8f9fa;">
+        <h2 class="section-title">Avis de nos utilisateurs professionnels et particuliers</h2>
+        
+        <div id="listeAvis" class="avis-grid" style="display: flex; gap: 20px; margin-bottom: 40px; flex-wrap: wrap;">
+            <div class="avis-card" style="flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;">
+                <div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div>
+                <p style="font-size: 14px; font-style: italic; color: #495057;">"L'approche proposée par le rapport est très fine. Cela m'a permis d'aborder la question des travaux d'électricité avec le vendeur de façon très sereine et objective. Résultat : un accord équitable trouvé en 2h."</p>
+                <div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- Marc D. (Investisseur locatif)</div>
             </div>
-        </main>
+            <div class="avis-card" style="flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;">
+                <div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div>
+                <p style="font-size: 14px; font-style: italic; color: #495057;">"Un outil fantastique pour la transparence. Je le présente désormais systématiquement à mes clients acquéreurs. Cela désamorce toutes leurs inquiétudes face au jargon technique des diagnostics."</p>
+                <div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- Sophie L. (Directrice d'Agence)</div>
+            </div>
+        </div>
 
-       <footer>
-           © 2026 AuditPro-Immo. Tous droits réservés. | Outil certifié d'analyse immobilière.<br>
-           Ce rapport d'expertise textuelle ne se substitue pas à un acte notarié formel ni à un devis d'artisan.<br>
-           <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" style="color: #00d632; text-decoration: underline; margin-top: 15px; display: inline-block;">Politique de confidentialité (RGPD) & Mentions Légales</a>
-        </footer>
-    </div> <div id="modalLegale" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.9); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
+        <div class="form-avis" style="background: #eaf9f0; padding: 40px; border-radius: 12px; border: 1px solid #00d632; max-width: 600px; margin: 0 auto; text-align: center;">
+            <h3 style="margin-top: 0; color: #0b1a14; text-transform: uppercase;">Vous avez utilisé AuditPro ? Évaluez-nous !</h3>
+            <div style="color: #f39c12; font-size: 30px; margin-bottom: 20px;">★★★★★</div>
+            <input type="text" id="nomAvis" placeholder="Votre Prénom & Fonction (ex: Jean, Agent immobilier)" class="form-control" style="margin-bottom: 15px; width: 100%; box-sizing: border-box;">
+            <textarea id="texteAvis" placeholder="Racontez-nous comment le rapport vous a aidé dans votre transaction..." class="form-control" style="margin-bottom: 15px; width: 100%; height: 100px; box-sizing: border-box; resize: vertical;"></textarea>
+            <button type="button" class="btn-solid" onclick="ajouterAvis()" style="width: 100%; padding: 15px; font-size: 16px;">Publier mon évaluation</button>
+        </div>
+    </section>
+    </div>
+
+    <div id="faq-tab" class="tab-content">
+        <section id="faq" class="content-section">
+            <h2 class="section-title">Questions Fréquentes (FAQ)</h2>
+            <div class="faq-container">
+                <details>
+                    <summary>1. Qu'est-ce qu'un audit technique pré-acquisition ?</summary>
+                    <p>C'est une analyse détaillée de la santé d'un bâtiment. Notre programme interprète les documents obligatoires du vendeur pour en déduire les risques financiers et estimer le budget nécessaire pour la mise aux normes.</p>
+                </details>
+                <details>
+                    <summary>2. Le rapport d'AuditPro a-t-il une valeur légale chez le notaire ?</summary>
+                    <p>Non. Le rapport généré est un outil d'aide à la décision visant la transparence commerciale. Chez le notaire, seul le Dossier de Diagnostic Technique (DDT) réalisé physiquement par l'expert certifié a une valeur juridique.</p>
+                </details>
+                <details>
+                    <summary>3. Puis-je utiliser ce chiffrage pour discuter du prix de vente ?</summary>
+                    <p>Absolument, c'est l'objectif principal. En présentant un rapport clair chiffrant les anomalies techniques (électricité, isolation, amiante), vous disposez d'une base objective et neutre pour trouver un accord équitable avec le vendeur.</p>
+                </details>
+                <details>
+                    <summary>4. L'outil remplace-t-il le devis d'un artisan professionnel ?</summary>
+                    <p>Non. L'application calcule une enveloppe budgétaire moyenne basée sur des statistiques régionales. Avant d'acheter, il est toujours conseillé de faire confirmer ces montants par le devis d'un artisan local certifié RGE.</p>
+                </details>
+                <details>
+                    <summary>5. Quels sont les diagnostics immobiliers obligatoires pour vendre ?</summary>
+                    <p>Le vendeur doit fournir : le DPE (énergie), le constat plomb (si construction avant 1949), l'amiante (avant 1997), l'électricité et le gaz (installations de plus de 15 ans), l'ERP (risques naturels), et l'état parasitaire selon la ville.</p>
+                </details>
+                <details>
+                    <summary>6. Quelle est la durée de validité du DPE ?</summary>
+                    <p>Un DPE est valable 10 ans. Attention toutefois, depuis le 1er janvier 2025, tous les DPE réalisés avec l'ancienne méthode (avant juillet 2021) ne sont plus valables légalement et doivent être refaits.</p>
+                </details>
+                <details>
+                    <summary>7. Qu'est-ce qu'exactement une "passoire thermique" ?</summary>
+                    <p>C'est un logement classé F ou G sur le DPE. Il consomme énormément de chauffage. La loi française interdit progressivement la mise en location de ces biens pour protéger les locataires de la précarité énergétique.</p>
+                </details>
+                <details>
+                    <summary>8. Quelle est la durée de validité des diagnostics Électricité et Gaz ?</summary>
+                    <p>Ils sont valables 3 ans dans le cadre d'une vente immobilière. Si vous achetez pour mettre le bien en location, leur durée de validité est étendue à 6 ans pour le contrat de bail.</p>
+                </details>
+                <details>
+                    <summary>9. Faut-il refaire le diagnostic Amiante si le résultat précédent était négatif ?</summary>
+                    <p>Non, sa validité est illimitée, MAIS à une seule condition : il doit avoir été réalisé après le 1er avril 2013. Les diagnostics amiante antérieurs à cette date doivent être refaits.</p>
+                </details>
+                <details>
+                    <summary>10. Quelle est la différence de risque entre l'amiante et le plomb ?</summary>
+                    <p>L'amiante est une fibre dans les murs/toits qui est cancérigène si on la respire (en perçant le matériau). Le plomb est présent dans les vieilles peintures et provoque le saturnisme si un enfant ingère les écailles qui tombent.</p>
+                </details>
+                <details>
+                    <summary>11. Qu'est-ce qu'un DGI (Danger Grave et Immédiat) ?</summary>
+                    <p>C'est le niveau d'alerte maximum, souvent sur le gaz. Si le diagnostiqueur repère un DGI, il a l'obligation légale de condamner l'installation sur le champ. Le gaz ne pourra être rouvert qu'après réparation par un pro.</p>
+                </details>
+                <details>
+                    <summary>12. Suis-je obligé de faire les travaux si une anomalie est détectée ?</summary>
+                    <p>Le vendeur n'a aucune obligation de travaux (sauf DGI), il doit juste informer l'acheteur en toute transparence. En tant qu'acheteur, les banques exigent souvent la mise aux normes pour vous accorder le prêt.</p>
+                </details>
+                <details>
+                    <summary>13. Le calcul prend-il en compte les aides de l'État (MaPrimeRénov') ?</summary>
+                    <p>Non. L'outil vous indique le coût global brut des travaux. Les aides de l'État étant calculées en fonction de vos revenus fiscaux personnels, c'est à vous de les déduire de l'enveloppe finale estimée par l'application.</p>
+                </details>
+                <details>
+                    <summary>14. Le rapport est-il adapté aux tarifs des artisans de ma région ?</summary>
+                    <p>Oui. L'algorithme lit le code postal que vous avez renseigné et applique un coefficient multiplicateur reflétant la tension du marché de la construction dans votre département.</p>
+                </details>
+                <details>
+                    <summary>15. Comment le programme calcule-t-il les prix des travaux ?</summary>
+                    <p>Il repère dans le PDF la surface totale du bien (ex: 80m²), identifie le type de problème (ex: toiture abîmée), et multiplie la surface par le coût moyen au mètre carré pratiqué pour ce type de réparation.</p>
+                </details>
+                <details>
+                    <summary>16. Mes données personnelles et mon document PDF sont-ils conservés ?</summary>
+                    <p>Absolument pas. Nous appliquons la règle stricte du "Zéro Stockage". Votre PDF est scanné en quelques secondes par la mémoire vive du serveur, puis il est immédiatement et définitivement supprimé. Rien n'est conservé.</p>
+                </details>
+                <details>
+                    <summary>17. Le programme peut-il lire un PDF de plus de 100 pages ?</summary>
+                    <p>Oui, c'est toute la force de l'outil. L'algorithme est conçu pour scanner instantanément l'intégralité du document et cibler uniquement les tableaux de synthèses et les mots-clés de conformité, peu importe la longueur.</p>
+                </details>
+                <details>
+                    <summary>18. Que se passe-t-il s'il manque un diagnostic obligatoire lors de la vente ?</summary>
+                    <p>Le notaire bloquera généralement la vente. Si elle se fait quand même, l'acheteur pourra plus tard attaquer le vendeur en justice pour "vice caché" s'il découvre un problème (termites, amiante) et demander l'annulation.</p>
+                </details>
+                <details>
+                    <summary>19. L'outil fonctionne-t-il pour les locaux commerciaux ou industriels ?</summary>
+                    <p>Actuellement non. Les règles de sécurité (incendie, accès handicapés) et de prix au mètre carré pour les commerces sont très différentes. L'outil est calibré exclusivement pour l'immobilier d'habitation (maisons et appartements).</p>
+                </details>
+                <details>
+                    <summary>20. Je suis un professionnel de l'immobilier, puis-je utiliser la plateforme ?</summary>
+                    <p>Oui, l'outil dispose d'un sélecteur de profil à l'accueil. En choisissant "Professionnel", l'algorithme générera un discours conçu pour vous aider à rassurer vos acquéreurs et apporter de la valeur à vos mandats.</p>
+                </details>
+            </div>
+        </section>
+    </div>
+
+    <div id="contact-tab" class="tab-content">
+        <section id="contact" class="content-section" style="text-align: center;">
+            <h2 class="section-title">Nous Contacter</h2>
+            <div style="background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 600px; margin: 0 auto; border-top: 4px solid #00d632;">
+                <p style="font-size: 16px; color: #495057; margin-bottom: 30px;">Une question sur l'algorithme ? Une proposition de partenariat commercial ? N'hésitez pas à contacter notre équipe à l'adresse ci-dessous :</p>
+                <div style="font-size: 22px; font-weight: 800; color: #0b1a14; margin-bottom: 30px; background: #eaf9f0; padding: 15px; border-radius: 8px; border: 1px solid #00d632; user-select: all;">
+                    <span>contact.auditpro.immo</span><span>@</span><span>gmail.com</span>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+   <footer>
+       © 2026 AuditPro-Immo. Tous droits réservés. | Outil certifié d'analyse immobilière.<br>
+       Ce rapport d'expertise textuelle ne se substitue pas à un acte notarié formel ni à un devis d'artisan.<br>
+       <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" style="color: #00d632; text-decoration: underline; margin-top: 15px; display: inline-block;">Politique de confidentialité (RGPD) & Mentions Légales</a>
+    </footer>
+
+    <div id="modalLegale" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.9); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
         <div style="background: #fff; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 40px; border-radius: 12px; position: relative; text-align: left;">
             <button onclick="document.getElementById('modalLegale').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: #cc0000; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">Fermer X</button>
             <h2 style="color: #0b1a14; border-bottom: 2px solid #00d632; padding-bottom: 10px;">Mentions Légales & Conditions d'Utilisation</h2>
@@ -391,7 +384,7 @@
     <div id="loading-overlay">
         <div class="spinner"></div>
         <h3 style="color: white; margin-top: 25px; font-family: 'Segoe UI', sans-serif;">Analyse en cours...</h3>
-        <p style="color: #00d632; font-weight: bold;">Extraction et calcul des données du diagnostic</p>
+        <p style="color: #00d632; font-weight: bold;">Extraction et chiffrage des données du diagnostic</p>
     </div>
 
     <script src="script.js"></script>
