@@ -1,5 +1,20 @@
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f8f9fa; color: #212529; scroll-behavior: smooth; display: flex; flex-direction: column; min-height: 100vh; }
 
+/* NOUVEAU DESIGN PORTAIL D'ACCUEIL PREMIUM */
+#welcome-portal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(11,26,20,0.95) 0%, rgba(26,60,45,0.98) 100%), url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80') center/cover; z-index: 100000; display: flex; justify-content: center; align-items: center; text-align: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(10px); transition: opacity 0.5s ease, visibility 0.5s; }
+.portal-content { max-width: 900px; width: 100%; }
+.portal-logo { font-size: 48px; font-weight: 800; color: #fff; margin-bottom: 20px; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+.portal-content h1 { color: #fff; margin-top: 0; font-size: 36px; }
+.portal-content p { color: #eaf9f0; font-size: 18px; margin-bottom: 50px; line-height: 1.5; }
+.portal-cards { display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; }
+.portal-card { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); padding: 40px; border-radius: 16px; cursor: pointer; flex: 1; min-width: 300px; transition: transform 0.3s, background 0.3s, box-shadow 0.3s; color: #fff; }
+.portal-card:hover { transform: translateY(-10px); background: rgba(255, 255, 255, 0.2); box-shadow: 0 20px 40px rgba(0,0,0,0.4); border-color: #00d632; }
+.card-icon { font-size: 50px; margin-bottom: 15px; }
+.portal-card h3 { margin-top: 0; font-size: 24px; color: #00d632; }
+.portal-card p { font-size: 15px; color: #ddd; margin-bottom: 0; }
+.portal-footer { margin-top: 50px; font-size: 13px; color: rgba(255,255,255,0.6); }
+
+/* RESTE DU DESIGN STANDARD */
 header { background: #0b1a14; color: #fff; padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .logo { font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 10px;}
 nav a { color: #fff; text-decoration: none; margin: 0 15px; font-size: 14px; font-weight: 600; }
@@ -24,7 +39,6 @@ main { flex: 1; }
 .profile-btn { flex: 1; padding: 12px 10px; border: none; background: transparent; border-radius: 6px; font-weight: 700; font-size: 13px; color: #6c757d; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .profile-btn:hover { background: #eaf9f0; }
 .profile-btn.active { background: #fff; color: #0b1a14; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border: 1px solid #00d632; }
-.profile-btn span { font-size: 16px; }
 
 #result-wrapper { max-width: 1050px; margin: 60px auto; display: none; padding: 0 20px; box-sizing: border-box; }
 #contenu-ecran { background: #fff; padding: 50px; border-radius: 8px; border: 1px solid #eee; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
@@ -98,4 +112,6 @@ footer { background-color: #1a1a1a; color: #ffffff; text-align: center; padding:
     .kpi-grid { flex-direction: column; gap: 15px; }
     #contenu-ecran { padding: 25px 15px; }
     .info-card, .avis-card { flex: 1 1 100%; min-width: 100%; }
+    .portal-logo { font-size: 36px; }
+    .portal-content h1 { font-size: 26px; }
 }
