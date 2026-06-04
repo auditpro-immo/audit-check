@@ -16,11 +16,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.0">
 </head>
 <body>
 
-    <!-- PORTAIL D'ACCUEIL PREMIUM (Réintégré et amélioré) -->
     <div id="welcome-portal">
         <div class="portal-content">
             <div class="portal-logo">Audit<span style="color: #00d632;">Pro</span></div>
@@ -45,7 +44,6 @@
         </div>
     </div>
 
-    <!-- APPLICATION PRINCIPALE -->
     <div id="main-app" style="display: none; opacity: 0; transition: opacity 0.5s ease;">
         <header>
             <div class="logo"><span id="header-logo-text">Audit</span><span id="header-logo-color" style="color: #00d632;">Pro</span></div>
@@ -61,7 +59,6 @@
         </header>
 
         <main>
-            <!-- ONGLET 1 : L'Analyse (Accueil) -->
             <div id="audit-tab" class="tab-content active">
                 <section class="hero" id="audit">
                     <div class="hero-content">
@@ -78,7 +75,6 @@
                     <div class="form-container">
                         <h2 id="form-title">Configuration de l'analyse</h2>
                         
-                        <!-- Toggle conservé pour changer de mode sans recharger la page -->
                         <div class="form-group" style="margin-bottom: 25px;">
                             <div class="profile-selector">
                                 <button type="button" id="btn-particulier" class="profile-btn active" onclick="changerProfilInterne('particulier')">
@@ -130,7 +126,6 @@
                 </div>
             </div>
 
-            <!-- ONGLET 2 : TABLEAU DE BORD PRO -->
             <div id="pro-tab" class="tab-content">
                 <section id="pro" class="content-section">
                     <h2 class="section-title">Tableau de Bord Professionnel</h2>
@@ -139,7 +134,6 @@
                     </p>
                     
                     <div style="display: flex; flex-wrap: wrap; gap: 30px; margin-bottom: 60px;">
-                        <!-- PARAMÈTRES MARQUE BLANCHE -->
                         <div style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 4px solid #0b1a14;">
                             <h3 style="margin-top: 0; color: #0b1a14; border-bottom: 1px solid #eee; padding-bottom: 15px;">🎨 Configuration Marque Blanche</h3>
                             <div class="form-group" style="margin-top: 20px;">
@@ -156,7 +150,6 @@
                             <button class="btn-solid btn-dynamic-color" style="width: 100%; margin-top: 10px; padding: 12px;" onclick="sauvegarderParametresPro()">Enregistrer mes préférences</button>
                         </div>
 
-                        <!-- HISTORIQUE CLOUD LOCAL -->
                         <div style="flex: 2; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 4px solid #0b1a14; display: flex; flex-direction: column;">
                             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
                                 <h3 style="margin: 0; color: #0b1a14;">📂 Historique Local</h3>
@@ -174,8 +167,7 @@
                                         </tr>
                                     </thead>
                                     <tbody id="historiqueTableBody">
-                                        <!-- Rempli dynamiquement par JS -->
-                                    </tbody>
+                                        </tbody>
                                 </table>
                             </div>
                         </div>
@@ -183,7 +175,6 @@
                 </section>
             </div>
 
-            <!-- ONGLET 3 : Informations & Grille -->
             <div id="informations-tab" class="tab-content">
                 <section id="informations" class="content-section">
                     <div style="background-color: #f8f9fa; padding: 40px 20px; text-align: center; border-radius: 12px; margin: 0 auto 60px auto; border: 1px solid #ced4da; max-width: 800px;">
@@ -210,13 +201,11 @@
                 </section>
             </div>
 
-            <!-- ONGLET 4 : Avis Clients -->
             <div id="avis-tab" class="tab-content">
                <section id="avis" class="content-section" style="background-color: #f8f9fa;">
                 <h2 class="section-title">Avis de nos utilisateurs</h2>
                 <div id="listeAvis" class="avis-grid" style="display: flex; gap: 20px; margin-bottom: 40px; flex-wrap: wrap;">
-                    <!-- Avis injectés par JS -->
-                </div>
+                    </div>
                 <div class="form-avis" style="background: #fff; padding: 40px; border-radius: 12px; border: 1px solid #ced4da; max-width: 600px; margin: 0 auto; text-align: center;">
                     <h3 style="margin-top: 0; color: #0b1a14;">Vous avez utilisé AuditPro ? Évaluez-nous !</h3>
                     <div style="color: #f39c12; font-size: 30px; margin-bottom: 20px;">★★★★★</div>
@@ -227,7 +216,6 @@
             </section>
             </div>
 
-            <!-- ONGLET 5 : FAQ COMPLÈTE -->
             <div id="faq-tab" class="tab-content">
                 <section id="faq" class="content-section">
                     <h2 class="section-title">Questions Fréquentes (FAQ)</h2>
@@ -243,7 +231,6 @@
                 </section>
             </div>
 
-            <!-- ONGLET 6 : CONTACT -->
             <div id="contact-tab" class="tab-content">
                 <section id="contact" class="content-section" style="text-align: center;">
                     <h2 class="section-title">Nous Contacter</h2>
@@ -260,25 +247,21 @@
        <footer>
            © 2026 AuditPro-Immo. Tous droits réservés. | Logiciel d'analyse immobilière.<br>
            Ce rapport d'expertise ne se substitue pas à un devis d'artisan.<br>
-           <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" class="text-dynamic-color" style="text-decoration: underline; margin-top: 15px; display: inline-block;">Mentions Légales & Confidentialité</a>
+           <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" class="text-dynamic-color" style="text-decoration: underline; margin-top: 15px; display: inline-block;">Mentions Légales & RGPD</a>
         </footer>
-    </div> <!-- Fin main-app -->
-
-    <!-- Mentions Légales Modale -->
-    <div id="modalLegale" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.9); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
+    </div> <div id="modalLegale" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.9); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
         <div style="background: #fff; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 40px; border-radius: 12px; position: relative; text-align: left;">
             <button onclick="document.getElementById('modalLegale').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: #cc0000; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">Fermer X</button>
-            <h2 style="color: #0b1a14; border-bottom: 2px solid #eee; padding-bottom: 10px;">Mentions Légales & Confidentialité</h2>
+            <h2 style="color: #0b1a14; border-bottom: 2px solid #eee; padding-bottom: 10px;">Mentions Légales & Conditions d'Utilisation</h2>
             <h3 style="font-size: 16px; margin-top: 20px;">1. Édition et Hébergement</h3>
             <p style="font-size: 14px; color: #555;">Interface publique hébergée par GitHub Pages. Moteur d'analyse hébergé par Render.</p>
-            <h3 style="font-size: 16px; margin-top: 20px;">2. Respect strict de la vie privée (Zéro Serveur)</h3>
-            <p style="font-size: 14px; color: #555;">La plateforme fonctionne sur une architecture respectueuse. <strong>Les documents PDF ne sont jamais enregistrés sur nos serveurs.</strong> Ils sont scannés instantanément puis détruits. Votre historique de recherche et vos paramètres d'agence sont sauvegardés <strong>exclusivement dans la mémoire de votre propre navigateur (Local Storage)</strong>. Vous avez le contrôle total sur ces données.</p>
+            <h3 style="font-size: 16px; margin-top: 20px;">2. Traitement des Données (RGPD)</h3>
+            <p style="font-size: 14px; color: #555;">Le respect de la vie privée est absolu. "Zéro Stockage" du côté serveur. Vos paramètres (Marque Blanche, Historique) sont stockés localement sur votre propre navigateur via les Cookies/LocalStorage.</p>
             <h3 style="font-size: 16px; margin-top: 20px;">3. Limites de Responsabilité</h3>
-            <p style="font-size: 14px; color: #555;">Les chiffrages proposés sont des estimations statistiques. L'éditeur décline toute responsabilité quant aux décisions financières prises sur la base de ces rapports qui ne remplacent en aucun cas des devis d'artisans.</p>
+            <p style="font-size: 14px; color: #555;">Les chiffrages proposés sont des estimations statistiques macro-économiques. L'éditeur décline toute responsabilité quant aux décisions financières prises sur la base de ces rapports.</p>
         </div>
     </div>
 
-    <!-- BANDEAU DE COOKIES (FONCTIONNEL ET UTILE) -->
     <div id="cookie-banner" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: #0b1a14; color: #fff; padding: 20px; z-index: 10000; box-sizing: border-box; text-align: center; border-top: 4px solid #00d632;" class="border-dynamic-color">
         <p style="margin: 0 0 15px 0; font-size: 14px;">🛠️ <strong>Fonctionnement "Local-First" :</strong> Ce site utilise le stockage local de votre navigateur pour sauvegarder vos paramètres d'agence (Marque Blanche) et votre historique de rapports sur cet appareil, sans jamais les envoyer sur nos serveurs. Acceptez-vous ce fonctionnement ?</p>
         <button onclick="accepterCookies()" class="btn-solid btn-dynamic-color" style="padding: 10px 30px; font-size: 14px;">J'accepte et j'active mon espace</button>
