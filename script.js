@@ -651,15 +651,15 @@ function exporterPDF(action = 'download') {
 
     // Logo ou Nom d'agence
     let logoBlock = agenceLogoBase64 
-        ? { image: agenceLogoBase64, fit: [140, 50], alignment: 'left' }
+        ? { image: agenceLogoBase64, fit: [150, 55], alignment: 'left' }
         : { text: agenceNom.toUpperCase(), fontSize: 22, bold: true, color: agenceCouleur, alignment: 'left', letterSpacing: 1 };
 
     // En-tête du document
     let headerTop = {
         columns: [
-            { width: '40%', stack: [logoBlock] },
+            { width: '45%', stack: [logoBlock], margin: [0, 5, 0, 0] },
             {
-                width: '60%',
+                width: '55%',
                 table: {
                     widths: ['*', '*'],
                     body: [
