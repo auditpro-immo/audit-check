@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AuditPro-Immo | Le logiciel d'expertise et de chiffrage immobilier</title>
     
-    <meta name="description" content="AuditPro-Immo : Testez et analysez les diagnostics de votre bien immobilier en 2 min. Chiffrage précis des travaux de rénovation.">
+    <meta name="description" content="AuditPro-Immo : Testez et analysez les diagnostics de votre bien immobilier en 2 min. Chiffrage précis des travaux de rénovation et de mise aux normes.">
     <meta name="keywords" content="auditpro-immo, immobilier, chiffrage travaux, DPE, passoire thermique, investissement locatif, expertise, diagnostic, agent immobilier">
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230b1a14'/><path d='M50 22 L82 72 L68 72 L50 44 L32 72 L18 72 Z' fill='%2300d632'/><path d='M50 35 L70 66 L59 66 L50 51 L41 66 L30 66 Z' fill='%23ffffff' opacity='0.85'/></svg>">
@@ -15,10 +15,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <link rel="stylesheet" href="style.css?v=9.0">
+    <link rel="stylesheet" href="style.css?v=10.0">
 </head>
 <body>
 
+    <!-- PORTAIL D'ACCUEIL -->
     <div id="welcome-portal">
         <div class="portal-content">
             <div class="portal-logo">Audit<span style="color: #00d632;">Pro</span></div>
@@ -51,13 +52,14 @@
         </div>
     </div>
 
+    <!-- APPLICATION PRINCIPALE -->
     <div id="main-app" style="display: none; opacity: 0; transition: opacity 0.5s ease;">
         <header>
             <div class="logo"><span id="header-logo-text">Audit</span><span id="header-logo-color" style="color: #00d632;">Pro</span></div>
            <nav>
                 <a href="#audit" class="active">Le Diagnostic</a>
-                <a href="#pro" id="nav-pro" style="display: none;">Mon Tableau de Bord Pro</a>
-                <a href="#informations">Ressources & Grille</a>
+                <a href="#pro" id="nav-pro" style="display: none;">Tableau de Bord Pro</a>
+                <a href="#informations">Ressources & Guides</a>
                 <a href="#avis">Avis Clients</a>
                 <a href="#faq">Questions Fréquentes</a>
                 <a href="#contact">Contact</a>
@@ -66,6 +68,7 @@
         </header>
 
         <main>
+            <!-- ONGLET 1 : L'Analyse (Accueil) -->
             <div id="audit-tab" class="tab-content active">
                 <section class="hero" id="audit">
                     <div class="hero-content">
@@ -129,7 +132,7 @@
 
                 <div style="background-color: #0b1a14; padding: 30px 20px; text-align: center; border-bottom: 4px solid #00d632;" class="border-dynamic-color">
                     <p style="color: #fff; font-size: 18px; margin: 0 0 15px 0; font-weight: 600;">En visite sur le terrain ? Anticipez l'analyse technique sans fichier PDF</p>
-                    <a href="grille.html" target="_blank" class="btn-solid btn-dynamic-color" style="display: inline-block; text-decoration: none; border: 2px solid transparent;">Télécharger la Grille d'Évaluation Physique</a>
+                    <a href="grille.html" target="_blank" class="btn-solid btn-dynamic-color" style="display: inline-block; text-decoration: none;">Télécharger la Grille d'Évaluation Physique</a>
                 </div>
 
                 <div id="result-wrapper">
@@ -140,6 +143,7 @@
                 </div>
             </div>
 
+            <!-- ONGLET 2 : TABLEAU DE BORD PRO -->
             <div id="pro-tab" class="tab-content">
                 <section id="pro" class="content-section">
                     <h2 class="section-title">Tableau de Bord Professionnel</h2>
@@ -148,6 +152,7 @@
                     </p>
                     
                     <div style="display: flex; flex-wrap: wrap; gap: 30px; margin-bottom: 60px;">
+                        <!-- PARAMÈTRES MARQUE BLANCHE -->
                         <div style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 4px solid #0b1a14;">
                             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
                                 <h3 style="margin: 0; color: #0b1a14; display: flex; align-items: center; gap: 8px;">
@@ -187,6 +192,7 @@
                             <button class="btn-solid btn-dynamic-color" style="width: 100%; margin-top: 10px; padding: 12px;" onclick="sauvegarderParametresPro()">Enregistrer mes paramètres</button>
                         </div>
 
+                        <!-- HISTORIQUE CLOUD LOCAL -->
                         <div style="flex: 2; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 4px solid #0b1a14; display: flex; flex-direction: column;">
                             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
                                 <h3 style="margin: 0; color: #0b1a14; display: flex; align-items: center; gap: 8px;">
@@ -199,7 +205,7 @@
                                 </button>
                             </div>
                             
-                            <p style="font-size: 12px; color: #666; margin-top: 0;">Cliquez sur un dossier ci-dessous pour recharger l'analyse et le rapport PDF instantanément.</p>
+                            <p style="font-size: 12px; color: #666; margin-top: 0; margin-bottom: 15px;">Retrouvez vos dossiers récents. Cliquez pour visualiser ou télécharger le PDF.</p>
                             <div class="table-responsive" style="margin-bottom: 0; flex: 1; overflow-y: auto; max-height: 250px;">
                                 <table style="min-width: 100%;">
                                     <thead>
@@ -207,16 +213,18 @@
                                             <th>Date</th>
                                             <th>Secteur</th>
                                             <th>Prix Vente</th>
-                                            <th>Action</th>
+                                            <th style="text-align: right;">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody id="historiqueTableBody">
-                                        </tbody>
+                                        <!-- Rempli dynamiquement par JS -->
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
 
+                    <!-- OUTIL DE CAPTATION DE LEADS -->
                     <div style="background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-left: 4px solid #0b1a14;" class="border-left-dynamic-color">
                         <div style="display: flex; gap: 30px; align-items: center; flex-wrap: wrap;">
                             <div style="flex: 1; min-width: 300px; text-align: left;">
@@ -225,13 +233,17 @@
                                     Outil de Captation (Générateur de Leads)
                                 </h3>
                                 <p style="font-size: 15px; color: #495057; line-height: 1.6;">Intégrez notre moteur d'analyse directement sur le site internet de votre agence. Offrez l'audit gratuit de leurs diagnostics à vos visiteurs en échange de leurs coordonnées.</p>
-                                <p style="font-size: 15px; color: #0b1a14; font-weight: 700; margin-bottom: 20px;">Transformez votre trafic web en mandats d'estimation qualifiés.</p>
-                                <button class="btn-demo" style="width: auto;" onclick="alert('L\'intégration API et le code iFrame seront débloqués dans la version Premium de votre abonnement.')">Obtenir le code d'intégration Widget</button>
+                                <ul style="font-size: 14px; color: #495057; margin-bottom: 20px; padding-left: 20px;">
+                                    <li>Récolte automatique des adresses emails.</li>
+                                    <li>Envoi direct des coordonnées dans votre logiciel CRM.</li>
+                                    <li>Détection de projets de vente qualifiés.</li>
+                                </ul>
+                                <button class="btn-demo" style="width: auto;" onclick="alert('L\'intégration API et le code iFrame seront débloqués dans la version Premium de votre abonnement.')">Obtenir le code d'intégration HTML</button>
                             </div>
                             <div style="flex: 1; min-width: 300px; background: #f8f9fa; padding: 25px; border-radius: 8px; border: 2px dashed #ced4da; text-align: center;">
-                                <span style="font-size: 12px; color: #6c757d; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">Aperçu du Widget sur votre site</span>
+                                <span style="font-size: 12px; color: #6c757d; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">Aperçu du Widget d'intégration</span>
                                 <div style="margin-top: 15px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: left;">
-                                    <label style="font-size: 12px; font-weight: 700; color: #0b1a14;">Testez vos diagnostics :</label>
+                                    <label style="font-size: 12px; font-weight: 700; color: #0b1a14;">Faites chiffrer vos diagnostics :</label>
                                     <div style="border: 1px dashed #ccc; padding: 10px; border-radius: 4px; text-align: center; margin: 10px 0; font-size: 12px; color: #888;">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
                                         Déposer le PDF ici
@@ -245,11 +257,12 @@
                 </section>
             </div>
 
+            <!-- ONGLET 3 : Informations & Grille -->
             <div id="informations-tab" class="tab-content">
                 <section id="informations" class="content-section">
                     <div style="background-color: #f8f9fa; padding: 40px 20px; text-align: center; border-radius: 12px; margin: 0 auto 60px auto; border: 1px solid #ced4da; max-width: 800px;">
                         <h2 style="color: #0b1a14; margin-top: 0;">La Grille d'Auto-Évaluation</h2>
-                        <p style="color: #495057; font-size: 16px; margin-bottom: 25px;">Imprimez cette fiche de contrôle vierge. Elle vous guidera étape par étape pour inspecter les points critiques d'un bien lors de votre visite sur le terrain.</p>
+                        <p style="color: #495057; font-size: 16px; margin-bottom: 25px;">Imprimez cette fiche de contrôle vierge. Elle vous guidera étape par étape pour inspecter les points critiques d'un bien lors de votre visite sur le terrain, sans attendre le dossier du notaire.</p>
                         <a href="grille.html" target="_blank" class="btn-solid btn-dynamic-color" style="display: inline-block; text-decoration: none;">Télécharger et imprimer la Grille</a>
                     </div>
 
@@ -257,20 +270,64 @@
                     <div class="info-grid" style="margin-bottom: 60px;">
                         <div class="info-card">
                             <h3>Audit Énergétique Obligatoire</h3>
-                            <p>En complément du DPE, la vente d'un logement classé E, F ou G impose un audit énergétique réglementaire. Il détaille les scénarios de travaux nécessaires pour atteindre la classe B et doit être remis par le vendeur.</p>
+                            <p>En complément du DPE, la vente d'un logement classé E, F ou G impose un audit énergétique réglementaire. Il détaille les scénarios de travaux nécessaires pour atteindre la classe B et doit être remis par le propriétaire vendeur dès la première visite du bien par un acquéreur potentiel.</p>
                         </div>
                         <div class="info-card">
                             <h3>Évolution de MaPrimeRénov'</h3>
-                            <p>Les aides financières de l'État favorisent désormais massivement les rénovations globales. Pour ces dossiers de grande ampleur, l'accompagnement par un tiers de confiance agréé est devenu une obligation légale.</p>
+                            <p>Les aides financières de l'État favorisent désormais massivement les rénovations globales (qui impliquent un saut d'au moins 2 classes sur le DPE). Pour ces dossiers de grande ampleur, l'accompagnement par un tiers de confiance agréé nommé "Mon Accompagnateur Rénov'" est devenu une obligation légale pour débloquer les fonds.</p>
                         </div>
                         <div class="info-card">
                             <h3>Le Permis de Louer</h3>
-                            <p>De plus en plus de communes métropolitaines exigent un Permis de Louer préalable pour lutter contre l'habitat indigne. Dans ce cadre, les diagnostics sont scrutés à la loupe par les inspecteurs de l'urbanisme.</p>
+                            <p>De plus en plus de communes métropolitaines exigent un Permis de Louer préalable pour lutter contre l'habitat indigne et les marchands de sommeil. Dans ce cadre strict, les diagnostics de conformité électrique, gaz et plomb sont scrutés à la loupe par les inspecteurs des services de l'urbanisme.</p>
+                        </div>
+                    </div>
+
+                    <h2 class="section-title">Conseils Stratégiques & Fiscaux</h2>
+                    <div class="info-grid" style="margin-bottom: 60px;">
+                        <div class="info-card">
+                            <h3>Le Déficit Foncier</h3>
+                            <p>Acheter un bien nécessitant de lourds travaux (comme identifié par AuditPro) permet de déduire le montant total de ces réparations de vos revenus fonciers. Une stratégie puissante pour effacer totalement votre imposition sur plusieurs années.</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>Statut LMNP (Meublé)</h3>
+                            <p>En réalisant une rénovation complète pour louer en meublé, vous activez l'amortissement comptable du bien et des travaux. Ce mécanisme fiscal complexe mais extrêmement rentable permet de générer des revenus locatifs net d'impôts sur une longue durée.</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>Sortir du Statut "Passoire"</h3>
+                            <p>Un DPE F ou G fait fuir 60% des acheteurs classiques. Acquérir ce type de bien avec une décote, isoler thermiquement (passage en lettre D minimum), puis revendre, constitue aujourd'hui l'une des opérations de "Marchand de biens" les plus lucratives.</p>
+                        </div>
+                    </div>
+
+                    <h2 class="section-title">Guide Pratique : Validité des diagnostics (DDT)</h2>
+                    <p style="text-align:center; color:#495057; margin-bottom:40px; font-size:16px;">
+                        Attention : un diagnostic périmé peut faire annuler une vente immobilière ou retarder la signature chez le notaire. Voici les durées légales :
+                    </p>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h3>Plomb (CREP)</h3>
+                            <p>Validité : <strong>1 an</strong> (en cas de présence avérée de plomb au-dessus des seuils).<br>Si la mesure est totalement négative, la validité devient alors <strong>illimitée</strong> pour les ventes futures.</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>Électricité & Gaz</h3>
+                            <p>Validité : <strong>3 ans</strong> (pour une vente) ou <strong>6 ans</strong> (pour location). Obligatoires uniquement si l'installation a plus de 15 ans d'ancienneté.</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>Diagnostic Énergétique (DPE)</h3>
+                            <p>Validité : <strong>10 ans</strong>. Attention, les DPE réalisés avec l'ancienne méthode de calcul (avant le 1er juillet 2021) ne sont officiellement plus valables et doivent être refaits.</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>Amiante (Avant Vente)</h3>
+                            <p>Validité : <strong>Illimitée</strong>. S'applique uniquement si le diagnostic a été réalisé après le 1er avril 2013 et s'il est totalement négatif.</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>Métrage Loi Carrez</h3>
+                            <p>Validité : <strong>Illimitée</strong>. Valable à vie à condition que le propriétaire n'ait pas réalisé de travaux modifiant la surface habitable.</p>
                         </div>
                     </div>
                 </section>
             </div>
 
+            <!-- ONGLET 4 : Avis Clients -->
             <div id="avis-tab" class="tab-content">
                <section id="avis" class="content-section" style="background-color: #f8f9fa;">
                 <h2 class="section-title">Avis de nos utilisateurs</h2>
@@ -295,6 +352,7 @@
             </section>
             </div>
 
+            <!-- ONGLET 5 : FAQ COMPLÈTE -->
             <div id="faq-tab" class="tab-content">
                 <section id="faq" class="content-section">
                     <h2 class="section-title">20 Questions Fréquentes (FAQ)</h2>
@@ -309,8 +367,8 @@
                         <details><summary>8. Quelle est la durée de validité des diagnostics Électricité et Gaz ?</summary><p>Ils sont valables 3 ans dans le cadre d'une vente immobilière. Si vous achetez ce bien pour le mettre en location, leur durée de validité est étendue à 6 ans pour la signature du contrat de bail.</p></details>
                         <details><summary>9. Faut-il refaire le diagnostic Amiante si le résultat précédent était négatif ?</summary><p>Non, sa validité est théoriquement illimitée, MAIS à une seule condition : il doit avoir été réalisé après le 1er avril 2013. Les diagnostics amiante antérieurs à cette date précise doivent être refaits, même s'ils étaient négatifs.</p></details>
                         <details><summary>10. Quelle est la différence de risque entre l'amiante et le plomb ?</summary><p>L'amiante est une fibre (souvent dans les toits en fibrociment ou les dalles) qui est cancérigène si on la respire en la cassant. Le plomb est présent dans les vieilles peintures et provoque une maladie grave (le saturnisme).</p></details>
-                        <details><summary>11. Qu'est-ce qu'un DGI (Danger Grave et Immédiat) ?</summary><p>C'est le niveau d'alerte maximum, extrêmement fréquent sur les anciennes chaudières au gaz. Si le diagnostiqueur repère un DGI, il a l'obligation légale de condamner l'installation sur le champ.</p></details>
-                        <details><summary>12. Suis-je obligé de faire les travaux si une anomalie est détectée ?</summary><p>Le vendeur n'a aucune obligation de travaux (sauf en cas de DGI), il doit juste informer l'acheteur en toute transparence. En tant qu'acheteur, la loi ne vous y oblige pas, mais les banques l'exigent souvent.</p></details>
+                        <details><summary>11. Qu'est-ce qu'un DGI (Danger Grave et Immédiat) ?</summary><p>C'est le niveau d'alerte maximum, extrêmement fréquent sur les anciennes chaudières au gaz. Si le diagnostiqueur repère un DGI, il a l'obligation légale de condamner l'installation sur le champ. Elle ne pourra être rouverte qu'après réparation par un pro.</p></details>
+                        <details><summary>12. Suis-je obligé de faire les travaux si une anomalie est détectée ?</summary><p>Le vendeur n'a aucune obligation de travaux (sauf en cas de DGI), il doit juste informer l'acheteur en toute transparence. En tant qu'acheteur, la loi ne vous y oblige pas, mais les banques exigent souvent la mise aux normes pour vous accorder le prêt immobilier.</p></details>
                         <details><summary>13. Le calcul prend-il en compte les aides de l'État (MaPrimeRénov') ?</summary><p>Non. L'outil vous indique le coût global brut des travaux. Les aides de l'État (MaPrimeRénov', CEE) étant calculées en fonction de vos revenus fiscaux personnels, c'est à vous de les déduire de l'enveloppe finale estimée.</p></details>
                         <details><summary>14. Le rapport est-il adapté aux tarifs des artisans de ma région ?</summary><p>Oui. L'algorithme lit le code postal que vous avez renseigné et applique un coefficient multiplicateur reflétant la tension du marché de la construction dans votre département.</p></details>
                         <details><summary>15. Comment le programme calcule-t-il les prix des travaux ?</summary><p>Il repère dans le PDF la surface totale du bien, identifie le type de problème relevé par l'expert, et multiplie la surface par le coût moyen au mètre carré pratiqué pour ce type de réparation spécifique.</p></details>
@@ -323,6 +381,7 @@
                 </section>
             </div>
 
+            <!-- ONGLET 6 : CONTACT -->
             <div id="contact-tab" class="tab-content">
                 <section id="contact" class="content-section" style="text-align: center;">
                     <h2 class="section-title">Nous Contacter</h2>
@@ -343,6 +402,7 @@
         </footer>
     </div>
 
+    <!-- Mentions Légales Modale -->
     <div id="modalLegale" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.9); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
         <div style="background: #fff; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 40px; border-radius: 12px; position: relative; text-align: left;">
             <button onclick="document.getElementById('modalLegale').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: #cc0000; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">Fermer X</button>
@@ -356,8 +416,9 @@
         </div>
     </div>
 
+    <!-- BANDEAU DE COOKIES -->
     <div id="cookie-banner" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: #0b1a14; color: #fff; padding: 20px; z-index: 10000; box-sizing: border-box; text-align: center; border-top: 4px solid #00d632;" class="border-dynamic-color">
-        <p style="margin: 0 0 15px 0; font-size: 14px;">🛠️ <strong>Fonctionnement "Local-First" :</strong> Ce site utilise le stockage local de votre navigateur pour sauvegarder vos paramètres d'agence (Marque Blanche) et votre historique de rapports sur cet appareil, sans jamais les envoyer sur nos serveurs. Acceptez-vous ce fonctionnement ?</p>
+        <p style="margin: 0 0 15px 0; font-size: 14px;"><strong>Fonctionnement "Local-First" :</strong> Ce site utilise le stockage local de votre navigateur pour sauvegarder vos paramètres d'agence (Marque Blanche) et votre historique de rapports sur cet appareil, sans jamais les envoyer sur nos serveurs. Acceptez-vous ce fonctionnement ?</p>
         <button onclick="accepterCookies()" class="btn-solid btn-dynamic-color" style="padding: 10px 30px; font-size: 14px;">J'accepte et j'active mon espace</button>
     </div>
 
