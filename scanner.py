@@ -20,7 +20,7 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return {"status": "API AuditPro-Immo opérationnelle", "version": "1.1", "message": "Moteur d'IA prêt."}
+    return {"status": "API AuditPro-Immo opérationnelle", "version": "1.1", "message": "Moteur d'analyse prêt."}
 
 def get_modulateur_marche(cp: str):
     mois_ecoules = (datetime.now().year - 2024) * 12 + datetime.now().month
@@ -231,7 +231,7 @@ async def analyze_grid(request: Request):
         decote += 2500
         details.append({"point": "Sécurité Électrique", "loi": "Norme NF C 15-100", "analyse": "CONSTAT DÉTAILLÉ :\nL'électricité est vieille. En clair, il n'y a pas les sécurités modernes de base.\n\nRISQUES IDENTIFIÉS :\nFort danger d'électrocution si un appareil ménager a un défaut.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Faire changer le tableau et ajouter des prises de terre -> env. 2 500 €.", "provision": "-2 500 €"})
 
-    if heating_vetuste == "oui" or chauffage_vetuste == "oui":
+    if chauffage_vetuste == "oui":
         decote += 12000; malus_dpe += 2
         details.append({"point": "Chauffage", "loi": "Transition Énergétique", "analyse": "CONSTAT DÉTAILLÉ :\nLa chaudière ou les radiateurs sont d'une ancienne génération.\n\nRISQUES IDENTIFIÉS :\nRisque de panne en plein hiver et consommation de gaz/fioul très chère.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Acheter et faire poser une Pompe à Chaleur moderne -> env. 12 000 €.", "provision": "-12 000 €"})
 
@@ -272,6 +272,6 @@ async def analyze_grid(request: Request):
     dpe_estime = lettres_dpe[index]
 
     etat = "Vigilance : Gros budget travaux requis" if decote > 0 else "Maison saine : Aucun gros travaux"
-    strategie = f"Bilan financier : L'application estime un total de {decote} € de travaux à prévoir. Vous pouvez utiliser ce document pour justifier une baisse du prix d'achat." if decote > 0 else "Bilan financier : La maison est en excellent état. Le vendeur n'acceptera pas facilement de baisser son prix."
+    strategie = f"Bilan financier : Le programme estime un total de {decote} € de travaux à prévoir. Vous pouvez utiliser ce document pour justifier une baisse du prix d'achat." if decote > 0 else "Bilan financier : La maison est en excellent état. Le vendeur n'acceptera pas facilement de baisser son prix."
 
     return {"success": True, "resultat": {"etat": etat, "decote_totale": decote, "details": details, "strategie": strategie, "dpe": dpe_estime}}
