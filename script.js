@@ -231,39 +231,20 @@ function chargerDossierHistorique(index) {
     afficherEcran();
 }
 
-// ACTION : BOUTON VOIR (OUVRE LE PDF DIRECTEMENT)
+// CORRECTION : ACTION BOUTON VOIR SANS DÉLAI POUR NE PAS ÊTRE BLOQUÉ PAR CHROME
 function voirPDFDirect(event, index) {
     event.stopPropagation();
-    chargerDossierHistorique(index);
+    chargerDossierHistorique(index); // Charge les données et dessine le graphique instantanément
     showToast("Ouverture du rapport PDF en cours...");
-    
-    // NOUVEAU : On ouvre l'onglet instantanément au clic pour contourner le bloqueur de pop-up
-    const pdfWindow = window.open("", "_blank");
-    if (pdfWindow) {
-        pdfWindow.document.write(`
-            <html lang='fr'>
-            <head><title>Rapport AuditPro</title></head>
-            <body style='background-color:#525659; display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; margin:0; color:white; font-family:sans-serif;'>
-                <h3>Génération du document en cours...</h3>
-                <p style="color:#aaa; font-size:14px;">Veuillez patienter quelques instants.</p>
-            </body>
-            </html>
-        `);
-    }
-
-    setTimeout(() => {
-        exporterPDF('view', pdfWindow); 
-    }, 800);
+    exporterPDF('open'); // Génère et ouvre le PDF immédiatement dans la même action de clic
 }
 
-// ACTION : BOUTON PDF (TÉLÉCHARGEMENT DIRECT)
+// CORRECTION : ACTION BOUTON TÉLÉCHARGER SANS DÉLAI
 function telechargerDirect(event, index) {
     event.stopPropagation();
     chargerDossierHistorique(index); 
     showToast("Génération du PDF en cours...");
-    setTimeout(() => {
-        exporterPDF('download'); // Génère le PDF en arrière plan
-    }, 800);
+    exporterPDF('download');
 }
 
 function viderHistorique() {
@@ -611,10 +592,10 @@ Ces données constituent une base objective. Face au vendeur, elles justifient m
 }
 
 // LE NOUVEAU PDF : STYLE "CABINET DE CONSEIL" - OPTIMISÉ, DENSE ET DESIGN
-function exporterPDF(action = 'download', targetWindow = null) {
+function exporterPDF(action = 'download') {
     if (!donneesAudit) return;
     const btn = document.getElementById('btnExport');
-    if(btn && action !== 'view') btn.innerText = "Édition du PDF en cours...";
+    if(btn && action !== 'open') btn.innerText = "Édition du PDF en cours...";
     
     // --- 1. GÉNÉRATEUR DE BADGE DPE DYNAMIQUE ---
     function getDpeSvg(lettre) {
@@ -838,16 +819,9 @@ function exporterPDF(action = 'download', targetWindow = null) {
 
         let pdf = pdfMake.createPdf(docDefinition);
         
-        if (action === 'view' && targetWindow) {
-            // INJECTION DU PDF DANS LE NOUVEL ONGLET
-            pdf.getBlob((blob) => {
-                const blobUrl = URL.createObjectURL(blob);
-                targetWindow.location.href = blobUrl;
-            });
-            if(btn) btn.innerText = "Télécharger le rapport PDF Officiel";
-        } else if (action === 'open') {
+        if (action === 'open') {
+            // NOUVEAU : pdf.open() ouvre l'onglet nativement et contourne le bloqueur de pop-up
             pdf.open();
-            if(btn) btn.innerText = "Télécharger le rapport PDF Officiel";
         } else {
             pdf.download(agenceNom.replace(/\s+/g, '_') + '_Bilan_Technique_' + idRapport + '.pdf');
             if(btn) {
@@ -856,7 +830,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
         }
     } catch(err) {
         showToast("Erreur lors de la génération du PDF.", "error");
-        if(btn && action !== 'view') btn.innerText = "Télécharger le rapport PDF Officiel";
+        if(btn && action !== 'open') btn.innerText = "Télécharger le rapport PDF Officiel";
     }
 }
 
