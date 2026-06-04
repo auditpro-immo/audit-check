@@ -53,6 +53,7 @@ function appliquerCouleurMarqueBlanche() {
     document.querySelectorAll('.btn-dynamic-color').forEach(btn => { btn.style.backgroundColor = agenceCouleur; });
     document.querySelectorAll('.text-dynamic-color').forEach(txt => { txt.style.color = agenceCouleur; });
     document.querySelectorAll('.border-dynamic-color').forEach(b => { b.style.borderTopColor = agenceCouleur; });
+    document.querySelectorAll('.border-left-dynamic-color').forEach(b => { b.style.borderLeftColor = agenceCouleur; });
     document.querySelector('.form-container').style.borderTopColor = agenceCouleur;
     
     const activeBtn = document.querySelector('.profile-btn.active');
@@ -60,6 +61,10 @@ function appliquerCouleurMarqueBlanche() {
         activeBtn.style.borderColor = agenceCouleur;
         activeBtn.style.color = agenceCouleur;
     }
+    
+    const dropZoneHover = document.getElementById('drop-zone');
+    dropZoneHover.addEventListener('mouseenter', () => { dropZoneHover.style.borderColor = agenceCouleur; });
+    dropZoneHover.addEventListener('mouseleave', () => { dropZoneHover.style.borderColor = '#ced4da'; });
 }
 
 function sauvegarderParametresPro() {
@@ -140,6 +145,45 @@ function formatInputNumber(e) {
     }
 }
 
+// FONCTION D'ANIMATION DES CHIFFRES (EFFET PREMIUM SAAS)
+function animateValue(obj, start, end, duration, prefix = "") {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease out
+        const currentVal = Math.floor(easeProgress * (end - start) + start);
+        
+        obj.innerHTML = prefix + formatNumber(currentVal) + " €";
+        
+        if (progress < 1) {
+            window.requestAnimationFrame(step);
+        } else {
+            obj.innerHTML = prefix + formatNumber(end) + " €";
+        }
+    };
+    window.requestAnimationFrame(step);
+}
+
+function animateValuePercent(obj, start, end, duration) {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        const currentVal = easeProgress * (end - start) + start;
+        
+        obj.innerHTML = currentVal.toFixed(2) + " %";
+        
+        if (progress < 1) {
+            window.requestAnimationFrame(step);
+        } else {
+            obj.innerHTML = end.toFixed(2) + " %";
+        }
+    };
+    window.requestAnimationFrame(step);
+}
+
 function showToast(message, type = "success") {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
@@ -174,13 +218,13 @@ function switchReportTab(tabId) {
     document.getElementById(tabId).classList.add('active');
 }
 
-// FONCTION DEMO ENRICHIE POUR MONTRER LA PUISSANCE DU LOGICIEL
+// DÉMO SURPUISSANTE ET COMPLÈTE
 function lancerDemo() {
-    document.getElementById('prixInitial').value = "245 000";
-    document.getElementById('loyerMensuel').value = "950";
+    document.getElementById('prixInitial').value = "345 000";
+    document.getElementById('loyerMensuel').value = "1 200";
     document.getElementById('codePostal').value = "35000";
     
-    loyerMensuelSaisi = 950;
+    loyerMensuelSaisi = 1200;
     idRapport = "DEMO-PRO-" + Math.floor(Math.random() * 90000 + 10000);
     
     donneesAudit = {
@@ -188,9 +232,9 @@ function lancerDemo() {
         localisation_exacte: "Rennes (Secteur Ille-et-Vilaine)",
         impact_marche: "Métropole régionale en forte croissance économique. La forte demande sur le locatif et le durcissement de la Loi Climat créent une tension sur les artisans certifiés RGE, justifiant un ajustement automatique des devis locaux à la hausse (+18%).",
         date_audit: new Date().toLocaleDateString('fr-FR'),
-        prix_initial: 245000,
+        prix_initial: 345000,
         total_decote: 28700,
-        prix_net: 216300,
+        prix_net: 316300,
         analyse_secteur: "Indice de marché local : 1.18",
         securite: "Vos données sont privées : Le PDF a été supprimé de nos serveurs.",
         solutions: [ 
@@ -274,25 +318,20 @@ function afficherEcran() {
     
     let kpiRentabiliteHtml = "";
     if (loyerMensuelSaisi > 0) {
-        let prixInitial = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
-        let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitial) * 100;
-        let coutTotalReel = prixInitial + donneesAudit.total_decote;
-        let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
-
         kpiRentabiliteHtml = `
         <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-top: 30px; margin-bottom: 15px;">Performance Locative Estimée</h3>
         <div class="kpi-grid">
             <div class="kpi-box">
                 <div class="kpi-label">Loyer Annuel Théorique</div>
-                <div class="kpi-value" style="color: #0b1a14;">${formatNumber(loyerMensuelSaisi * 12)} €</div>
+                <div class="kpi-value" style="color: #0b1a14;" id="anim-loyer">0 €</div>
             </div>
             <div class="kpi-box">
                 <div class="kpi-label">Rendement Brut Hors Travaux</div>
-                <div class="kpi-value">${rentaInitiale.toFixed(2)} %</div>
+                <div class="kpi-value" id="anim-renta-brute">0.00 %</div>
             </div>
             <div class="kpi-box main" style="background: ${agenceCouleur}; color: #fff;">
                 <div class="kpi-label" style="color: #fff;">Rendement Réel Après Travaux</div>
-                <div class="kpi-value">${rentaFinale.toFixed(2)} %</div>
+                <div class="kpi-value" id="anim-renta-nette">0.00 %</div>
             </div>
         </div>`;
     }
@@ -342,15 +381,15 @@ POUR RASSURER L'ACQUÉREUR DURANT LA VISITE :
         <div class="kpi-grid">
             <div class="kpi-box">
                 <div class="kpi-label">Prix de vente initial</div>
-                <div class="kpi-value">${formatNumber(document.getElementById('prixInitial').value.replace(/\s+/g, ''))} €</div>
+                <div class="kpi-value" id="anim-prix-initial">0 €</div>
             </div>
             <div class="kpi-box">
                 <div class="kpi-label" style="color: #cc0000;">Enveloppe Travaux Globale</div>
-                <div class="kpi-value" style="color: #cc0000;">-${formatNumber(donneesAudit.total_decote)} €</div>
+                <div class="kpi-value" style="color: #cc0000;" id="anim-cout-travaux">-0 €</div>
             </div>
             <div class="kpi-box main" style="background-color: ${agenceCouleur};">
                 <div class="kpi-label" style="color: #fff;">Prix Équitable Recommandé</div>
-                <div class="kpi-value">${formatNumber(donneesAudit.prix_net)} €</div>
+                <div class="kpi-value" id="anim-prix-net">0 €</div>
             </div>
         </div>
         ${kpiRentabiliteHtml}
@@ -395,6 +434,22 @@ POUR RASSURER L'ACQUÉREUR DURANT LA VISITE :
     </div>`;
 
     document.getElementById('contenu-ecran').innerHTML = html;
+
+    // LANCEMENT DES ANIMATIONS DE CHIFFRES EN DIRECT
+    let prixInitialClean = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
+    animateValue(document.getElementById('anim-prix-initial'), 0, prixInitialClean, 1500);
+    animateValue(document.getElementById('anim-cout-travaux'), 0, donneesAudit.total_decote, 1500, "-");
+    animateValue(document.getElementById('anim-prix-net'), 0, donneesAudit.prix_net, 1500);
+
+    if (loyerMensuelSaisi > 0) {
+        let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitialClean) * 100;
+        let coutTotalReel = prixInitialClean + donneesAudit.total_decote;
+        let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
+
+        animateValue(document.getElementById('anim-loyer'), 0, (loyerMensuelSaisi * 12), 1500);
+        animateValuePercent(document.getElementById('anim-renta-brute'), 0, rentaInitiale, 1500);
+        animateValuePercent(document.getElementById('anim-renta-nette'), 0, rentaFinale, 1500);
+    }
 
     if (anomalies.length > 0) {
         const ctx = document.getElementById('coutChart').getContext('2d');
@@ -528,7 +583,22 @@ function exporterPDF() {
                 margin: [0, 0, 0, 20]
             },
             
-            { text: '2. INVENTAIRE TECHNIQUE DÉTAILLÉ (DDT)', style: 'sectionTitle', margin: [0, 20, 0, 10] },
+            {
+                table: { widths: ['*'], body: [ [ { stack: [ { text: 'NOTE MACRO-ÉCONOMIQUE LOCALE', fontSize: 9, bold: true, color: '#0b1a14', margin: [0, 0, 0, 4] }, { text: donneesAudit.impact_marche, fontSize: 9, color: '#495057', lineHeight: 1.4 } ], padding: 10 } ] ] },
+                layout: { hLineWidth: () => 1, vLineWidth: () => 1, hLineColor: () => '#ced4da', vLineColor: () => '#ced4da' }, margin: [0, 0, 0, 25]
+            },
+            
+            ...rentaBlock,
+            
+            { text: '3. RECOMMANDATIONS TECHNIQUES', style: 'sectionTitle' },
+            {
+                columns: [
+                    { width: anomalies.length > 0 ? '60%' : '100%', stack: [ { ul: listSolutions, fontSize: 10, lineHeight: 1.5, color: '#333' } ] },
+                    ...chartColumn
+                ], margin: [0, 0, 0, 30]
+            },
+            
+            { text: '4. INVENTAIRE TECHNIQUE DÉTAILLÉ (DDT)', style: 'sectionTitle', pageBreak: 'before' },
             {
                 table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody },
                 layout: { hLineWidth: (i, n) => (i === 0 || i === 1 || i === n.table.body.length) ? 2 : 1, vLineWidth: () => 0, hLineColor: (i, n) => (i === 0 || i === 1 || i === n.table.body.length) ? '#0b1a14' : '#eeeeee', paddingLeft: () => 10, paddingRight: () => 10, paddingTop: () => 12, paddingBottom: () => 12, fillColor: (i) => i === 0 ? agenceCouleur : (i % 2 === 0 ? '#fafafa' : '#ffffff') }
@@ -545,9 +615,11 @@ function exporterPDF() {
             kpiHeader: { alignment: 'center', fontSize: 9, color: '#666', bold: true },
             kpiHeaderRed: { alignment: 'center', fontSize: 9, color: '#cc0000', bold: true },
             kpiHeaderDark: { alignment: 'center', fontSize: 9, color: '#fff', bold: true },
+            kpiHeaderGreen: { alignment: 'center', fontSize: 9, color: '#00923E', bold: true },
             kpiValue: { alignment: 'center', fontSize: 16, bold: true },
             kpiValueRed: { alignment: 'center', fontSize: 16, bold: true, color: '#cc0000' },
             kpiValueDark: { alignment: 'center', fontSize: 18, bold: true, color: '#fff' },
+            kpiValueGreen: { alignment: 'center', fontSize: 18, bold: true, color: '#00923E' },
             tableHeader: { bold: true, fontSize: 10, color: '#ffffff' },
             footerTitle: { fontSize: 9, bold: true, color: '#0b1a14' },
             footerText: { fontSize: 8, color: '#888', alignment: 'justify' }
@@ -646,6 +718,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 dropZoneText.innerHTML = `Document chargé : <b>${this.files[0].name}</b>`;
                 dropZone.style.borderColor = agenceCouleur;
                 dropZone.style.background = "#f4fbf7";
+                document.querySelector('.drop-icon').style.color = agenceCouleur;
             }
         });
     }
