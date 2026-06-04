@@ -21,7 +21,6 @@ function showToast(message, type = "success") {
     }, 4000);
 }
 
-// FONCTIONS POUR LE FORMULAIRE PRO
 function ouvrirModalPro() {
     document.getElementById('modalPro').style.display = 'flex';
 }
@@ -31,7 +30,7 @@ function fermerModalPro() {
 }
 
 function soumettrePro(event) {
-    event.preventDefault(); // Empêche le rechargement de la page
+    event.preventDefault(); 
     fermerModalPro();
     showToast("Demande envoyée avec succès. Notre équipe vous contactera sous 24h.");
 }
@@ -155,13 +154,16 @@ function afficherEcran() {
 
     let scriptNegoTxt = "";
     let titreSectionNego = "";
+    let nomOnglet3 = "";
     
     if (profilSelectionne === "particulier") {
+        nomOnglet3 = "3. Script Acheteur";
         titreSectionNego = "Script de Négociation Prêt à l'Emploi (Acheteur)";
         scriptNegoTxt = `Bonjour, suite à l'analyse rigoureuse du Dossier de Diagnostics Techniques (DDT) concernant le bien situé au ${donneesAudit.cp}, je vous soumets une offre d'achat argumentée.
 L'étude met en évidence une enveloppe de travaux indispensables chiffrée à ${formatNumber(donneesAudit.total_decote)} €, notamment pour pallier les défauts suivants : ${anomalies.map(a => a.titre).join(', ')}. 
 Compte tenu du contexte local à ${donneesAudit.localisation_exacte}, ces coûts techniques impactent directement la valeur nette du bien. Mon offre se positionne donc à ${formatNumber(donneesAudit.prix_net)} €, cohérente avec l'état réel de la structure.`;
     } else {
+        nomOnglet3 = "3. Argumentaire Pro";
         titreSectionNego = "Argumentaire Métier Dédié (Espace Professionnel)";
         scriptNegoTxt = `STRATÉGIE DE RECONTRATISATION DU MANDAT (FACE AU VENDEUR) :
 "Monsieur le vendeur, l'analyse réglementaire objective du fichier DDT chiffre l'enveloppe de mise en conformité de votre bien à ${formatNumber(donneesAudit.total_decote)} €. Pour préserver notre positionnement sur le marché à ${donneesAudit.localisation_exacte} et parer les futures objections des acquéreurs, nous devons ajuster notre mandat exclusif à un prix net conseillé de ${formatNumber(donneesAudit.prix_net)} €."
@@ -184,7 +186,7 @@ PITCH DE RÉASSURANCE COMMERCIALE (FACE À L'ACQUÉREUR DURANT LA VISITE) :
     <div class="report-tabs">
         <button class="report-tab-btn active" onclick="switchReportTab('paneFinancier')">1. Synthèse Financière</button>
         <button class="report-tab-btn" onclick="switchReportTab('paneTechnique')">2. Inventaire Technique</button>
-        <button class="report-tab-btn" onclick="switchReportTab('paneStrategie')" style="background-color: #f4fbf7; color: #00d632; border-radius: 4px;">3. Levier Commercial</button>
+        <button class="report-tab-btn" onclick="switchReportTab('paneStrategie')" style="background-color: #f4fbf7; color: #00d632; border-radius: 4px;">${nomOnglet3}</button>
     </div>
     
     <div id="paneFinancier" class="report-pane active">
@@ -233,7 +235,7 @@ PITCH DE RÉASSURANCE COMMERCIALE (FACE À L'ACQUÉREUR DURANT LA VISITE) :
     
     <div id="paneStrategie" class="report-pane">
         <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-bottom: 10px;">${titreSectionNego}</h3>
-        <p style="font-size: 14px; color: #495057; margin-bottom: 15px; text-align: left;">Script exclusif généré par notre algorithme pour étayer votre positionnement ou votre négociation terrain :</p>
+        <p style="font-size: 14px; color: #495057; margin-bottom: 15px; text-align: left;">Script exclusif généré par notre programme pour étayer votre positionnement ou votre négociation terrain :</p>
         <div class="script-box">
             <button class="btn-copy" onclick="copierScript()">Copier le texte</button>
             <div id="texteScript">${scriptNegoTxt}</div>
