@@ -45,10 +45,6 @@ function changerProfilInterne(profil) {
         document.getElementById('form-title').innerText = "Configuration de l'analyse";
         document.getElementById('nav-pro').style.display = "none";
     }
-    
-    if(donneesAudit) {
-        afficherEcran(); 
-    }
 }
 
 document.getElementById('logoUploadInput').addEventListener('change', function(event) {
@@ -102,6 +98,11 @@ function appliquerCouleurMarqueBlanche() {
     
     const dropIcon = document.querySelector('.drop-icon');
     if(dropIcon) dropIcon.style.color = agenceCouleur;
+    
+    // Met à jour la couleur des boutons PDF dans l'historique
+    document.querySelectorAll('.btn-pdf').forEach(btn => {
+        btn.style.backgroundColor = agenceCouleur;
+    });
 }
 
 function sauvegarderParametresPro() {
@@ -121,7 +122,6 @@ function sauvegarderParametresPro() {
     }
     
     appliquerCouleurMarqueBlanche();
-    chargerHistorique(); // Mets à jour les couleurs des boutons du tableau
     
     if(donneesAudit) {
         afficherEcran(); // Recharge les couleurs dans le rapport actif
@@ -145,7 +145,6 @@ function reinitialiserMarqueBlanche() {
     document.getElementById('logo-preview').src = '';
     
     appliquerCouleurMarqueBlanche(); // Met à jour l'interface immédiatement
-    chargerHistorique(); // Met à jour les couleurs des boutons du tableau
     
     if(donneesAudit) {
         afficherEcran(); // Met à jour le rapport à l'écran
@@ -172,6 +171,7 @@ function chargerHistorique() {
         return;
     }
     
+    // Ajout des boutons "Voir" (Ouvre dans le site) et "PDF" (Génère et télécharge)
     historique.reverse().forEach((dossier, index) => {
         let realIndex = historique.length - 1 - index;
         historiqueTable.innerHTML += `
@@ -181,10 +181,10 @@ function chargerHistorique() {
                 <td>${formatNumber(dossier.prixInitial)} €</td>
                 <td style="text-align: right;">
                     <div style="display:flex; justify-content:flex-end; gap:5px;">
-                        <button class="btn-voir" onclick="chargerDossierHistorique(${realIndex})">
+                        <button class="btn-voir" onmouseover="this.style.color='${agenceCouleur}'; this.style.borderColor='${agenceCouleur}'" onmouseout="this.style.color='#0b1a14'; this.style.borderColor='#ced4da'" onclick="voirPDFDirect(event, ${realIndex})">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Voir
                         </button>
-                        <button class="btn-pdf" style="background-color: ${agenceCouleur};" onclick="telechargerDirect(${realIndex})">
+                        <button class="btn-pdf" style="background-color: ${agenceCouleur}; color: #fff;" onclick="telechargerDirect(event, ${realIndex})">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> PDF
                         </button>
                     </div>
@@ -224,14 +224,22 @@ function chargerDossierHistorique(index) {
     document.getElementById('result-wrapper').style.display = "block";
     document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
     afficherEcran();
-    showToast("Dossier chargé à l'écran.");
 }
 
-function telechargerDirect(index) {
-    chargerDossierHistorique(index); // Charge les datas
-    showToast("Génération du PDF de l'archive en cours...");
+// ACTION : BOUTON VOIR
+function voirPDFDirect(event, index) {
+    event.stopPropagation();
+    chargerDossierHistorique(index);
+    showToast("Le dossier a été chargé dans l'interface.");
+}
+
+// ACTION : BOUTON PDF (TÉLÉCHARGEMENT DIRECT)
+function telechargerDirect(event, index) {
+    event.stopPropagation();
+    chargerDossierHistorique(index); 
+    showToast("Génération du PDF en cours...");
     setTimeout(() => {
-        exporterPDF(); // Télécharge 1 seconde après le temps que le graphique se dessine
+        exporterPDF('download'); // Génère le PDF en arrière plan
     }, 800);
 }
 
@@ -294,11 +302,6 @@ function showToast(message, type = "success") {
     }, 4000);
 }
 
-function copierScript(idElement) {
-    const texte = document.getElementById(idElement).innerText;
-    navigator.clipboard.writeText(texte).then(() => { showToast("Texte copié dans le presse-papier."); });
-}
-
 function switchReportTab(tabId) {
     document.querySelectorAll('.report-tab-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -316,29 +319,27 @@ function switchReportTab(tabId) {
 }
 
 function lancerDemo() {
-    document.getElementById('prixInitial').value = "345 000";
+    document.getElementById('prixInitial').value = "450 000";
     document.getElementById('loyerMensuel').value = "1 200";
     document.getElementById('codePostal').value = "35000";
     
     loyerMensuelSaisi = 1200;
-    idRapport = "DEMO-PRO-" + Math.floor(Math.random() * 90000 + 10000);
+    idRapport = "DEMO-" + Math.floor(Math.random() * 90000 + 10000);
     
     donneesAudit = {
         cp: "35000",
-        localisation_exacte: "Rennes (Secteur Ille-et-Vilaine)",
-        impact_marche: "Métropole régionale en forte croissance économique. La forte demande sur le locatif et le durcissement de la Loi Climat créent une tension sur les artisans certifiés RGE, justifiant un ajustement automatique des devis locaux à la hausse (+18%).",
+        localisation_exacte: "Zone Régionale Intermédiaire",
+        impact_marche: "Secteur provincial actif. Légère tension économique constatée sur les devis (+8%) liée à l'attractivité du littoral ou des grands axes de transport.",
         date_audit: new Date().toLocaleDateString('fr-FR'),
-        prix_initial: 345000,
-        total_decote: 28700,
-        prix_net: 316300,
-        analyse_secteur: "Indice de marché local : 1.18",
+        prix_initial: 450000,
+        total_decote: 16703,
+        prix_net: 433297,
+        analyse_secteur: "Indice de marché local : 1.08",
         securite: "Vos données sont privées : Le PDF a été supprimé de nos serveurs.",
         diagnostics: [
-            {titre: "Électricité (Sécurité)", cout: 4500, loi: "Norme NF C 15-100", detail: "Défaut de mise à la terre ou matériel ancien identifié.", action: "Une mise en sécurité du tableau électrique par un professionnel est recommandée."},
-            {titre: "DPE (Énergie)", cout: 20000, loi: "Loi Climat & Résilience", detail: "Logement classé F (Passoire thermique). Pertes de chaleur majeures identifiées.", action: "Isolation des combles et installation d'une Pompe à Chaleur."},
-            {titre: "Amiante (Matériaux)", cout: 4200, loi: "Art. L1334-13", detail: "Présence de conduits en amiante-ciment dans la cave.", action: "Retrait et traitement des déchets par une société spécialisée."},
-            {titre: "Plomb (Peintures)", cout: 0, loi: "Art. L1334-1", detail: "Aucune trace de plomb au-dessus des seuils réglementaires détectée.", action: "Aucune intervention nécessaire sur les murs."},
-            {titre: "Gaz (Risque fuite)", cout: 0, loi: "Norme NF P 45-500", detail: "Installation étanche et valves de sécurité fonctionnelles.", action: "Entretien annuel classique de la chaudière suffisant."}
+            {titre: "Électricité (Sécurité)", cout: 8128, loi: "Norme NF C 15-100", detail: "Défaut de mise à la terre ou matériel ancien identifié.", action: "Mise en sécurité du tableau électrique par un professionnel."},
+            {titre: "Gaz (Risque fuite)", cout: 0, loi: "Norme NF P 45-500", detail: "La tuyauterie de gaz ne présente aucun défaut d'étanchéité.", action: "Entretien annuel classique de la chaudière."},
+            {titre: "Amiante (Matériaux)", cout: 8575, loi: "Art. L1334-13", detail: "Présence d'amiante confirmée dans certains matériaux de construction.", action: "Intervention d'une entreprise spécialisée nécessaire si des travaux sont prévus."}
         ]
     };
     
@@ -411,10 +412,6 @@ function afficherEcran() {
     
     let kpiRentabiliteHtml = "";
     if (loyerMensuelSaisi > 0) {
-        let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitialClean) * 100;
-        let coutTotalReel = prixInitialClean + donneesAudit.total_decote;
-        let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
-
         kpiRentabiliteHtml = `
         <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-top: 30px; margin-bottom: 15px;">Performance Locative Estimée</h3>
         <div class="kpi-grid">
@@ -433,47 +430,6 @@ function afficherEcran() {
         </div>`;
     }
 
-    let scriptNegoTxt = "";
-    let titreSectionNego = "";
-    let nomOnglet3 = "";
-    let defautsFormate = anomalies.length > 0 ? anomalies.map(a => "• " + a.titre).join('\n') : "Aucun défaut technique majeur.";
-    
-    // ONGLETS FACTUELS : DONNÉES BRUTES POUR LES PROS ET LES PARTICULIERS
-    if (profilActuel === "particulier") {
-        nomOnglet3 = "3. Éléments de Négociation";
-        titreSectionNego = "Aide à la Négociation (Acquéreur)";
-        scriptNegoTxt = `RÉSUMÉ FACTUEL POUR VOTRE OFFRE D'ACHAT :
-
-> VALEURS DE BASE :
-- Prix affiché par le vendeur : ${formatNumber(prixInitialClean)} €
-- Total estimé des travaux de mise aux normes : ${formatNumber(donneesAudit.total_decote)} €
-- Juste valeur technique du bien : ${formatNumber(donneesAudit.prix_net)} €
-
-> JUSTIFICATION DES TRAVAUX :
-L'enveloppe de travaux s'appuie sur le rapport de diagnostic. Ces points doivent être sécurisés :
-${defautsFormate}
-
-CONSEIL : Utilisez ces données objectives issues de notre analyse pour justifier une proposition d'achat équitable auprès du propriétaire.`;
-    } else {
-        nomOnglet3 = "3. Synthèse Commerciale";
-        titreSectionNego = "Données d'appui pour la Transaction (Professionnel)";
-        scriptNegoTxt = `SYNTHÈSE FACTUELLE DU DOSSIER :
-
-> ANALYSE FINANCIÈRE :
-- Écart technique justifié : ${formatNumber(donneesAudit.total_decote)} €
-- Valeur nette recommandée pour mandat : ${formatNumber(donneesAudit.prix_net)} €
-
-> POINTS D'ATTENTION MAJEURS (DDT) :
-${defautsFormate}
-
-> CONTEXTE MARCHÉ (${donneesAudit.localisation_exacte}) :
-${donneesAudit.impact_marche}
-
-UTILISATION CONSEILLÉE :
-Face au vendeur : Ce rapport vous fournit une base chiffrée et objective pour ajuster l'estimation du bien et sécuriser un mandat au juste prix.
-Face à l'acquéreur : Transmettez cette analyse pour prouver votre transparence. L'acquéreur intègre ces coûts dans son plan de financement, limitant ainsi le risque de rétractation post-compromis.`;
-    }
-
     let html = `
     <div style="border-bottom: 3px solid #0b1a14; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
         <div>
@@ -488,7 +444,6 @@ Face à l'acquéreur : Transmettez cette analyse pour prouver votre transparence
     <div class="report-tabs">
         <button class="report-tab-btn active" onclick="switchReportTab('paneFinancier')" style="color: ${agenceCouleur}; border-bottom-color: ${agenceCouleur};">1. Synthèse Financière</button>
         <button class="report-tab-btn" onclick="switchReportTab('paneTechnique')">2. Bilan Technique (DDT)</button>
-        <button class="report-tab-btn" onclick="switchReportTab('paneStrategie')">${nomOnglet3}</button>
     </div>
     
     <div id="paneFinancier" class="report-pane active">
@@ -535,15 +490,6 @@ Face à l'acquéreur : Transmettez cette analyse pour prouver votre transparence
         </div>
     </div>
     
-    <div id="paneStrategie" class="report-pane">
-        <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-bottom: 10px;">${titreSectionNego}</h3>
-        <p style="font-size: 14px; color: #495057; margin-bottom: 15px; text-align: left;">Copiez ces éléments factuels générés par le système pour appuyer votre argumentation :</p>
-        <div class="script-box" style="border-left-color: ${agenceCouleur}; font-style: normal; font-family: 'Inter', sans-serif;">
-            <button class="btn-copy" onclick="copierScript('texteScript')">Copier les données</button>
-            <div id="texteScript">${scriptNegoTxt}</div>
-        </div>
-    </div>
-    
     <div style="font-size: 10px; color: #adb5bd; text-align: justify; border-top: 1px solid #eaeaea; padding-top: 15px; margin-top: 40px;">
         <b>CADRE D'APPLICATION :</b> Cette étude est une simulation macro-économique informatisée d'aide à la décision. Document non contractuel.
     </div>`;
@@ -580,8 +526,8 @@ Face à l'acquéreur : Transmettez cette analyse pour prouver votre transparence
     }
 }
 
-// LE NOUVEAU PDF : STYLE "CABINET DE CONSEIL" - EPURE, SANS FOND VERT FLASHY
-function exporterPDF() {
+// LE NOUVEAU PDF : STYLE "CABINET DE CONSEIL" - EPURE ET SOBRE
+function exporterPDF(action = 'download') {
     if (!donneesAudit) return;
     const btn = document.getElementById('btnExport');
     if(btn) btn.innerText = "Édition du PDF en cours...";
@@ -611,13 +557,29 @@ function exporterPDF() {
         ]);
     });
 
-    // LOGO CADRÉ PARFAITEMENT (fit)
-    let headerPDF = [];
-    if(agenceLogoBase64) {
-        headerPDF.push({ image: agenceLogoBase64, fit: [150, 60], alignment: 'center', margin: [0, 0, 0, 20] });
-    } else {
-        headerPDF.push({ text: agenceNom.toUpperCase(), fontSize: 26, bold: true, color: agenceCouleur, alignment: 'center', margin: [0, 0, 0, 20], letterSpacing: 1 });
-    }
+    // LOGO CADRÉ ET TABLEAU ALIGNÉ (DESIGN PRO)
+    let logoBlock = agenceLogoBase64 
+        ? { image: agenceLogoBase64, fit: [160, 60], alignment: 'left' }
+        : { text: agenceNom.toUpperCase(), fontSize: 22, bold: true, color: agenceCouleur, alignment: 'left' };
+
+    let headerTop = {
+        columns: [
+            logoBlock,
+            {
+                table: {
+                    widths: [100, 150],
+                    body: [
+                        [ { text: 'Identifiant Unique :', style: 'coverLabel' }, { text: idRapport, style: 'coverValue' } ],
+                        [ { text: 'Date de l\'évaluation :', style: 'coverLabel' }, { text: donneesAudit.date_audit, style: 'coverValue' } ],
+                        [ { text: 'Secteur Localisation :', style: 'coverLabel' }, { text: donneesAudit.localisation_exacte, style: 'coverValue' } ]
+                    ]
+                },
+                layout: 'noBorders',
+                alignment: 'right'
+            }
+        ],
+        margin: [0, 0, 0, 40]
+    };
     
     let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
     let chartBlock = [];
@@ -675,21 +637,9 @@ function exporterPDF() {
             };
         },
         content: [
-            ...headerPDF,
-            { text: 'RAPPORT D\'EXPERTISE TECHNIQUE IMMOBILIÈRE', fontSize: 16, color: '#444', alignment: 'center', margin: [0, 10, 0, 30] },
-            
-            {
-                table: {
-                    widths: ['50%', '50%'],
-                    body: [
-                        [ { text: 'DÉTAILS DU DOSSIER', colSpan: 2, style: 'coverTableTitle' }, {} ],
-                        [ { text: 'Identifiant Unique :', style: 'coverLabel' }, { text: idRapport, style: 'coverValue' } ],
-                        [ { text: 'Date de l\'évaluation :', style: 'coverLabel' }, { text: donneesAudit.date_audit, style: 'coverValue' } ],
-                        [ { text: 'Cible / Localisation :', style: 'coverLabel' }, { text: donneesAudit.localisation_exacte, style: 'coverValue' } ]
-                    ]
-                },
-                layout: 'lightHorizontalLines', margin: [0, 0, 0, 40]
-            },
+            headerTop,
+            { text: 'RAPPORT D\'EXPERTISE TECHNIQUE IMMOBILIÈRE', fontSize: 16, color: '#1a1a1a', bold:true, alignment: 'center', margin: [0, 0, 0, 15] },
+            { text: 'Ce document synthétise les données extraites du Dossier de Diagnostic Technique (DDT). Il présente une évaluation objective des coûts de remise aux normes pour sécuriser et justifier la transaction immobilière.', fontSize: 10, color: '#555', alignment: 'center', margin: [0, 0, 0, 40], italics: true },
             
             { text: '1. SYNTHÈSE DES VALORISATIONS', style: 'sectionTitle' },
             {
@@ -718,34 +668,42 @@ function exporterPDF() {
                 layout: { 
                     hLineWidth: function (i, node) { return (i === 0 || i === 1 || i === node.table.body.length) ? 1 : 1; }, 
                     vLineWidth: function (i, node) { return 0; }, 
-                    hLineColor: function (i, node) { return (i === 0 || i === node.table.body.length) ? '#1a1a1a' : '#e0e0e0'; }, 
-                    paddingTop: function(i, node) { return 8; }, 
-                    paddingBottom: function(i, node) { return 8; } 
+                    hLineColor: function (i, node) { return (i === 0 || i === node.table.body.length) ? '#1a1a1a' : '#eeeeee'; }, 
+                    paddingTop: function(i, node) { return 10; }, 
+                    paddingBottom: function(i, node) { return 10; } 
                 }
             },
+
+            { text: '4. CADRE LÉGAL ET FISCAL (RAPPEL)', style: 'sectionTitle', margin: [0, 40, 0, 10] },
+            { text: '• Déficit Foncier : L\'acquisition d\'un bien nécessitant des travaux permet d\'optimiser la fiscalité des revenus fonciers existants.\n• Validité DDT : Il est impératif de s\'assurer que l\'ensemble des diagnostics (DPE, Électricité, Amiante) sont valides à la date de la signature de l\'acte authentique.', fontSize: 9, color: '#444', lineHeight: 1.5, margin: [0, 0, 0, 40] },
             
             { text: 'MÉTHODOLOGIE ET CLAUSE DE NON-SUBSTITUTION', style: 'footerTitle', margin: [0, 40, 0, 5] },
             { text: 'Ce document constitue une évaluation macro-économique basée sur l\'analyse sémantique du Dossier de Diagnostic Technique (DDT). Les coûts sont indexés sur les moyennes du bâtiment applicables au code postal renseigné. Cette simulation statistique a valeur d\'aide indicative pour structurer une transaction immobilière. Les montants chiffrés ne se substituent en aucun cas à la passation de devis contradictoires établis par des corps de métier certifiés RGE.', style: 'footerText' }
         ],
         styles: {
-            coverTableTitle: { fontSize: 10, bold: true, color: '#1a1a1a', alignment: 'center', margin: [0, 6, 0, 6], letterSpacing: 1 },
-            coverLabel: { fontSize: 9, bold: true, color: '#888', alignment: 'right', margin: [0, 4, 10, 4] },
-            coverValue: { fontSize: 9, color: '#1a1a1a', margin: [10, 4, 0, 4], bold: true },
-            sectionTitle: { fontSize: 13, bold: true, color: '#1a1a1a', margin: [0, 25, 0, 15], textTransform: 'uppercase' },
+            coverLabel: { fontSize: 8, bold: true, color: '#888', alignment: 'right', margin: [0, 2, 10, 2] },
+            coverValue: { fontSize: 9, color: '#1a1a1a', margin: [0, 2, 0, 2], bold: true },
+            sectionTitle: { fontSize: 12, bold: true, color: '#1a1a1a', margin: [0, 25, 0, 15], textTransform: 'uppercase' },
             kpiHeader: { alignment: 'center', fontSize: 9, color: '#888', bold: true, margin: [0, 5, 0, 5], textTransform: 'uppercase' },
             kpiHeaderRed: { alignment: 'center', fontSize: 9, color: '#cc0000', bold: true, margin: [0, 5, 0, 5], textTransform: 'uppercase' },
             kpiValue: { alignment: 'center', fontSize: 16, bold: true, color: '#1a1a1a', margin: [0, 10, 0, 10] },
             kpiValueRed: { alignment: 'center', fontSize: 16, bold: true, color: '#cc0000', margin: [0, 10, 0, 10] },
             kpiValueNet: { alignment: 'center', fontSize: 20, bold: true, margin: [0, 10, 0, 10] },
-            tableHeader: { bold: true, fontSize: 9, color: '#ffffff', fillColor: '#1a1a1a', margin: [0, 6, 0, 6] },
+            tableHeader: { bold: true, fontSize: 9, color: '#ffffff', fillColor: '#1a1a1a', margin: [0, 4, 0, 4] },
             footerTitle: { fontSize: 9, bold: true, color: '#1a1a1a' },
             footerText: { fontSize: 8, color: '#666', alignment: 'justify', lineHeight: 1.4 }
         }
     };
 
-    pdfMake.createPdf(docDefinition).download(agenceNom + '_Bilan_Technique_' + idRapport + '.pdf');
-    if(btn) {
-        setTimeout(() => { btn.innerText = "Télécharger le rapport PDF Officiel"; }, 1500);
+    let pdf = pdfMake.createPdf(docDefinition);
+    
+    if (action === 'open') {
+        pdf.open();
+    } else {
+        pdf.download(agenceNom + '_Bilan_Technique_' + idRapport + '.pdf');
+        if(btn) {
+            setTimeout(() => { btn.innerText = "Télécharger le rapport PDF Officiel"; }, 1500);
+        }
     }
 }
 
