@@ -30,7 +30,7 @@ nav a { color: #fff; text-decoration: none; margin: 0 15px; font-size: 14px; fon
     padding: 14px 28px; 
     border-radius: 8px; 
     font-weight: 800; 
-    border: none !important; 
+    border: 0px solid transparent !important; 
     outline: none !important; 
     cursor: pointer; 
     transition: all 0.3s ease; 
@@ -41,8 +41,6 @@ nav a { color: #fff; text-decoration: none; margin: 0 15px; font-size: 14px; fon
     -webkit-appearance: none !important; 
     -moz-appearance: none !important; 
     appearance: none !important; 
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 .btn-solid:hover, .btn-submit:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 214, 50, 0.4); }
 .btn-submit { width: 100%; padding: 16px; font-size: 16px; font-weight: 800; margin-top: 10px;}
@@ -52,6 +50,14 @@ nav a { color: #fff; text-decoration: none; margin: 0 15px; font-size: 14px; fon
 
 .btn-delete { background: transparent; color: #cc0000; border: 1px solid rgba(204, 0, 0, 0.3) !important; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif; outline: none !important; -webkit-appearance: none !important; appearance: none !important;}
 .btn-delete:hover { background: #cc0000; color: #fff; border-color: #cc0000 !important; box-shadow: 0 2px 8px rgba(204, 0, 0, 0.2); }
+
+/* BOUTON VOIR (HISTORIQUE) */
+.btn-voir { background: #f8f9fa; color: #0b1a14; border: 1px solid #ced4da !important; padding: 8px 12px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; font-family: 'Inter', sans-serif;}
+.btn-voir:hover { background: #eaf9f0; border-color: #00d632 !important; color: #00d632; }
+
+/* BOUTON PDF (HISTORIQUE) */
+.btn-pdf { background: #00d632; color: #0b1a14; border: 0px solid transparent !important; padding: 8px 12px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; font-family: 'Inter', sans-serif;}
+.btn-pdf:hover { opacity: 0.9; }
 
 main { flex: 1; }
 
@@ -95,8 +101,8 @@ th, td { border: 1px solid #dee2e6; padding: 16px; text-align: left; vertical-al
 th { background-color: #f8f9fa; text-transform: uppercase; font-size: 11px; font-weight: 800; color: #0b1a14; letter-spacing: 0.5px;}
 
 /* LIGNE HISTORIQUE CLIQUABLE */
-.history-row { cursor: pointer; transition: background-color 0.2s ease; }
-.history-row:hover { background-color: #f4fbf7; }
+.history-row { transition: background-color 0.2s ease; }
+.history-row:hover { background-color: #f8f9fa; }
 
 .content-section { padding: 80px 50px; max-width: 1200px; margin: 0 auto; border-bottom: 1px solid #eaeaea; box-sizing: border-box; }
 .section-title { font-size: 30px; color: #0b1a14; margin-bottom: 40px; text-align: center; font-weight: 800; letter-spacing: -1px;}
@@ -139,10 +145,6 @@ footer { background-color: #1a1a1a; color: #ffffff; text-align: center; padding:
 #loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.95); z-index: 10000; flex-direction: column; justify-content: center; align-items: center; }
 .spinner { width: 60px; height: 60px; border: 6px solid rgba(255, 255, 255, 0.2); border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
-
-.script-box { background: #ffffff; border-left: 4px solid #ced4da; padding: 25px 25px 25px 30px; border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); font-size: 14px; line-height: 1.7; color: #333; white-space: pre-wrap; margin-top: 15px; position: relative; text-align: left; }
-.btn-copy { position: absolute; top: 15px; right: 15px; background: #f8f9fa; color: #0b1a14; border: 1px solid #ced4da !important; padding: 6px 12px; font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; font-style: normal; font-family: 'Inter', sans-serif;}
-.btn-copy:hover { background: #eaeaea; }
 
 @media (max-width: 768px) {
     header { flex-wrap: wrap; padding: 15px 20px; }
