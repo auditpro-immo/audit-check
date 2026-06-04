@@ -21,7 +21,21 @@ function showToast(message, type = "success") {
     }, 4000);
 }
 
-// COPIER LE SCRIPT DE NÉGOCIATION DANS LE PRESSE-PAPIER
+// FONCTIONS POUR LE FORMULAIRE PRO
+function ouvrirModalPro() {
+    document.getElementById('modalPro').style.display = 'flex';
+}
+
+function fermerModalPro() {
+    document.getElementById('modalPro').style.display = 'none';
+}
+
+function soumettrePro(event) {
+    event.preventDefault(); // Empêche le rechargement de la page
+    fermerModalPro();
+    showToast("Demande envoyée avec succès. Notre équipe vous contactera sous 24h.");
+}
+
 function copierScript() {
     const texte = document.getElementById('texteScript').innerText;
     navigator.clipboard.writeText(texte).then(() => {
@@ -29,7 +43,6 @@ function copierScript() {
     });
 }
 
-// CHANGEMENT D'ONGLET INTERNE AU RAPPORT
 function switchReportTab(tabId) {
     document.querySelectorAll('.report-tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.report-pane').forEach(pane => pane.classList.remove('active'));
@@ -115,7 +128,6 @@ function afficherEcran() {
     profilSelectionne = document.getElementById('userProfile').value;
     let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
     
-    // CALCUL DU BLOC RENTABILITÉ
     let kpiRentabiliteHtml = "";
     if (loyerMensuelSaisi > 0) {
         let prixInitial = Number(document.getElementById('prixInitial').value);
@@ -141,14 +153,13 @@ function afficherEcran() {
         </div>`;
     }
 
-    // GÉNÉRATEUR UNIQUE D'ARGUMENTAIRE SUR MESURE
     let scriptNegoTxt = "";
     let titreSectionNego = "";
     
     if (profilSelectionne === "particulier") {
         titreSectionNego = "Script de Négociation Prêt à l'Emploi (Acheteur)";
         scriptNegoTxt = `Bonjour, suite à l'analyse rigoureuse du Dossier de Diagnostics Techniques (DDT) concernant le bien situé au ${donneesAudit.cp}, je vous soumets une offre d'achat argumentée.
-L'étude automatisée met en évidence une enveloppe de travaux indispensables chiffrée à ${formatNumber(donneesAudit.total_decote)} €, notamment pour pallier les défauts suivants : ${anomalies.map(a => a.titre).join(', ')}. 
+L'étude met en évidence une enveloppe de travaux indispensables chiffrée à ${formatNumber(donneesAudit.total_decote)} €, notamment pour pallier les défauts suivants : ${anomalies.map(a => a.titre).join(', ')}. 
 Compte tenu du contexte local à ${donneesAudit.localisation_exacte}, ces coûts techniques impactent directement la valeur nette du bien. Mon offre se positionne donc à ${formatNumber(donneesAudit.prix_net)} €, cohérente avec l'état réel de la structure.`;
     } else {
         titreSectionNego = "Argumentaire Métier Dédié (Espace Professionnel)";
@@ -159,7 +170,6 @@ PITCH DE RÉASSURANCE COMMERCIALE (FACE À L'ACQUÉREUR DURANT LA VISITE) :
 "Le bien présente un chiffrage de travaux transparent de ${formatNumber(donneesAudit.total_decote)} € déjà intégré dans notre étude financière. Vous achetez en parfaite connaissance de cause, sans surprise post-acquisition."`;
     }
 
-    // ARCHITECTURE EN 3 ONGLETS SAAS
     let html = `
     <div style="border-bottom: 3px solid #0b1a14; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
         <div>
@@ -194,7 +204,7 @@ PITCH DE RÉASSURANCE COMMERCIALE (FACE À L'ACQUÉREUR DURANT LA VISITE) :
             </div>
         </div>
         ${kpiRentabiliteHtml}
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 6px; margin-top: 20px; border: 1px solid #ced4da;">
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 6px; margin-top: 20px; border: 1px solid #ced4da; text-align: left;">
             <h4 style="margin: 0 0 8px 0; color: #0b1a14; text-transform: uppercase; font-size: 12px;">Analyse contextuelle du secteur</h4>
             <p style="margin: 0; font-size: 14px; color: #495057; line-height: 1.5;">${donneesAudit.impact_marche}</p>
         </div>
@@ -223,7 +233,7 @@ PITCH DE RÉASSURANCE COMMERCIALE (FACE À L'ACQUÉREUR DURANT LA VISITE) :
     
     <div id="paneStrategie" class="report-pane">
         <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-bottom: 10px;">${titreSectionNego}</h3>
-        <p style="font-size: 14px; color: #495057; margin-bottom: 15px;">Script exclusif généré par notre IA pour étayer votre positionnement ou votre négociation terrain :</p>
+        <p style="font-size: 14px; color: #495057; margin-bottom: 15px; text-align: left;">Script exclusif généré par notre algorithme pour étayer votre positionnement ou votre négociation terrain :</p>
         <div class="script-box">
             <button class="btn-copy" onclick="copierScript()">Copier le texte</button>
             <div id="texteScript">${scriptNegoTxt}</div>
@@ -253,7 +263,6 @@ PITCH DE RÉASSURANCE COMMERCIALE (FACE À L'ACQUÉREUR DURANT LA VISITE) :
     }
 }
 
-// CONFIGURATION EXPORT PDF PREMIUM SANS ELEMENT BLANC
 function exporterPDF() {
     if (!donneesAudit) return;
     const btn = document.getElementById('btnExport');
@@ -416,10 +425,42 @@ function exporterPDF() {
     setTimeout(() => { btn.innerText = "Télécharger le rapport PDF Officiel"; }, 1500);
 }
 
+function ajouterAvis() {
+    const nom = document.getElementById('nomAvis').value;
+    const texte = document.getElementById('texteAvis').value;
+    
+    if (!nom || !texte) return showToast("Veuillez remplir votre nom et votre avis.", "error");
+
+    const nouvelAvis = document.createElement('div');
+    nouvelAvis.className = 'avis-card';
+    nouvelAvis.style.cssText = 'flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;';
+    nouvelAvis.innerHTML = `<div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div><p style="font-size: 14px; font-style: italic; color: #495057;">"${texte}"</p><div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- ${nom}</div>`;
+
+    document.getElementById('listeAvis').prepend(nouvelAvis);
+
+    const avisSauvegardes = JSON.parse(localStorage.getItem('auditpro_avis')) || [];
+    avisSauvegardes.push({ nom: nom, texte: texte });
+    localStorage.setItem('auditpro_avis', JSON.stringify(avisSauvegardes));
+
+    document.getElementById('nomAvis').value = '';
+    document.getElementById('texteAvis').value = '';
+    showToast("Votre avis a bien été publié !");
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+    
+    const avisSauvegardes = JSON.parse(localStorage.getItem('auditpro_avis')) || [];
+    const listeAvis = document.getElementById('listeAvis');
+    avisSauvegardes.forEach(avis => {
+        const nouvelAvis = document.createElement('div');
+        nouvelAvis.className = 'avis-card';
+        nouvelAvis.style.cssText = 'flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;';
+        nouvelAvis.innerHTML = `<div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div><p style="font-size: 14px; font-style: italic; color: #495057;">"${avis.texte}"</p><div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- ${avis.nom}</div>`;
+        listeAvis.prepend(nouvelAvis);
+    });
+
     const liensMenu = document.querySelectorAll('nav a[href^="#"]');
     const blocsOnglets = document.querySelectorAll('.tab-content');
-    const btnNouveauDiag = document.querySelector('header .btn-solid');
 
     function changerOnglet(targetId) {
         liensMenu.forEach(lien => lien.classList.remove('active'));
