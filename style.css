@@ -23,7 +23,7 @@ header { background: #0b1a14; color: #fff; padding: 15px 50px; display: flex; ju
 .logo { font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px;}
 nav a { color: #fff; text-decoration: none; margin: 0 15px; font-size: 14px; font-weight: 600; transition: color 0.2s;}
 
-/* BOUTONS LISSES ET PRO (SUPPRESSION TOTALE DES BORDURES PAR DEFAUT DU NAVIGATEUR) */
+/* BOUTONS LISSES ET PRO (SUPPRESSION ABSOLUE DES BORDURES) */
 .btn-solid, .btn-submit { 
     background-color: #00d632; 
     color: #0b1a14; 
@@ -41,9 +41,11 @@ nav a { color: #fff; text-decoration: none; margin: 0 15px; font-size: 14px; fon
     -webkit-appearance: none !important; 
     -moz-appearance: none !important; 
     appearance: none !important; 
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 .btn-solid:hover, .btn-submit:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 214, 50, 0.4); }
-.btn-submit { width: 100%; padding: 16px; font-size: 16px; font-weight: 800; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px;}
+.btn-submit { width: 100%; padding: 16px; font-size: 16px; font-weight: 800; margin-top: 10px;}
 
 .btn-demo { background: transparent; color: #6c757d; border: 1px solid #ced4da !important; padding: 12px 20px; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; font-family: 'Inter', sans-serif; outline: none !important; -webkit-appearance: none !important; appearance: none !important;}
 .btn-demo:hover { background: #f8f9fa; color: #0b1a14; border-color: #0b1a14 !important; }
@@ -51,18 +53,19 @@ nav a { color: #fff; text-decoration: none; margin: 0 15px; font-size: 14px; fon
 .btn-delete { background: transparent; color: #cc0000; border: 1px solid rgba(204, 0, 0, 0.3) !important; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif; outline: none !important; -webkit-appearance: none !important; appearance: none !important;}
 .btn-delete:hover { background: #cc0000; color: #fff; border-color: #cc0000 !important; box-shadow: 0 2px 8px rgba(204, 0, 0, 0.2); }
 
-/* BOUTON VOIR & PDF (HISTORIQUE) SANS EMOJI */
-.btn-voir { background: transparent; color: #0b1a14; border: 1px solid #ced4da !important; padding: 8px 12px; font-size: 12px; font-weight: 600; border-radius: 4px; cursor: pointer; transition: 0.2s; font-family: 'Inter', sans-serif; display:inline-flex; align-items:center; gap:6px; outline: none !important;}
+/* BOUTONS HISTORIQUE (VOIR & PDF) */
+.btn-voir { background: transparent; color: #0b1a14; border: 1px solid #ced4da !important; padding: 8px 12px; font-size: 12px; font-weight: 600; border-radius: 4px; cursor: pointer; transition: 0.2s; font-family: 'Inter', sans-serif; display:inline-flex; align-items:center; gap:6px; outline: none !important; -webkit-appearance: none !important; appearance: none !important;}
 .btn-voir:hover { background: #f8f9fa; border-color: #0b1a14 !important; }
 
-.btn-pdf { background: #00d632; color: #fff; border: 0px solid transparent !important; padding: 8px 12px; font-size: 12px; font-weight: 600; border-radius: 4px; cursor: pointer; transition: 0.2s; font-family: 'Inter', sans-serif; display:inline-flex; align-items:center; gap:6px; outline: none !important;}
+.btn-pdf { background: #00d632; color: #fff; border: 0px solid transparent !important; padding: 8px 12px; font-size: 12px; font-weight: 600; border-radius: 4px; cursor: pointer; transition: 0.2s; font-family: 'Inter', sans-serif; display:inline-flex; align-items:center; gap:6px; outline: none !important; -webkit-appearance: none !important; appearance: none !important;}
 .btn-pdf:hover { opacity: 0.85; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.15);}
 
 main { flex: 1; }
 
-.hero { background: linear-gradient(135deg, #eaf9f0 0%, #ffffff 100%); padding: 80px 50px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eaeaea; }
-.hero-content { max-width: 45%; }
-.hero-content h1 { font-size: 42px; color: #0b1a14; margin-bottom: 20px; line-height: 1.2; font-weight: 800; transition: 0.3s; letter-spacing: -1px;}
+/* REHAUSSEMENT DU TEXTE DE LA PAGE D'ACCUEIL */
+.hero { background: linear-gradient(135deg, #eaf9f0 0%, #ffffff 100%); padding: 40px 50px 80px 50px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eaeaea; }
+.hero-content { max-width: 48%; }
+.hero-content h1 { font-size: 44px; color: #0b1a14; margin-bottom: 20px; line-height: 1.2; font-weight: 800; transition: 0.3s; letter-spacing: -1px;}
 .hero-content p { font-size: 16px; color: #495057; line-height: 1.6; margin-bottom: 30px; transition: 0.3s; }
 .hero-content ul { color: #495057; line-height: 1.8; padding-left: 20px; font-size: 15px;}
 
@@ -134,6 +137,7 @@ footer { background-color: #1a1a1a; color: #ffffff; text-align: center; padding:
 .drop-zone-text { font-size: 14px; font-weight: 600; color: #6c757d; pointer-events: none; }
 .drop-zone-input { position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer; }
 
+/* BORDURES DYNAMIQUES HAUT/GAUCHE (Pour Marque Blanche) */
 .border-left-dynamic-color { border-left: 4px solid #00d632; }
 .border-dynamic-color-top { border-top: 4px solid #00d632; }
 
