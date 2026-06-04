@@ -16,10 +16,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <link rel="stylesheet" href="style.css?v=3.0">
+    <!-- Forçage de la mise à jour visuelle (v=6.0) -->
+    <link rel="stylesheet" href="style.css?v=6.0">
 </head>
 <body>
 
+    <!-- PORTAIL D'ACCUEIL ULTRA-PRO -->
     <div id="welcome-portal">
         <div class="portal-content">
             <div class="portal-logo">Audit<span style="color: #00d632;">Pro</span></div>
@@ -52,6 +54,7 @@
         </div>
     </div>
 
+    <!-- APPLICATION PRINCIPALE -->
     <div id="main-app" style="display: none; opacity: 0; transition: opacity 0.5s ease;">
         <header>
             <div class="logo"><span id="header-logo-text">Audit</span><span id="header-logo-color" style="color: #00d632;">Pro</span></div>
@@ -67,6 +70,7 @@
         </header>
 
         <main>
+            <!-- ONGLET 1 : L'Analyse (Accueil) -->
             <div id="audit-tab" class="tab-content active">
                 <section class="hero" id="audit">
                     <div class="hero-content">
@@ -106,24 +110,32 @@
                             <label>Code Postal de la ville *</label>
                             <input type="text" inputmode="numeric" id="codePostal" class="form-control" placeholder="Ex : 35000" maxlength="5">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" style="margin-bottom: 30px;">
                             <label>Dossier PDF (Diagnostics) *</label>
                             <div id="drop-zone" class="drop-zone">
+                                <div class="drop-icon text-dynamic-color">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                                </div>
                                 <span class="drop-zone-text">Glissez-déposez votre PDF ici ou cliquez</span>
                                 <input type="file" id="fichierPdf" class="drop-zone-input" accept="application/pdf">
                             </div>
                         </div>
+                        
+                        <!-- BOUTON RECTIFIÉ SANS BORDURES NOIRES -->
                         <button class="btn-submit btn-dynamic-color" id="btnSubmit" onclick="envoyer()">Générer l'audit complet</button>
                         
-                        <div style="text-align: center; margin-top: 20px;">
-                            <a href="#" onclick="lancerDemo(); return false;" style="color: #6c757d; font-size: 13px; text-decoration: underline; font-weight: 600; transition: color 0.3s;">Découvrir l'interface via une démonstration</a>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <button type="button" class="btn-demo" onclick="lancerDemo()">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                Lancer une simulation de démonstration
+                            </button>
                         </div>
                     </div>
                 </section>
 
                 <div style="background-color: #0b1a14; padding: 30px 20px; text-align: center; border-bottom: 4px solid #00d632;" class="border-dynamic-color">
                     <p style="color: #fff; font-size: 18px; margin: 0 0 15px 0; font-weight: 600;">En visite sur le terrain ? Anticipez l'analyse technique sans fichier PDF</p>
-                    <a href="grille.html" target="_blank" class="btn-solid btn-dynamic-color" style="display: inline-block; text-decoration: none; border: 2px solid transparent;">Télécharger la Grille d'Évaluation Physique</a>
+                    <a href="grille.html" target="_blank" class="btn-solid btn-dynamic-color" style="display: inline-block; text-decoration: none;">Télécharger la Grille d'Évaluation Physique</a>
                 </div>
 
                 <div id="result-wrapper">
@@ -134,6 +146,7 @@
                 </div>
             </div>
 
+            <!-- ONGLET 2 : TABLEAU DE BORD PRO (AVEC LOGO ET RESET) -->
             <div id="pro-tab" class="tab-content">
                 <section id="pro" class="content-section">
                     <h2 class="section-title">Tableau de Bord Professionnel</h2>
@@ -142,47 +155,95 @@
                     </p>
                     
                     <div style="display: flex; flex-wrap: wrap; gap: 30px; margin-bottom: 60px;">
+                        
+                        <!-- PARAMÈTRES MARQUE BLANCHE AVEC LOGO -->
                         <div style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 4px solid #0b1a14;">
-                            <h3 style="margin-top: 0; color: #0b1a14; border-bottom: 1px solid #eee; padding-bottom: 15px;">🎨 Configuration Marque Blanche</h3>
-                            <div class="form-group" style="margin-top: 20px;">
-                                <label>Nom de votre Agence / Réseau</label>
-                                <input type="text" id="nomAgenceInput" class="form-control" placeholder="Ex: Century 21, Orpi, IAD, Laforêt...">
-                            </div>
-                            <div class="form-group">
-                                <label>Couleur principale (PDF & Interface)</label>
-                                <div style="display: flex; gap: 10px; align-items: center;">
-                                    <input type="color" id="couleurAgenceInput" value="#00d632" style="width: 50px; height: 40px; border: none; cursor: pointer; border-radius: 4px;">
-                                    <span style="font-size: 13px; color: #666;">Appliquée à l'interface et aux rapports PDF.</span>
-                                </div>
-                            </div>
-                            <button class="btn-solid btn-dynamic-color" style="width: 100%; margin-top: 10px; padding: 12px;" onclick="sauvegarderParametresPro()">Enregistrer mes préférences</button>
-                        </div>
-
-                        <div style="flex: 2; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 4px solid #0b1a14; display: flex; flex-direction: column;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
-                                <h3 style="margin: 0; color: #0b1a14;">📂 Historique Local</h3>
-                                <button onclick="viderHistorique()" style="background: none; border: 1px solid #cc0000; color: #cc0000; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s;">🗑️ Effacer les données</button>
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
+                                <h3 style="margin: 0; color: #0b1a14;">🎨 Marque Blanche</h3>
+                                <button onclick="reinitialiserMarqueBlanche()" class="btn-delete" style="font-weight: 600;">🔄 Réinitialiser</button>
                             </div>
                             
+                            <div class="form-group">
+                                <label>Nom de l'Agence / Réseau</label>
+                                <input type="text" id="nomAgenceInput" class="form-control" placeholder="Ex: Century 21, Orpi, IAD...">
+                            </div>
+                            
+                            <!-- NOUVEAU : UPLOAD DU LOGO -->
+                            <div class="form-group">
+                                <label>Logo de l'Agence (Pour le PDF)</label>
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <div style="position: relative; overflow: hidden; display: inline-block;">
+                                        <button class="btn-demo" style="padding: 8px 15px; font-size: 12px;">📁 Parcourir...</button>
+                                        <input type="file" id="logoUploadInput" accept="image/png, image/jpeg, image/jpg" style="position: absolute; top: 0; left: 0; opacity: 0; cursor: pointer; height: 100%;">
+                                    </div>
+                                    <img id="logo-preview" style="display: none; max-height: 40px; max-width: 100px; object-fit: contain; border-radius: 4px; border: 1px solid #eee; padding: 2px;">
+                                </div>
+                                <span style="font-size: 11px; color: #888; display: block; margin-top: 5px;">Format PNG ou JPG. S'imprimera automatiquement en haut des rapports PDF.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Couleur principale</label>
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <input type="color" id="couleurAgenceInput" value="#00d632" style="width: 50px; height: 40px; border: none; cursor: pointer; border-radius: 4px;">
+                                    <span style="font-size: 12px; color: #666;">Appliquée à l'interface et aux graphiques.</span>
+                                </div>
+                            </div>
+                            <button class="btn-solid btn-dynamic-color" style="width: 100%; margin-top: 10px; padding: 12px;" onclick="sauvegarderParametresPro()">Enregistrer mes paramètres</button>
+                        </div>
+
+                        <!-- HISTORIQUE CLOUD LOCAL INTERACTIF -->
+                        <div style="flex: 2; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 4px solid #0b1a14; display: flex; flex-direction: column;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+                                <h3 style="margin: 0; color: #0b1a14;">📂 Historique des Analyses</h3>
+                                <button onclick="viderHistorique()" class="btn-delete">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    Purger l'historique
+                                </button>
+                            </div>
+                            
+                            <p style="font-size: 12px; color: #666; margin-top: 0;">Cliquez sur un dossier ci-dessous pour recharger l'analyse instantanément.</p>
                             <div class="table-responsive" style="margin-bottom: 0; flex: 1; overflow-y: auto; max-height: 250px;">
                                 <table style="min-width: 100%;">
                                     <thead>
                                         <tr>
                                             <th>Date</th>
                                             <th>Secteur</th>
-                                            <th>Prix Initial</th>
-                                            <th>Coût Travaux</th>
+                                            <th>Prix Vente</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody id="historiqueTableBody">
-                                        </tbody>
+                                        <!-- Rempli dynamiquement par JS -->
+                                    </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- OUTIL DE CAPTATION DE LEADS -->
+                    <div style="background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-left: 4px solid #0b1a14;" class="border-left-dynamic-color">
+                        <div style="display: flex; gap: 30px; align-items: center; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 300px; text-align: left;">
+                                <h3 style="margin-top: 0; color: #0b1a14; font-size: 22px;">🧲 Outil de Captation (Générateur de Leads)</h3>
+                                <p style="font-size: 15px; color: #495057; line-height: 1.6;">Intégrez notre moteur d'analyse directement sur le site internet de votre agence. Offrez l'audit gratuit de leurs diagnostics à vos visiteurs en échange de leurs coordonnées.</p>
+                                <p style="font-size: 15px; color: #0b1a14; font-weight: 700; margin-bottom: 20px;">Transformez votre trafic web en mandats d'estimation qualifiés.</p>
+                                <button class="btn-demo" style="width: auto;" onclick="alert('L\'intégration API et le code iFrame seront débloqués dans la version Premium de votre abonnement.')">Obtenir le code d'intégration Widget</button>
+                            </div>
+                            <div style="flex: 1; min-width: 300px; background: #f8f9fa; padding: 25px; border-radius: 8px; border: 2px dashed #ced4da; text-align: center;">
+                                <span style="font-size: 12px; color: #6c757d; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">Aperçu du Widget sur votre site</span>
+                                <div style="margin-top: 15px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: left;">
+                                    <label style="font-size: 12px; font-weight: 700; color: #0b1a14;">Testez vos diagnostics :</label>
+                                    <div style="border: 1px dashed #ccc; padding: 10px; border-radius: 4px; text-align: center; margin: 10px 0; font-size: 12px; color: #888;">📄 Déposer le PDF ici</div>
+                                    <input type="text" placeholder="Entrez votre email pour recevoir l'audit..." style="width: 100%; padding: 10px; border: 1px solid #eee; border-radius: 4px; box-sizing: border-box; margin-bottom: 10px; font-size: 12px;">
+                                    <button class="btn-solid btn-dynamic-color" style="width: 100%; padding: 10px; font-size: 13px;">Recevoir mon audit gratuit</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </section>
             </div>
 
+            <!-- ONGLET 3 : Informations & Grille -->
             <div id="informations-tab" class="tab-content">
                 <section id="informations" class="content-section">
                     <div style="background-color: #f8f9fa; padding: 40px 20px; text-align: center; border-radius: 12px; margin: 0 auto 60px auto; border: 1px solid #ced4da; max-width: 800px;">
@@ -214,28 +275,29 @@
                     <div class="info-grid">
                         <div class="info-card">
                             <h3>Plomb (CREP)</h3>
-                            <p>Validité : <strong>1 an</strong> (en cas de présence avérée de plomb au-dessus des seuils).<br>Si la mesure est totalement négative (aucune trace détectée sur les revêtements), la validité de ce document devient alors <strong>illimitée</strong> pour les ventes futures.</p>
+                            <p>Validité : <strong>1 an</strong> (en cas de présence avérée de plomb au-dessus des seuils).<br>Si la mesure est totalement négative, la validité devient alors <strong>illimitée</strong>.</p>
                         </div>
                         <div class="info-card">
                             <h3>Électricité & Gaz</h3>
-                            <p>Validité : <strong>3 ans</strong> (dans le cadre strict d'une vente) ou <strong>6 ans</strong> (pour une mise en location). Ces diagnostics sont obligatoires uniquement si l'installation du bien a plus de 15 ans d'ancienneté.</p>
+                            <p>Validité : <strong>3 ans</strong> (pour une vente) ou <strong>6 ans</strong> (pour location). Obligatoires uniquement si l'installation a plus de 15 ans d'ancienneté.</p>
                         </div>
                         <div class="info-card">
                             <h3>Diagnostic Énergétique (DPE)</h3>
-                            <p>Validité : <strong>10 ans</strong> en règle générale.<br>Attention, suite à la réforme nationale, les DPE réalisés avec l'ancienne méthode de calcul (avant le 1er juillet 2021) ne sont officiellement plus valables et doivent être obligatoirement refaits.</p>
+                            <p>Validité : <strong>10 ans</strong>. Attention, les DPE réalisés avec l'ancienne méthode de calcul (avant le 1er juillet 2021) ne sont officiellement plus valables.</p>
                         </div>
                         <div class="info-card">
                             <h3>Amiante (Avant Vente)</h3>
-                            <p>Validité : <strong>Illimitée</strong>.<br>Cependant, cette règle ne s'applique que si le diagnostic a été réalisé après le 1er avril 2013 et s'il est totalement négatif. Tout diagnostic antérieur à cette date doit être recommencé.</p>
+                            <p>Validité : <strong>Illimitée</strong>. S'applique uniquement si le diagnostic a été réalisé après le 1er avril 2013 et s'il est totalement négatif.</p>
                         </div>
                         <div class="info-card">
                             <h3>Métrage Loi Carrez</h3>
-                            <p>Validité : <strong>Illimitée</strong>.<br>Le certificat de surface reste valable à vie, à l'unique condition que le propriétaire n'ait pas réalisé de travaux lourds modifiant la surface habitable (abattage de cloisons, aménagement de combles).</p>
+                            <p>Validité : <strong>Illimitée</strong>. Valable à vie à condition que le propriétaire n'ait pas réalisé de travaux modifiant la surface habitable.</p>
                         </div>
                     </div>
                 </section>
             </div>
 
+            <!-- ONGLET 4 : Avis Clients -->
             <div id="avis-tab" class="tab-content">
                <section id="avis" class="content-section" style="background-color: #f8f9fa;">
                 <h2 class="section-title">Avis de nos utilisateurs</h2>
@@ -261,6 +323,7 @@
             </section>
             </div>
 
+            <!-- ONGLET 5 : FAQ COMPLÈTE -->
             <div id="faq-tab" class="tab-content">
                 <section id="faq" class="content-section">
                     <h2 class="section-title">20 Questions Fréquentes (FAQ)</h2>
@@ -289,6 +352,7 @@
                 </section>
             </div>
 
+            <!-- ONGLET 6 : CONTACT -->
             <div id="contact-tab" class="tab-content">
                 <section id="contact" class="content-section" style="text-align: center;">
                     <h2 class="section-title">Nous Contacter</h2>
@@ -305,9 +369,12 @@
        <footer>
            © 2026 AuditPro-Immo. Tous droits réservés. | Logiciel d'analyse immobilière.<br>
            Ce rapport d'expertise ne se substitue pas à un devis d'artisan.<br>
-           <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" class="text-dynamic-color" style="text-decoration: underline; margin-top: 15px; display: inline-block;">Mentions Légales & RGPD</a>
+           <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" class="text-dynamic-color" style="text-decoration: underline; margin-top: 15px; display: inline-block;">Mentions Légales & Confidentialité</a>
         </footer>
-    </div> <div id="modalLegale" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.9); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
+    </div>
+
+    <!-- Mentions Légales Modale -->
+    <div id="modalLegale" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.9); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
         <div style="background: #fff; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 40px; border-radius: 12px; position: relative; text-align: left;">
             <button onclick="document.getElementById('modalLegale').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: #cc0000; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">Fermer X</button>
             <h2 style="color: #0b1a14; border-bottom: 2px solid #eee; padding-bottom: 10px;">Mentions Légales & Conditions d'Utilisation</h2>
@@ -320,6 +387,7 @@
         </div>
     </div>
 
+    <!-- BANDEAU DE COOKIES -->
     <div id="cookie-banner" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: #0b1a14; color: #fff; padding: 20px; z-index: 10000; box-sizing: border-box; text-align: center; border-top: 4px solid #00d632;" class="border-dynamic-color">
         <p style="margin: 0 0 15px 0; font-size: 14px;">🛠️ <strong>Fonctionnement "Local-First" :</strong> Ce site utilise le stockage local de votre navigateur pour sauvegarder vos paramètres d'agence (Marque Blanche) et votre historique de rapports sur cet appareil, sans jamais les envoyer sur nos serveurs. Acceptez-vous ce fonctionnement ?</p>
         <button onclick="accepterCookies()" class="btn-solid btn-dynamic-color" style="padding: 10px 30px; font-size: 14px;">J'accepte et j'active mon espace</button>
@@ -328,7 +396,7 @@
     <div id="toast-container"></div>
     <div id="loading-overlay">
         <div class="spinner border-dynamic-color"></div>
-        <h3 style="color: white; margin-top: 25px; font-family: 'Inter', 'Segoe UI', sans-serif;" id="loading-text">Analyse en cours...</h3>
+        <h3 style="color: white; margin-top: 25px; font-family: 'Inter', sans-serif;" id="loading-text">Analyse en cours...</h3>
         <p class="text-dynamic-color" style="font-weight: bold;">Extraction des données du document réglementaire</p>
     </div>
 
