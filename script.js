@@ -125,10 +125,10 @@ function sauvegarderParametresPro() {
     }
     
     appliquerCouleurMarqueBlanche();
-    chargerHistorique(); // Mets à jour les couleurs des boutons du tableau
+    chargerHistorique(); 
     
     if(donneesAudit) {
-        afficherEcran(); // Recharge les couleurs dans le rapport actif
+        afficherEcran(); 
     }
     
     showToast("Paramètres Agence sauvegardés localement avec succès !");
@@ -148,11 +148,11 @@ function reinitialiserMarqueBlanche() {
     document.getElementById('logo-preview').style.display = 'none';
     document.getElementById('logo-preview').src = '';
     
-    appliquerCouleurMarqueBlanche(); // Met à jour l'interface immédiatement
-    chargerHistorique(); // Met à jour les couleurs des boutons du tableau
+    appliquerCouleurMarqueBlanche(); 
+    chargerHistorique(); 
     
     if(donneesAudit) {
-        afficherEcran(); // Met à jour le rapport à l'écran
+        afficherEcran(); 
     }
     
     showToast("L'interface a retrouvé ses couleurs par défaut.");
@@ -176,7 +176,6 @@ function chargerHistorique() {
         return;
     }
     
-    // Ajout des boutons clairs pour "Voir" ou "Télécharger PDF"
     historique.reverse().forEach((dossier, index) => {
         let realIndex = historique.length - 1 - index;
         historiqueTable.innerHTML += `
@@ -231,20 +230,43 @@ function chargerDossierHistorique(index) {
     afficherEcran();
 }
 
-// CORRECTION : ACTION BOUTON VOIR SANS DÉLAI POUR NE PAS ÊTRE BLOQUÉ PAR CHROME
+// CORRECTION ULTIME : INJECTION DU PDF VIA UNE VISIONNEUSE (IFRAME)
 function voirPDFDirect(event, index) {
     event.stopPropagation();
-    chargerDossierHistorique(index); // Charge les données et dessine le graphique instantanément
+    chargerDossierHistorique(index);
     showToast("Ouverture du rapport PDF en cours...");
-    exporterPDF('open'); // Génère et ouvre le PDF immédiatement dans la même action de clic
+    
+    // Ouverture immédiate pour contourner le bloqueur
+    const pdfWindow = window.open("", "_blank");
+    if (pdfWindow) {
+        pdfWindow.document.write(`
+            <html lang='fr'>
+            <head>
+                <title>Rapport d'Expertise - ${agenceNom}</title>
+                <style>body, html { margin: 0; padding: 0; background-color: #525659; height: 100vh; overflow: hidden; }</style>
+            </head>
+            <body>
+                <div id="loader" style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; color:white; font-family:sans-serif;">
+                    <h3>Génération du document en cours...</h3>
+                    <p style="color:#ccc; font-size:14px;">Veuillez patienter.</p>
+                </div>
+            </body>
+            </html>
+        `);
+    }
+
+    setTimeout(() => {
+        exporterPDF('view', pdfWindow); 
+    }, 800);
 }
 
-// CORRECTION : ACTION BOUTON TÉLÉCHARGER SANS DÉLAI
 function telechargerDirect(event, index) {
     event.stopPropagation();
     chargerDossierHistorique(index); 
     showToast("Génération du PDF en cours...");
-    exporterPDF('download');
+    setTimeout(() => {
+        exporterPDF('download'); 
+    }, 800);
 }
 
 function viderHistorique() {
@@ -450,7 +472,6 @@ function afficherEcran() {
     let nomOnglet3 = "";
     let defautsFormate = anomalies.length > 0 ? anomalies.map(a => "- " + a.titre).join('\n') : "- Aucun défaut technique majeur justifiant une décote.";
     
-    // ONGLETS FACTUELS : DONNÉES BRUTES ET OBJECTIVES SEULEMENT
     if (profilActuel === "particulier") {
         nomOnglet3 = "3. Données d'Appui";
         titreSectionNego = "Aide à la Décision (Acquéreur)";
@@ -591,13 +612,12 @@ Ces données constituent une base objective. Face au vendeur, elles justifient m
     }
 }
 
-// LE NOUVEAU PDF : STYLE "CABINET DE CONSEIL" - OPTIMISÉ, DENSE ET DESIGN
-function exporterPDF(action = 'download') {
+// FONCTION EXPORT PDF : INJECTION VIA IFRAME POUR ÉVITER LE BLOCAGE CHROME
+function exporterPDF(action = 'download', targetWindow = null) {
     if (!donneesAudit) return;
     const btn = document.getElementById('btnExport');
-    if(btn && action !== 'open') btn.innerText = "Édition du PDF en cours...";
+    if(btn && action !== 'view') btn.innerText = "Édition du PDF en cours...";
     
-    // --- 1. GÉNÉRATEUR DE BADGE DPE DYNAMIQUE ---
     function getDpeSvg(lettre) {
         const dpeColors = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F" };
         const color = dpeColors[lettre] || "#888888";
@@ -609,7 +629,6 @@ function exporterPDF(action = 'download') {
         </svg>`;
     }
 
-    // Extraction de la lettre DPE depuis le rapport
     let dpeMatch = donneesAudit.diagnostics.find(d => d.titre.toUpperCase().includes("DPE"));
     let dpeBadgeBlock = {};
     if (dpeMatch) {
@@ -619,7 +638,6 @@ function exporterPDF(action = 'download') {
         }
     }
 
-    // --- 2. PRÉPARATION DES DONNÉES ---
     let prixInitFormate = formatNumber(document.getElementById('prixInitial').value.replace(/\s+/g, '')) + ' €';
     let decoteFormate = '-' + formatNumber(donneesAudit.total_decote) + ' €';
     let prixNetFormate = formatNumber(donneesAudit.prix_net) + ' €';
@@ -645,12 +663,10 @@ function exporterPDF(action = 'download') {
         ]);
     });
 
-    // Logo ou Nom d'agence
     let logoBlock = agenceLogoBase64 
         ? { image: agenceLogoBase64, fit: [150, 55], alignment: 'left' }
         : { text: agenceNom.toUpperCase(), fontSize: 22, bold: true, color: agenceCouleur, alignment: 'left', letterSpacing: 1 };
 
-    // En-tête du document
     let headerTop = {
         columns: [
             { width: '45%', stack: [logoBlock], margin: [0, 5, 0, 0] },
@@ -671,7 +687,6 @@ function exporterPDF(action = 'download') {
         margin: [0, 0, 0, 30]
     };
 
-    // Extraction du graphique Canvas
     let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
     let chartImageBlock = {};
     if (anomalies.length > 0) {
@@ -686,7 +701,6 @@ function exporterPDF(action = 'download') {
         }
     }
 
-    // Bloc Rentabilité (Optionnel)
     let rentaBlock = [];
     if (loyerMensuelSaisi > 0) {
         let prixInitial = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
@@ -713,9 +727,8 @@ function exporterPDF(action = 'download') {
     try {
         let docDefinition = {
             pageSize: 'A4',
-            pageMargins: [ 50, 50, 40, 50 ], // Marges ajustées pour le design
+            pageMargins: [ 50, 50, 40, 50 ], 
             background: function() {
-                // Bandeau vertical décoratif sur la gauche de chaque page
                 return { canvas: [ { type: 'rect', x: 0, y: 0, w: 12, h: 842, color: agenceCouleur } ] };
             },
             header: function(currentPage) {
@@ -741,14 +754,13 @@ function exporterPDF(action = 'download') {
                 { text: 'RAPPORT D\'ANALYSE TECHNIQUE & FINANCIÈRE', fontSize: 18, color: '#1a1a1a', bold: true, margin: [0, 0, 0, 5] },
                 { text: 'Évaluation algorithmique des coûts de remise aux normes basée sur le DDT.', fontSize: 11, color: '#666', margin: [0, 0, 0, 25], italics: true },
                 
-                // COLONNES : KPI Financiers (Gauche) / Graphique (Droite)
                 {
                     columns: [
                         {
                             width: '55%',
                             stack: [
                                 { text: '1. SYNTHÈSE DES VALORISATIONS', style: 'sectionTitle', color: agenceCouleur },
-                                dpeBadgeBlock, // Injection du SVG DPE
+                                dpeBadgeBlock,
                                 {
                                     table: {
                                         widths: ['*', '*'],
@@ -776,13 +788,11 @@ function exporterPDF(action = 'download') {
                 
                 ...rentaBlock,
 
-                // Contexte Macro dans un encart stylisé
                 {
                     table: { widths: ['*'], body: [ [ { stack: [ { text: 'CONTEXTE MACRO-ÉCONOMIQUE', fontSize: 10, bold: true, color: '#fff', margin: [0, 0, 0, 4] }, { text: donneesAudit.impact_marche, fontSize: 9, color: '#eef2f5', lineHeight: 1.4 } ], padding: 12, fillColor: '#0b1a14' } ] ] },
                     layout: 'noBorders', margin: [0, 10, 0, 30]
                 },
                 
-                // Le tableau commence ici sans forcément forcer un saut de page, il prendra l'espace vacant
                 { text: '2. INVENTAIRE TECHNIQUE DÉTAILLÉ (DDT)', style: 'sectionTitle', color: agenceCouleur, margin: [0, 10, 0, 10] },
                 {
                     table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody },
@@ -795,7 +805,6 @@ function exporterPDF(action = 'download') {
                     }
                 },
 
-                // Mention Légale en pied de rapport (plus besoin d'une page entière pour ça)
                 { text: 'MÉTHODOLOGIE ET CADRE D\'APPLICATION', fontSize: 10, bold: true, color: '#1a1a1a', margin: [0, 30, 0, 5] },
                 { text: 'L\'estimation s\'appuie sur une analyse des anomalies répertoriées dans le Dossier de Diagnostic Technique (Art. L271-4 du CCH). Les tarifs sont pondérés selon l\'indice régional des coûts de construction. Clause de non-substitution : Cette simulation statistique a valeur d\'aide indicative. Les montants chiffrés ne se substituent en aucun cas à la passation de devis contradictoires établis par des artisans certifiés RGE.', fontSize: 8, color: '#666', alignment: 'justify', lineHeight: 1.4 }
             ],
@@ -805,7 +814,6 @@ function exporterPDF(action = 'download') {
                 coverValue: { fontSize: 9, color: '#1a1a1a', margin: [10, 2, 0, 2], bold: true },
                 sectionTitle: { fontSize: 13, bold: true, color: '#1a1a1a', margin: [0, 0, 0, 15], textTransform: 'uppercase' },
                 
-                // Nouveaux styles pour les colonnes (Taille standardisée)
                 kpiHeaderLeft: { fontSize: 10, color: '#555', margin: [0, 5, 0, 5] },
                 kpiValueLeft: { fontSize: 14, bold: true, color: '#1a1a1a', alignment: 'right', margin: [0, 5, 0, 5] },
                 kpiValueNetLeft: { fontSize: 14, bold: true, alignment: 'right', margin: [0, 5, 0, 5] },
@@ -819,9 +827,13 @@ function exporterPDF(action = 'download') {
 
         let pdf = pdfMake.createPdf(docDefinition);
         
-        if (action === 'open') {
-            // NOUVEAU : pdf.open() ouvre l'onglet nativement et contourne le bloqueur de pop-up
-            pdf.open();
+        if (action === 'view' && targetWindow) {
+            // INJECTION PARFAITE ET SÉCURISÉE DANS L'ONGLET EXISTANT
+            pdf.getBlob((blob) => {
+                const blobUrl = URL.createObjectURL(blob);
+                targetWindow.document.body.innerHTML = `<iframe src="${blobUrl}#view=FitH" style="width:100vw; height:100vh; border:none; margin:0; padding:0; display:block;"></iframe>`;
+            });
+            if(btn) btn.innerText = "Télécharger le rapport PDF Officiel";
         } else {
             pdf.download(agenceNom.replace(/\s+/g, '_') + '_Bilan_Technique_' + idRapport + '.pdf');
             if(btn) {
@@ -830,7 +842,7 @@ function exporterPDF(action = 'download') {
         }
     } catch(err) {
         showToast("Erreur lors de la génération du PDF.", "error");
-        if(btn && action !== 'open') btn.innerText = "Télécharger le rapport PDF Officiel";
+        if(btn && action !== 'view') btn.innerText = "Télécharger le rapport PDF Officiel";
     }
 }
 
