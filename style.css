@@ -51,12 +51,12 @@ nav a { color: #fff; text-decoration: none; margin: 0 15px; font-size: 14px; fon
 .btn-delete { background: transparent; color: #cc0000; border: 1px solid rgba(204, 0, 0, 0.3) !important; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif; outline: none !important; -webkit-appearance: none !important; appearance: none !important;}
 .btn-delete:hover { background: #cc0000; color: #fff; border-color: #cc0000 !important; box-shadow: 0 2px 8px rgba(204, 0, 0, 0.2); }
 
-/* BOUTON VOIR & PDF (HISTORIQUE) */
-.btn-voir { background: transparent; color: #0b1a14; border: 1px solid #ced4da !important; padding: 8px 12px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; font-family: 'Inter', sans-serif; display:inline-flex; align-items:center; gap:4px; outline: none !important;}
+/* BOUTON VOIR & PDF (HISTORIQUE) SANS EMOJI */
+.btn-voir { background: transparent; color: #0b1a14; border: 1px solid #ced4da !important; padding: 8px 12px; font-size: 12px; font-weight: 600; border-radius: 4px; cursor: pointer; transition: 0.2s; font-family: 'Inter', sans-serif; display:inline-flex; align-items:center; gap:6px; outline: none !important;}
 .btn-voir:hover { background: #f8f9fa; border-color: #0b1a14 !important; }
 
-.btn-pdf { background: #00d632; color: #fff; border: 0px solid transparent !important; padding: 8px 12px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; font-family: 'Inter', sans-serif; display:inline-flex; align-items:center; gap:4px; outline: none !important;}
-.btn-pdf:hover { opacity: 0.85; transform: translateY(-1px); }
+.btn-pdf { background: #00d632; color: #fff; border: 0px solid transparent !important; padding: 8px 12px; font-size: 12px; font-weight: 600; border-radius: 4px; cursor: pointer; transition: 0.2s; font-family: 'Inter', sans-serif; display:inline-flex; align-items:center; gap:6px; outline: none !important;}
+.btn-pdf:hover { opacity: 0.85; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.15);}
 
 main { flex: 1; }
 
@@ -100,7 +100,7 @@ th, td { border: 1px solid #dee2e6; padding: 16px; text-align: left; vertical-al
 th { background-color: #f8f9fa; text-transform: uppercase; font-size: 11px; font-weight: 800; color: #0b1a14; letter-spacing: 0.5px;}
 
 /* LIGNE HISTORIQUE */
-.history-row { transition: background-color 0.2s ease; }
+.history-row { transition: background-color 0.2s ease; cursor: default;}
 .history-row:hover { background-color: #f8f9fa; }
 
 .content-section { padding: 80px 50px; max-width: 1200px; margin: 0 auto; border-bottom: 1px solid #eaeaea; box-sizing: border-box; }
