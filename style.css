@@ -2,7 +2,7 @@
 
 body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; background-color: #f8f9fa; color: #212529; scroll-behavior: smooth; display: flex; flex-direction: column; min-height: 100vh; }
 
-/* DESIGN PORTAIL D'ACCUEIL - VERSION B2B ÉLÉGANTE */
+/* DESIGN PORTAIL D'ACCUEIL */
 #welcome-portal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0b1a14; z-index: 100000; display: flex; justify-content: center; align-items: center; text-align: center; padding: 20px; box-sizing: border-box; transition: opacity 0.5s ease, visibility 0.5s; }
 .portal-content { max-width: 900px; width: 100%; }
 .portal-logo { font-size: 40px; font-weight: 800; color: #fff; margin-bottom: 25px; letter-spacing: -1px;}
@@ -16,15 +16,22 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans
 .portal-card h3 { color: #0b1a14; font-size: 20px; font-weight: 800; margin-top: 0; margin-bottom: 12px;}
 .portal-card p { color: #555; font-size: 14px; line-height: 1.6; margin-bottom: 30px; }
 .card-action { font-size: 14px; font-weight: 700; color: #00d632; }
-
 .portal-footer { margin-top: 50px; font-size: 12px; color: #6c757d; font-weight: 600;}
 
-/* RESTE DU DESIGN STANDARD */
+/* HEADER & BOUTONS PRINCIPAUX SANS BORDURES NOIRES */
 header { background: #0b1a14; color: #fff; padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .logo { font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px;}
 nav a { color: #fff; text-decoration: none; margin: 0 15px; font-size: 14px; font-weight: 600; }
-.btn-solid { background: #00d632; color: #0b1a14; padding: 10px 24px; border-radius: 6px; text-decoration: none; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; font-family: 'Inter', sans-serif;}
-.btn-solid:hover { opacity: 0.9; transform: translateY(-2px); }
+
+.btn-solid, .btn-submit { background: #00d632; color: #0b1a14; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 700; border: 0px solid transparent !important; outline: none !important; cursor: pointer; transition: all 0.3s ease; font-family: 'Inter', sans-serif; box-shadow: 0 4px 15px rgba(0, 214, 50, 0.2); }
+.btn-solid:hover, .btn-submit:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 214, 50, 0.4); }
+.btn-submit { width: 100%; padding: 16px; font-size: 16px; font-weight: 800; margin-top: 10px;}
+
+.btn-demo { background: transparent; color: #6c757d; border: 1px solid #ced4da !important; padding: 12px 20px; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; font-family: 'Inter', sans-serif; outline: none; }
+.btn-demo:hover { background: #f8f9fa; color: #0b1a14; border-color: #0b1a14 !important; }
+
+.btn-delete { background: transparent; color: #cc0000; border: 1px solid rgba(204, 0, 0, 0.3) !important; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif; outline: none; }
+.btn-delete:hover { background: #cc0000; color: #fff; border-color: #cc0000 !important; box-shadow: 0 2px 8px rgba(204, 0, 0, 0.2); }
 
 main { flex: 1; }
 
@@ -39,7 +46,6 @@ main { flex: 1; }
 .form-group { margin-bottom: 20px; text-align: left; }
 .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #0b1a14; }
 .form-control { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; background: #f8f9fa; font-size: 14px; font-family: 'Inter', sans-serif;}
-.btn-submit { width: 100%; padding: 16px; font-size: 16px; font-weight: 800; }
 
 .profile-selector { display: flex; background: #f8f9fa; padding: 6px; border-radius: 8px; border: 1px solid #ced4da; gap: 5px; }
 .profile-btn { flex: 1; padding: 12px 10px; border: none; background: transparent; border-radius: 6px; font-weight: 700; font-size: 13px; color: #6c757d; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Inter', sans-serif;}
@@ -58,7 +64,7 @@ main { flex: 1; }
 .kpi-box { flex: 1; padding: 25px; border-radius: 8px; text-align: center; border: 1px solid #eaeaea; box-sizing: border-box; }
 .kpi-box.main { background: #0b1a14; color: #fff; border: none; }
 .kpi-label { font-size: 11px; text-transform: uppercase; font-weight: 700; opacity: 0.8; margin-bottom: 10px; letter-spacing: 0.5px;}
-.kpi-value { font-size: 26px; font-weight: 800; }
+.kpi-value { font-size: 28px; font-weight: 800; }
 
 .chart-container { width: 100%; max-width: 350px; margin: 0 auto 40px; }
 
@@ -66,6 +72,10 @@ main { flex: 1; }
 table { width: 100%; border-collapse: collapse; min-width: 600px; }
 th, td { border: 1px solid #dee2e6; padding: 16px; text-align: left; vertical-align: middle; font-size: 14px;}
 th { background-color: #f8f9fa; text-transform: uppercase; font-size: 11px; font-weight: 800; color: #0b1a14; letter-spacing: 0.5px;}
+
+/* LIGNE HISTORIQUE CLIQUABLE */
+.history-row { cursor: pointer; transition: background-color 0.2s ease; }
+.history-row:hover { background-color: #f4fbf7; }
 
 .content-section { padding: 80px 50px; max-width: 1200px; margin: 0 auto; border-bottom: 1px solid #eaeaea; box-sizing: border-box; }
 .section-title { font-size: 30px; color: #0b1a14; margin-bottom: 40px; text-align: center; font-weight: 800; letter-spacing: -1px;}
@@ -90,13 +100,19 @@ footer { background-color: #1a1a1a; color: #ffffff; text-align: center; padding:
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+/* EFFET DRAG & DROP ANIMÉ */
 .drop-zone { width: 100%; padding: 30px 20px; border: 2px dashed #ced4da; border-radius: 8px; text-align: center; background: #f8f9fa; cursor: pointer; transition: all 0.3s ease; box-sizing: border-box; position: relative; }
+.drop-icon { margin-bottom: 10px; color: #6c757d; transition: all 0.3s ease; }
+.drop-zone:hover, .drop-zone.dragover { background: #eaf9f0; border-color: #00d632; box-shadow: 0 10px 20px rgba(0,214,50,0.1); transform: scale(1.02); }
+.drop-zone:hover .drop-icon, .drop-zone.dragover .drop-icon { transform: translateY(-5px) scale(1.1); color: #00d632; }
 .drop-zone-text { font-size: 14px; font-weight: 600; color: #6c757d; pointer-events: none; }
 .drop-zone-input { position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer; }
 
+.border-left-dynamic-color { border-left: 4px solid #00d632; }
+
 #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
 .toast { background: #212529; color: #fff; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-weight: 600; font-size: 14px; opacity: 0; transform: translateX(100%); animation: slideIn 0.4s forwards; }
-.toast.error { border-left: 5px solid #cc0000; }
+.toast.error { border-left: 5px solid #cc0000 !important; }
 @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
 @keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } }
 
@@ -105,7 +121,7 @@ footer { background-color: #1a1a1a; color: #ffffff; text-align: center; padding:
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .script-box { background: #ffffff; border-left: 4px solid #ced4da; padding: 25px 25px 25px 30px; border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); font-size: 14px; font-style: italic; line-height: 1.7; color: #333; white-space: pre-wrap; margin-top: 15px; position: relative; text-align: left; }
-.btn-copy { position: absolute; top: 15px; right: 15px; background: #f8f9fa; color: #0b1a14; border: 1px solid #ced4da; padding: 6px 12px; font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; font-style: normal; font-family: 'Inter', sans-serif;}
+.btn-copy { position: absolute; top: 15px; right: 15px; background: #f8f9fa; color: #0b1a14; border: 1px solid #ced4da !important; padding: 6px 12px; font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; font-style: normal; font-family: 'Inter', sans-serif;}
 .btn-copy:hover { background: #eaeaea; }
 
 @media (max-width: 768px) {
