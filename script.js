@@ -24,12 +24,8 @@ function entrerSurLeSite(profil) {
 
 function changerProfilInterne(profil) {
     profilActuel = profil;
-    
-    document.querySelectorAll('.profile-btn').forEach(btn => {
-        btn.classList.remove('active');
-        btn.style.borderColor = 'transparent';
-        btn.style.color = '#6c757d';
-    });
+    document.getElementById('btn-particulier').classList.remove('active');
+    document.getElementById('btn-pro').classList.remove('active');
     
     let btnActif = document.getElementById('btn-' + (profil === 'particulier' ? 'particulier' : 'pro'));
     btnActif.classList.add('active');
@@ -51,7 +47,7 @@ function changerProfilInterne(profil) {
     }
     
     if(donneesAudit) {
-        afficherEcran(); // Met à jour le texte du rapport actif si le profil change
+        afficherEcran(); 
     }
 }
 
@@ -68,7 +64,6 @@ document.getElementById('logoUploadInput').addEventListener('change', function(e
     }
 });
 
-// APPLIQUE LE THEME GLOBAL (Utilisé pour l'enregistrement et la réinitialisation)
 function appliquerCouleurMarqueBlanche() {
     document.getElementById('header-logo-text').innerText = agenceNom === 'AuditPro' ? 'Audit' : agenceNom;
     document.getElementById('header-logo-color').innerText = agenceNom === 'AuditPro' ? 'Pro' : 'Immo';
@@ -84,7 +79,6 @@ function appliquerCouleurMarqueBlanche() {
     document.querySelectorAll('.border-left-dynamic-color').forEach(b => { b.style.borderLeftColor = agenceCouleur; });
     document.querySelector('.form-container').style.borderTopColor = agenceCouleur;
     
-    // Reset complet du menu de navigation haut
     document.querySelectorAll('nav a').forEach(a => {
         a.style.color = '#fff';
         a.style.borderBottomColor = 'transparent';
@@ -95,7 +89,6 @@ function appliquerCouleurMarqueBlanche() {
         lienActif.style.borderBottom = `2px solid ${agenceCouleur}`;
     }
     
-    // Application sur le bouton Profil actif
     document.querySelectorAll('.profile-btn').forEach(btn => {
         btn.style.borderColor = 'transparent';
         btn.style.color = '#6c757d';
@@ -129,19 +122,20 @@ function sauvegarderParametresPro() {
     appliquerCouleurMarqueBlanche();
     
     if(donneesAudit) {
-        afficherEcran(); // Recharge les couleurs dans le rapport actif
+        afficherEcran(); 
     }
     
     showToast("Paramètres Agence sauvegardés localement avec succès !");
 }
 
+// CORRECTION DU BUG : REINITIALISATION TOTALE EN DIRECT
 function reinitialiserMarqueBlanche() {
     localStorage.removeItem('auditpro_agence_nom');
     localStorage.removeItem('auditpro_agence_couleur');
     localStorage.removeItem('auditpro_agence_logo');
     
     agenceNom = 'AuditPro';
-    agenceCouleur = '#00d632';
+    agenceCouleur = '#00d632'; // Le vert de base
     agenceLogoBase64 = null;
     
     document.getElementById('nomAgenceInput').value = '';
@@ -149,10 +143,10 @@ function reinitialiserMarqueBlanche() {
     document.getElementById('logo-preview').style.display = 'none';
     document.getElementById('logo-preview').src = '';
     
-    appliquerCouleurMarqueBlanche();
+    appliquerCouleurMarqueBlanche(); // Met à jour les boutons, la navbar, etc.
     
     if(donneesAudit) {
-        afficherEcran(); // Met à jour le rapport PDF affiché en vert
+        afficherEcran(); // Met à jour le rapport à l'écran
     }
     
     showToast("L'interface a retrouvé ses couleurs par défaut.");
@@ -282,11 +276,6 @@ function showToast(message, type = "success") {
     }, 4000);
 }
 
-function copierScript(idElement) {
-    const texte = document.getElementById(idElement).innerText;
-    navigator.clipboard.writeText(texte).then(() => { showToast("Texte copié dans le presse-papier."); });
-}
-
 function switchReportTab(tabId) {
     document.querySelectorAll('.report-tab-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -321,11 +310,6 @@ function lancerDemo() {
         prix_net: 316300,
         analyse_secteur: "Indice de marché local : 1.18",
         securite: "Vos données sont privées : Le PDF a été supprimé de nos serveurs.",
-        solutions: [ 
-            "MISE EN SÉCURITÉ : Le tableau électrique nécessite une intervention prioritaire pour la sécurité des occupants.", 
-            "PERFORMANCE ÉNERGÉTIQUE : Rénovation globale indispensable pour sortir du statut de passoire thermique (Classe F).",
-            "SANTÉ PUBLIQUE : Une société certifiée devra procéder au retrait des matériaux amiantés détectés dans les conduits."
-        ],
         diagnostics: [
             {titre: "Électricité (Sécurité)", cout: 4500, loi: "Norme NF C 15-100", detail: "Matériel ancien et absence de mise à la terre sur les pièces d'eau.", action: "Mise en sécurité complète du tableau par un électricien."},
             {titre: "DPE (Énergie)", cout: 20000, loi: "Loi Climat & Résilience", detail: "Logement classé F (Passoire thermique). Pertes de chaleur majeures identifiées.", action: "Isolation des combles et installation d'une Pompe à Chaleur."},
@@ -422,35 +406,7 @@ function afficherEcran() {
         </div>`;
     }
 
-    let scriptNegoTxt = "";
-    let titreSectionNego = "";
-    let nomOnglet3 = "";
-    let defautsFormate = anomalies.length > 0 ? anomalies.map(a => a.titre).join(', ') : "aucun défaut critique";
-    
-    // TEXTES FACTUELS SANS DICTER LA CONDUITE DE L'AGENT
-    if (profilActuel === "particulier") {
-        nomOnglet3 = "3. Aide à la Négociation";
-        titreSectionNego = "Bilan et Arguments Objectifs (Acquéreur)";
-        scriptNegoTxt = `BILAN DE L'ÉVALUATION TECHNIQUE :
-- Prix de présentation : ${formatNumber(prixInitialClean)} €
-- Coût estimé des remises aux normes : ${formatNumber(donneesAudit.total_decote)} €
-- Valeur technique ajustée : ${formatNumber(donneesAudit.prix_net)} €
-
-VOS ARGUMENTS POUR LA NÉGOCIATION :
-L'enveloppe de travaux s'appuie sur des éléments factuels du dossier de diagnostics (notamment : ${defautsFormate}). Vous pouvez utiliser cette synthèse chiffrée pour justifier objectivement une proposition d'achat à ${formatNumber(donneesAudit.prix_net)} € auprès du vendeur ou de son représentant.`;
-    } else {
-        nomOnglet3 = "3. Synthèse Commerciale";
-        titreSectionNego = "Éléments Factuels pour la Transaction (Professionnel)";
-        scriptNegoTxt = `SYNTHÈSE FACTUELLE DU DOSSIER :
-- Écart technique identifié : ${formatNumber(donneesAudit.total_decote)} €
-- Points d'attention majeurs : ${defautsFormate}
-- Valeur de présentation recommandée : ${formatNumber(donneesAudit.prix_net)} €
-
-BÉNÉFICES POUR LA TRANSACTION :
-> Face au vendeur : Cette analyse neutre et chiffrée constitue une preuve tangible pour justifier un ajustement de l'estimation et sécuriser le mandat au juste prix.
-> Face à l'acquéreur : L'anticipation du budget travaux démontre une totale transparence de l'agence. Le client intègre cette enveloppe dès son plan de financement, ce qui sécurise la vente et limite les négociations de dernière minute.`;
-    }
-
+    // ON SUPPRIME DEFINITIVEMENT LES ONGLETS STRATEGIE ET ANNONCE POUR GARDER UN OUTIL 100% FACTUEL.
     let html = `
     <div style="border-bottom: 3px solid #0b1a14; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
         <div>
@@ -464,8 +420,7 @@ BÉNÉFICES POUR LA TRANSACTION :
     
     <div class="report-tabs">
         <button class="report-tab-btn active" onclick="switchReportTab('paneFinancier')" style="color: ${agenceCouleur}; border-bottom-color: ${agenceCouleur};">1. Synthèse Financière</button>
-        <button class="report-tab-btn" onclick="switchReportTab('paneTechnique')">2. Bilan Technique</button>
-        <button class="report-tab-btn" onclick="switchReportTab('paneStrategie')">${nomOnglet3}</button>
+        <button class="report-tab-btn" onclick="switchReportTab('paneTechnique')">2. Bilan Technique (DDT)</button>
     </div>
     
     <div id="paneFinancier" class="report-pane active">
@@ -480,7 +435,7 @@ BÉNÉFICES POUR LA TRANSACTION :
                 <div class="kpi-value" style="color: #cc0000;" id="anim-cout-travaux">-0 €</div>
             </div>
             <div class="kpi-box main" style="background-color: ${agenceCouleur};">
-                <div class="kpi-label" style="color: #fff;">Prix Équitable Recommandé</div>
+                <div class="kpi-label" style="color: #fff;">Valeur Nette Recommandée</div>
                 <div class="kpi-value" id="anim-prix-net">0 €</div>
             </div>
         </div>
@@ -509,15 +464,6 @@ BÉNÉFICES POUR LA TRANSACTION :
                     <td style="padding: 15px; font-weight:bold; text-align: right; font-size: 16px;">${a.cout > 0 ? `-${formatNumber(a.cout)} €` : '0 €'}</td>
                 </tr>`).join('')}
             </table>
-        </div>
-    </div>
-    
-    <div id="paneStrategie" class="report-pane">
-        <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-bottom: 10px;">${titreSectionNego}</h3>
-        <p style="font-size: 14px; color: #495057; margin-bottom: 15px; text-align: left;">Voici la synthèse des informations générée par le système pour appuyer votre expertise :</p>
-        <div class="script-box" style="border-left-color: ${agenceCouleur}; font-style: normal; font-family: 'Inter', sans-serif;">
-            <button class="btn-copy" onclick="copierScript('texteScript')">Copier les informations</button>
-            <div id="texteScript">${scriptNegoTxt}</div>
         </div>
     </div>
     
@@ -557,6 +503,7 @@ BÉNÉFICES POUR LA TRANSACTION :
     }
 }
 
+// LE NOUVEAU PDF : DESIGN "CABINET DE CONSEIL" 100% PRO
 function exporterPDF() {
     if (!donneesAudit) return;
     const btn = document.getElementById('btnExport');
@@ -568,10 +515,10 @@ function exporterPDF() {
 
     let tableBody = [
         [
-            { text: 'DOMAINE CONTRÔLÉ', style: 'tableHeader', fillColor: agenceCouleur },
-            { text: 'ÉTAT', style: 'tableHeader', alignment: 'center', fillColor: agenceCouleur },
-            { text: 'EXPLICATION & STRATÉGIE TECHNIQUE', style: 'tableHeader', fillColor: agenceCouleur },
-            { text: 'BUDGET', style: 'tableHeader', alignment: 'right', fillColor: agenceCouleur }
+            { text: 'DOMAINE CONTRÔLÉ', style: 'tableHeader' },
+            { text: 'ÉTAT', style: 'tableHeader', alignment: 'center' },
+            { text: 'DÉTAILS & PRÉCONISATIONS', style: 'tableHeader' },
+            { text: 'BUDGET', style: 'tableHeader', alignment: 'right' }
         ]
     ];
 
@@ -579,19 +526,54 @@ function exporterPDF() {
         let isAnomalie = a.cout > 0;
         tableBody.push([
             { text: a.titre, bold: true, fontSize: 10, color: '#0b1a14' },
-            { text: isAnomalie ? 'ANOMALIE' : 'CONFORME', bold: true, fontSize: 9, color: isAnomalie ? '#cc0000' : agenceCouleur, alignment: 'center' },
-            { text: `Constat : ${a.detail}\n` + (isAnomalie ? `Action : ${a.action}` : ''), fontSize: 9, lineHeight: 1.3 },
+            { text: isAnomalie ? 'ANOMALIE' : 'CONFORME', bold: true, fontSize: 9, color: isAnomalie ? '#cc0000' : '#00d632', alignment: 'center' },
+            { text: `Constat : ${a.detail}\n` + (isAnomalie ? `Action requise : ${a.action}` : ''), fontSize: 9, lineHeight: 1.4, color: '#444444' },
             { text: isAnomalie ? '-' + formatNumber(a.cout) + ' €' : '0 €', bold: true, fontSize: 11, color: isAnomalie ? '#cc0000' : '#0b1a14', alignment: 'right' }
         ]);
     });
 
+    // LE LOGO EST PARFAITEMENT CADRÉ AVEC LA FONCTION "fit"
     let headerPDF = [];
     if(agenceLogoBase64) {
-        headerPDF.push({ image: agenceLogoBase64, width: 140, alignment: 'center', margin: [0, 20, 0, 15] });
+        headerPDF.push({ image: agenceLogoBase64, fit: [180, 60], alignment: 'center', margin: [0, 0, 0, 20] });
     } else {
-        headerPDF.push({ text: agenceNom.toUpperCase(), fontSize: 38, bold: true, color: '#0b1a14', alignment: 'center', margin: [0, 40, 0, 5] });
+        headerPDF.push({ text: agenceNom.toUpperCase(), fontSize: 26, bold: true, color: agenceCouleur, alignment: 'center', margin: [0, 0, 0, 20], letterSpacing: 1 });
     }
-    headerPDF.push({ text: 'RAPPORT D\'EXPERTISE TECHNIQUE IMMOBILIÈRE', fontSize: 13, color: '#666', alignment: 'center', margin: [0, 0, 0, 40] });
+    headerPDF.push({ text: 'RAPPORT D\'ANALYSE TECHNIQUE & FINANCIÈRE', fontSize: 14, color: '#0b1a14', bold:true, alignment: 'center', margin: [0, 0, 0, 40] });
+
+    let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
+    let chartBlock = [];
+    if (anomalies.length > 0) {
+        let chartCanvas = document.getElementById('coutChart');
+        if (chartCanvas) {
+            chartBlock = [
+                { text: 'RÉPARTITION DU BUDGET TRAVAUX', fontSize: 11, bold: true, alignment: 'center', color: '#0b1a14', margin: [0, 30, 0, 15] },
+                { image: chartCanvas.toDataURL('image/png', 1.0), fit: [200, 200], alignment: 'center', margin: [0, 0, 0, 30] }
+            ];
+        }
+    }
+
+    let rentaBlock = [];
+    if (loyerMensuelSaisi > 0) {
+        let prixInitial = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
+        let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitial) * 100;
+        let coutTotalReel = prixInitial + donneesAudit.total_decote;
+        let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
+        
+        rentaBlock = [
+            { text: '2. PERFORMANCE RENDEMENT LOCATIF', style: 'sectionTitle', color: agenceCouleur, margin: [0, 20, 0, 10] },
+            {
+                table: {
+                    widths: ['*', '*', '*'],
+                    body: [
+                        [ { text: 'Loyer Annuel Théorique', style: 'kpiHeader' }, { text: 'Rendement Brut', style: 'kpiHeader' }, { text: 'Rendement Net Après Travaux', style: 'kpiHeader' } ],
+                        [ { text: formatNumber(loyerMensuelSaisi * 12) + ' €', style: 'kpiValue' }, { text: rentaInitiale.toFixed(2) + ' %', style: 'kpiValue' }, { text: rentaFinale.toFixed(2) + ' %', style: 'kpiValueNet', color: agenceCouleur } ]
+                    ]
+                },
+                layout: 'lightHorizontalLines'
+            }
+        ];
+    }
 
     let docDefinition = {
         pageSize: 'A4',
@@ -600,7 +582,7 @@ function exporterPDF() {
             if (currentPage > 1) {
                 return {
                     columns: [
-                        { text: agenceNom.toUpperCase() + ' CERTIFICATION', bold: true, color: agenceCouleur, fontSize: 11 },
+                        { text: agenceNom.toUpperCase() + ' - DOSSIER TECHNIQUE', bold: true, color: agenceCouleur, fontSize: 10 },
                         { text: 'Réf. ' + idRapport, alignment: 'right', color: '#888', fontSize: 9 }
                     ], margin: [40, 25, 40, 0]
                 };
@@ -620,7 +602,7 @@ function exporterPDF() {
                 table: {
                     widths: ['50%', '50%'],
                     body: [
-                        [ { text: 'DÉTAILS DU DOSSIER', colSpan: 2, style: 'coverTableTitle' }, {} ],
+                        [ { text: 'DÉTAILS DE L\'ÉTUDE', colSpan: 2, style: 'coverTableTitle' }, {} ],
                         [ { text: 'Identifiant Unique :', style: 'coverLabel' }, { text: idRapport, style: 'coverValue' } ],
                         [ { text: 'Date de l\'évaluation :', style: 'coverLabel' }, { text: donneesAudit.date_audit, style: 'coverValue' } ],
                         [ { text: 'Cible / Localisation :', style: 'coverLabel' }, { text: donneesAudit.localisation_exacte, style: 'coverValue' } ]
@@ -629,67 +611,60 @@ function exporterPDF() {
                 layout: 'lightHorizontalLines', margin: [0, 0, 0, 40]
             },
             
-            { text: '1. SYNTHÈSE DES VALORISATIONS', style: 'sectionTitle' },
+            { text: '1. SYNTHÈSE DES VALORISATIONS', style: 'sectionTitle', color: agenceCouleur },
             {
                 table: {
                     widths: ['*', '*', '*'],
                     body: [
-                        [ { text: 'Prix de Vente Initial', style: 'kpiHeader' }, { text: 'Enveloppe Travaux', style: 'kpiHeaderRed' }, { text: 'Prix Équitable Recommandé', style: 'kpiHeaderDark' } ],
-                        [ { text: prixInitFormate, style: 'kpiValue' }, { text: decoteFormate, style: 'kpiValueRed' }, { text: prixNetFormate, style: 'kpiValueDark' } ]
+                        [ { text: 'Prix de Vente Initial', style: 'kpiHeader' }, { text: 'Enveloppe Travaux', style: 'kpiHeaderRed' }, { text: 'Valeur Nette Recommandée', style: 'kpiHeader' } ],
+                        [ { text: prixInitFormate, style: 'kpiValue' }, { text: decoteFormate, style: 'kpiValueRed' }, { text: prixNetFormate, style: 'kpiValueNet', color: agenceCouleur } ]
                     ]
                 },
-                layout: { hLineWidth: () => 0, vLineWidth: () => 0, fillColor: (r, n, c) => r === 0 ? (c === 2 ? agenceCouleur : '#f8f9fa') : (c === 2 ? agenceCouleur : '#ffffff'), paddingTop: () => 12, paddingBottom: () => 12 },
+                layout: 'lightHorizontalLines',
                 margin: [0, 0, 0, 20]
             },
             
-            { text: '2. INVENTAIRE TECHNIQUE DÉTAILLÉ (DDT)', style: 'sectionTitle', margin: [0, 20, 0, 10] },
+            {
+                table: { widths: ['*'], body: [ [ { stack: [ { text: 'NOTE MACRO-ÉCONOMIQUE LOCALE', fontSize: 9, bold: true, color: '#0b1a14', margin: [0, 0, 0, 4] }, { text: donneesAudit.impact_marche, fontSize: 9, color: '#495057', lineHeight: 1.4 } ], padding: 10 } ] ] },
+                layout: { hLineWidth: () => 1, vLineWidth: () => 1, hLineColor: () => '#ced4da', vLineColor: () => '#ced4da' }, margin: [0, 0, 0, 25]
+            },
+            
+            ...rentaBlock,
+            ...chartBlock,
+            
+            { text: '3. INVENTAIRE TECHNIQUE DÉTAILLÉ (DDT)', style: 'sectionTitle', color: agenceCouleur, margin: [0, 20, 0, 10], pageBreak: chartBlock.length > 0 ? 'before' : 'auto' },
             {
                 table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody },
-                layout: { hLineWidth: (i, n) => (i === 0 || i === 1 || i === n.table.body.length) ? 2 : 1, vLineWidth: () => 0, hLineColor: (i, n) => (i === 0 || i === 1 || i === n.table.body.length) ? '#0b1a14' : '#eeeeee', paddingLeft: () => 10, paddingRight: () => 10, paddingTop: () => 12, paddingBottom: () => 12, fillColor: (i) => i === 0 ? agenceCouleur : (i % 2 === 0 ? '#fafafa' : '#ffffff') }
+                layout: { 
+                    hLineWidth: function (i, node) { return (i === 0 || i === 1 || i === node.table.body.length) ? 2 : 1; }, 
+                    vLineWidth: function (i, node) { return 0; }, 
+                    hLineColor: function (i, node) { return (i === 0 || i === 1 || i === node.table.body.length) ? '#0b1a14' : '#eeeeee'; }, 
+                    paddingTop: function(i, node) { return 12; }, 
+                    paddingBottom: function(i, node) { return 12; } 
+                }
             },
             
             { text: 'CLAUSE DE NON-SUBSTITUTION LÉGALE', style: 'footerTitle', margin: [0, 40, 0, 5] },
-            { text: 'Ce rapport constitue une simulation statistique à valeur d\'aide indicative pour une transaction équitable. Les chiffrages ne se substituent pas à la passation de devis contradictoires par des corps de métier certifiés RGE.', style: 'footerText' }
+            { text: 'Ce document constitue une simulation statistique à valeur d\'aide indicative pour une transaction équitable. Les chiffrages ne se substituent pas à la passation de devis contradictoires par des corps de métier certifiés RGE.', style: 'footerText' }
         ],
         styles: {
-            coverTableTitle: { fontSize: 11, bold: true, color: '#0b1a14', alignment: 'center', fillColor: '#eaf9f0', margin: [0, 6, 0, 6] },
-            coverLabel: { fontSize: 10, bold: true, color: '#555', alignment: 'right' },
-            coverValue: { fontSize: 10, color: '#000' },
-            sectionTitle: { fontSize: 12, bold: true, color: '#0b1a14', margin: [0, 25, 0, 12] },
-            kpiHeader: { alignment: 'center', fontSize: 9, color: '#666', bold: true },
-            kpiHeaderRed: { alignment: 'center', fontSize: 9, color: '#cc0000', bold: true },
-            kpiHeaderDark: { alignment: 'center', fontSize: 9, color: '#fff', bold: true },
-            kpiValue: { alignment: 'center', fontSize: 16, bold: true },
-            kpiValueRed: { alignment: 'center', fontSize: 16, bold: true, color: '#cc0000' },
-            kpiValueDark: { alignment: 'center', fontSize: 18, bold: true, color: '#fff' },
-            tableHeader: { bold: true, fontSize: 10, color: '#ffffff' },
+            coverTableTitle: { fontSize: 11, bold: true, color: '#ffffff', alignment: 'center', fillColor: '#0b1a14', margin: [0, 6, 0, 6] },
+            coverLabel: { fontSize: 10, bold: true, color: '#555', alignment: 'right', margin: [0, 4, 10, 4] },
+            coverValue: { fontSize: 10, color: '#0b1a14', margin: [10, 4, 0, 4], bold: true },
+            sectionTitle: { fontSize: 14, bold: true, margin: [0, 25, 0, 15], textTransform: 'uppercase' },
+            kpiHeader: { alignment: 'center', fontSize: 10, color: '#666', bold: true, margin: [0, 5, 0, 5] },
+            kpiHeaderRed: { alignment: 'center', fontSize: 10, color: '#cc0000', bold: true, margin: [0, 5, 0, 5] },
+            kpiValue: { alignment: 'center', fontSize: 18, bold: true, color: '#0b1a14', margin: [0, 10, 0, 10] },
+            kpiValueRed: { alignment: 'center', fontSize: 18, bold: true, color: '#cc0000', margin: [0, 10, 0, 10] },
+            kpiValueNet: { alignment: 'center', fontSize: 20, bold: true, margin: [0, 10, 0, 10] },
+            tableHeader: { bold: true, fontSize: 10, color: '#ffffff', fillColor: '#0b1a14', margin: [0, 4, 0, 4] },
             footerTitle: { fontSize: 9, bold: true, color: '#0b1a14' },
-            footerText: { fontSize: 8, color: '#888', alignment: 'justify' }
+            footerText: { fontSize: 8, color: '#888', alignment: 'justify', lineHeight: 1.3 }
         }
     };
 
-    pdfMake.createPdf(docDefinition).download(agenceNom + '_Bilan_Global_' + idRapport + '.pdf');
+    pdfMake.createPdf(docDefinition).download(agenceNom + '_Bilan_Technique_' + idRapport + '.pdf');
     setTimeout(() => { btn.innerText = "Télécharger le rapport PDF Officiel"; }, 1500);
-}
-
-function ajouterAvis() {
-    const nom = document.getElementById('nomAvis').value;
-    const texte = document.getElementById('texteAvis').value;
-    if (!nom || !texte) return showToast("Veuillez remplir votre nom et votre avis.", "error");
-
-    const nouvelAvis = document.createElement('div');
-    nouvelAvis.className = 'avis-card';
-    nouvelAvis.style.cssText = 'flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;';
-    nouvelAvis.innerHTML = `<div style="color: ${agenceCouleur}; font-size: 20px; margin-bottom: 10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div><p style="font-size: 14px; font-style: italic; color: #495057;">"${texte}"</p><div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- ${nom}</div>`;
-    document.getElementById('listeAvis').prepend(nouvelAvis);
-
-    const avisSauvegardes = JSON.parse(localStorage.getItem('auditpro_avis')) || [];
-    avisSauvegardes.push({ nom: nom, texte: texte });
-    localStorage.setItem('auditpro_avis', JSON.stringify(avisSauvegardes));
-
-    document.getElementById('nomAvis').value = '';
-    document.getElementById('texteAvis').value = '';
-    showToast("Votre avis a bien été publié !");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -708,16 +683,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.querySelectorAll('.price-input').forEach(input => {
         input.addEventListener('input', formatInputNumber);
-    });
-
-    const avisSauvegardes = JSON.parse(localStorage.getItem('auditpro_avis')) || [];
-    const listeAvis = document.getElementById('listeAvis');
-    avisSauvegardes.forEach(avis => {
-        const nouvelAvis = document.createElement('div');
-        nouvelAvis.className = 'avis-card';
-        nouvelAvis.style.cssText = 'flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;';
-        nouvelAvis.innerHTML = `<div style="color: ${agenceCouleur}; font-size: 20px; margin-bottom: 10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div><p style="font-size: 14px; font-style: italic; color: #495057;">"${avis.texte}"</p><div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- ${avis.nom}</div>`;
-        listeAvis.prepend(nouvelAvis);
     });
 
     const liensMenu = document.querySelectorAll('nav a[href^="#"]');
