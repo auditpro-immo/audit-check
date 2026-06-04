@@ -4,61 +4,28 @@ let chartInstance = null;
 let loyerMensuelSaisi = 0;
 let profilActuel = "particulier";
 
-// VARIABLES MARQUE BLANCHE (Par défaut)
 let agenceNom = localStorage.getItem('auditpro_agence_nom') || 'AuditPro';
 let agenceCouleur = localStorage.getItem('auditpro_agence_couleur') || '#00d632';
 
-// APPLICATION DE LA COULEUR DYNAMIQUE AU SITE
-function appliquerCouleurMarqueBlanche() {
-    document.getElementById('header-logo-text').innerText = agenceNom === 'AuditPro' ? 'Audit' : agenceNom;
-    document.getElementById('header-logo-color').innerText = agenceNom === 'AuditPro' ? 'Pro' : 'Immo';
-    document.getElementById('header-logo-color').style.color = agenceCouleur;
+// 1. ANIMATION DU PORTAIL D'ENTRÉE ET CONFIGURATION DU PROFIL
+function entrerSurLeSite(profil) {
+    const portal = document.getElementById('welcome-portal');
+    const mainApp = document.getElementById('main-app');
     
-    document.querySelectorAll('.btn-dynamic-color').forEach(btn => {
-        btn.style.backgroundColor = agenceCouleur;
-    });
-    document.querySelectorAll('.text-dynamic-color').forEach(txt => {
-        txt.style.color = agenceCouleur;
-    });
-    document.querySelectorAll('.border-dynamic-color').forEach(b => {
-        b.style.borderTopColor = agenceCouleur;
-    });
-    document.querySelector('.form-container').style.borderTopColor = agenceCouleur;
-}
-
-// GESTION DU BANDEAU RGPD
-function accepterCookies() {
-    localStorage.setItem('auditpro_cookies', 'true');
-    document.getElementById('cookie-banner').style.display = 'none';
-    showToast("Préférences sauvegardées.");
-}
-
-const formatNumber = (num) => {
-    return Number(num).toLocaleString('fr-FR').replace(/[\u202F\u00A0]/g, ' ');
-};
-
-function formatInputNumber(e) {
-    let value = e.target.value.replace(/\s+/g, '');
-    if (!isNaN(value) && value !== "") {
-        e.target.value = formatNumber(value);
-    }
-}
-
-function showToast(message, type = "success") {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    if(type === "success") { toast.style.borderLeft = `5px solid ${agenceCouleur}`; }
-    toast.innerHTML = `<strong>${type === "success" ? "SUCCÈS :" : "ATTENTION :"}</strong> ${message}`;
-    container.appendChild(toast);
+    // Animation de disparition douce
+    portal.style.opacity = '0';
     setTimeout(() => {
-        toast.style.animation = "fadeOut 0.4s forwards";
-        setTimeout(() => toast.remove(), 400);
-    }, 4000);
+        portal.style.display = 'none';
+        mainApp.style.display = 'block';
+        setTimeout(() => { mainApp.style.opacity = '1'; }, 50);
+        
+        // Applique le bon profil dans le formulaire interne
+        changerProfilInterne(profil);
+    }, 500);
 }
 
-// SÉLECTEUR DE PROFIL FLUIDE
-function choisirProfil(profil) {
+// 2. CHANGEMENT DE PROFIL DEPUIS LE FORMULAIRE INTERNE
+function changerProfilInterne(profil) {
     profilActuel = profil;
     document.getElementById('btn-particulier').classList.remove('active');
     document.getElementById('btn-pro').classList.remove('active');
@@ -83,10 +50,28 @@ function choisirProfil(profil) {
     }
 }
 
-// SAUVEGARDE DES PARAMÈTRES PRO (MARQUE BLANCHE)
+// 3. GESTION DES COULEURS ET DE LA MARQUE BLANCHE
+function appliquerCouleurMarqueBlanche() {
+    document.getElementById('header-logo-text').innerText = agenceNom === 'AuditPro' ? 'Audit' : agenceNom;
+    document.getElementById('header-logo-color').innerText = agenceNom === 'AuditPro' ? 'Pro' : 'Immo';
+    document.getElementById('header-logo-color').style.color = agenceCouleur;
+    
+    document.querySelectorAll('.btn-dynamic-color').forEach(btn => { btn.style.backgroundColor = agenceCouleur; });
+    document.querySelectorAll('.text-dynamic-color').forEach(txt => { txt.style.color = agenceCouleur; });
+    document.querySelectorAll('.border-dynamic-color').forEach(b => { b.style.borderTopColor = agenceCouleur; });
+    document.querySelector('.form-container').style.borderTopColor = agenceCouleur;
+    
+    // Met à jour la couleur du bouton profil si déjà sélectionné
+    const activeBtn = document.querySelector('.profile-btn.active');
+    if(activeBtn) {
+        activeBtn.style.borderColor = agenceCouleur;
+        activeBtn.style.color = agenceCouleur;
+    }
+}
+
 function sauvegarderParametresPro() {
     if (!localStorage.getItem('auditpro_cookies')) {
-        return showToast("Veuillez accepter les cookies via le bandeau en bas de page pour activer la sauvegarde.", "error");
+        return showToast("Veuillez accepter la sauvegarde locale (bandeau en bas) pour activer cette fonction.", "error");
     }
     const inputNom = document.getElementById('nomAgenceInput').value.trim();
     const inputCouleur = document.getElementById('couleurAgenceInput').value;
@@ -98,10 +83,16 @@ function sauvegarderParametresPro() {
     localStorage.setItem('auditpro_agence_couleur', agenceCouleur);
     
     appliquerCouleurMarqueBlanche();
-    showToast("Paramètres Marque Blanche mis à jour avec succès !");
+    showToast("Paramètres Agence sauvegardés localement avec succès !");
 }
 
-// GESTION DE L'HISTORIQUE CLOUD LOCAL
+// 4. GESTION DU CLOUD LOCAL ET RGPD
+function accepterCookies() {
+    localStorage.setItem('auditpro_cookies', 'true');
+    document.getElementById('cookie-banner').style.display = 'none';
+    showToast("Mode de sauvegarde locale activé.");
+}
+
 function chargerHistorique() {
     const historiqueTable = document.getElementById('historiqueTableBody');
     if(!historiqueTable) return;
@@ -140,6 +131,37 @@ function ajouterAuHistorique(ville, prixInitial, coutTravaux) {
     chargerHistorique();
 }
 
+function viderHistorique() {
+    if(confirm("Êtes-vous sûr de vouloir supprimer définitivement tout l'historique de cet appareil ?")) {
+        localStorage.removeItem('auditpro_historique');
+        chargerHistorique();
+        showToast("Historique local effacé avec succès.");
+    }
+}
+
+// 5. FONCTIONS UTILITAIRES
+const formatNumber = (num) => { return Number(num).toLocaleString('fr-FR').replace(/[\u202F\u00A0]/g, ' '); };
+
+function formatInputNumber(e) {
+    let value = e.target.value.replace(/\s+/g, '');
+    if (!isNaN(value) && value !== "") {
+        e.target.value = formatNumber(value);
+    }
+}
+
+function showToast(message, type = "success") {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    if(type === "success") { toast.style.borderLeft = `5px solid ${agenceCouleur}`; }
+    toast.innerHTML = `<strong>${type === "success" ? "SUCCÈS :" : "ATTENTION :"}</strong> ${message}`;
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.style.animation = "fadeOut 0.4s forwards";
+        setTimeout(() => toast.remove(), 400);
+    }, 4000);
+}
+
 function copierScript() {
     const texte = document.getElementById('texteScript').innerText;
     navigator.clipboard.writeText(texte).then(() => { showToast("Texte copié dans le presse-papier."); });
@@ -161,6 +183,7 @@ function switchReportTab(tabId) {
     document.getElementById(tabId).classList.add('active');
 }
 
+// 6. MOTEUR D'ANALYSE
 function lancerDemo() {
     document.getElementById('prixInitial').value = "245 000";
     document.getElementById('loyerMensuel').value = "950";
@@ -234,7 +257,6 @@ async function envoyer() {
         clearInterval(loadInterval);
         document.getElementById('loading-overlay').style.display = "none";
         
-        // Ajout à l'historique Pro
         ajouterAuHistorique(donneesAudit.localisation_exacte, prixInput, donneesAudit.total_decote);
 
         showToast("Analyse effectuée avec succès.");
@@ -294,10 +316,10 @@ Afin de réaliser cette transaction dans des conditions équitables et sécuris�
         nomOnglet3 = "3. Argumentaire d'Agence";
         titreSectionNego = "Approche Conseil & Transparence (Professionnel)";
         scriptNegoTxt = `POUR CONSEILLER LE VENDEUR SUR SON PRIX :
-"Cher client, l'analyse réglementaire de votre bien a mis en évidence plusieurs points nécessitant une mise aux normes pour un budget estimé à ${formatNumber(donneesAudit.total_decote)} €. Pour que votre bien reste attractif face aux exigences actuelles des acheteurs et de leurs banques, je vous conseille d'ajuster le prix de présentation à ${formatNumber(donneesAudit.prix_net)} €. Cette transparence technique nous permettra de vendre plus rapidement et sans négociation agressive de dernière minute."
+"Cher client, l'analyse réglementaire de votre bien a mis en évidence plusieurs points nécessitant une mise aux normes pour un budget estimé à ${formatNumber(donneesAudit.total_decote)} €. Pour que votre bien reste attractif face aux exigences actuelles des acheteurs et de leurs banques, je vous conseille d'ajuster le prix de présentation à ${formatNumber(donneesAudit.prix_net)} €. Cette transparence technique nous permettra de vendre plus rapidement et sans négociation de dernière minute."
 
 POUR RASSURER L'ACQUÉREUR DURANT LA VISITE :
-"Sachez que nous avons anticipé les conclusions des diagnostics. L'enveloppe de mise en conformité de ${formatNumber(donneesAudit.total_decote)} € est parfaitement transparente et peut être intégrée dans votre plan de financement. Vous achetez ainsi en parfaite connaissance de cause, sans surprise post-acquisition."`;
+"Sachez que nous avons anticipé les conclusions des diagnostics. L'enveloppe de mise en conformité de ${formatNumber(donneesAudit.total_decote)} € est parfaitement transparente et peut être intégrée dans votre plan de financement. Vous achetez ainsi en parfaite connaissance de cause, sans surprise."`;
     }
 
     let html = `
@@ -393,7 +415,6 @@ POUR RASSURER L'ACQUÉREUR DURANT LA VISITE :
     }
 }
 
-// EXPORT PDF AVEC LA MARQUE BLANCHE DE L'AGENCE
 function exporterPDF() {
     if (!donneesAudit) return;
     const btn = document.getElementById('btnExport');
@@ -471,16 +492,7 @@ function exporterPDF() {
                 },
                 layout: { hLineWidth: () => 0, vLineWidth: () => 0, fillColor: (r, n, c) => r === 0 ? (c === 2 ? agenceCouleur : '#f8f9fa') : (c === 2 ? agenceCouleur : '#ffffff'), paddingTop: () => 12, paddingBottom: () => 12 },
                 margin: [0, 0, 0, 20]
-            },
-            
-            { text: '2. INVENTAIRE TECHNIQUE DÉTAILLÉ (DDT)', style: 'sectionTitle', margin: [0, 20, 0, 10] },
-            {
-                table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody },
-                layout: { hLineWidth: (i, n) => (i === 0 || i === 1 || i === n.table.body.length) ? 2 : 1, vLineWidth: () => 0, hLineColor: (i, n) => (i === 0 || i === 1 || i === n.table.body.length) ? '#0b1a14' : '#eeeeee', paddingLeft: () => 10, paddingRight: () => 10, paddingTop: () => 12, paddingBottom: () => 12, fillColor: (i) => i === 0 ? agenceCouleur : (i % 2 === 0 ? '#fafafa' : '#ffffff') }
-            },
-            
-            { text: 'CLAUSE DE NON-SUBSTITUTION LÉGALE', style: 'footerTitle', margin: [0, 40, 0, 5] },
-            { text: 'Ce rapport constitue une simulation statistique à valeur d\'aide indicative pour une transaction équitable. Les chiffrages ne se substituent pas à la passation de devis contradictoires par des corps de métier certifiés RGE.', style: 'footerText' }
+            }
         ],
         styles: {
             coverTableTitle: { fontSize: 11, bold: true, color: '#0b1a14', alignment: 'center', fillColor: '#eaf9f0', margin: [0, 6, 0, 6] },
@@ -525,7 +537,7 @@ function ajouterAvis() {
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // VERIFICATION DU CONSENTEMENT RGPD
+    // VERIFICATION DU CONSENTEMENT LOCAL STORAGE
     if (!localStorage.getItem('auditpro_cookies')) {
         document.getElementById('cookie-banner').style.display = 'block';
     }
@@ -535,10 +547,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('couleurAgenceInput').value = agenceCouleur;
     appliquerCouleurMarqueBlanche();
 
-    // CHARGEMENT DE L'HISTORIQUE CLOUD LOCAL
+    // CHARGEMENT DE L'HISTORIQUE
     chargerHistorique();
 
-    // ESPACEMENT DYNAMIQUE DES PRIX
     document.querySelectorAll('.price-input').forEach(input => {
         input.addEventListener('input', formatInputNumber);
     });
@@ -575,7 +586,6 @@ document.addEventListener("DOMContentLoaded", () => {
     liensMenu.forEach(lien => {
         lien.addEventListener('click', function(e) {
             e.preventDefault();
-            // Reset nav colors
             liensMenu.forEach(l => { l.style.color = '#fff'; l.style.borderBottomColor = 'transparent'; });
             changerOnglet(this.getAttribute('href'));
         });
@@ -593,7 +603,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ['dragleave', 'drop'].forEach(eventName => { dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false); });
         fileInput.addEventListener('change', function() {
             if (this.files && this.files.length > 0) {
-                dropZoneText.innerHTML = `Document chargé : <b style="color:#0b1a14;">${this.files[0].name}</b>`;
+                dropZoneText.innerHTML = `Document chargé : <b>${this.files[0].name}</b>`;
                 dropZone.style.borderColor = agenceCouleur;
                 dropZone.style.background = "#f4fbf7";
             }
