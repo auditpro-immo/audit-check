@@ -37,10 +37,11 @@
             <a href="#faq">Questions Fréquentes</a>
             <a href="#contact">Contact</a>
         </nav>
-        <button class="btn-solid" onclick="document.querySelector('nav a[href=\'#audit\']').click();">Nouveau Chiffrage</button>
+        <button class="btn-solid" onclick="document.querySelector('nav a[href=\'#audit\']').click();">Nouveau Diagnostic</button>
     </header>
 
 <main>
+    <!-- ONGLET 1 : L'Analyse (Accueil) -->
     <div id="audit-tab" class="tab-content active">
         <section class="hero" id="audit">
             <div class="hero-content">
@@ -92,11 +93,7 @@
             </div>
         </section>
 
-        <div style="background-color: #0b1a14; padding: 30px 20px; text-align: center; border-bottom: 4px solid #00d632;">
-            <p style="color: #fff; font-size: 18px; margin: 0 0 15px 0; font-weight: 600;">En visite sur le terrain ? Anticipez l'analyse technique sans fichier PDF</p>
-            <a href="grille.html" target="_blank" class="btn-solid" style="display: inline-block; text-decoration: none; background: #fff; color: #0b1a14; border: 2px solid #00d632;">Télécharger la Grille d'Évaluation Physique</a>
-        </div>
-
+        <!-- ZONE D'AFFICHAGE DU RAPPORT DYNAMIQUE -->
         <div id="result-wrapper">
             <div id="contenu-ecran"></div>
             <div style="text-align: center; margin-top: 40px;">
@@ -105,6 +102,7 @@
         </div>
     </div>
 
+    <!-- ONGLET 2 : Espace Pro -->
     <div id="pro-tab" class="tab-content">
         <section id="pro" class="content-section" style="text-align: center;">
             <h2 class="section-title">Agents, Mandataires & Promoteurs</h2>
@@ -127,6 +125,7 @@
                 </div>
             </div>
 
+            <!-- LE TEASER DE LA VERSION PAYANTE AVEC APPEL À LA MODALE -->
             <div style="background: linear-gradient(135deg, #0b1a14 0%, #1a3c2d 100%); padding: 50px; border-radius: 12px; color: #fff; max-width: 900px; margin: 0 auto; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
                     <div style="flex: 1; min-width: 300px;">
@@ -148,6 +147,7 @@
         </section>
     </div>
 
+    <!-- ONGLET 3 : Informations & Grille -->
     <div id="informations-tab" class="tab-content">
         <section id="informations" class="content-section">
             
@@ -202,6 +202,7 @@
         </section>
     </div>
 
+    <!-- ONGLET 4 : Avis Clients -->
     <div id="avis-tab" class="tab-content">
        <section id="avis" class="content-section" style="background-color: #f8f9fa;">
         <h2 class="section-title">Avis de nos utilisateurs professionnels et particuliers</h2>
@@ -229,6 +230,7 @@
     </section>
     </div>
 
+    <!-- ONGLET 5 : FAQ COMPLÈTE (20 QUESTIONS) -->
     <div id="faq-tab" class="tab-content">
         <section id="faq" class="content-section">
             <h2 class="section-title">20 Questions Fréquentes (FAQ)</h2>
@@ -283,7 +285,7 @@
                 </details>
                 <details>
                     <summary>13. Le calcul prend-il en compte les aides de l'État (MaPrimeRénov') ?</summary>
-                    <p>Non. L'outil vous indique le coût global brut des travaux. Les aides de l'État étant calculées en fonction de vos revenus fiscaux personnels, c'est à vous de les déduire de l'enveloppe finale estimée par l'application.</p>
+                    <p>Non. L'outil vous indique le coût global brut des travaux. Les aides de l'État étant calculées en fonction de vos revenus fiscaux personnels, cest à vous de les déduire de l'enveloppe finale estimée par l'application.</p>
                 </details>
                 <details>
                     <summary>14. Le rapport est-il adapté aux tarifs des artisans de ma région ?</summary>
@@ -317,6 +319,7 @@
         </section>
     </div>
 
+    <!-- ONGLET 6 : CONTACT -->
     <div id="contact-tab" class="tab-content">
         <section id="contact" class="content-section" style="text-align: center;">
             <h2 class="section-title">Nous Contacter</h2>
@@ -336,6 +339,7 @@
        <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" style="color: #00d632; text-decoration: underline; margin-top: 15px; display: inline-block;">Politique de confidentialité (RGPD) & Mentions Légales</a>
     </footer>
 
+    <!-- Mentions Légales Modale -->
     <div id="modalLegale" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.9); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
         <div style="background: #fff; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 40px; border-radius: 12px; position: relative; text-align: left;">
             <button onclick="document.getElementById('modalLegale').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: #cc0000; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">Fermer X</button>
@@ -352,6 +356,7 @@
         </div>
     </div>
 
+    <!-- Modale Pro -->
     <div id="modalPro" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.9); z-index: 10000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
         <div style="background: #fff; max-width: 500px; width: 100%; padding: 40px; border-radius: 12px; position: relative; border-top: 5px solid #00d632;">
             <button onclick="fermerModalPro()" style="position: absolute; top: 20px; right: 20px; background: #eee; color: #333; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">X</button>
@@ -381,7 +386,6 @@
     </div>
 
     <div id="toast-container"></div>
-
     <div id="loading-overlay">
         <div class="spinner"></div>
         <h3 style="color: white; margin-top: 25px; font-family: 'Segoe UI', sans-serif;">Analyse en cours...</h3>
