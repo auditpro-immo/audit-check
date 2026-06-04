@@ -7,24 +7,19 @@ let profilActuel = "particulier";
 let agenceNom = localStorage.getItem('auditpro_agence_nom') || 'AuditPro';
 let agenceCouleur = localStorage.getItem('auditpro_agence_couleur') || '#00d632';
 
-// 1. ANIMATION DU PORTAIL D'ENTRÉE ET CONFIGURATION DU PROFIL
 function entrerSurLeSite(profil) {
     const portal = document.getElementById('welcome-portal');
     const mainApp = document.getElementById('main-app');
     
-    // Animation de disparition douce
     portal.style.opacity = '0';
     setTimeout(() => {
         portal.style.display = 'none';
         mainApp.style.display = 'block';
         setTimeout(() => { mainApp.style.opacity = '1'; }, 50);
-        
-        // Applique le bon profil dans le formulaire interne
         changerProfilInterne(profil);
     }, 500);
 }
 
-// 2. CHANGEMENT DE PROFIL DEPUIS LE FORMULAIRE INTERNE
 function changerProfilInterne(profil) {
     profilActuel = profil;
     document.getElementById('btn-particulier').classList.remove('active');
@@ -50,7 +45,6 @@ function changerProfilInterne(profil) {
     }
 }
 
-// 3. GESTION DES COULEURS ET DE LA MARQUE BLANCHE
 function appliquerCouleurMarqueBlanche() {
     document.getElementById('header-logo-text').innerText = agenceNom === 'AuditPro' ? 'Audit' : agenceNom;
     document.getElementById('header-logo-color').innerText = agenceNom === 'AuditPro' ? 'Pro' : 'Immo';
@@ -61,7 +55,6 @@ function appliquerCouleurMarqueBlanche() {
     document.querySelectorAll('.border-dynamic-color').forEach(b => { b.style.borderTopColor = agenceCouleur; });
     document.querySelector('.form-container').style.borderTopColor = agenceCouleur;
     
-    // Met à jour la couleur du bouton profil si déjà sélectionné
     const activeBtn = document.querySelector('.profile-btn.active');
     if(activeBtn) {
         activeBtn.style.borderColor = agenceCouleur;
@@ -86,7 +79,6 @@ function sauvegarderParametresPro() {
     showToast("Paramètres Agence sauvegardés localement avec succès !");
 }
 
-// 4. GESTION DU CLOUD LOCAL ET RGPD
 function accepterCookies() {
     localStorage.setItem('auditpro_cookies', 'true');
     document.getElementById('cookie-banner').style.display = 'none';
@@ -139,7 +131,6 @@ function viderHistorique() {
     }
 }
 
-// 5. FONCTIONS UTILITAIRES
 const formatNumber = (num) => { return Number(num).toLocaleString('fr-FR').replace(/[\u202F\u00A0]/g, ' '); };
 
 function formatInputNumber(e) {
@@ -183,7 +174,6 @@ function switchReportTab(tabId) {
     document.getElementById(tabId).classList.add('active');
 }
 
-// 6. MOTEUR D'ANALYSE
 function lancerDemo() {
     document.getElementById('prixInitial').value = "245 000";
     document.getElementById('loyerMensuel').value = "950";
@@ -492,7 +482,16 @@ function exporterPDF() {
                 },
                 layout: { hLineWidth: () => 0, vLineWidth: () => 0, fillColor: (r, n, c) => r === 0 ? (c === 2 ? agenceCouleur : '#f8f9fa') : (c === 2 ? agenceCouleur : '#ffffff'), paddingTop: () => 12, paddingBottom: () => 12 },
                 margin: [0, 0, 0, 20]
-            }
+            },
+            
+            { text: '2. INVENTAIRE TECHNIQUE DÉTAILLÉ (DDT)', style: 'sectionTitle', margin: [0, 20, 0, 10] },
+            {
+                table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody },
+                layout: { hLineWidth: (i, n) => (i === 0 || i === 1 || i === n.table.body.length) ? 2 : 1, vLineWidth: () => 0, hLineColor: (i, n) => (i === 0 || i === 1 || i === n.table.body.length) ? '#0b1a14' : '#eeeeee', paddingLeft: () => 10, paddingRight: () => 10, paddingTop: () => 12, paddingBottom: () => 12, fillColor: (i) => i === 0 ? agenceCouleur : (i % 2 === 0 ? '#fafafa' : '#ffffff') }
+            },
+            
+            { text: 'CLAUSE DE NON-SUBSTITUTION LÉGALE', style: 'footerTitle', margin: [0, 40, 0, 5] },
+            { text: 'Ce rapport constitue une simulation statistique à valeur d\'aide indicative pour une transaction équitable. Les chiffrages ne se substituent pas à la passation de devis contradictoires par des corps de métier certifiés RGE.', style: 'footerText' }
         ],
         styles: {
             coverTableTitle: { fontSize: 11, bold: true, color: '#0b1a14', alignment: 'center', fillColor: '#eaf9f0', margin: [0, 6, 0, 6] },
@@ -537,17 +536,14 @@ function ajouterAvis() {
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // VERIFICATION DU CONSENTEMENT LOCAL STORAGE
     if (!localStorage.getItem('auditpro_cookies')) {
         document.getElementById('cookie-banner').style.display = 'block';
     }
 
-    // APPLICATION DE LA MARQUE BLANCHE AU DÉMARRAGE
     document.getElementById('nomAgenceInput').value = agenceNom !== 'AuditPro' ? agenceNom : '';
     document.getElementById('couleurAgenceInput').value = agenceCouleur;
     appliquerCouleurMarqueBlanche();
 
-    // CHARGEMENT DE L'HISTORIQUE
     chargerHistorique();
 
     document.querySelectorAll('.price-input').forEach(input => {
