@@ -23,16 +23,34 @@ header { background: #0b1a14; color: #fff; padding: 15px 50px; display: flex; ju
 .logo { font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px;}
 nav a { color: #fff; text-decoration: none; margin: 0 15px; font-size: 14px; font-weight: 600; transition: color 0.2s;}
 
-/* BOUTONS LISSES ET PRO (AUCUNE BORDURE) */
-.btn-solid, .btn-submit { background: #00d632; color: #0b1a14; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 700; border: none; outline: none; cursor: pointer; transition: all 0.3s ease; font-family: 'Inter', sans-serif; box-shadow: 0 4px 15px rgba(0, 214, 50, 0.2); display: inline-block; text-align: center; -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+/* BOUTONS LISSES ET PRO (EFFACEMENT DES BORDURES NAVIGATEUR) */
+.btn-solid, .btn-submit { 
+    background-color: #00d632; 
+    color: #0b1a14; 
+    padding: 12px 24px; 
+    border-radius: 8px; 
+    text-decoration: none; 
+    font-weight: 700; 
+    border: 0px solid transparent !important; 
+    outline: none !important; 
+    cursor: pointer; 
+    transition: all 0.3s ease; 
+    font-family: 'Inter', sans-serif; 
+    box-shadow: 0 4px 15px rgba(0, 214, 50, 0.2); 
+    display: inline-block; 
+    text-align: center; 
+    -webkit-appearance: none !important; 
+    -moz-appearance: none !important; 
+    appearance: none !important; 
+}
 .btn-solid:hover, .btn-submit:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 214, 50, 0.4); }
 .btn-submit { width: 100%; padding: 16px; font-size: 16px; font-weight: 800; margin-top: 10px;}
 
-.btn-demo { background: transparent; color: #6c757d; border: 1px solid #ced4da; padding: 12px 20px; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; font-family: 'Inter', sans-serif; outline: none; -webkit-appearance: none; -moz-appearance: none; appearance: none;}
-.btn-demo:hover { background: #f8f9fa; color: #0b1a14; border-color: #0b1a14; }
+.btn-demo { background: transparent; color: #6c757d; border: 1px solid #ced4da !important; padding: 12px 20px; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; font-family: 'Inter', sans-serif; outline: none; -webkit-appearance: none; -moz-appearance: none; appearance: none;}
+.btn-demo:hover { background: #f8f9fa; color: #0b1a14; border-color: #0b1a14 !important; }
 
-.btn-delete { background: transparent; color: #cc0000; border: 1px solid rgba(204, 0, 0, 0.3); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif; outline: none; -webkit-appearance: none; -moz-appearance: none; appearance: none;}
-.btn-delete:hover { background: #cc0000; color: #fff; border-color: #cc0000; box-shadow: 0 2px 8px rgba(204, 0, 0, 0.2); }
+.btn-delete { background: transparent; color: #cc0000; border: 1px solid rgba(204, 0, 0, 0.3) !important; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif; outline: none; -webkit-appearance: none; -moz-appearance: none; appearance: none;}
+.btn-delete:hover { background: #cc0000; color: #fff; border-color: #cc0000 !important; box-shadow: 0 2px 8px rgba(204, 0, 0, 0.2); }
 
 main { flex: 1; }
 
@@ -120,8 +138,8 @@ footer { background-color: #1a1a1a; color: #ffffff; text-align: center; padding:
 .spinner { width: 60px; height: 60px; border: 6px solid rgba(255, 255, 255, 0.2); border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.script-box { background: #ffffff; border-left: 4px solid #ced4da; padding: 25px 25px 25px 30px; border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); font-size: 14px; font-style: italic; line-height: 1.7; color: #333; white-space: pre-wrap; margin-top: 15px; position: relative; text-align: left; }
-.btn-copy { position: absolute; top: 15px; right: 15px; background: #f8f9fa; color: #0b1a14; border: 1px solid #ced4da; padding: 6px 12px; font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; font-style: normal; font-family: 'Inter', sans-serif; outline: none;}
+.script-box { background: #ffffff; border-left: 4px solid #ced4da; padding: 25px 25px 25px 30px; border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); font-size: 14px; line-height: 1.7; color: #333; white-space: pre-wrap; margin-top: 15px; position: relative; text-align: left; }
+.btn-copy { position: absolute; top: 15px; right: 15px; background: #f8f9fa; color: #0b1a14; border: 1px solid #ced4da !important; padding: 6px 12px; font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; font-style: normal; font-family: 'Inter', sans-serif;}
 .btn-copy:hover { background: #eaeaea; }
 
 @media (max-width: 768px) {
