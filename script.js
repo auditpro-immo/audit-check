@@ -24,8 +24,12 @@ function entrerSurLeSite(profil) {
 
 function changerProfilInterne(profil) {
     profilActuel = profil;
-    document.getElementById('btn-particulier').classList.remove('active');
-    document.getElementById('btn-pro').classList.remove('active');
+    
+    document.querySelectorAll('.profile-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.borderColor = 'transparent';
+        btn.style.color = '#6c757d';
+    });
     
     let btnActif = document.getElementById('btn-' + (profil === 'particulier' ? 'particulier' : 'pro'));
     btnActif.classList.add('active');
@@ -46,9 +50,8 @@ function changerProfilInterne(profil) {
         document.getElementById('nav-pro').style.display = "none";
     }
     
-    // Met à jour l'affichage en direct si un rapport est ouvert
     if(donneesAudit) {
-        afficherEcran();
+        afficherEcran(); // Met à jour le texte du rapport actif si le profil change
     }
 }
 
@@ -65,6 +68,7 @@ document.getElementById('logoUploadInput').addEventListener('change', function(e
     }
 });
 
+// APPLIQUE LE THEME GLOBAL (Utilisé pour l'enregistrement et la réinitialisation)
 function appliquerCouleurMarqueBlanche() {
     document.getElementById('header-logo-text').innerText = agenceNom === 'AuditPro' ? 'Audit' : agenceNom;
     document.getElementById('header-logo-color').innerText = agenceNom === 'AuditPro' ? 'Pro' : 'Immo';
@@ -80,14 +84,18 @@ function appliquerCouleurMarqueBlanche() {
     document.querySelectorAll('.border-left-dynamic-color').forEach(b => { b.style.borderLeftColor = agenceCouleur; });
     document.querySelector('.form-container').style.borderTopColor = agenceCouleur;
     
-    // Mettre à jour la couleur du lien actif du menu
+    // Reset complet du menu de navigation haut
+    document.querySelectorAll('nav a').forEach(a => {
+        a.style.color = '#fff';
+        a.style.borderBottomColor = 'transparent';
+    });
     const lienActif = document.querySelector('nav a.active');
     if (lienActif) {
         lienActif.style.color = agenceCouleur;
         lienActif.style.borderBottom = `2px solid ${agenceCouleur}`;
     }
     
-    // Boutons de profil
+    // Application sur le bouton Profil actif
     document.querySelectorAll('.profile-btn').forEach(btn => {
         btn.style.borderColor = 'transparent';
         btn.style.color = '#6c757d';
@@ -98,14 +106,13 @@ function appliquerCouleurMarqueBlanche() {
         activeBtn.style.color = agenceCouleur;
     }
     
-    // SVG dropzone
     const dropIcon = document.querySelector('.drop-icon');
     if(dropIcon) dropIcon.style.color = agenceCouleur;
 }
 
 function sauvegarderParametresPro() {
     if (!localStorage.getItem('auditpro_cookies')) {
-        return showToast("Veuillez accepter la sauvegarde locale (bandeau en bas) pour activer cette fonction.");
+        return showToast("Veuillez accepter la sauvegarde locale (bandeau en bas) pour activer cette fonction.", "error");
     }
     const inputNom = document.getElementById('nomAgenceInput').value.trim();
     const inputCouleur = document.getElementById('couleurAgenceInput').value;
@@ -145,7 +152,7 @@ function reinitialiserMarqueBlanche() {
     appliquerCouleurMarqueBlanche();
     
     if(donneesAudit) {
-        afficherEcran(); // Remet le rapport affiché en vert instantanément
+        afficherEcran(); // Met à jour le rapport PDF affiché en vert
     }
     
     showToast("L'interface a retrouvé ses couleurs par défaut.");
@@ -176,7 +183,7 @@ function chargerHistorique() {
                 <td>${dossier.date}</td>
                 <td><strong>${dossier.ville}</strong></td>
                 <td>${formatNumber(dossier.prixInitial)} €</td>
-                <td><button class="btn-solid btn-dynamic-color" style="padding: 6px 12px; font-size: 11px; box-shadow:none;">Ouvrir</button></td>
+                <td><button class="btn-solid btn-dynamic-color" style="padding: 6px 12px; font-size: 11px; box-shadow:none; border:none; color:#0b1a14;">Ouvrir</button></td>
             </tr>
         `;
     });
@@ -265,8 +272,8 @@ function showToast(message, type = "success") {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    if(type === "success") { toast.style.borderLeft = `5px solid ${agenceCouleur}`; }
-    else { toast.style.borderLeft = `5px solid #cc0000`; }
+    if(type === "success") { toast.style.borderLeftColor = agenceCouleur; }
+    else { toast.style.borderLeftColor = '#cc0000'; }
     toast.innerHTML = `<strong>${type === "success" ? "SUCCÈS :" : "ATTENTION :"}</strong> ${message}`;
     container.appendChild(toast);
     setTimeout(() => {
@@ -410,7 +417,7 @@ function afficherEcran() {
             </div>
             <div class="kpi-box main" style="background: ${agenceCouleur}; color: #fff;">
                 <div class="kpi-label" style="color: #fff;">Rendement Réel Après Travaux</div>
-                <div class="kpi-value">${( (loyerMensuelSaisi * 12) / (prixInitialClean + donneesAudit.total_decote) * 100 ).toFixed(2)} %</div>
+                <div class="kpi-value" id="anim-renta-nette">0.00 %</div>
             </div>
         </div>`;
     }
@@ -418,36 +425,31 @@ function afficherEcran() {
     let scriptNegoTxt = "";
     let titreSectionNego = "";
     let nomOnglet3 = "";
-    let nomOnglet4 = "";
     let defautsFormate = anomalies.length > 0 ? anomalies.map(a => a.titre).join(', ') : "aucun défaut critique";
     
+    // TEXTES FACTUELS SANS DICTER LA CONDUITE DE L'AGENT
     if (profilActuel === "particulier") {
-        nomOnglet3 = "3. Formuler son Offre";
-        titreSectionNego = "Proposition Transparente (Acquéreur)";
-        scriptNegoTxt = `Madame, Monsieur, suite à la visite de votre bien situé au ${donneesAudit.cp} et à l'analyse objective du Dossier de Diagnostics Techniques, je vous confirme mon vif intérêt.
+        nomOnglet3 = "3. Aide à la Négociation";
+        titreSectionNego = "Bilan et Arguments Objectifs (Acquéreur)";
+        scriptNegoTxt = `BILAN DE L'ÉVALUATION TECHNIQUE :
+- Prix de présentation : ${formatNumber(prixInitialClean)} €
+- Coût estimé des remises aux normes : ${formatNumber(donneesAudit.total_decote)} €
+- Valeur technique ajustée : ${formatNumber(donneesAudit.prix_net)} €
 
-Cependant, l'étude technique détaillée met en évidence un budget de mise en conformité évalué à ${formatNumber(donneesAudit.total_decote)} €, notamment concernant les points suivants : ${defautsFormate}. 
-
-Afin de réaliser cette transaction dans des conditions équitables et sécurisées pour nos deux parties, en tenant compte des réalités du marché à ${donneesAudit.localisation_exacte}, je vous soumets une offre d'achat ferme au prix de ${formatNumber(donneesAudit.prix_net)} €. Cette proposition intègre les travaux nécessaires tout en respectant la valeur réelle et objective de votre bien.`;
+VOS ARGUMENTS POUR LA NÉGOCIATION :
+L'enveloppe de travaux s'appuie sur des éléments factuels du dossier de diagnostics (notamment : ${defautsFormate}). Vous pouvez utiliser cette synthèse chiffrée pour justifier objectivement une proposition d'achat à ${formatNumber(donneesAudit.prix_net)} € auprès du vendeur ou de son représentant.`;
     } else {
-        nomOnglet3 = "3. Argumentaire d'Agence";
-        titreSectionNego = "Approche Conseil & Transparence (Professionnel)";
-        scriptNegoTxt = `POUR CONSEILLER LE VENDEUR SUR SON PRIX :
-"Cher client, l'analyse réglementaire de votre bien a mis en évidence plusieurs points nécessitant une mise aux normes pour un budget estimé à ${formatNumber(donneesAudit.total_decote)} €. Pour que votre bien reste attractif face aux exigences actuelles des acheteurs et de leurs banques, je vous conseille d'ajuster le prix de présentation à ${formatNumber(donneesAudit.prix_net)} €. Cette transparence technique nous permettra de vendre plus rapidement et de signer le mandat dans des conditions optimales."
+        nomOnglet3 = "3. Synthèse Commerciale";
+        titreSectionNego = "Éléments Factuels pour la Transaction (Professionnel)";
+        scriptNegoTxt = `SYNTHÈSE FACTUELLE DU DOSSIER :
+- Écart technique identifié : ${formatNumber(donneesAudit.total_decote)} €
+- Points d'attention majeurs : ${defautsFormate}
+- Valeur de présentation recommandée : ${formatNumber(donneesAudit.prix_net)} €
 
-POUR RASSURER L'ACQUÉREUR DURANT LA VISITE :
-"Sachez que nous avons anticipé les conclusions des diagnostics pour vous. L'enveloppe de mise en conformité de ${formatNumber(donneesAudit.total_decote)} € est parfaitement transparente et peut être intégrée dès maintenant dans votre plan de financement. Vous achetez ainsi en parfaite connaissance de cause, sans aucune surprise technique après la vente."`;
+BÉNÉFICES POUR LA TRANSACTION :
+> Face au vendeur : Cette analyse neutre et chiffrée constitue une preuve tangible pour justifier un ajustement de l'estimation et sécuriser le mandat au juste prix.
+> Face à l'acquéreur : L'anticipation du budget travaux démontre une totale transparence de l'agence. Le client intègre cette enveloppe dès son plan de financement, ce qui sécurise la vente et limite les négociations de dernière minute.`;
     }
-
-    let texteAnnonceIA = `À saisir rapidement sur le secteur de ${donneesAudit.localisation_exacte} (${donneesAudit.cp}) !
-
-Nous vous proposons ce bien affiché au prix de ${formatNumber(prixInitialClean)} €, idéal pour un premier achat ou un investissement locatif patrimonial. 
-
-Le bien nécessite une mise au goût du jour et quelques travaux de remise aux normes (budget estimé à ${formatNumber(donneesAudit.total_decote)} €) offrant une belle marge de valorisation post-rénovation. Un dossier de diagnostic technique complet est à votre disposition lors de la visite. 
-
-Le prix net recommandé après déduction de la valorisation technique s'établit à ${formatNumber(donneesAudit.prix_net)} €. Ne manquez pas cette opportunité de créer un espace à votre image ! 
-
-Contactez-nous pour organiser une visite.`;
 
     let html = `
     <div style="border-bottom: 3px solid #0b1a14; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
@@ -464,7 +466,6 @@ Contactez-nous pour organiser une visite.`;
         <button class="report-tab-btn active" onclick="switchReportTab('paneFinancier')" style="color: ${agenceCouleur}; border-bottom-color: ${agenceCouleur};">1. Synthèse Financière</button>
         <button class="report-tab-btn" onclick="switchReportTab('paneTechnique')">2. Bilan Technique</button>
         <button class="report-tab-btn" onclick="switchReportTab('paneStrategie')">${nomOnglet3}</button>
-        ${profilActuel === "professionnel" ? `<button class="report-tab-btn" onclick="switchReportTab('paneAnnonce')" style="background-color: #f4fbf7; color: ${agenceCouleur}; border-radius: 4px;">4. Rédiger l'Annonce</button>` : ''}
     </div>
     
     <div id="paneFinancier" class="report-pane active">
@@ -513,22 +514,12 @@ Contactez-nous pour organiser une visite.`;
     
     <div id="paneStrategie" class="report-pane">
         <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-bottom: 10px;">${titreSectionNego}</h3>
-        <p style="font-size: 14px; color: #495057; margin-bottom: 15px; text-align: left;">Cet outil de rédaction exclusif vous aide à aborder le volet financier de manière factuelle et rassurante :</p>
-        <div class="script-box" style="border-left-color: ${agenceCouleur};">
-            <button class="btn-copy" onclick="copierScript('texteScript')">Copier</button>
+        <p style="font-size: 14px; color: #495057; margin-bottom: 15px; text-align: left;">Voici la synthèse des informations générée par le système pour appuyer votre expertise :</p>
+        <div class="script-box" style="border-left-color: ${agenceCouleur}; font-style: normal; font-family: 'Inter', sans-serif;">
+            <button class="btn-copy" onclick="copierScript('texteScript')">Copier les informations</button>
             <div id="texteScript">${scriptNegoTxt}</div>
         </div>
     </div>
-
-    ${profilActuel === "professionnel" ? `
-    <div id="paneAnnonce" class="report-pane">
-        <h3 style="text-transform: uppercase; font-size: 14px; color: ${agenceCouleur}; margin-bottom: 10px;">Générateur d'Annonce Immobilière</h3>
-        <p style="font-size: 14px; color: #495057; margin-bottom: 15px; text-align: left;">Gagnez du temps. Notre algorithme a rédigé une annonce optimisée pour les portails immobiliers, en transformant les travaux nécessaires en opportunité d'investissement :</p>
-        <div class="script-box" style="border-left-color: ${agenceCouleur}; font-style: normal; font-family: 'Inter', sans-serif;">
-            <button class="btn-copy" onclick="copierScript('texteAnnonce')">Copier l'annonce</button>
-            <div id="texteAnnonce">${texteAnnonceIA}</div>
-        </div>
-    </div>` : ''}
     
     <div style="font-size: 10px; color: #adb5bd; text-align: justify; border-top: 1px solid #eaeaea; padding-top: 15px; margin-top: 40px;">
         <b>CADRE D'APPLICATION :</b> Cette étude est une simulation macro-économique informatisée d'aide à la décision. Document non contractuel.
@@ -542,8 +533,11 @@ Contactez-nous pour organiser une visite.`;
 
     if (loyerMensuelSaisi > 0) {
         let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitialClean) * 100;
-        animateValuePercent(document.getElementById('anim-renta-brute'), 0, rentaInitiale, 1500);
+        let coutTotalReel = prixInitialClean + donneesAudit.total_decote;
+        let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
         animateValue(document.getElementById('anim-loyer'), 0, (loyerMensuelSaisi * 12), 1500);
+        animateValuePercent(document.getElementById('anim-renta-brute'), 0, rentaInitiale, 1500);
+        animateValuePercent(document.getElementById('anim-renta-nette'), 0, rentaFinale, 1500);
     }
 
     if (anomalies.length > 0) {
