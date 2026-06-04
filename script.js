@@ -236,8 +236,23 @@ function voirPDFDirect(event, index) {
     event.stopPropagation();
     chargerDossierHistorique(index);
     showToast("Ouverture du rapport PDF en cours...");
+    
+    // NOUVEAU : On ouvre l'onglet instantanément au clic pour contourner le bloqueur de pop-up
+    const pdfWindow = window.open("", "_blank");
+    if (pdfWindow) {
+        pdfWindow.document.write(`
+            <html lang='fr'>
+            <head><title>Rapport AuditPro</title></head>
+            <body style='background-color:#525659; display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; margin:0; color:white; font-family:sans-serif;'>
+                <h3>Génération du document en cours...</h3>
+                <p style="color:#aaa; font-size:14px;">Veuillez patienter quelques instants.</p>
+            </body>
+            </html>
+        `);
+    }
+
     setTimeout(() => {
-        exporterPDF('open'); // Ouvre le PDF dans un nouvel onglet
+        exporterPDF('view', pdfWindow); 
     }, 800);
 }
 
@@ -469,7 +484,7 @@ function afficherEcran() {
 L'enveloppe de travaux s'appuie sur le rapport de diagnostic. Les points suivants nécessitent une mise en sécurité ou une remise aux normes :
 ${defautsFormate}
 
-L'évaluation prend également en compte la zone de localisation (${donneesAudit.localisation_exacte}), ce qui permet de justifyifier la cohérence du budget travaux calculé.`;
+L'évaluation prend également en compte la zone de localisation (${donneesAudit.localisation_exacte}), ce qui permet de justifier la cohérence du budget travaux calculé.`;
     } else {
         nomOnglet3 = "3. Données d'Appui";
         titreSectionNego = "Éléments Factuels pour la Transaction (Professionnel)";
@@ -596,10 +611,10 @@ Ces données constituent une base objective. Face au vendeur, elles justifient m
 }
 
 // LE NOUVEAU PDF : STYLE "CABINET DE CONSEIL" - OPTIMISÉ, DENSE ET DESIGN
-function exporterPDF(action = 'download') {
+function exporterPDF(action = 'download', targetWindow = null) {
     if (!donneesAudit) return;
     const btn = document.getElementById('btnExport');
-    if(btn) btn.innerText = "Édition du PDF en cours...";
+    if(btn && action !== 'view') btn.innerText = "Édition du PDF en cours...";
     
     // --- 1. GÉNÉRATEUR DE BADGE DPE DYNAMIQUE ---
     function getDpeSvg(lettre) {
@@ -809,7 +824,7 @@ function exporterPDF(action = 'download') {
                 coverValue: { fontSize: 9, color: '#1a1a1a', margin: [10, 2, 0, 2], bold: true },
                 sectionTitle: { fontSize: 13, bold: true, color: '#1a1a1a', margin: [0, 0, 0, 15], textTransform: 'uppercase' },
                 
-                // Nouveaux styles pour les colonnes
+                // Nouveaux styles pour les colonnes (Taille standardisée)
                 kpiHeaderLeft: { fontSize: 10, color: '#555', margin: [0, 5, 0, 5] },
                 kpiValueLeft: { fontSize: 14, bold: true, color: '#1a1a1a', alignment: 'right', margin: [0, 5, 0, 5] },
                 kpiValueNetLeft: { fontSize: 14, bold: true, alignment: 'right', margin: [0, 5, 0, 5] },
@@ -823,7 +838,14 @@ function exporterPDF(action = 'download') {
 
         let pdf = pdfMake.createPdf(docDefinition);
         
-        if (action === 'open') {
+        if (action === 'view' && targetWindow) {
+            // INJECTION DU PDF DANS LE NOUVEL ONGLET
+            pdf.getBlob((blob) => {
+                const blobUrl = URL.createObjectURL(blob);
+                targetWindow.location.href = blobUrl;
+            });
+            if(btn) btn.innerText = "Télécharger le rapport PDF Officiel";
+        } else if (action === 'open') {
             pdf.open();
             if(btn) btn.innerText = "Télécharger le rapport PDF Officiel";
         } else {
@@ -834,7 +856,7 @@ function exporterPDF(action = 'download') {
         }
     } catch(err) {
         showToast("Erreur lors de la génération du PDF.", "error");
-        if(btn) btn.innerText = "Télécharger le rapport PDF Officiel";
+        if(btn && action !== 'view') btn.innerText = "Télécharger le rapport PDF Officiel";
     }
 }
 
