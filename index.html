@@ -16,7 +16,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="stylesheet" href="style.css?v=4.0">
 </head>
 <body>
 
@@ -106,17 +106,21 @@
                             <label>Code Postal de la ville *</label>
                             <input type="text" inputmode="numeric" id="codePostal" class="form-control" placeholder="Ex : 35000" maxlength="5">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" style="margin-bottom: 30px;">
                             <label>Dossier PDF (Diagnostics) *</label>
                             <div id="drop-zone" class="drop-zone">
                                 <span class="drop-zone-text">Glissez-déposez votre PDF ici ou cliquez</span>
                                 <input type="file" id="fichierPdf" class="drop-zone-input" accept="application/pdf">
                             </div>
                         </div>
+                        
                         <button class="btn-submit btn-dynamic-color" id="btnSubmit" onclick="envoyer()">Générer l'audit complet</button>
                         
-                        <div style="text-align: center; margin-top: 20px;">
-                            <a href="#" onclick="lancerDemo(); return false;" style="color: #6c757d; font-size: 13px; text-decoration: underline; font-weight: 600; transition: color 0.3s;">Découvrir l'interface via une démonstration</a>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <button type="button" class="btn-demo" onclick="lancerDemo()">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                Lancer une simulation de démonstration
+                            </button>
                         </div>
                     </div>
                 </section>
@@ -161,7 +165,10 @@
                         <div style="flex: 2; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 4px solid #0b1a14; display: flex; flex-direction: column;">
                             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
                                 <h3 style="margin: 0; color: #0b1a14;">📂 Historique Local</h3>
-                                <button onclick="viderHistorique()" style="background: none; border: 1px solid #cc0000; color: #cc0000; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s;">🗑️ Effacer les données</button>
+                                <button onclick="viderHistorique()" class="btn-delete">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    Effacer les données
+                                </button>
                             </div>
                             
                             <div class="table-responsive" style="margin-bottom: 0; flex: 1; overflow-y: auto; max-height: 250px;">
@@ -305,9 +312,11 @@
        <footer>
            © 2026 AuditPro-Immo. Tous droits réservés. | Logiciel d'analyse immobilière.<br>
            Ce rapport d'expertise ne se substitue pas à un devis d'artisan.<br>
-           <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" class="text-dynamic-color" style="text-decoration: underline; margin-top: 15px; display: inline-block;">Mentions Légales & RGPD</a>
+           <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" class="text-dynamic-color" style="text-decoration: underline; margin-top: 15px; display: inline-block;">Mentions Légales & Confidentialité</a>
         </footer>
-    </div> <div id="modalLegale" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.9); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
+    </div>
+
+    <div id="modalLegale" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.9); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
         <div style="background: #fff; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 40px; border-radius: 12px; position: relative; text-align: left;">
             <button onclick="document.getElementById('modalLegale').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: #cc0000; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">Fermer X</button>
             <h2 style="color: #0b1a14; border-bottom: 2px solid #eee; padding-bottom: 10px;">Mentions Légales & Conditions d'Utilisation</h2>
@@ -328,7 +337,7 @@
     <div id="toast-container"></div>
     <div id="loading-overlay">
         <div class="spinner border-dynamic-color"></div>
-        <h3 style="color: white; margin-top: 25px; font-family: 'Inter', 'Segoe UI', sans-serif;" id="loading-text">Analyse en cours...</h3>
+        <h3 style="color: white; margin-top: 25px; font-family: 'Inter', sans-serif;" id="loading-text">Analyse en cours...</h3>
         <p class="text-dynamic-color" style="font-weight: bold;">Extraction des données du document réglementaire</p>
     </div>
 
