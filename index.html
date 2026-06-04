@@ -15,8 +15,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Forçage de la mise à jour visuelle (v=10.0) -->
-    <link rel="stylesheet" href="style.css?v=10.0">
+    <!-- Forçage de la mise à jour visuelle (v=11.0) -->
+    <link rel="stylesheet" href="style.css?v=11.0">
 </head>
 <body>
 
@@ -34,7 +34,7 @@
                     </div>
                     <h3>Espace Acquéreur</h3>
                     <p>Analysez les diagnostics d'un bien en quelques secondes pour anticiper le coût des travaux et formuler une offre d'achat sécurisée.</p>
-                    <div class="card-action">Accéder au simulateur →</div>
+                    <div class="card-action">Accéder au simulateur <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></div>
                 </div>
                 
                 <div class="portal-card" onclick="entrerSurLeSite('professionnel')">
@@ -43,7 +43,7 @@
                     </div>
                     <h3>Espace Professionnel</h3>
                     <p>Justifiez objectivement vos estimations, rassurez vos clients et éditez des rapports d'expertise personnalisés aux couleurs de votre agence.</p>
-                    <div class="card-action">Accéder au tableau de bord →</div>
+                    <div class="card-action">Accéder au tableau de bord <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></div>
                 </div>
             </div>
             <div class="portal-footer">
@@ -69,7 +69,7 @@
         </header>
 
         <main>
-            <!-- ONGLET 1 : L'Analyse (Accueil) -->
+            <!-- ONGLET 1 : L'Analyse -->
             <div id="audit-tab" class="tab-content active">
                 <section class="hero" id="audit">
                     <div class="hero-content">
@@ -139,7 +139,10 @@
                 <div id="result-wrapper">
                     <div id="contenu-ecran"></div>
                     <div style="text-align: center; margin-top: 40px;">
-                        <button class="btn-solid btn-dynamic-color" id="btnExport" style="padding: 16px 40px; font-size: 16px;" onclick="exporterPDF()">Télécharger le rapport PDF Officiel</button>
+                        <button class="btn-solid btn-dynamic-color" id="btnExport" style="padding: 16px 40px; font-size: 16px;" onclick="exporterPDF('download')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Télécharger le rapport PDF Officiel
+                        </button>
                     </div>
                 </div>
             </div>
@@ -183,7 +186,7 @@
                                     </div>
                                     <img id="logo-preview" style="display: none; max-height: 40px; max-width: 100px; object-fit: contain; border-radius: 4px; border: 1px solid #eee; padding: 2px;">
                                 </div>
-                                <span style="font-size: 11px; color: #888; display: block; margin-top: 5px;">Format PNG/JPG. Cadrage parfait automatique.</span>
+                                <span style="font-size: 11px; color: #888; display: block; margin-top: 5px;">Format PNG ou JPG. Cadrage automatique.</span>
                             </div>
 
                             <div class="form-group">
@@ -233,32 +236,34 @@
                             <div style="flex: 1; min-width: 300px; text-align: left;">
                                 <h3 style="margin-top: 0; color: #0b1a14; font-size: 22px; display: flex; align-items: center; gap: 8px;">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"></path><path d="M4 14l5-5 5 5 6-6"></path></svg>
-                                    Générateur de Leads (Widget Site Web)
+                                    Module de Captation de Leads
                                 </h3>
                                 <p style="font-size: 15px; color: #495057; line-height: 1.6;">Intégrez notre moteur d'analyse directement sur le site internet de votre agence. Offrez un pré-chiffrage gratuit à vos visiteurs en échange de leurs coordonnées.</p>
                                 <ul style="font-size: 14px; color: #495057; margin-bottom: 20px; padding-left: 20px; line-height: 1.6;">
-                                    <li>Récolte automatique des adresses emails.</li>
-                                    <li>Envoi direct des coordonnées dans votre logiciel CRM (API).</li>
+                                    <li>Récolte automatique des adresses emails et téléphones.</li>
+                                    <li>Envoi direct des coordonnées dans votre logiciel CRM (via API).</li>
                                     <li>Détection de projets de vente qualifiés sur votre secteur.</li>
                                 </ul>
-                                <button class="btn-demo" style="width: auto;" onclick="alert('L\'intégration API et le code iFrame seront débloqués dans la version Premium de votre abonnement.')">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-                                    Obtenir le code d'intégration HTML
-                                </button>
+                                
+                                <div style="background: #f8f9fa; border: 1px solid #ced4da; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                                    <div style="font-size: 11px; font-weight: bold; color: #6c757d; margin-bottom: 8px; text-transform: uppercase;">Code d'intégration iFrame (Exemple)</div>
+                                    <code style="font-size: 12px; color: #cc0000; word-break: break-all;">&lt;iframe src="https://auditpro.immo/widget/votre-agence-id" width="100%" height="400px" style="border:none;"&gt;&lt;/iframe&gt;</code>
+                                </div>
+                                <p style="font-size: 12px; color: #6c757d; font-style: italic;">* L'activation de l'API est réservée aux abonnements Premium.</p>
                             </div>
                             
                             <!-- APERÇU DU WIDGET -->
                             <div style="flex: 1; min-width: 300px;">
-                                <div style="font-size: 12px; color: #6c757d; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; text-align: center; margin-bottom: 10px;">Aperçu visuel sur votre site</div>
+                                <div style="font-size: 12px; color: #6c757d; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; text-align: center; margin-bottom: 10px;">Aperçu du Widget sur votre site web</div>
                                 <div style="border: 1px solid #eaeaea; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
                                     <div style="background: #0b1a14; color: #fff; padding: 15px; text-align: center; font-weight: 600; font-size: 14px;">
-                                        Estimez le coût de vos travaux
+                                        Faites estimer vos diagnostics
                                     </div>
                                     <div style="padding: 20px; background: #fff;">
-                                        <p style="font-size: 12px; color: #666; margin-bottom: 15px; text-align: center;">Obtenez instantanément un rapport chiffré de vos diagnostics immobiliers.</p>
+                                        <p style="font-size: 12px; color: #666; margin-bottom: 15px; text-align: center;">Découvrez le coût des travaux de mise aux normes de votre bien immobilier.</p>
                                         <div style="border: 2px dashed #ced4da; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 15px; cursor: pointer; background: #f8f9fa;">
                                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6c757d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-                                            <div style="font-size: 12px; color: #6c757d; font-weight: 600; margin-top: 8px;">Glissez votre PDF ici</div>
+                                            <div style="font-size: 12px; color: #6c757d; font-weight: 600; margin-top: 8px;">Glissez votre dossier PDF ici</div>
                                         </div>
                                         <input type="email" placeholder="Votre adresse e-mail" style="width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 6px; margin-bottom: 15px; font-size: 13px; box-sizing: border-box; outline:none; font-family:'Inter', sans-serif;">
                                         <button class="btn-solid btn-dynamic-color" style="width: 100%; padding: 12px; font-size: 13px;">Recevoir mon audit gratuit</button>
@@ -392,8 +397,8 @@
                         <details><summary>8. Quelle est la durée de validité des diagnostics Électricité et Gaz ?</summary><p>Ils sont valables 3 ans dans le cadre d'une vente immobilière. Si vous achetez ce bien pour le mettre en location, leur durée de validité est étendue à 6 ans pour la signature du contrat de bail.</p></details>
                         <details><summary>9. Faut-il refaire le diagnostic Amiante si le résultat précédent était négatif ?</summary><p>Non, sa validité est théoriquement illimitée, MAIS à une seule condition : il doit avoir été réalisé après le 1er avril 2013. Les diagnostics amiante antérieurs à cette date précise doivent être refaits, même s'ils étaient négatifs.</p></details>
                         <details><summary>10. Quelle est la différence de risque entre l'amiante et le plomb ?</summary><p>L'amiante est une fibre (souvent dans les toits en fibrociment ou les dalles) qui est cancérigène si on la respire en la cassant. Le plomb est présent dans les vieilles peintures et provoque une maladie grave (le saturnisme).</p></details>
-                        <details><summary>11. Qu'est-ce qu'un DGI (Danger Grave et Immédiat) ?</summary><p>C'est le niveau d'alerte maximum, extrêmement fréquent sur les anciennes chaudières au gaz. Si le diagnostiqueur repère un DGI, il a l'obligation légale de condamner l'installation sur le champ. Elle ne pourra être rouverte qu'après réparation par un pro.</p></details>
-                        <details><summary>12. Suis-je obligé de faire les travaux si une anomalie est détectée ?</summary><p>Le vendeur n'a aucune obligation de travaux (sauf en cas de DGI), il doit juste informer l'acheteur en toute transparence. En tant qu'acheteur, la loi ne vous y oblige pas, mais les banques exigent souvent la mise aux normes pour vous accorder le prêt immobilier.</p></details>
+                        <details><summary>11. Qu'est-ce qu'un DGI (Danger Grave et Immédiat) ?</summary><p>C'est le niveau d'alerte maximum, extrêmement fréquent sur les anciennes chaudières au gaz. Si le diagnostiqueur repère un DGI, il a l'obligation légale de condamner l'installation sur le champ.</p></details>
+                        <details><summary>12. Suis-je obligé de faire les travaux si une anomalie est détectée ?</summary><p>Le vendeur n'a aucune obligation de travaux (sauf en cas de DGI), il doit juste informer l'acheteur en toute transparence. En tant qu'acheteur, la loi ne vous y oblige pas, mais les banques l'exigent souvent.</p></details>
                         <details><summary>13. Le calcul prend-il en compte les aides de l'État (MaPrimeRénov') ?</summary><p>Non. L'outil vous indique le coût global brut des travaux. Les aides de l'État (MaPrimeRénov', CEE) étant calculées en fonction de vos revenus fiscaux personnels, c'est à vous de les déduire de l'enveloppe finale estimée.</p></details>
                         <details><summary>14. Le rapport est-il adapté aux tarifs des artisans de ma région ?</summary><p>Oui. L'algorithme lit le code postal que vous avez renseigné et applique un coefficient multiplicateur reflétant la tension du marché de la construction dans votre département.</p></details>
                         <details><summary>15. Comment le programme calcule-t-il les prix des travaux ?</summary><p>Il repère dans le PDF la surface totale du bien, identifie le type de problème relevé par l'expert, et multiplie la surface par le coût moyen au mètre carré pratiqué pour ce type de réparation spécifique.</p></details>
