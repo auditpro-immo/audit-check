@@ -1,784 +1,169 @@
-let donneesAudit = null;
-let idRapport = "";
-let chartInstance = null;
-let loyerMensuelSaisi = 0;
-let profilActuel = "particulier";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
-// VARIABLES MARQUE BLANCHE
-let agenceNom = localStorage.getItem('auditpro_agence_nom') || 'AuditPro';
-let agenceCouleur = localStorage.getItem('auditpro_agence_couleur') || '#00d632';
-let agenceLogoBase64 = localStorage.getItem('auditpro_agence_logo') || null;
+body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; background-color: #f8f9fa; color: #212529; scroll-behavior: smooth; display: flex; flex-direction: column; min-height: 100vh; }
 
-function entrerSurLeSite(profil) {
-    const portal = document.getElementById('welcome-portal');
-    const mainApp = document.getElementById('main-app');
-    
-    portal.style.opacity = '0';
-    setTimeout(() => {
-        portal.style.display = 'none';
-        mainApp.style.display = 'block';
-        setTimeout(() => { mainApp.style.opacity = '1'; }, 50);
-        changerProfilInterne(profil);
-    }, 500);
+/* DESIGN PORTAIL D'ACCUEIL */
+#welcome-portal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0b1a14; z-index: 100000; display: flex; justify-content: center; align-items: center; text-align: center; padding: 20px; box-sizing: border-box; transition: opacity 0.5s ease, visibility 0.5s; }
+.portal-content { max-width: 900px; width: 100%; }
+.portal-logo { font-size: 40px; font-weight: 800; color: #fff; margin-bottom: 25px; letter-spacing: -1px;}
+.portal-content h1 { color: #fff; margin-top: 0; font-size: 32px; font-weight: 800;}
+.portal-content p { color: #88928c; font-size: 16px; margin-bottom: 50px; line-height: 1.6; max-width: 600px; margin-left: auto; margin-right: auto;}
+.portal-cards { display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; }
+
+.portal-card { background: #ffffff; color: #0b1a14; border: 1px solid #eaeaea; padding: 40px; border-radius: 12px; cursor: pointer; flex: 1; min-width: 280px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); transition: all 0.3s ease; position: relative; overflow: hidden; text-align: left; border-top: 4px solid #eaeaea;}
+.portal-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,214,50,0.15); border-top-color: #00d632; }
+.card-icon-svg { margin-bottom: 20px; background: #f4fbf7; display: inline-flex; padding: 15px; border-radius: 12px; color: #00d632;}
+.portal-card h3 { color: #0b1a14; font-size: 20px; font-weight: 800; margin-top: 0; margin-bottom: 12px;}
+.portal-card p { color: #555; font-size: 14px; line-height: 1.6; margin-bottom: 30px; }
+.card-action { font-size: 14px; font-weight: 700; color: #00d632; }
+.portal-footer { margin-top: 50px; font-size: 12px; color: #6c757d; font-weight: 600;}
+
+/* HEADER */
+header { background: #0b1a14; color: #fff; padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.logo { font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px;}
+nav a { color: #fff; text-decoration: none; margin: 0 15px; font-size: 14px; font-weight: 600; transition: color 0.2s;}
+
+/* BOUTONS LISSES ET PRO (SUPPRESSION ABSOLUE DES BORDURES) */
+.btn-solid, .btn-submit { 
+    background-color: #00d632; 
+    color: #0b1a14; 
+    padding: 14px 28px; 
+    border-radius: 8px; 
+    font-weight: 800; 
+    border: 0px solid transparent !important; 
+    outline: none !important; 
+    cursor: pointer; 
+    transition: all 0.3s ease; 
+    font-family: 'Inter', sans-serif; 
+    box-shadow: 0 4px 15px rgba(0, 214, 50, 0.2); 
+    display: inline-block; 
+    text-align: center; 
+    -webkit-appearance: none !important; 
+    -moz-appearance: none !important; 
+    appearance: none !important; 
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
+.btn-solid:hover, .btn-submit:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 214, 50, 0.4); }
+.btn-submit { width: 100%; padding: 16px; font-size: 16px; font-weight: 800; margin-top: 10px;}
 
-function changerProfilInterne(profil) {
-    profilActuel = profil;
-    document.getElementById('btn-particulier').classList.remove('active');
-    document.getElementById('btn-pro').classList.remove('active');
-    
-    let btnActif = document.getElementById('btn-' + (profil === 'particulier' ? 'particulier' : 'pro'));
-    btnActif.classList.add('active');
-    btnActif.style.borderColor = agenceCouleur;
-    btnActif.style.color = agenceCouleur;
+.btn-demo { background: transparent; color: #6c757d; border: 1px solid #ced4da !important; padding: 12px 20px; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; font-family: 'Inter', sans-serif; outline: none !important; -webkit-appearance: none !important; appearance: none !important;}
+.btn-demo:hover { background: #f8f9fa; color: #0b1a14; border-color: #0b1a14 !important; }
 
-    if(profil === "professionnel") {
-        document.getElementById('hero-badge').innerText = "Espace Professionnels (B2B)";
-        document.getElementById('hero-title').innerText = "Justifiez vos estimations et sécurisez vos transactions.";
-        document.getElementById('hero-desc').innerText = "Notre technologie d'analyse traduit instantanément les PDF de diagnostics en rapports chiffrés. Un outil pensé pour rassurer vos acquéreurs et obtenir l'exclusivité auprès des vendeurs.";
-        document.getElementById('form-title').innerText = "Simulateur pour les agences";
-        document.getElementById('nav-pro').style.display = "inline-block";
-    } else {
-        document.getElementById('hero-badge').innerText = "Espace Particulier (B2C)";
-        document.getElementById('hero-title').innerText = "Sécurisez votre achat en chiffrant les travaux cachés.";
-        document.getElementById('hero-desc').innerText = "Notre outil analyse l'ensemble des diagnostics obligatoires de la maison que vous visitez. Obtenez en 2 minutes le vrai coût des remises aux normes.";
-        document.getElementById('form-title').innerText = "Configuration de l'analyse";
-        document.getElementById('nav-pro').style.display = "none";
-    }
+.btn-delete { background: transparent; color: #cc0000; border: 1px solid rgba(204, 0, 0, 0.3) !important; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif; outline: none !important; -webkit-appearance: none !important; appearance: none !important;}
+.btn-delete:hover { background: #cc0000; color: #fff; border-color: #cc0000 !important; box-shadow: 0 2px 8px rgba(204, 0, 0, 0.2); }
+
+/* BOUTONS HISTORIQUE (VOIR & PDF) */
+.btn-voir { background: transparent; color: #0b1a14; border: 1px solid #ced4da !important; padding: 8px 12px; font-size: 12px; font-weight: 600; border-radius: 4px; cursor: pointer; transition: 0.2s; font-family: 'Inter', sans-serif; display:inline-flex; align-items:center; gap:6px; outline: none !important; -webkit-appearance: none !important; appearance: none !important;}
+.btn-voir:hover { background: #f8f9fa; border-color: #0b1a14 !important; }
+
+.btn-pdf { background: #00d632; color: #fff; border: 0px solid transparent !important; padding: 8px 12px; font-size: 12px; font-weight: 600; border-radius: 4px; cursor: pointer; transition: 0.2s; font-family: 'Inter', sans-serif; display:inline-flex; align-items:center; gap:6px; outline: none !important; -webkit-appearance: none !important; appearance: none !important;}
+.btn-pdf:hover { opacity: 0.85; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.15);}
+
+main { flex: 1; }
+
+/* REHAUSSEMENT DU TEXTE DE LA PAGE D'ACCUEIL */
+.hero { background: linear-gradient(135deg, #eaf9f0 0%, #ffffff 100%); padding: 40px 50px 80px 50px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eaeaea; }
+.hero-content { max-width: 48%; }
+.hero-content h1 { font-size: 44px; color: #0b1a14; margin-bottom: 20px; line-height: 1.2; font-weight: 800; transition: 0.3s; letter-spacing: -1px;}
+.hero-content p { font-size: 16px; color: #495057; line-height: 1.6; margin-bottom: 30px; transition: 0.3s; }
+.hero-content ul { color: #495057; line-height: 1.8; padding-left: 20px; font-size: 15px;}
+
+.form-container { background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 420px; border-top: 5px solid #00d632; box-sizing: border-box; }
+.form-container h2 { margin: 0 0 20px 0; font-size: 20px; color: #0b1a14; transition: 0.3s;}
+.form-group { margin-bottom: 20px; text-align: left; }
+.form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #0b1a14; }
+.form-control { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; background: #f8f9fa; font-size: 14px; font-family: 'Inter', sans-serif; outline:none;}
+.form-control:focus { border-color: #0b1a14; }
+
+.profile-selector { display: flex; background: #f8f9fa; padding: 6px; border-radius: 8px; border: 1px solid #ced4da; gap: 5px; }
+.profile-btn { flex: 1; padding: 12px 10px; border: none; background: transparent; border-radius: 6px; font-weight: 700; font-size: 13px; color: #6c757d; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Inter', sans-serif; outline: none !important;}
+.profile-btn:hover { background: #eaf9f0; }
+.profile-btn.active { background: #fff; color: #0b1a14; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border: 1px solid #00d632; }
+
+#result-wrapper { max-width: 1050px; margin: 60px auto; display: none; padding: 0 20px; box-sizing: border-box; }
+#contenu-ecran { background: #fff; padding: 50px; border-radius: 8px; border: 1px solid #eee; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+
+.report-tabs { display: flex; border-bottom: 2px solid #ced4da; margin-bottom: 30px; gap: 10px; }
+.report-tab-btn { background: none; border: none; padding: 12px 20px; font-size: 14px; font-weight: 700; color: #6c757d; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s; font-family: 'Inter', sans-serif; outline: none;}
+.report-pane { display: none; }
+.report-pane.active { display: block; }
+
+.kpi-grid { display: flex; justify-content: space-between; margin-bottom: 40px; gap: 20px; }
+.kpi-box { flex: 1; padding: 25px; border-radius: 8px; text-align: center; border: 1px solid #eaeaea; box-sizing: border-box; }
+.kpi-box.main { background: #0b1a14; color: #fff; border: none; }
+.kpi-label { font-size: 11px; text-transform: uppercase; font-weight: 700; opacity: 0.8; margin-bottom: 10px; letter-spacing: 0.5px;}
+.kpi-value { font-size: 28px; font-weight: 800; }
+
+.chart-container { width: 100%; max-width: 350px; margin: 0 auto 40px; }
+
+.table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 0; }
+table { width: 100%; border-collapse: collapse; min-width: 600px; }
+th, td { border: 1px solid #dee2e6; padding: 16px; text-align: left; vertical-align: middle; font-size: 14px;}
+th { background-color: #f8f9fa; text-transform: uppercase; font-size: 11px; font-weight: 800; color: #0b1a14; letter-spacing: 0.5px;}
+
+/* LIGNE HISTORIQUE */
+.history-row { transition: background-color 0.2s ease; cursor: default;}
+.history-row:hover { background-color: #f8f9fa; }
+
+.content-section { padding: 80px 50px; max-width: 1200px; margin: 0 auto; border-bottom: 1px solid #eaeaea; box-sizing: border-box; }
+.section-title { font-size: 30px; color: #0b1a14; margin-bottom: 40px; text-align: center; font-weight: 800; letter-spacing: -1px;}
+
+.info-grid, .avis-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; margin: 0 auto; max-width: 1000px; }
+.info-card, .avis-card { flex: 1 1 calc(33.333% - 30px); min-width: 300px; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border-top: 4px solid #00d632; box-sizing: border-box; transition: border-color 0.3s;}
+.info-card h3 { margin-top: 0; color: #0b1a14; font-size: 18px; font-weight: 800;}
+.info-card p { font-size: 14px; color: #555; line-height: 1.6; margin: 0; }
+
+.faq-container { max-width: 800px; margin: 0 auto; text-align: left; }
+details { background: #fff; border: 1px solid #dee2e6; border-radius: 8px; margin-bottom: 15px; transition: 0.3s; }
+summary { font-weight: 700; padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; list-style: none; color: #0b1a14; font-size: 15px; outline: none;}
+summary::-webkit-details-marker { display: none; }
+summary::after { content: '+'; font-size: 20px; }
+details[open] summary::after { content: '-'; }
+details p { padding: 0 20px 20px 20px; margin: 0; color: #495057; line-height: 1.6; border-top: 1px solid #eee; padding-top: 15px; font-size: 14px;}
+
+footer { background-color: #1a1a1a; color: #ffffff; text-align: center; padding: 25px 0; font-size: 12px; border-top: 1px solid #333; margin-top: auto; line-height: 1.6; }
+
+.tab-content { display: none; width: 100%; }
+.tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* EFFET DRAG & DROP ANIMÉ */
+.drop-zone { width: 100%; padding: 30px 20px; border: 2px dashed #ced4da; border-radius: 8px; text-align: center; background: #f8f9fa; cursor: pointer; transition: all 0.3s ease; box-sizing: border-box; position: relative; }
+.drop-icon { margin-bottom: 10px; color: #6c757d; transition: all 0.3s ease; }
+.drop-zone:hover, .drop-zone.dragover { background: #eaf9f0; border-color: #00d632; box-shadow: 0 10px 20px rgba(0,0,0,0.05); transform: scale(1.02); }
+.drop-zone:hover .drop-icon, .drop-zone.dragover .drop-icon { transform: translateY(-5px) scale(1.1); color: #00d632; }
+.drop-zone-text { font-size: 14px; font-weight: 600; color: #6c757d; pointer-events: none; }
+.drop-zone-input { position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer; }
+
+/* BORDURES DYNAMIQUES HAUT/GAUCHE (Pour Marque Blanche) */
+.border-left-dynamic-color { border-left: 4px solid #00d632; }
+.border-dynamic-color-top { border-top: 4px solid #00d632; }
+
+#toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+.toast { background: #212529; color: #fff; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-weight: 600; font-size: 14px; opacity: 0; transform: translateX(100%); animation: slideIn 0.4s forwards; }
+@keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+@keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } }
+
+#loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.95); z-index: 10000; flex-direction: column; justify-content: center; align-items: center; }
+.spinner { width: 60px; height: 60px; border: 6px solid rgba(255, 255, 255, 0.2); border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.script-box { background: #ffffff; border-left: 4px solid #ced4da; padding: 25px 25px 25px 30px; border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); font-size: 14px; line-height: 1.7; color: #333; white-space: pre-wrap; margin-top: 15px; position: relative; text-align: left; }
+.btn-copy { position: absolute; top: 15px; right: 15px; background: #f8f9fa; color: #0b1a14; border: 1px solid #ced4da !important; padding: 6px 12px; font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; font-style: normal; font-family: 'Inter', sans-serif; outline: none !important;}
+.btn-copy:hover { background: #eaeaea; }
+
+@media (max-width: 768px) {
+    header { flex-wrap: wrap; padding: 15px 20px; }
+    header nav { order: 3; width: 100%; display: flex; overflow-x: auto; margin-top: 15px; padding-bottom: 5px; gap: 15px; }
+    header nav::-webkit-scrollbar { display: none; }
+    .hero { flex-direction: column; padding: 40px 20px; text-align: center; }
+    .hero-content { max-width: 100%; margin-bottom: 40px; }
+    .form-container { max-width: 100%; padding: 25px 20px; }
+    .kpi-grid { flex-direction: column; gap: 15px; }
+    #contenu-ecran { padding: 25px 15px; }
+    .info-card, .avis-card { flex: 1 1 100%; min-width: 100%; }
+    .portal-logo { font-size: 36px; }
+    .portal-content h1 { font-size: 24px; }
 }
-
-document.getElementById('logoUploadInput').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            agenceLogoBase64 = e.target.result;
-            document.getElementById('logo-preview').src = agenceLogoBase64;
-            document.getElementById('logo-preview').style.display = 'block';
-        }
-        reader.readAsDataURL(file);
-    }
-});
-
-function appliquerCouleurMarqueBlanche() {
-    document.getElementById('header-logo-text').innerText = agenceNom === 'AuditPro' ? 'Audit' : agenceNom;
-    document.getElementById('header-logo-color').innerText = agenceNom === 'AuditPro' ? 'Pro' : 'Immo';
-    document.getElementById('header-logo-color').style.color = agenceCouleur;
-    
-    document.querySelectorAll('.btn-dynamic-color').forEach(btn => { 
-        btn.style.backgroundColor = agenceCouleur; 
-        btn.style.boxShadow = `0 4px 15px ${agenceCouleur}40`;
-    });
-    
-    document.querySelectorAll('.text-dynamic-color').forEach(txt => { txt.style.color = agenceCouleur; });
-    document.querySelectorAll('.border-dynamic-color').forEach(b => { b.style.borderTopColor = agenceCouleur; });
-    document.querySelectorAll('.border-left-dynamic-color').forEach(b => { b.style.borderLeftColor = agenceCouleur; });
-    document.querySelectorAll('.border-dynamic-color-top').forEach(b => { b.style.borderTopColor = agenceCouleur; });
-    document.querySelector('.form-container').style.borderTopColor = agenceCouleur;
-    
-    document.querySelectorAll('nav a').forEach(a => {
-        a.style.color = '#fff';
-        a.style.borderBottomColor = 'transparent';
-    });
-    const lienActif = document.querySelector('nav a.active');
-    if (lienActif) {
-        lienActif.style.color = agenceCouleur;
-        lienActif.style.borderBottom = `2px solid ${agenceCouleur}`;
-    }
-    
-    document.querySelectorAll('.profile-btn').forEach(btn => {
-        btn.style.borderColor = 'transparent';
-        btn.style.color = '#6c757d';
-    });
-    const activeBtn = document.querySelector('.profile-btn.active');
-    if(activeBtn) {
-        activeBtn.style.borderColor = agenceCouleur;
-        activeBtn.style.color = agenceCouleur;
-    }
-    
-    const dropIcon = document.querySelector('.drop-icon');
-    if(dropIcon) dropIcon.style.color = agenceCouleur;
-    
-    // Met à jour la couleur des boutons PDF dans l'historique
-    document.querySelectorAll('.btn-pdf').forEach(btn => {
-        btn.style.backgroundColor = agenceCouleur;
-    });
-}
-
-function sauvegarderParametresPro() {
-    if (!localStorage.getItem('auditpro_cookies')) {
-        return showToast("Veuillez accepter la sauvegarde locale (bandeau en bas) pour activer cette fonction.", "error");
-    }
-    const inputNom = document.getElementById('nomAgenceInput').value.trim();
-    const inputCouleur = document.getElementById('couleurAgenceInput').value;
-    
-    agenceNom = inputNom !== "" ? inputNom : "AuditPro";
-    agenceCouleur = inputCouleur;
-    
-    localStorage.setItem('auditpro_agence_nom', agenceNom);
-    localStorage.setItem('auditpro_agence_couleur', agenceCouleur);
-    if(agenceLogoBase64) {
-        localStorage.setItem('auditpro_agence_logo', agenceLogoBase64);
-    }
-    
-    appliquerCouleurMarqueBlanche();
-    
-    if(donneesAudit) {
-        afficherEcran(); // Recharge les couleurs dans le rapport actif
-    }
-    
-    showToast("Paramètres Agence sauvegardés localement avec succès !");
-}
-
-function reinitialiserMarqueBlanche() {
-    localStorage.removeItem('auditpro_agence_nom');
-    localStorage.removeItem('auditpro_agence_couleur');
-    localStorage.removeItem('auditpro_agence_logo');
-    
-    agenceNom = 'AuditPro';
-    agenceCouleur = '#00d632'; // Le vert de base
-    agenceLogoBase64 = null;
-    
-    document.getElementById('nomAgenceInput').value = '';
-    document.getElementById('couleurAgenceInput').value = '#00d632';
-    document.getElementById('logo-preview').style.display = 'none';
-    document.getElementById('logo-preview').src = '';
-    
-    appliquerCouleurMarqueBlanche(); // Met à jour l'interface immédiatement
-    
-    if(donneesAudit) {
-        afficherEcran(); // Met à jour le rapport à l'écran
-    }
-    
-    showToast("L'interface a retrouvé ses couleurs par défaut.");
-}
-
-function accepterCookies() {
-    localStorage.setItem('auditpro_cookies', 'true');
-    document.getElementById('cookie-banner').style.display = 'none';
-    showToast("Mode de sauvegarde locale activé.");
-}
-
-function chargerHistorique() {
-    const historiqueTable = document.getElementById('historiqueTableBody');
-    if(!historiqueTable) return;
-    
-    const historique = JSON.parse(localStorage.getItem('auditpro_historique_v2')) || [];
-    historiqueTable.innerHTML = '';
-    
-    if(historique.length === 0) {
-        historiqueTable.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #666; padding: 20px;">Aucun dossier généré pour le moment.</td></tr>';
-        return;
-    }
-    
-    // Ajout des boutons "Voir" (Ouvre dans le site) et "PDF" (Génère et télécharge)
-    historique.reverse().forEach((dossier, index) => {
-        let realIndex = historique.length - 1 - index;
-        historiqueTable.innerHTML += `
-            <tr class="history-row">
-                <td>${dossier.date}</td>
-                <td><strong>${dossier.ville}</strong></td>
-                <td>${formatNumber(dossier.prixInitial)} €</td>
-                <td style="text-align: right;">
-                    <div style="display:flex; justify-content:flex-end; gap:5px;">
-                        <button class="btn-voir" onmouseover="this.style.color='${agenceCouleur}'; this.style.borderColor='${agenceCouleur}'" onmouseout="this.style.color='#0b1a14'; this.style.borderColor='#ced4da'" onclick="voirPDFDirect(event, ${realIndex})">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Voir
-                        </button>
-                        <button class="btn-pdf" style="background-color: ${agenceCouleur}; color: #fff;" onclick="telechargerDirect(event, ${realIndex})">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> PDF
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        `;
-    });
-}
-
-function ajouterAuHistorique(ville, prixInitial, donneesCompletes) {
-    if (!localStorage.getItem('auditpro_cookies')) return;
-    
-    const historique = JSON.parse(localStorage.getItem('auditpro_historique_v2')) || [];
-    historique.push({
-        id: "AUDIT-" + Math.floor(Math.random() * 90000 + 10000),
-        date: new Date().toLocaleDateString('fr-FR'),
-        ville: ville,
-        prixInitial: prixInitial,
-        data: donneesCompletes,
-        loyer: loyerMensuelSaisi
-    });
-    localStorage.setItem('auditpro_historique_v2', JSON.stringify(historique));
-    chargerHistorique();
-}
-
-function chargerDossierHistorique(index) {
-    const historique = JSON.parse(localStorage.getItem('auditpro_historique_v2')) || [];
-    const dossier = historique[index];
-    
-    donneesAudit = dossier.data;
-    idRapport = dossier.id;
-    loyerMensuelSaisi = dossier.loyer || 0;
-    
-    document.getElementById('prixInitial').value = formatNumber(dossier.prixInitial);
-    if(loyerMensuelSaisi > 0) document.getElementById('loyerMensuel').value = formatNumber(loyerMensuelSaisi);
-    
-    document.getElementById('result-wrapper').style.display = "block";
-    document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
-    afficherEcran();
-}
-
-// ACTION : BOUTON VOIR
-function voirPDFDirect(event, index) {
-    event.stopPropagation();
-    chargerDossierHistorique(index);
-    showToast("Le dossier a été chargé dans l'interface.");
-}
-
-// ACTION : BOUTON PDF (TÉLÉCHARGEMENT DIRECT)
-function telechargerDirect(event, index) {
-    event.stopPropagation();
-    chargerDossierHistorique(index); 
-    showToast("Génération du PDF en cours...");
-    setTimeout(() => {
-        exporterPDF('download'); // Génère le PDF en arrière plan
-    }, 800);
-}
-
-function viderHistorique() {
-    if(confirm("Êtes-vous sûr de vouloir supprimer définitivement tout l'historique de cet appareil ?")) {
-        localStorage.removeItem('auditpro_historique_v2');
-        chargerHistorique();
-        showToast("Historique local effacé avec succès.");
-    }
-}
-
-const formatNumber = (num) => { return Number(num).toLocaleString('fr-FR').replace(/[\u202F\u00A0]/g, ' '); };
-
-function formatInputNumber(e) {
-    let value = e.target.value.replace(/\s+/g, '');
-    if (!isNaN(value) && value !== "") {
-        e.target.value = formatNumber(value);
-    }
-}
-
-function animateValue(obj, start, end, duration, prefix = "") {
-    let startTimestamp = null;
-    const step = (timestamp) => {
-        if (!startTimestamp) startTimestamp = timestamp;
-        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-        const easeProgress = 1 - Math.pow(1 - progress, 3);
-        const currentVal = Math.floor(easeProgress * (end - start) + start);
-        obj.innerHTML = prefix + formatNumber(currentVal) + " €";
-        if (progress < 1) { window.requestAnimationFrame(step); } 
-        else { obj.innerHTML = prefix + formatNumber(end) + " €"; }
-    };
-    window.requestAnimationFrame(step);
-}
-
-function animateValuePercent(obj, start, end, duration) {
-    let startTimestamp = null;
-    const step = (timestamp) => {
-        if (!startTimestamp) startTimestamp = timestamp;
-        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-        const easeProgress = 1 - Math.pow(1 - progress, 3);
-        const currentVal = easeProgress * (end - start) + start;
-        obj.innerHTML = currentVal.toFixed(2) + " %";
-        if (progress < 1) { window.requestAnimationFrame(step); } 
-        else { obj.innerHTML = end.toFixed(2) + " %"; }
-    };
-    window.requestAnimationFrame(step);
-}
-
-function showToast(message, type = "success") {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    if(type === "success") { toast.style.borderLeftColor = agenceCouleur; }
-    else { toast.style.borderLeftColor = '#cc0000'; }
-    toast.innerHTML = `<strong>${type === "success" ? "SUCCÈS :" : "ATTENTION :"}</strong> ${message}`;
-    container.appendChild(toast);
-    setTimeout(() => {
-        toast.style.animation = "fadeOut 0.4s forwards";
-        setTimeout(() => toast.remove(), 400);
-    }, 4000);
-}
-
-function switchReportTab(tabId) {
-    document.querySelectorAll('.report-tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-        btn.style.color = '#6c757d';
-        btn.style.borderBottomColor = 'transparent';
-    });
-    document.querySelectorAll('.report-pane').forEach(pane => pane.classList.remove('active'));
-    
-    let activeBtn = document.querySelector(`[onclick="switchReportTab('${tabId}')"]`);
-    activeBtn.classList.add('active');
-    activeBtn.style.color = agenceCouleur;
-    activeBtn.style.borderBottomColor = agenceCouleur;
-    
-    document.getElementById(tabId).classList.add('active');
-}
-
-function lancerDemo() {
-    document.getElementById('prixInitial').value = "450 000";
-    document.getElementById('loyerMensuel').value = "1 200";
-    document.getElementById('codePostal').value = "35000";
-    
-    loyerMensuelSaisi = 1200;
-    idRapport = "DEMO-" + Math.floor(Math.random() * 90000 + 10000);
-    
-    donneesAudit = {
-        cp: "35000",
-        localisation_exacte: "Zone Régionale Intermédiaire",
-        impact_marche: "Secteur provincial actif. Légère tension économique constatée sur les devis (+8%) liée à l'attractivité du littoral ou des grands axes de transport.",
-        date_audit: new Date().toLocaleDateString('fr-FR'),
-        prix_initial: 450000,
-        total_decote: 16703,
-        prix_net: 433297,
-        analyse_secteur: "Indice de marché local : 1.08",
-        securite: "Vos données sont privées : Le PDF a été supprimé de nos serveurs.",
-        diagnostics: [
-            {titre: "Électricité (Sécurité)", cout: 8128, loi: "Norme NF C 15-100", detail: "Défaut de mise à la terre ou matériel ancien identifié.", action: "Mise en sécurité du tableau électrique par un professionnel."},
-            {titre: "Gaz (Risque fuite)", cout: 0, loi: "Norme NF P 45-500", detail: "La tuyauterie de gaz ne présente aucun défaut d'étanchéité.", action: "Entretien annuel classique de la chaudière."},
-            {titre: "Amiante (Matériaux)", cout: 8575, loi: "Art. L1334-13", detail: "Présence d'amiante confirmée dans certains matériaux de construction.", action: "Intervention d'une entreprise spécialisée nécessaire si des travaux sont prévus."}
-        ]
-    };
-    
-    showToast("Simulation de Démonstration générée avec succès.");
-    document.getElementById('result-wrapper').style.display = "block";
-    document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
-    afficherEcran();
-}
-
-async function envoyer() {
-    const input = document.getElementById('fichierPdf');
-    const prixInputBrut = document.getElementById('prixInitial').value.replace(/\s+/g, '');
-    const prixInput = Number(prixInputBrut) || 0;
-    const loyerInputBrut = document.getElementById('loyerMensuel').value.replace(/\s+/g, '');
-    const loyerInput = Number(loyerInputBrut) || 0;
-    const cpInput = document.getElementById('codePostal').value || "";
-    
-    if (prixInput <= 0) return showToast("Veuillez indiquer le prix de vente.", "error");
-    if (!input.files.length) return showToast("Veuillez charger le fichier PDF.", "error");
-    
-    loyerMensuelSaisi = loyerInput;
-    document.getElementById('loading-overlay').style.display = "flex";
-
-    const messagesIA = [
-        "Lecture et structuration du document PDF...",
-        "Recherche de données réglementaires...",
-        "Calcul des devis moyens pour le département...",
-        "Génération de la synthèse d'évaluation..."
-    ];
-    let msgIndex = 0;
-    const textElement = document.getElementById('loading-text');
-    const loadInterval = setInterval(() => {
-        textElement.innerText = messagesIA[msgIndex];
-        msgIndex = (msgIndex + 1) % messagesIA.length;
-    }, 1200);
-
-    const formData = new FormData();
-    formData.append("fichier", input.files[0]);
-    formData.append("prix", prixInput);
-    formData.append("cp", cpInput);
-
-    try {
-        const reponse = await fetch("https://audit-check-ktny.onrender.com/scan", { method: "POST", body: formData });
-        if (!reponse.ok) throw new Error("Erreur serveur");
-        donneesAudit = await reponse.json();
-        donneesAudit.cp = cpInput;
-        idRapport = "AUDIT-" + Math.floor(Math.random() * 90000 + 10000);
-        
-        clearInterval(loadInterval);
-        document.getElementById('loading-overlay').style.display = "none";
-        
-        ajouterAuHistorique(donneesAudit.localisation_exacte, prixInput, donneesAudit);
-
-        showToast("Analyse effectuée avec succès.");
-        document.getElementById('result-wrapper').style.display = "block";
-        document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
-        afficherEcran();
-
-    } catch (e) {
-        clearInterval(loadInterval);
-        document.getElementById('loading-overlay').style.display = "none";
-        showToast("Erreur de traitement serveur.", "error");
-    }
-}
-
-function afficherEcran() {
-    let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
-    let prixInitialClean = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
-    if(prixInitialClean === 0 && donneesAudit.prix_initial > 0) prixInitialClean = donneesAudit.prix_initial;
-    
-    let kpiRentabiliteHtml = "";
-    if (loyerMensuelSaisi > 0) {
-        kpiRentabiliteHtml = `
-        <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-top: 30px; margin-bottom: 15px;">Performance Locative Estimée</h3>
-        <div class="kpi-grid">
-            <div class="kpi-box">
-                <div class="kpi-label">Loyer Annuel Théorique</div>
-                <div class="kpi-value" style="color: #0b1a14;" id="anim-loyer">0 €</div>
-            </div>
-            <div class="kpi-box">
-                <div class="kpi-label">Rendement Brut Hors Travaux</div>
-                <div class="kpi-value" id="anim-renta-brute">0.00 %</div>
-            </div>
-            <div class="kpi-box main" style="background: ${agenceCouleur}; color: #fff;">
-                <div class="kpi-label" style="color: #fff;">Rendement Net (Post-Travaux)</div>
-                <div class="kpi-value" id="anim-renta-nette">0.00 %</div>
-            </div>
-        </div>`;
-    }
-
-    let html = `
-    <div style="border-bottom: 3px solid #0b1a14; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
-        <div>
-            <h2 style="font-size: 24px; color: #0b1a14; font-weight: 800; margin: 0;">Rapport d'Analyse Technique</h2>
-            <div style="font-size: 14px; color: #6c757d; margin-top: 5px; font-weight: 600;">Secteur : ${donneesAudit.localisation_exacte}</div>
-        </div>
-        <div style="text-align: right; font-size: 13px; color: #6c757d; font-weight: bold;">
-            Dossier : ${idRapport}<br>Date : ${donneesAudit.date_audit}
-        </div>
-    </div>
-    
-    <div class="report-tabs">
-        <button class="report-tab-btn active" onclick="switchReportTab('paneFinancier')" style="color: ${agenceCouleur}; border-bottom-color: ${agenceCouleur};">1. Synthèse Financière</button>
-        <button class="report-tab-btn" onclick="switchReportTab('paneTechnique')">2. Bilan Technique (DDT)</button>
-    </div>
-    
-    <div id="paneFinancier" class="report-pane active">
-        <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-bottom: 15px;">Évaluation de la Balance Financière</h3>
-        <div class="kpi-grid">
-            <div class="kpi-box">
-                <div class="kpi-label">Prix de vente initial</div>
-                <div class="kpi-value" id="anim-prix-initial">0 €</div>
-            </div>
-            <div class="kpi-box">
-                <div class="kpi-label" style="color: #cc0000;">Enveloppe Travaux Globale</div>
-                <div class="kpi-value" style="color: #cc0000;" id="anim-cout-travaux">-0 €</div>
-            </div>
-            <div class="kpi-box main" style="background-color: ${agenceCouleur};">
-                <div class="kpi-label" style="color: #fff;">Valeur Nette Recommandée</div>
-                <div class="kpi-value" id="anim-prix-net">0 €</div>
-            </div>
-        </div>
-        ${kpiRentabiliteHtml}
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 6px; margin-top: 20px; border: 1px solid #ced4da; text-align: left;">
-            <h4 style="margin: 0 0 8px 0; color: #0b1a14; text-transform: uppercase; font-size: 12px;">Contexte du secteur géographique</h4>
-            <p style="margin: 0; font-size: 14px; color: #495057; line-height: 1.5;">${donneesAudit.impact_marche}</p>
-        </div>
-    </div>
-    
-    <div id="paneTechnique" class="report-pane">
-        ${anomalies.length > 0 ? `<div class="chart-container"><canvas id="coutChart"></canvas></div>` : ''}
-        <div class="table-responsive">
-            <table>
-                <tr>
-                    <th style="width: 25%;">Domaine Contrôlé</th>
-                    <th style="width: 15%; text-align: center;">État</th>
-                    <th style="width: 45%;">Détails & Préconisations</th>
-                    <th style="text-align: right; width: 15%;">Budget</th>
-                </tr>
-                ${donneesAudit.diagnostics.map(a => `
-                <tr style="border-bottom: 1px solid #ecf0f1;">
-                    <td style="padding: 15px; border-left: 4px solid ${a.cout > 0 ? '#cc0000' : agenceCouleur};"><b>${a.titre}</b></td>
-                    <td style="padding: 15px; color: ${a.cout > 0 ? '#cc0000' : '#000000'}; font-weight: bold; text-align: center;">${a.cout > 0 ? 'ANOMALIE' : 'CONFORME'}</td>
-                    <td style="padding: 15px; font-size: 13px; color: #333; line-height: 1.5;"><b>Constat :</b> ${a.detail}<br>${a.cout > 0 ? `<b>Action requise :</b> ${a.action}` : ''}</td>
-                    <td style="padding: 15px; font-weight:bold; text-align: right; font-size: 16px;">${a.cout > 0 ? `-${formatNumber(a.cout)} €` : '0 €'}</td>
-                </tr>`).join('')}
-            </table>
-        </div>
-    </div>
-    
-    <div style="font-size: 10px; color: #adb5bd; text-align: justify; border-top: 1px solid #eaeaea; padding-top: 15px; margin-top: 40px;">
-        <b>CADRE D'APPLICATION :</b> Cette étude est une simulation macro-économique informatisée d'aide à la décision. Document non contractuel.
-    </div>`;
-
-    document.getElementById('contenu-ecran').innerHTML = html;
-
-    animateValue(document.getElementById('anim-prix-initial'), 0, prixInitialClean, 1500);
-    animateValue(document.getElementById('anim-cout-travaux'), 0, donneesAudit.total_decote, 1500, "-");
-    animateValue(document.getElementById('anim-prix-net'), 0, donneesAudit.prix_net, 1500);
-
-    if (loyerMensuelSaisi > 0) {
-        let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitialClean) * 100;
-        let coutTotalReel = prixInitialClean + donneesAudit.total_decote;
-        let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
-        animateValue(document.getElementById('anim-loyer'), 0, (loyerMensuelSaisi * 12), 1500);
-        animateValuePercent(document.getElementById('anim-renta-brute'), 0, rentaInitiale, 1500);
-        animateValuePercent(document.getElementById('anim-renta-nette'), 0, rentaFinale, 1500);
-    }
-
-    if (anomalies.length > 0) {
-        const ctx = document.getElementById('coutChart').getContext('2d');
-        if (chartInstance) chartInstance.destroy();
-        chartInstance = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: anomalies.map(a => a.titre),
-                datasets: [{ 
-                    data: anomalies.map(a => a.cout), 
-                    backgroundColor: ['#1a1a1a', '#cc0000', '#555555', '#888888', '#aaaaaa', '#dddddd'] 
-                }]
-            },
-            options: { animation: false, plugins: { legend: { position: 'bottom' } } }
-        });
-    }
-}
-
-// LE NOUVEAU PDF : STYLE "CABINET DE CONSEIL" - EPURE ET SOBRE
-function exporterPDF(action = 'download') {
-    if (!donneesAudit) return;
-    const btn = document.getElementById('btnExport');
-    if(btn) btn.innerText = "Édition du PDF en cours...";
-    
-    let prixInitFormate = formatNumber(document.getElementById('prixInitial').value.replace(/\s+/g, '')) + ' €';
-    let decoteFormate = '-' + formatNumber(donneesAudit.total_decote) + ' €';
-    let prixNetFormate = formatNumber(donneesAudit.prix_net) + ' €';
-
-    let tableBody = [
-        [
-            { text: 'DOMAINE CONTRÔLÉ', style: 'tableHeader' },
-            { text: 'ÉTAT', style: 'tableHeader', alignment: 'center' },
-            { text: 'DÉTAILS TECHNIQUES', style: 'tableHeader' },
-            { text: 'BUDGET', style: 'tableHeader', alignment: 'right' }
-        ]
-    ];
-
-    donneesAudit.diagnostics.forEach((a, index) => {
-        let isAnomalie = a.cout > 0;
-        let rowColor = (index % 2 === 0) ? '#f9f9f9' : '#ffffff'; 
-        
-        tableBody.push([
-            { text: a.titre, bold: true, fontSize: 10, color: '#1a1a1a', fillColor: rowColor, margin: [0, 8, 0, 8] },
-            { text: isAnomalie ? 'ANOMALIE' : 'CONFORME', bold: true, fontSize: 9, color: isAnomalie ? '#cc0000' : '#555555', alignment: 'center', fillColor: rowColor, margin: [0, 8, 0, 8] },
-            { text: `Constat : ${a.detail}\n` + (isAnomalie ? `Action requise : ${a.action}` : ''), fontSize: 9, lineHeight: 1.4, color: '#444444', fillColor: rowColor, margin: [0, 8, 0, 8] },
-            { text: isAnomalie ? '-' + formatNumber(a.cout) + ' €' : '0 €', bold: true, fontSize: 11, color: isAnomalie ? '#cc0000' : '#1a1a1a', alignment: 'right', fillColor: rowColor, margin: [0, 8, 0, 8] }
-        ]);
-    });
-
-    // LOGO CADRÉ ET TABLEAU ALIGNÉ (DESIGN PRO)
-    let logoBlock = agenceLogoBase64 
-        ? { image: agenceLogoBase64, fit: [160, 60], alignment: 'left' }
-        : { text: agenceNom.toUpperCase(), fontSize: 22, bold: true, color: agenceCouleur, alignment: 'left' };
-
-    let headerTop = {
-        columns: [
-            logoBlock,
-            {
-                table: {
-                    widths: [100, 150],
-                    body: [
-                        [ { text: 'Identifiant Unique :', style: 'coverLabel' }, { text: idRapport, style: 'coverValue' } ],
-                        [ { text: 'Date de l\'évaluation :', style: 'coverLabel' }, { text: donneesAudit.date_audit, style: 'coverValue' } ],
-                        [ { text: 'Secteur Localisation :', style: 'coverLabel' }, { text: donneesAudit.localisation_exacte, style: 'coverValue' } ]
-                    ]
-                },
-                layout: 'noBorders',
-                alignment: 'right'
-            }
-        ],
-        margin: [0, 0, 0, 40]
-    };
-    
-    let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
-    let chartBlock = [];
-    if (anomalies.length > 0) {
-        let chartCanvas = document.getElementById('coutChart');
-        if (chartCanvas) {
-            chartBlock = [
-                { text: 'RÉPARTITION DU BUDGET TRAVAUX', fontSize: 11, bold: true, alignment: 'center', color: '#1a1a1a', margin: [0, 30, 0, 15] },
-                { image: chartCanvas.toDataURL('image/png', 1.0), fit: [200, 200], alignment: 'center', margin: [0, 0, 0, 30] }
-            ];
-        }
-    }
-
-    let rentaBlock = [];
-    if (loyerMensuelSaisi > 0) {
-        let prixInitial = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
-        let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitial) * 100;
-        let coutTotalReel = prixInitial + donneesAudit.total_decote;
-        let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
-        
-        rentaBlock = [
-            { text: '2. PERFORMANCE LOCATIVE ESTIMÉE', style: 'sectionTitle', margin: [0, 20, 0, 10] },
-            {
-                table: {
-                    widths: ['*', '*', '*'],
-                    body: [
-                        [ { text: 'Loyer Annuel', style: 'kpiHeader' }, { text: 'Rendement Brut', style: 'kpiHeader' }, { text: 'Rendement Net (Post-Travaux)', style: 'kpiHeader' } ],
-                        [ { text: formatNumber(loyerMensuelSaisi * 12) + ' €', style: 'kpiValue' }, { text: rentaInitiale.toFixed(2) + ' %', style: 'kpiValue' }, { text: rentaFinale.toFixed(2) + ' %', style: 'kpiValueNet', color: agenceCouleur } ]
-                    ]
-                },
-                layout: 'lightHorizontalLines'
-            }
-        ];
-    }
-
-    let docDefinition = {
-        pageSize: 'A4',
-        pageMargins: [ 40, 60, 40, 60 ],
-        header: function(currentPage) {
-            if (currentPage > 1) {
-                return {
-                    columns: [
-                        { text: agenceNom.toUpperCase() + ' - DOSSIER TECHNIQUE', bold: true, color: '#888', fontSize: 9 },
-                        { text: 'Réf. ' + idRapport, alignment: 'right', color: '#888', fontSize: 9 }
-                    ], margin: [40, 20, 40, 0]
-                };
-            }
-        },
-        footer: function(currentPage, pageCount) {
-            return {
-                columns: [
-                    { text: 'Rapport d\'analyse financière macro-économique standardisé', fontSize: 8, color: '#aaa' },
-                    { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#aaa' }
-                ], margin: [40, 20, 40, 0]
-            };
-        },
-        content: [
-            headerTop,
-            { text: 'RAPPORT D\'EXPERTISE TECHNIQUE IMMOBILIÈRE', fontSize: 16, color: '#1a1a1a', bold:true, alignment: 'center', margin: [0, 0, 0, 15] },
-            { text: 'Ce document synthétise les données extraites du Dossier de Diagnostic Technique (DDT). Il présente une évaluation objective des coûts de remise aux normes pour sécuriser et justifier la transaction immobilière.', fontSize: 10, color: '#555', alignment: 'center', margin: [0, 0, 0, 40], italics: true },
-            
-            { text: '1. SYNTHÈSE DES VALORISATIONS', style: 'sectionTitle' },
-            {
-                table: {
-                    widths: ['*', '*', '*'],
-                    body: [
-                        [ { text: 'Prix de Vente Initial', style: 'kpiHeader' }, { text: 'Enveloppe Travaux', style: 'kpiHeaderRed' }, { text: 'Valeur Nette Recommandée', style: 'kpiHeader' } ],
-                        [ { text: prixInitFormate, style: 'kpiValue' }, { text: decoteFormate, style: 'kpiValueRed' }, { text: prixNetFormate, style: 'kpiValueNet', color: agenceCouleur } ]
-                    ]
-                },
-                layout: 'lightHorizontalLines',
-                margin: [0, 0, 0, 20]
-            },
-            
-            {
-                table: { widths: ['*'], body: [ [ { stack: [ { text: 'NOTE MACRO-ÉCONOMIQUE LOCALE', fontSize: 9, bold: true, color: '#1a1a1a', margin: [0, 0, 0, 4] }, { text: donneesAudit.impact_marche, fontSize: 9, color: '#4a4a4a', lineHeight: 1.4 } ], padding: 10 } ] ] },
-                layout: { hLineWidth: () => 1, vLineWidth: () => 1, hLineColor: () => '#e0e0e0', vLineColor: () => '#e0e0e0' }, margin: [0, 0, 0, 25]
-            },
-            
-            ...rentaBlock,
-            ...chartBlock,
-            
-            { text: '3. INVENTAIRE TECHNIQUE DÉTAILLÉ (DDT)', style: 'sectionTitle', margin: [0, 20, 0, 10], pageBreak: chartBlock.length > 0 ? 'before' : 'auto' },
-            {
-                table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody },
-                layout: { 
-                    hLineWidth: function (i, node) { return (i === 0 || i === 1 || i === node.table.body.length) ? 1 : 1; }, 
-                    vLineWidth: function (i, node) { return 0; }, 
-                    hLineColor: function (i, node) { return (i === 0 || i === node.table.body.length) ? '#1a1a1a' : '#eeeeee'; }, 
-                    paddingTop: function(i, node) { return 10; }, 
-                    paddingBottom: function(i, node) { return 10; } 
-                }
-            },
-
-            { text: '4. CADRE LÉGAL ET FISCAL (RAPPEL)', style: 'sectionTitle', margin: [0, 40, 0, 10] },
-            { text: '• Déficit Foncier : L\'acquisition d\'un bien nécessitant des travaux permet d\'optimiser la fiscalité des revenus fonciers existants.\n• Validité DDT : Il est impératif de s\'assurer que l\'ensemble des diagnostics (DPE, Électricité, Amiante) sont valides à la date de la signature de l\'acte authentique.', fontSize: 9, color: '#444', lineHeight: 1.5, margin: [0, 0, 0, 40] },
-            
-            { text: 'MÉTHODOLOGIE ET CLAUSE DE NON-SUBSTITUTION', style: 'footerTitle', margin: [0, 40, 0, 5] },
-            { text: 'Ce document constitue une évaluation macro-économique basée sur l\'analyse sémantique du Dossier de Diagnostic Technique (DDT). Les coûts sont indexés sur les moyennes du bâtiment applicables au code postal renseigné. Cette simulation statistique a valeur d\'aide indicative pour structurer une transaction immobilière. Les montants chiffrés ne se substituent en aucun cas à la passation de devis contradictoires établis par des corps de métier certifiés RGE.', style: 'footerText' }
-        ],
-        styles: {
-            coverLabel: { fontSize: 8, bold: true, color: '#888', alignment: 'right', margin: [0, 2, 10, 2] },
-            coverValue: { fontSize: 9, color: '#1a1a1a', margin: [0, 2, 0, 2], bold: true },
-            sectionTitle: { fontSize: 12, bold: true, color: '#1a1a1a', margin: [0, 25, 0, 15], textTransform: 'uppercase' },
-            kpiHeader: { alignment: 'center', fontSize: 9, color: '#888', bold: true, margin: [0, 5, 0, 5], textTransform: 'uppercase' },
-            kpiHeaderRed: { alignment: 'center', fontSize: 9, color: '#cc0000', bold: true, margin: [0, 5, 0, 5], textTransform: 'uppercase' },
-            kpiValue: { alignment: 'center', fontSize: 16, bold: true, color: '#1a1a1a', margin: [0, 10, 0, 10] },
-            kpiValueRed: { alignment: 'center', fontSize: 16, bold: true, color: '#cc0000', margin: [0, 10, 0, 10] },
-            kpiValueNet: { alignment: 'center', fontSize: 20, bold: true, margin: [0, 10, 0, 10] },
-            tableHeader: { bold: true, fontSize: 9, color: '#ffffff', fillColor: '#1a1a1a', margin: [0, 4, 0, 4] },
-            footerTitle: { fontSize: 9, bold: true, color: '#1a1a1a' },
-            footerText: { fontSize: 8, color: '#666', alignment: 'justify', lineHeight: 1.4 }
-        }
-    };
-
-    let pdf = pdfMake.createPdf(docDefinition);
-    
-    if (action === 'open') {
-        pdf.open();
-    } else {
-        pdf.download(agenceNom + '_Bilan_Technique_' + idRapport + '.pdf');
-        if(btn) {
-            setTimeout(() => { btn.innerText = "Télécharger le rapport PDF Officiel"; }, 1500);
-        }
-    }
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    if (!localStorage.getItem('auditpro_cookies')) {
-        document.getElementById('cookie-banner').style.display = 'block';
-    }
-
-    document.getElementById('nomAgenceInput').value = agenceNom !== 'AuditPro' ? agenceNom : '';
-    document.getElementById('couleurAgenceInput').value = agenceCouleur;
-    if(agenceLogoBase64) {
-        document.getElementById('logo-preview').src = agenceLogoBase64;
-        document.getElementById('logo-preview').style.display = 'block';
-    }
-    appliquerCouleurMarqueBlanche();
-    chargerHistorique();
-
-    document.querySelectorAll('.price-input').forEach(input => {
-        input.addEventListener('input', formatInputNumber);
-    });
-
-    const avisSauvegardes = JSON.parse(localStorage.getItem('auditpro_avis')) || [];
-    const listeAvis = document.getElementById('listeAvis');
-    avisSauvegardes.forEach(avis => {
-        const nouvelAvis = document.createElement('div');
-        nouvelAvis.className = 'avis-card border-dynamic-color-top';
-        nouvelAvis.innerHTML = `<div class="text-dynamic-color" style="font-size: 20px; margin-bottom: 10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div><p style="font-size: 14px; font-style: italic; color: #495057;">"${avis.texte}"</p><div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- ${avis.nom}</div>`;
-        listeAvis.prepend(nouvelAvis);
-    });
-    appliquerCouleurMarqueBlanche();
-
-    const liensMenu = document.querySelectorAll('nav a[href^="#"]');
-    const blocsOnglets = document.querySelectorAll('.tab-content');
-
-    function changerOnglet(targetId) {
-        liensMenu.forEach(lien => lien.classList.remove('active'));
-        blocsOnglets.forEach(onglet => onglet.classList.remove('active'));
-
-        const lienActif = document.querySelector(`nav a[href="${targetId}"]`);
-        if (lienActif) {
-            lienActif.classList.add('active');
-            lienActif.style.color = agenceCouleur;
-            lienActif.style.borderBottomColor = agenceCouleur;
-        }
-
-        const ongletCible = document.getElementById(`${targetId.substring(1)}-tab`);
-        if (ongletCible) ongletCible.classList.add('active');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    liensMenu.forEach(lien => {
-        lien.addEventListener('click', function(e) {
-            e.preventDefault();
-            liensMenu.forEach(l => { l.style.color = '#fff'; l.style.borderBottomColor = 'transparent'; });
-            changerOnglet(this.getAttribute('href'));
-        });
-    });
-
-    const dropZone = document.getElementById('drop-zone');
-    const fileInput = document.getElementById('fichierPdf');
-    const dropZoneText = document.querySelector('.drop-zone-text');
-
-    if (dropZone && fileInput) {
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
-        });
-        ['dragenter', 'dragover'].forEach(eventName => { dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false); });
-        ['dragleave', 'drop'].forEach(eventName => { dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false); });
-        fileInput.addEventListener('change', function() {
-            if (this.files && this.files.length > 0) {
-                dropZoneText.innerHTML = `Document chargé : <b>${this.files[0].name}</b>`;
-                dropZone.style.borderColor = agenceCouleur;
-                dropZone.style.background = "#f4fbf7";
-                document.querySelector('.drop-icon').style.color = agenceCouleur;
-            }
-        });
-    }
-});
