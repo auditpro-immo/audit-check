@@ -174,32 +174,40 @@ function switchReportTab(tabId) {
     document.getElementById(tabId).classList.add('active');
 }
 
+// FONCTION DEMO ENRICHIE POUR MONTRER LA PUISSANCE DU LOGICIEL
 function lancerDemo() {
     document.getElementById('prixInitial').value = "245 000";
     document.getElementById('loyerMensuel').value = "950";
     document.getElementById('codePostal').value = "35000";
     
     loyerMensuelSaisi = 950;
-    idRapport = "DEMO-" + Math.floor(Math.random() * 90000 + 10000);
+    idRapport = "DEMO-PRO-" + Math.floor(Math.random() * 90000 + 10000);
     
     donneesAudit = {
         cp: "35000",
         localisation_exacte: "Rennes (Secteur Ille-et-Vilaine)",
-        impact_marche: "Métropole régionale en forte croissance économique. La forte demande sur le locatif et le durcissement de la Loi Climat créent une tension sur les artisans certifiés RGE, justifiant un ajustement des devis locaux de 18%.",
+        impact_marche: "Métropole régionale en forte croissance économique. La forte demande sur le locatif et le durcissement de la Loi Climat créent une tension sur les artisans certifiés RGE, justifiant un ajustement automatique des devis locaux à la hausse (+18%).",
         date_audit: new Date().toLocaleDateString('fr-FR'),
         prix_initial: 245000,
-        total_decote: 24500,
-        prix_net: 220500,
+        total_decote: 28700,
+        prix_net: 216300,
         analyse_secteur: "Indice de marché local : 1.18",
         securite: "Vos données sont privées : Le PDF a été supprimé de nos serveurs.",
-        solutions: [ "Sécurisation du tableau électrique recommandée.", "Amélioration de la performance énergétique requise (Classe F)." ],
+        solutions: [ 
+            "⚠️ MISE EN SÉCURITÉ : Le tableau électrique nécessite une intervention prioritaire pour la sécurité des occupants.", 
+            "❄️ PERFORMANCE ÉNERGÉTIQUE : Rénovation globale indispensable pour sortir du statut de passoire thermique (Classe F).",
+            "🛡️ SANTÉ PUBLIQUE : Une société certifiée devra procéder au retrait des matériaux amiantés détectés dans les conduits."
+        ],
         diagnostics: [
-            {titre: "Électricité (Sécurité des personnes)", cout: 4500, loi: "Norme NF C 15-100", detail: "Matériel ancien ou absence de mise à la terre.", action: "Mise en sécurité du tableau électrique par un professionnel."},
-            {titre: "DPE (Consommation d'énergie)", cout: 20000, loi: "Loi Climat & Résilience", detail: "Logement classé F (Nécessite une optimisation énergétique).", action: "Isolation et amélioration du système de chauffage."}
+            {titre: "Électricité (Sécurité)", cout: 4500, loi: "Norme NF C 15-100", detail: "Matériel ancien et absence de mise à la terre sur les pièces d'eau.", action: "Mise en sécurité complète du tableau par un électricien."},
+            {titre: "DPE (Énergie)", cout: 20000, loi: "Loi Climat & Résilience", detail: "Logement classé F (Passoire thermique). Pertes de chaleur majeures identifiées.", action: "Isolation des combles et installation d'une Pompe à Chaleur."},
+            {titre: "Amiante (Matériaux)", cout: 4200, loi: "Art. L1334-13", detail: "Présence de conduits en amiante-ciment dans la cave.", action: "Retrait et traitement des déchets par une société spécialisée."},
+            {titre: "Plomb (Peintures)", cout: 0, loi: "Art. L1334-1", detail: "Aucune trace de plomb au-dessus des seuils réglementaires détectée.", action: "Aucune intervention nécessaire sur les murs."},
+            {titre: "Gaz (Risque fuite)", cout: 0, loi: "Norme NF P 45-500", detail: "Installation étanche et valves de sécurité fonctionnelles.", action: "Entretien annuel classique de la chaudière suffisant."}
         ]
     };
     
-    showToast("Simulation Démo activée.");
+    showToast("Simulation de Démonstration générée avec succès.");
     document.getElementById('result-wrapper').style.display = "block";
     document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
     afficherEcran();
@@ -299,17 +307,17 @@ function afficherEcran() {
         titreSectionNego = "Proposition Transparente (Acquéreur)";
         scriptNegoTxt = `Madame, Monsieur, suite à la visite de votre bien situé au ${donneesAudit.cp} et à l'analyse objective du Dossier de Diagnostics Techniques, je vous confirme mon vif intérêt.
 
-Cependant, l'étude technique met en évidence un budget de mise en conformité évalué à ${formatNumber(donneesAudit.total_decote)} €, notamment concernant les points suivants : ${defautsFormate}. 
+Cependant, l'étude technique détaillée met en évidence un budget de mise en conformité évalué à ${formatNumber(donneesAudit.total_decote)} €, notamment concernant les points suivants : ${defautsFormate}. 
 
-Afin de réaliser cette transaction dans des conditions équitables et sécurisées pour nos deux parties, en tenant compte des réalités du marché à ${donneesAudit.localisation_exacte}, je vous soumets une offre d'achat ferme au prix de ${formatNumber(donneesAudit.prix_net)} €. Cette proposition intègre les travaux nécessaires tout en respectant la valeur réelle de votre bien.`;
+Afin de réaliser cette transaction dans des conditions équitables et sécurisées pour nos deux parties, en tenant compte des réalités du marché à ${donneesAudit.localisation_exacte}, je vous soumets une offre d'achat ferme au prix de ${formatNumber(donneesAudit.prix_net)} €. Cette proposition intègre les travaux nécessaires tout en respectant la valeur réelle et objective de votre bien.`;
     } else {
         nomOnglet3 = "3. Argumentaire d'Agence";
         titreSectionNego = "Approche Conseil & Transparence (Professionnel)";
         scriptNegoTxt = `POUR CONSEILLER LE VENDEUR SUR SON PRIX :
-"Cher client, l'analyse réglementaire de votre bien a mis en évidence plusieurs points nécessitant une mise aux normes pour un budget estimé à ${formatNumber(donneesAudit.total_decote)} €. Pour que votre bien reste attractif face aux exigences actuelles des acheteurs et de leurs banques, je vous conseille d'ajuster le prix de présentation à ${formatNumber(donneesAudit.prix_net)} €. Cette transparence technique nous permettra de vendre plus rapidement et sans négociation de dernière minute."
+"Cher client, l'analyse réglementaire de votre bien a mis en évidence plusieurs points nécessitant une mise aux normes pour un budget estimé à ${formatNumber(donneesAudit.total_decote)} €. Pour que votre bien reste attractif face aux exigences actuelles des acheteurs et de leurs banques, je vous conseille d'ajuster le prix de présentation à ${formatNumber(donneesAudit.prix_net)} €. Cette transparence technique nous permettra de vendre plus rapidement et de signer le mandat dans des conditions optimales."
 
 POUR RASSURER L'ACQUÉREUR DURANT LA VISITE :
-"Sachez que nous avons anticipé les conclusions des diagnostics. L'enveloppe de mise en conformité de ${formatNumber(donneesAudit.total_decote)} € est parfaitement transparente et peut être intégrée dans votre plan de financement. Vous achetez ainsi en parfaite connaissance de cause, sans surprise."`;
+"Sachez que nous avons anticipé les conclusions des diagnostics pour vous. L'enveloppe de mise en conformité de ${formatNumber(donneesAudit.total_decote)} € est parfaitement transparente et peut être intégrée dès maintenant dans votre plan de financement. Vous achetez ainsi en parfaite connaissance de cause, sans aucune surprise technique après la vente."`;
     }
 
     let html = `
@@ -375,7 +383,7 @@ POUR RASSURER L'ACQUÉREUR DURANT LA VISITE :
     
     <div id="paneStrategie" class="report-pane">
         <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-bottom: 10px;">${titreSectionNego}</h3>
-        <p style="font-size: 14px; color: #495057; margin-bottom: 15px; text-align: left;">Cet outil de rédaction vous aide à aborder le volet financier de manière factuelle et rassurante :</p>
+        <p style="font-size: 14px; color: #495057; margin-bottom: 15px; text-align: left;">Cet outil de rédaction exclusif vous aide à aborder le volet financier de manière factuelle et rassurante :</p>
         <div class="script-box" style="border-left-color: ${agenceCouleur};">
             <button class="btn-copy" onclick="copierScript()">Copier</button>
             <div id="texteScript">${scriptNegoTxt}</div>
@@ -432,6 +440,42 @@ function exporterPDF() {
             { text: isAnomalie ? '-' + formatNumber(a.cout) + ' €' : '0 €', bold: true, fontSize: 11, color: isAnomalie ? '#cc0000' : '#0b1a14', alignment: 'right' }
         ]);
     });
+
+    let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
+    let chartColumn = [];
+    if (anomalies.length > 0) {
+        let chartCanvas = document.getElementById('coutChart');
+        if (chartCanvas) {
+            chartColumn = [
+                { text: 'RÉPARTITION TECHNIQUE', fontSize: 10, bold: true, alignment: 'center', color: '#0b1a14', margin: [0, 0, 0, 10] },
+                { image: chartCanvas.toDataURL('image/png', 1.0), width: 160, alignment: 'center' }
+            ];
+        }
+    }
+
+    let listSolutions = donneesAudit.solutions.map(s => ({ text: s, margin: [0, 4, 0, 4] }));
+
+    let rentaBlock = [];
+    if (loyerMensuelSaisi > 0) {
+        let prixInitial = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
+        let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitial) * 100;
+        let coutTotalReel = prixInitial + donneesAudit.total_decote;
+        let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
+        
+        rentaBlock = [
+            { text: '2. PERFORMANCE RENDEMENT LOCATIF', style: 'sectionTitle' },
+            {
+                table: {
+                    widths: ['*', '*', '*'],
+                    body: [
+                        [ { text: 'Loyer Annuel Théorique', style: 'kpiHeader' }, { text: 'Rendement Brut', style: 'kpiHeader' }, { text: 'Rendement Net Après Travaux', style: 'kpiHeaderGreen' } ],
+                        [ { text: formatNumber(loyerMensuelSaisi * 12) + ' €', style: 'kpiValue' }, { text: rentaInitiale.toFixed(2) + ' %', style: 'kpiValue' }, { text: rentaFinale.toFixed(2) + ' %', style: 'kpiValueGreen' } ]
+                    ]
+                },
+                layout: { hLineWidth: () => 0, vLineWidth: () => 0, fillColor: (i) => i === 0 ? '#f8f9fa' : '#ffffff', paddingTop: () => 12, paddingBottom: () => 12 }
+            }
+        ];
+    }
 
     let docDefinition = {
         pageSize: 'A4',
