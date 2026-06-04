@@ -2,7 +2,7 @@ let donneesAudit = null;
 let idRapport = "";
 let chartInstance = null;
 let loyerMensuelSaisi = 0;
-let profilSelectionne = "particulier";
+let profilActuel = "particulier";
 
 const formatNumber = (num) => {
     return Number(num).toLocaleString('fr-FR').replace(/[\u202F\u00A0]/g, ' ');
@@ -21,14 +21,30 @@ function showToast(message, type = "success") {
     }, 4000);
 }
 
-function ouvrirModalPro() {
-    document.getElementById('modalPro').style.display = 'flex';
+// FONCTION PORTAIL : Adapte le site au clic sur l'écran d'accueil
+function choisirProfil(profil) {
+    profilActuel = profil;
+    document.getElementById('welcome-screen').style.display = 'none';
+    document.getElementById('main-app').style.display = 'block';
+    
+    // Adaptation des textes de la page d'accueil
+    if(profil === "professionnel") {
+        document.getElementById('hero-badge').innerText = "Espace Professionnels (B2B)";
+        document.getElementById('hero-title').innerText = "Justifiez vos estimations et sécurisez vos transactions.";
+        document.getElementById('hero-desc').innerText = "Notre technologie d'analyse traduit instantanément les PDF de diagnostics en rapports chiffrés. Un outil pensé pour rassurer vos acquéreurs et obtenir l'exclusivité auprès des vendeurs.";
+        document.getElementById('form-title').innerText = "Simulateur pour les agences";
+        document.getElementById('nav-pro').style.display = "inline-block";
+    } else {
+        document.getElementById('hero-badge').innerText = "Espace Particuliers (B2C)";
+        document.getElementById('hero-title').innerText = "Sécurisez votre achat en chiffrant les travaux cachés.";
+        document.getElementById('hero-desc').innerText = "Notre outil analyse l'ensemble des diagnostics obligatoires de la maison que vous visitez. Obtenez en 2 minutes le vrai coût des remises aux normes.";
+        document.getElementById('form-title').innerText = "Mon analyse technique";
+        document.getElementById('nav-pro').style.display = "none";
+    }
 }
 
-function fermerModalPro() {
-    document.getElementById('modalPro').style.display = 'none';
-}
-
+function ouvrirModalPro() { document.getElementById('modalPro').style.display = 'flex'; }
+function fermerModalPro() { document.getElementById('modalPro').style.display = 'none'; }
 function soumettrePro(event) {
     event.preventDefault(); 
     fermerModalPro();
@@ -38,14 +54,13 @@ function soumettrePro(event) {
 function copierScript() {
     const texte = document.getElementById('texteScript').innerText;
     navigator.clipboard.writeText(texte).then(() => {
-        showToast("Script copié dans le presse-papier.");
+        showToast("Texte copié dans le presse-papier.");
     });
 }
 
 function switchReportTab(tabId) {
     document.querySelectorAll('.report-tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.report-pane').forEach(pane => pane.classList.remove('active'));
-    
     document.querySelector(`[onclick="switchReportTab('${tabId}')"]`).classList.add('active');
     document.getElementById(tabId).classList.add('active');
 }
@@ -54,16 +69,14 @@ function lancerDemo() {
     document.getElementById('prixInitial').value = 245000;
     document.getElementById('loyerMensuel').value = 950;
     document.getElementById('codePostal').value = 35000;
-    document.getElementById('userProfile').value = "professionnel";
     
     loyerMensuelSaisi = 950;
-    profilSelectionne = "professionnel";
     idRapport = "DEMO-" + Math.floor(Math.random() * 90000 + 10000);
     
     donneesAudit = {
         cp: "35000",
         localisation_exacte: "Rennes (Secteur Ille-et-Vilaine)",
-        impact_marche: "Métropole régionale en forte croissance économique. La forte demande sur le locatif et le durcissement de la Loi Climat créent une pression sur les artisans certifiés RGE, majorant les devis locaux de 18%.",
+        impact_marche: "Métropole régionale en forte croissance économique. La forte demande sur le locatif et le durcissement de la Loi Climat créent une tension sur les artisans certifiés RGE, justifiant un ajustement des devis locaux de 18%.",
         date_audit: new Date().toLocaleDateString('fr-FR'),
         prix_initial: 245000,
         total_decote: 24500,
@@ -71,12 +84,12 @@ function lancerDemo() {
         analyse_secteur: "Indice de marché local : 1.18",
         securite: "Vos données sont privées : Le PDF a été supprimé de nos serveurs.",
         solutions: [
-            "Sécurisation tableau électrique nécessaire.",
-            "Rénovation thermique globale requise (Classe F)."
+            "Sécurisation du tableau électrique recommandée.",
+            "Amélioration de la performance énergétique requise (Classe F)."
         ],
         diagnostics: [
-            {titre: "Électricité (Sécurité des personnes)", cout: 4500, loi: "Norme NF C 15-100", detail: "Matériel ancien et absence de mise à la terre. En clair : grand risque d'électrocution.", action: "Faire changer le tableau électrique."},
-            {titre: "DPE (Consommation d'énergie)", cout: 20000, loi: "Loi Climat & Résilience", detail: "Logement classé F (Passoire thermique).", action: "Rénovation globale (isolation + système de chauffage)."}
+            {titre: "Électricité (Sécurité des personnes)", cout: 4500, loi: "Norme NF C 15-100", detail: "Matériel ancien ou absence de mise à la terre.", action: "Mise en sécurité du tableau électrique par un professionnel."},
+            {titre: "DPE (Consommation d'énergie)", cout: 20000, loi: "Loi Climat & Résilience", detail: "Logement classé F (Nécessite une optimisation énergétique).", action: "Isolation et amélioration du système de chauffage."}
         ]
     };
     
@@ -96,7 +109,6 @@ async function envoyer() {
     if (!input.files.length) return showToast("Veuillez charger le fichier PDF.", "error");
     
     loyerMensuelSaisi = Number(loyerInput);
-    profilSelectionne = document.getElementById('userProfile').value;
     document.getElementById('loading-overlay').style.display = "flex";
 
     const formData = new FormData();
@@ -112,7 +124,7 @@ async function envoyer() {
         idRapport = "AUDIT-" + Math.floor(Math.random() * 90000 + 10000);
         
         document.getElementById('loading-overlay').style.display = "none";
-        showToast("Audit généré avec succès.");
+        showToast("Analyse effectuée avec succès.");
         document.getElementById('result-wrapper').style.display = "block";
         document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
         afficherEcran();
@@ -124,7 +136,6 @@ async function envoyer() {
 }
 
 function afficherEcran() {
-    profilSelectionne = document.getElementById('userProfile').value;
     let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
     
     let kpiRentabiliteHtml = "";
@@ -152,30 +163,33 @@ function afficherEcran() {
         </div>`;
     }
 
+    // TEXTES PROFESSIONNELS ET OBJECTIFS (FINI L'EFFET VAUTOUR)
     let scriptNegoTxt = "";
     let titreSectionNego = "";
     let nomOnglet3 = "";
     
-    if (profilSelectionne === "particulier") {
-        nomOnglet3 = "3. Script Acheteur";
-        titreSectionNego = "Script de Négociation Prêt à l'Emploi (Acheteur)";
-        scriptNegoTxt = `Bonjour, suite à l'analyse rigoureuse du Dossier de Diagnostics Techniques (DDT) concernant le bien situé au ${donneesAudit.cp}, je vous soumets une offre d'achat argumentée.
-L'étude met en évidence une enveloppe de travaux indispensables chiffrée à ${formatNumber(donneesAudit.total_decote)} €, notamment pour pallier les défauts suivants : ${anomalies.map(a => a.titre).join(', ')}. 
-Compte tenu du contexte local à ${donneesAudit.localisation_exacte}, ces coûts techniques impactent directement la valeur nette du bien. Mon offre se positionne donc à ${formatNumber(donneesAudit.prix_net)} €, cohérente avec l'état réel de la structure.`;
-    } else {
-        nomOnglet3 = "3. Argumentaire Pro";
-        titreSectionNego = "Argumentaire Métier Dédié (Espace Professionnel)";
-        scriptNegoTxt = `STRATÉGIE DE RECONTRATISATION DU MANDAT (FACE AU VENDEUR) :
-"Monsieur le vendeur, l'analyse réglementaire objective du fichier DDT chiffre l'enveloppe de mise en conformité de votre bien à ${formatNumber(donneesAudit.total_decote)} €. Pour préserver notre positionnement sur le marché à ${donneesAudit.localisation_exacte} et parer les futures objections des acquéreurs, nous devons ajuster notre mandat exclusif à un prix net conseillé de ${formatNumber(donneesAudit.prix_net)} €."
+    if (profilActuel === "particulier") {
+        nomOnglet3 = "3. Formuler son Offre";
+        titreSectionNego = "Proposition Transparente (Acquéreur)";
+        scriptNegoTxt = `Madame, Monsieur, suite à la visite de votre bien situé au ${donneesAudit.cp} et à l'analyse objective du Dossier de Diagnostics Techniques, je vous confirme mon vif intérêt.
 
-PITCH DE RÉASSURANCE COMMERCIALE (FACE À L'ACQUÉREUR DURANT LA VISITE) :
-"Le bien présente un chiffrage de travaux transparent de ${formatNumber(donneesAudit.total_decote)} € déjà intégré dans notre étude financière. Vous achetez en parfaite connaissance de cause, sans surprise post-acquisition."`;
+Cependant, l'étude technique met en évidence un budget de mise en conformité évalué à ${formatNumber(donneesAudit.total_decote)} €, notamment concernant les points suivants : ${anomalies.map(a => a.titre).join(', ')}. 
+
+Afin de réaliser cette transaction dans des conditions équitables et sécurisées pour nos deux parties, en tenant compte des réalités du marché à ${donneesAudit.localisation_exacte}, je vous soumets une offre d'achat ferme au prix de ${formatNumber(donneesAudit.prix_net)} €. Cette proposition intègre les travaux nécessaires tout en respectant la valeur réelle de votre bien.`;
+    } else {
+        nomOnglet3 = "3. Argumentaire d'Agence";
+        titreSectionNego = "Approche Conseil & Transparence (Professionnel)";
+        scriptNegoTxt = `POUR CONSEILLER LE VENDEUR SUR SON PRIX :
+"Cher client, l'analyse réglementaire de votre bien a mis en évidence plusieurs points nécessitant une mise aux normes pour un budget estimé à ${formatNumber(donneesAudit.total_decote)} €. Pour que votre bien reste attractif face aux exigences actuelles des acheteurs et de leurs banques, je vous conseille d'ajuster le prix de présentation à ${formatNumber(donneesAudit.prix_net)} €. Cette transparence technique nous permettra de vendre plus rapidement et sans négociation agressive de dernière minute."
+
+POUR RASSURER L'ACQUÉREUR DURANT LA VISITE :
+"Sachez que nous avons anticipé les conclusions des diagnostics. L'enveloppe de mise en conformité de ${formatNumber(donneesAudit.total_decote)} € est parfaitement transparente et peut être intégrée dans votre plan de financement. Vous achetez ainsi en parfaite connaissance de cause, sans surprise post-acquisition."`;
     }
 
     let html = `
     <div style="border-bottom: 3px solid #0b1a14; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
         <div>
-            <h2 style="font-size: 24px; color: #0b1a14; font-weight: 800; margin: 0;">Rapport d'Audit Réglementaire</h2>
+            <h2 style="font-size: 24px; color: #0b1a14; font-weight: 800; margin: 0;">Rapport d'Analyse Technique</h2>
             <div style="font-size: 14px; color: #6c757d; margin-top: 5px; font-weight: 600;">Secteur : ${donneesAudit.localisation_exacte}</div>
         </div>
         <div style="text-align: right; font-size: 13px; color: #6c757d; font-weight: bold;">
@@ -185,7 +199,7 @@ PITCH DE RÉASSURANCE COMMERCIALE (FACE À L'ACQUÉREUR DURANT LA VISITE) :
     
     <div class="report-tabs">
         <button class="report-tab-btn active" onclick="switchReportTab('paneFinancier')">1. Synthèse Financière</button>
-        <button class="report-tab-btn" onclick="switchReportTab('paneTechnique')">2. Inventaire Technique</button>
+        <button class="report-tab-btn" onclick="switchReportTab('paneTechnique')">2. Bilan Technique</button>
         <button class="report-tab-btn" onclick="switchReportTab('paneStrategie')" style="background-color: #f4fbf7; color: #00d632; border-radius: 4px;">${nomOnglet3}</button>
     </div>
     
@@ -193,21 +207,21 @@ PITCH DE RÉASSURANCE COMMERCIALE (FACE À L'ACQUÉREUR DURANT LA VISITE) :
         <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-bottom: 15px;">Évaluation de la Balance Financière</h3>
         <div class="kpi-grid">
             <div class="kpi-box">
-                <div class="kpi-label">Prix de vente affiché</div>
+                <div class="kpi-label">Prix de vente initial</div>
                 <div class="kpi-value">${formatNumber(document.getElementById('prixInitial').value)} €</div>
             </div>
             <div class="kpi-box">
-                <div class="kpi-label" style="color: #cc0000;">Enveloppe Travaux Estimée</div>
+                <div class="kpi-label" style="color: #cc0000;">Enveloppe Travaux Globale</div>
                 <div class="kpi-value" style="color: #cc0000;">-${formatNumber(donneesAudit.total_decote)} €</div>
             </div>
             <div class="kpi-box main">
-                <div class="kpi-label">Pivot d'Achat Recommandé</div>
+                <div class="kpi-label">Prix Équitable Recommandé</div>
                 <div class="kpi-value">${formatNumber(donneesAudit.prix_net)} €</div>
             </div>
         </div>
         ${kpiRentabiliteHtml}
         <div style="background: #f8f9fa; padding: 20px; border-radius: 6px; margin-top: 20px; border: 1px solid #ced4da; text-align: left;">
-            <h4 style="margin: 0 0 8px 0; color: #0b1a14; text-transform: uppercase; font-size: 12px;">Analyse contextuelle du secteur</h4>
+            <h4 style="margin: 0 0 8px 0; color: #0b1a14; text-transform: uppercase; font-size: 12px;">Contexte du secteur géographique</h4>
             <p style="margin: 0; font-size: 14px; color: #495057; line-height: 1.5;">${donneesAudit.impact_marche}</p>
         </div>
     </div>
@@ -219,14 +233,14 @@ PITCH DE RÉASSURANCE COMMERCIALE (FACE À L'ACQUÉREUR DURANT LA VISITE) :
                 <tr>
                     <th style="width: 25%;">Domaine Contrôlé</th>
                     <th style="width: 15%; text-align: center;">État</th>
-                    <th style="width: 45%;">Explication Simplifiée</th>
+                    <th style="width: 45%;">Détails & Préconisations</th>
                     <th style="text-align: right; width: 15%;">Budget</th>
                 </tr>
                 ${donneesAudit.diagnostics.map(a => `
                 <tr style="border-bottom: 1px solid #ecf0f1;">
                     <td style="padding: 15px; border-left: 4px solid ${a.cout > 0 ? '#cc0000' : '#00d632'};"><b>${a.titre}</b></td>
                     <td style="padding: 15px; color: ${a.cout > 0 ? '#cc0000' : '#000000'}; font-weight: bold; text-align: center;">${a.cout > 0 ? 'ANOMALIE' : 'CONFORME'}</td>
-                    <td style="padding: 15px; font-size: 13px; color: #333; line-height: 1.5;"><b>Impact :</b> ${a.detail}<br>${a.cout > 0 ? `<b>Solution :</b> ${a.action}` : ''}</td>
+                    <td style="padding: 15px; font-size: 13px; color: #333; line-height: 1.5;"><b>Impact :</b> ${a.detail}<br>${a.cout > 0 ? `<b>Action requise :</b> ${a.action}` : ''}</td>
                     <td style="padding: 15px; font-weight:bold; text-align: right; font-size: 16px;">${a.cout > 0 ? `-${formatNumber(a.cout)} €` : '0 €'}</td>
                 </tr>`).join('')}
             </table>
@@ -235,9 +249,9 @@ PITCH DE RÉASSURANCE COMMERCIALE (FACE À L'ACQUÉREUR DURANT LA VISITE) :
     
     <div id="paneStrategie" class="report-pane">
         <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-bottom: 10px;">${titreSectionNego}</h3>
-        <p style="font-size: 14px; color: #495057; margin-bottom: 15px; text-align: left;">Script exclusif généré par notre programme pour étayer votre positionnement ou votre négociation terrain :</p>
+        <p style="font-size: 14px; color: #495057; margin-bottom: 15px; text-align: left;">Cet outil de rédaction vous aide à aborder le volet financier de manière factuelle et rassurante :</p>
         <div class="script-box">
-            <button class="btn-copy" onclick="copierScript()">Copier le texte</button>
+            <button class="btn-copy" onclick="copierScript()">Copier</button>
             <div id="texteScript">${scriptNegoTxt}</div>
         </div>
     </div>
@@ -288,7 +302,7 @@ function exporterPDF() {
         tableBody.push([
             { text: a.titre, bold: true, fontSize: 10, color: '#0b1a14' },
             { text: isAnomalie ? 'ANOMALIE' : 'CONFORME', bold: true, fontSize: 9, color: isAnomalie ? '#cc0000' : '#00d632', alignment: 'center' },
-            { text: `Constat : ${a.detail}\n` + (isAnomalie ? `Solution : ${a.action}` : ''), fontSize: 9, lineHeight: 1.3 },
+            { text: `Constat : ${a.detail}\n` + (isAnomalie ? `Action : ${a.action}` : ''), fontSize: 9, lineHeight: 1.3 },
             { text: isAnomalie ? '-' + formatNumber(a.cout) + ' €' : '0 €', bold: true, fontSize: 11, color: isAnomalie ? '#cc0000' : '#0b1a14', alignment: 'right' }
         ]);
     });
@@ -336,7 +350,7 @@ function exporterPDF() {
             if (currentPage > 1) {
                 return {
                     columns: [
-                        { text: 'AUDITPRO CERTIFICATION', bold: true, color: '#00d632', fontSize: 11 },
+                        { text: 'AUDITPRO IMMOBILIER', bold: true, color: '#00d632', fontSize: 11 },
                         { text: 'Réf. ' + idRapport, alignment: 'right', color: '#888', fontSize: 9 }
                     ], margin: [40, 25, 40, 0]
                 };
@@ -372,7 +386,7 @@ function exporterPDF() {
                 table: {
                     widths: ['*', '*', '*'],
                     body: [
-                        [ { text: 'Prix de Vente Initial', style: 'kpiHeader' }, { text: 'Enveloppe Travaux', style: 'kpiHeaderRed' }, { text: 'Prix d\'Achat Conseillé', style: 'kpiHeaderDark' } ],
+                        [ { text: 'Prix de Vente Initial', style: 'kpiHeader' }, { text: 'Enveloppe Travaux', style: 'kpiHeaderRed' }, { text: 'Prix Équitable Recommandé', style: 'kpiHeaderDark' } ],
                         [ { text: prixInitFormate, style: 'kpiValue' }, { text: decoteFormate, style: 'kpiValueRed' }, { text: prixNetFormate, style: 'kpiValueDark' } ]
                     ]
                 },
@@ -387,7 +401,7 @@ function exporterPDF() {
             
             ...rentaBlock,
             
-            { text: '3. PLAN D\'ACTION & STRATÉGIE', style: 'sectionTitle' },
+            { text: '3. RECOMMANDATIONS TECHNIQUES', style: 'sectionTitle' },
             {
                 columns: [
                     { width: anomalies.length > 0 ? '60%' : '100%', stack: [ { ul: listSolutions, fontSize: 10, lineHeight: 1.5, color: '#333' } ] },
@@ -402,7 +416,7 @@ function exporterPDF() {
             },
             
             { text: 'CLAUSE DE NON-SUBSTITUTION LÉGALE', style: 'footerTitle', margin: [0, 40, 0, 5] },
-            { text: 'Ce rapport constitue une simulation statistique à valeur d\'aide indicative pour les négociations. Les chiffrages ne se substituent pas à la passation de devis contradictoires par des corps de métier certifiés RGE.', style: 'footerText' }
+            { text: 'Ce rapport constitue une simulation statistique à valeur d\'aide indicative pour une transaction équitable. Les chiffrages ne se substituent pas à la passation de devis contradictoires par des corps de métier certifiés RGE.', style: 'footerText' }
         ],
         styles: {
             coverTableTitle: { fontSize: 11, bold: true, color: '#0b1a14', alignment: 'center', fillColor: '#eaf9f0', margin: [0, 6, 0, 6] },
@@ -423,7 +437,7 @@ function exporterPDF() {
         }
     };
 
-    pdfMake.createPdf(docDefinition).download('AuditPro_Etude_Complete_' + idRapport + '.pdf');
+    pdfMake.createPdf(docDefinition).download('AuditPro_Bilan_Global_' + idRapport + '.pdf');
     setTimeout(() => { btn.innerText = "Télécharger le rapport PDF Officiel"; }, 1500);
 }
 
