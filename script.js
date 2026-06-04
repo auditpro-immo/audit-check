@@ -21,13 +21,16 @@ function showToast(message, type = "success") {
     }, 4000);
 }
 
-// FONCTION PORTAIL : Adapte le site au clic sur l'écran d'accueil
+// GESTION DU DOUBLE BOUTON (TOGGLE) INCRUSTÉ
 function choisirProfil(profil) {
     profilActuel = profil;
-    document.getElementById('welcome-screen').style.display = 'none';
-    document.getElementById('main-app').style.display = 'block';
     
-    // Adaptation des textes de la page d'accueil
+    // Gérer l'aspect visuel des boutons
+    document.getElementById('btn-particulier').classList.remove('active');
+    document.getElementById('btn-pro').classList.remove('active');
+    document.getElementById('btn-' + (profil === 'particulier' ? 'particulier' : 'pro')).classList.add('active');
+
+    // Adaptation des textes de la page d'accueil en direct
     if(profil === "professionnel") {
         document.getElementById('hero-badge').innerText = "Espace Professionnels (B2B)";
         document.getElementById('hero-title').innerText = "Justifiez vos estimations et sécurisez vos transactions.";
@@ -35,10 +38,10 @@ function choisirProfil(profil) {
         document.getElementById('form-title').innerText = "Simulateur pour les agences";
         document.getElementById('nav-pro').style.display = "inline-block";
     } else {
-        document.getElementById('hero-badge').innerText = "Espace Particuliers (B2C)";
+        document.getElementById('hero-badge').innerText = "Espace Particulier (B2C)";
         document.getElementById('hero-title').innerText = "Sécurisez votre achat en chiffrant les travaux cachés.";
         document.getElementById('hero-desc').innerText = "Notre outil analyse l'ensemble des diagnostics obligatoires de la maison que vous visitez. Obtenez en 2 minutes le vrai coût des remises aux normes.";
-        document.getElementById('form-title').innerText = "Mon analyse technique";
+        document.getElementById('form-title').innerText = "Configuration de l'analyse";
         document.getElementById('nav-pro').style.display = "none";
     }
 }
@@ -163,7 +166,6 @@ function afficherEcran() {
         </div>`;
     }
 
-    // TEXTES PROFESSIONNELS ET OBJECTIFS (FINI L'EFFET VAUTOUR)
     let scriptNegoTxt = "";
     let titreSectionNego = "";
     let nomOnglet3 = "";
