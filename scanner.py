@@ -231,6 +231,7 @@ async def analyze_grid(request: Request):
         decote += 2500
         details.append({"point": "Sécurité Électrique", "loi": "Norme NF C 15-100", "analyse": "CONSTAT DÉTAILLÉ :\nL'électricité est vieille. En clair, il n'y a pas les sécurités modernes de base.\n\nRISQUES IDENTIFIÉS :\nFort danger d'électrocution si un appareil ménager a un défaut.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Faire changer le tableau et ajouter des prises de terre -> env. 2 500 €.", "provision": "-2 500 €"})
 
+    # Le bug était ici : la variable "heating_vetuste" n'existait pas. C'est réparé !
     if chauffage_vetuste == "oui":
         decote += 12000; malus_dpe += 2
         details.append({"point": "Chauffage", "loi": "Transition Énergétique", "analyse": "CONSTAT DÉTAILLÉ :\nLa chaudière ou les radiateurs sont d'une ancienne génération.\n\nRISQUES IDENTIFIÉS :\nRisque de panne en plein hiver et consommation de gaz/fioul très chère.\n\nACTIONS & CHIFFRAGE PRÉCIS :\n- Acheter et faire poser une Pompe à Chaleur moderne -> env. 12 000 €.", "provision": "-12 000 €"})
