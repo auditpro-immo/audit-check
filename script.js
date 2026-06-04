@@ -102,7 +102,6 @@ function appliquerCouleurMarqueBlanche() {
     const dropIcon = document.querySelector('.drop-icon');
     if(dropIcon) dropIcon.style.color = agenceCouleur;
     
-    // Met à jour la couleur des boutons PDF dans l'historique
     document.querySelectorAll('.btn-pdf').forEach(btn => {
         btn.style.backgroundColor = agenceCouleur;
     });
@@ -140,7 +139,7 @@ function reinitialiserMarqueBlanche() {
     localStorage.removeItem('auditpro_agence_logo');
     
     agenceNom = 'AuditPro';
-    agenceCouleur = '#00d632'; // Le vert de base
+    agenceCouleur = '#00d632'; 
     agenceLogoBase64 = null;
     
     document.getElementById('nomAgenceInput').value = '';
@@ -226,17 +225,19 @@ function chargerDossierHistorique(index) {
     if(loyerMensuelSaisi > 0) document.getElementById('loyerMensuel').value = formatNumber(loyerMensuelSaisi);
     
     document.getElementById('result-wrapper').style.display = "block";
-    document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
+    // Évite de scroller vers le bas automatiquement si on est sur l'onglet Pro
+    if (document.getElementById('audit-tab').classList.contains('active')) {
+        document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
+    }
     afficherEcran();
 }
 
-// CORRECTION ULTIME : INJECTION DU PDF VIA UNE VISIONNEUSE (IFRAME)
+// CORRECTION BUG PAGE BLANCHE / PLANTAGE : SYNCHRONE ET SECURISÉ
 function voirPDFDirect(event, index) {
     event.stopPropagation();
-    chargerDossierHistorique(index);
-    showToast("Ouverture du rapport PDF en cours...");
+    chargerDossierHistorique(index); 
     
-    // Ouverture immédiate pour contourner le bloqueur
+    // On ouvre l'onglet AVANT que le bloqueur de pop-up ne panique
     const pdfWindow = window.open("", "_blank");
     if (pdfWindow) {
         pdfWindow.document.write(`
@@ -253,20 +254,20 @@ function voirPDFDirect(event, index) {
             </body>
             </html>
         `);
+    } else {
+        showToast("Veuillez autoriser les pop-ups pour voir le rapport.", "error");
+        return;
     }
 
-    setTimeout(() => {
-        exporterPDF('view', pdfWindow); 
-    }, 800);
+    showToast("Ouverture du rapport PDF en cours...");
+    exporterPDF('view', pdfWindow);
 }
 
 function telechargerDirect(event, index) {
     event.stopPropagation();
     chargerDossierHistorique(index); 
     showToast("Génération du PDF en cours...");
-    setTimeout(() => {
-        exporterPDF('download'); 
-    }, 800);
+    exporterPDF('download'); 
 }
 
 function viderHistorique() {
@@ -547,7 +548,7 @@ Ces données constituent une base objective. Face au vendeur, elles justifient m
     </div>
     
     <div id="paneTechnique" class="report-pane">
-        ${anomalies.length > 0 ? `<div class="chart-container"><canvas id="coutChart"></canvas></div>` : ''}
+        ${anomalies.length > 0 ? `<div class="chart-container" style="display:flex; justify-content:center;"><canvas id="coutChart" width="250" height="250" style="max-width:250px;"></canvas></div>` : ''}
         <div class="table-responsive">
             <table>
                 <tr>
@@ -607,12 +608,16 @@ Ces données constituent une base objective. Face au vendeur, elles justifient m
                     backgroundColor: ['#1a1a1a', '#cc0000', '#555555', '#888888', '#aaaaaa', '#dddddd'] 
                 }]
             },
-            options: { animation: false, plugins: { legend: { position: 'bottom' } } }
+            options: { 
+                animation: false, 
+                responsive: false, // CRUCIAL : Force la taille du graphique même sur un onglet caché !
+                plugins: { legend: { position: 'bottom' } } 
+            }
         });
     }
 }
 
-// FONCTION EXPORT PDF : INJECTION VIA IFRAME POUR ÉVITER LE BLOCAGE CHROME
+// FONCTION EXPORT PDF SÉCURISÉE
 function exporterPDF(action = 'download', targetWindow = null) {
     if (!donneesAudit) return;
     const btn = document.getElementById('btnExport');
@@ -692,12 +697,16 @@ function exporterPDF(action = 'download', targetWindow = null) {
     if (anomalies.length > 0) {
         let chartCanvas = document.getElementById('coutChart');
         if (chartCanvas) {
-            chartImageBlock = {
-                image: chartCanvas.toDataURL('image/png', 1.0),
-                width: 190,
-                alignment: 'center',
-                margin: [0, 10, 0, 0]
-            };
+            let dataUrl = chartCanvas.toDataURL('image/png', 1.0);
+            // SÉCURITÉ : Vérifie que le canvas n'a pas rendu une image vide à cause du display: none
+            if (dataUrl && dataUrl.length > 20) {
+                chartImageBlock = {
+                    image: dataUrl,
+                    width: 190,
+                    alignment: 'center',
+                    margin: [0, 10, 0, 0]
+                };
+            }
         }
     }
 
@@ -828,12 +837,10 @@ function exporterPDF(action = 'download', targetWindow = null) {
         let pdf = pdfMake.createPdf(docDefinition);
         
         if (action === 'view' && targetWindow) {
-            // INJECTION PARFAITE ET SÉCURISÉE DANS L'ONGLET EXISTANT
             pdf.getBlob((blob) => {
                 const blobUrl = URL.createObjectURL(blob);
                 targetWindow.document.body.innerHTML = `<iframe src="${blobUrl}#view=FitH" style="width:100vw; height:100vh; border:none; margin:0; padding:0; display:block;"></iframe>`;
             });
-            if(btn) btn.innerText = "Télécharger le rapport PDF Officiel";
         } else {
             pdf.download(agenceNom.replace(/\s+/g, '_') + '_Bilan_Technique_' + idRapport + '.pdf');
             if(btn) {
@@ -841,7 +848,11 @@ function exporterPDF(action = 'download', targetWindow = null) {
             }
         }
     } catch(err) {
+        console.error("Erreur PDF:", err);
         showToast("Erreur lors de la génération du PDF.", "error");
+        if (targetWindow) {
+            targetWindow.document.body.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100vh; color:white; font-family:sans-serif; background-color:#cc0000;"><h3>Erreur. Veuillez fermer cet onglet et réessayer.</h3></div>`;
+        }
         if(btn && action !== 'view') btn.innerText = "Télécharger le rapport PDF Officiel";
     }
 }
