@@ -4,7 +4,7 @@ let chartInstance = null;
 let loyerMensuelSaisi = 0;
 let profilActuel = "particulier";
 
-// VARIABLES MARQUE BLANCHE (Avec Logo)
+// VARIABLES MARQUE BLANCHE
 let agenceNom = localStorage.getItem('auditpro_agence_nom') || 'AuditPro';
 let agenceCouleur = localStorage.getItem('auditpro_agence_couleur') || '#00d632';
 let agenceLogoBase64 = localStorage.getItem('auditpro_agence_logo') || null;
@@ -45,9 +45,13 @@ function changerProfilInterne(profil) {
         document.getElementById('form-title').innerText = "Configuration de l'analyse";
         document.getElementById('nav-pro').style.display = "none";
     }
+    
+    // Met à jour l'affichage en direct si un rapport est ouvert
+    if(donneesAudit) {
+        afficherEcran();
+    }
 }
 
-// LECTURE DU LOGO EN BASE 64 POUR LE SAUVEGARDER LOCALEMENT
 document.getElementById('logoUploadInput').addEventListener('change', function(event) {
     const file = event.target.files[0];
     if (file) {
@@ -70,25 +74,38 @@ function appliquerCouleurMarqueBlanche() {
         btn.style.backgroundColor = agenceCouleur; 
         btn.style.boxShadow = `0 4px 15px ${agenceCouleur}40`;
     });
+    
     document.querySelectorAll('.text-dynamic-color').forEach(txt => { txt.style.color = agenceCouleur; });
     document.querySelectorAll('.border-dynamic-color').forEach(b => { b.style.borderTopColor = agenceCouleur; });
     document.querySelectorAll('.border-left-dynamic-color').forEach(b => { b.style.borderLeftColor = agenceCouleur; });
     document.querySelector('.form-container').style.borderTopColor = agenceCouleur;
     
+    // Mettre à jour la couleur du lien actif du menu
+    const lienActif = document.querySelector('nav a.active');
+    if (lienActif) {
+        lienActif.style.color = agenceCouleur;
+        lienActif.style.borderBottom = `2px solid ${agenceCouleur}`;
+    }
+    
+    // Boutons de profil
+    document.querySelectorAll('.profile-btn').forEach(btn => {
+        btn.style.borderColor = 'transparent';
+        btn.style.color = '#6c757d';
+    });
     const activeBtn = document.querySelector('.profile-btn.active');
     if(activeBtn) {
         activeBtn.style.borderColor = agenceCouleur;
         activeBtn.style.color = agenceCouleur;
     }
     
-    const dropZoneHover = document.getElementById('drop-zone');
-    dropZoneHover.addEventListener('mouseenter', () => { dropZoneHover.style.borderColor = agenceCouleur; });
-    dropZoneHover.addEventListener('mouseleave', () => { dropZoneHover.style.borderColor = '#ced4da'; });
+    // SVG dropzone
+    const dropIcon = document.querySelector('.drop-icon');
+    if(dropIcon) dropIcon.style.color = agenceCouleur;
 }
 
 function sauvegarderParametresPro() {
     if (!localStorage.getItem('auditpro_cookies')) {
-        return showToast("Veuillez accepter la sauvegarde locale (bandeau en bas) pour activer cette fonction.", "error");
+        return showToast("Veuillez accepter la sauvegarde locale (bandeau en bas) pour activer cette fonction.");
     }
     const inputNom = document.getElementById('nomAgenceInput').value.trim();
     const inputCouleur = document.getElementById('couleurAgenceInput').value;
@@ -103,6 +120,11 @@ function sauvegarderParametresPro() {
     }
     
     appliquerCouleurMarqueBlanche();
+    
+    if(donneesAudit) {
+        afficherEcran(); // Recharge les couleurs dans le rapport actif
+    }
+    
     showToast("Paramètres Agence sauvegardés localement avec succès !");
 }
 
@@ -121,7 +143,12 @@ function reinitialiserMarqueBlanche() {
     document.getElementById('logo-preview').src = '';
     
     appliquerCouleurMarqueBlanche();
-    showToast("Paramètres réinitialisés par défaut (AuditPro).");
+    
+    if(donneesAudit) {
+        afficherEcran(); // Remet le rapport affiché en vert instantanément
+    }
+    
+    showToast("L'interface a retrouvé ses couleurs par défaut.");
 }
 
 function accepterCookies() {
@@ -142,23 +169,20 @@ function chargerHistorique() {
         return;
     }
     
-    // Le clic sur une ligne recharge tout l'objet
     historique.reverse().forEach((dossier, index) => {
-        // L'index réel dans le tableau inversé (pour le retrouver)
         let realIndex = historique.length - 1 - index;
         historiqueTable.innerHTML += `
             <tr class="history-row" onclick="chargerDossierHistorique(${realIndex})">
                 <td>${dossier.date}</td>
                 <td><strong>${dossier.ville}</strong></td>
                 <td>${formatNumber(dossier.prixInitial)} €</td>
-                <td><button class="btn-solid btn-dynamic-color" style="padding: 6px 12px; font-size: 11px;">Ouvrir</button></td>
+                <td><button class="btn-solid btn-dynamic-color" style="padding: 6px 12px; font-size: 11px; box-shadow:none;">Ouvrir</button></td>
             </tr>
         `;
     });
-    appliquerCouleurMarqueBlanche(); // Pour colorer les boutons "Ouvrir"
+    appliquerCouleurMarqueBlanche();
 }
 
-// NOUVEAU : SAUVEGARDE L'OBJET ENTIER
 function ajouterAuHistorique(ville, prixInitial, donneesCompletes) {
     if (!localStorage.getItem('auditpro_cookies')) return;
     
@@ -241,7 +265,8 @@ function showToast(message, type = "success") {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    if(type === "success") { toast.style.borderLeftColor = agenceCouleur; }
+    if(type === "success") { toast.style.borderLeft = `5px solid ${agenceCouleur}`; }
+    else { toast.style.borderLeft = `5px solid #cc0000`; }
     toast.innerHTML = `<strong>${type === "success" ? "SUCCÈS :" : "ATTENTION :"}</strong> ${message}`;
     container.appendChild(toast);
     setTimeout(() => {
@@ -271,7 +296,6 @@ function switchReportTab(tabId) {
     document.getElementById(tabId).classList.add('active');
 }
 
-// DEMO COMPLETE
 function lancerDemo() {
     document.getElementById('prixInitial').value = "345 000";
     document.getElementById('loyerMensuel').value = "1 200";
@@ -291,9 +315,9 @@ function lancerDemo() {
         analyse_secteur: "Indice de marché local : 1.18",
         securite: "Vos données sont privées : Le PDF a été supprimé de nos serveurs.",
         solutions: [ 
-            "⚠️ MISE EN SÉCURITÉ : Le tableau électrique nécessite une intervention prioritaire pour la sécurité des occupants.", 
-            "❄️ PERFORMANCE ÉNERGÉTIQUE : Rénovation globale indispensable pour sortir du statut de passoire thermique (Classe F).",
-            "🛡️ SANTÉ PUBLIQUE : Une société certifiée devra procéder au retrait des matériaux amiantés détectés dans les conduits."
+            "MISE EN SÉCURITÉ : Le tableau électrique nécessite une intervention prioritaire pour la sécurité des occupants.", 
+            "PERFORMANCE ÉNERGÉTIQUE : Rénovation globale indispensable pour sortir du statut de passoire thermique (Classe F).",
+            "SANTÉ PUBLIQUE : Une société certifiée devra procéder au retrait des matériaux amiantés détectés dans les conduits."
         ],
         diagnostics: [
             {titre: "Électricité (Sécurité)", cout: 4500, loi: "Norme NF C 15-100", detail: "Matériel ancien et absence de mise à la terre sur les pièces d'eau.", action: "Mise en sécurité complète du tableau par un électricien."},
@@ -369,7 +393,7 @@ async function envoyer() {
 function afficherEcran() {
     let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
     let prixInitialClean = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
-    if(prixInitialClean === 0 && donneesAudit.prix_initial > 0) prixInitialClean = donneesAudit.prix_initial; // Pour le chargement depuis l'historique
+    if(prixInitialClean === 0 && donneesAudit.prix_initial > 0) prixInitialClean = donneesAudit.prix_initial;
     
     let kpiRentabiliteHtml = "";
     if (loyerMensuelSaisi > 0) {
@@ -386,7 +410,7 @@ function afficherEcran() {
             </div>
             <div class="kpi-box main" style="background: ${agenceCouleur}; color: #fff;">
                 <div class="kpi-label" style="color: #fff;">Rendement Réel Après Travaux</div>
-                <div class="kpi-value" id="anim-renta-nette">0.00 %</div>
+                <div class="kpi-value">${( (loyerMensuelSaisi * 12) / (prixInitialClean + donneesAudit.total_decote) * 100 ).toFixed(2)} %</div>
             </div>
         </div>`;
     }
@@ -394,6 +418,7 @@ function afficherEcran() {
     let scriptNegoTxt = "";
     let titreSectionNego = "";
     let nomOnglet3 = "";
+    let nomOnglet4 = "";
     let defautsFormate = anomalies.length > 0 ? anomalies.map(a => a.titre).join(', ') : "aucun défaut critique";
     
     if (profilActuel === "particulier") {
@@ -414,7 +439,6 @@ POUR RASSURER L'ACQUÉREUR DURANT LA VISITE :
 "Sachez que nous avons anticipé les conclusions des diagnostics pour vous. L'enveloppe de mise en conformité de ${formatNumber(donneesAudit.total_decote)} € est parfaitement transparente et peut être intégrée dès maintenant dans votre plan de financement. Vous achetez ainsi en parfaite connaissance de cause, sans aucune surprise technique après la vente."`;
     }
 
-    // NOUVELLE FONCTIONNALITÉ INNOVANTE : L'ANNONCE IA
     let texteAnnonceIA = `À saisir rapidement sur le secteur de ${donneesAudit.localisation_exacte} (${donneesAudit.cp}) !
 
 Nous vous proposons ce bien affiché au prix de ${formatNumber(prixInitialClean)} €, idéal pour un premier achat ou un investissement locatif patrimonial. 
@@ -440,7 +464,7 @@ Contactez-nous pour organiser une visite.`;
         <button class="report-tab-btn active" onclick="switchReportTab('paneFinancier')" style="color: ${agenceCouleur}; border-bottom-color: ${agenceCouleur};">1. Synthèse Financière</button>
         <button class="report-tab-btn" onclick="switchReportTab('paneTechnique')">2. Bilan Technique</button>
         <button class="report-tab-btn" onclick="switchReportTab('paneStrategie')">${nomOnglet3}</button>
-        <button class="report-tab-btn" onclick="switchReportTab('paneAnnonce')" style="background-color: #f4fbf7; color: #00d632; border-radius: 4px;">4. 🪄 Rédiger l'Annonce</button>
+        ${profilActuel === "professionnel" ? `<button class="report-tab-btn" onclick="switchReportTab('paneAnnonce')" style="background-color: #f4fbf7; color: ${agenceCouleur}; border-radius: 4px;">4. Rédiger l'Annonce</button>` : ''}
     </div>
     
     <div id="paneFinancier" class="report-pane active">
@@ -496,14 +520,15 @@ Contactez-nous pour organiser une visite.`;
         </div>
     </div>
 
+    ${profilActuel === "professionnel" ? `
     <div id="paneAnnonce" class="report-pane">
-        <h3 style="text-transform: uppercase; font-size: 14px; color: #00d632; margin-bottom: 10px;">🪄 Générateur d'Annonce Immobilière</h3>
-        <p style="font-size: 14px; color: #495057; margin-bottom: 15px; text-align: left;">Gagnez du temps. Notre algorithme a rédigé une annonce optimisée pour Leboncoin/SeLoger, en transformant les travaux nécessaires en opportunité d'investissement :</p>
-        <div class="script-box" style="border-left-color: #00d632; font-style: normal; font-family: 'Inter', sans-serif;">
+        <h3 style="text-transform: uppercase; font-size: 14px; color: ${agenceCouleur}; margin-bottom: 10px;">Générateur d'Annonce Immobilière</h3>
+        <p style="font-size: 14px; color: #495057; margin-bottom: 15px; text-align: left;">Gagnez du temps. Notre algorithme a rédigé une annonce optimisée pour les portails immobiliers, en transformant les travaux nécessaires en opportunité d'investissement :</p>
+        <div class="script-box" style="border-left-color: ${agenceCouleur}; font-style: normal; font-family: 'Inter', sans-serif;">
             <button class="btn-copy" onclick="copierScript('texteAnnonce')">Copier l'annonce</button>
             <div id="texteAnnonce">${texteAnnonceIA}</div>
         </div>
-    </div>
+    </div>` : ''}
     
     <div style="font-size: 10px; color: #adb5bd; text-align: justify; border-top: 1px solid #eaeaea; padding-top: 15px; margin-top: 40px;">
         <b>CADRE D'APPLICATION :</b> Cette étude est une simulation macro-économique informatisée d'aide à la décision. Document non contractuel.
@@ -517,12 +542,8 @@ Contactez-nous pour organiser une visite.`;
 
     if (loyerMensuelSaisi > 0) {
         let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitialClean) * 100;
-        let coutTotalReel = prixInitialClean + donneesAudit.total_decote;
-        let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
-
-        animateValue(document.getElementById('anim-loyer'), 0, (loyerMensuelSaisi * 12), 1500);
         animateValuePercent(document.getElementById('anim-renta-brute'), 0, rentaInitiale, 1500);
-        animateValuePercent(document.getElementById('anim-renta-nette'), 0, rentaFinale, 1500);
+        animateValue(document.getElementById('anim-loyer'), 0, (loyerMensuelSaisi * 12), 1500);
     }
 
     if (anomalies.length > 0) {
@@ -542,7 +563,6 @@ Contactez-nous pour organiser une visite.`;
     }
 }
 
-// EXPORT PDF AVEC LOGO BASE64 ET MARQUE BLANCHE
 function exporterPDF() {
     if (!donneesAudit) return;
     const btn = document.getElementById('btnExport');
@@ -666,7 +686,7 @@ function ajouterAvis() {
     const nouvelAvis = document.createElement('div');
     nouvelAvis.className = 'avis-card';
     nouvelAvis.style.cssText = 'flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;';
-    nouvelAvis.innerHTML = `<div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div><p style="font-size: 14px; font-style: italic; color: #495057;">"${texte}"</p><div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- ${nom}</div>`;
+    nouvelAvis.innerHTML = `<div style="color: ${agenceCouleur}; font-size: 20px; margin-bottom: 10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div><p style="font-size: 14px; font-style: italic; color: #495057;">"${texte}"</p><div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- ${nom}</div>`;
     document.getElementById('listeAvis').prepend(nouvelAvis);
 
     const avisSauvegardes = JSON.parse(localStorage.getItem('auditpro_avis')) || [];
@@ -702,7 +722,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const nouvelAvis = document.createElement('div');
         nouvelAvis.className = 'avis-card';
         nouvelAvis.style.cssText = 'flex: 1; min-width: 300px; background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #eee;';
-        nouvelAvis.innerHTML = `<div style="color: #f39c12; font-size: 20px; margin-bottom: 10px;">★★★★★</div><p style="font-size: 14px; font-style: italic; color: #495057;">"${avis.texte}"</p><div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- ${avis.nom}</div>`;
+        nouvelAvis.innerHTML = `<div style="color: ${agenceCouleur}; font-size: 20px; margin-bottom: 10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div><p style="font-size: 14px; font-style: italic; color: #495057;">"${avis.texte}"</p><div style="font-weight: 700; font-size: 14px; margin-top: 10px;">- ${avis.nom}</div>`;
         listeAvis.prepend(nouvelAvis);
     });
 
