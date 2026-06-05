@@ -2,7 +2,7 @@ let donneesAudit = null;
 let idRapport = "";
 let chartInstance = null;
 let loyerMensuelSaisi = 0;
-let profilActuel = "particulier";
+let profilActuel = localStorage.getItem('auditpro_profil') || "particulier";
 
 // Charger le comparateur depuis le navigateur
 let comparateur = JSON.parse(localStorage.getItem('auditpro_comparateur')) || [];
@@ -11,7 +11,10 @@ let comparateur = JSON.parse(localStorage.getItem('auditpro_comparateur')) || []
 let agenceNom = localStorage.getItem('auditpro_agence_nom') || 'AuditPro';
 let agenceCouleur = localStorage.getItem('auditpro_agence_couleur') || '#00d632';
 let agenceLogoBase64 = localStorage.getItem('auditpro_agence_logo') || null;
+
+// Nouveaux paramètres acheteurs
 let fraisNotaireEstimes = parseFloat(localStorage.getItem('auditpro_frais_notaire')) || 8.0;
+let margeSecuriteTravaux = parseFloat(localStorage.getItem('auditpro_marge_secu')) || 10.0;
 
 // GÉNÉRATEUR DE FLÈCHES SVG EXACTES POUR DPE ET GES (WEB ET PDF)
 function getSvgArrow(lettre, type) {
@@ -31,6 +34,20 @@ function getSvgArrow(lettre, type) {
     </svg>`;
 }
 
+// Fonction SVG optimisée pour le PDF (taille réduite pour éviter les superpositions)
+function getCleanPdfSvg(lettre, type) {
+    lettre = lettre ? lettre.toUpperCase() : "?";
+    const colorsDPE = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F" };
+    const colorsGES = { "A": "#F2E8FA", "B": "#E1C9F2", "C": "#D0AAEA", "D": "#BF8BE2", "E": "#AE6CD9", "F": "#9D4DD1", "G": "#7A35A3" };
+    const color = type === "DPE" ? (colorsDPE[lettre] || "#888888") : (colorsGES[lettre] || "#888888");
+    const txtCol = (lettre === "C" || lettre === "D" || lettre === "?" || lettre === "N/A" || (type==="GES" && (lettre==="A"||lettre==="B"||lettre==="C"))) ? "#000000" : "#ffffff";
+    
+    return `<svg width="70" height="30" viewBox="0 0 70 30" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="0,0 55,0 70,15 55,30 0,30" fill="${color}" />
+        <text x="32" y="21" font-family="Helvetica, sans-serif" font-size="15" font-weight="bold" fill="${txtCol}" text-anchor="middle">${lettre}</text>
+    </svg>`;
+}
+
 function entrerSurLeSite(profil) {
     const portal = document.getElementById('welcome-portal');
     const mainApp = document.getElementById('main-app');
@@ -46,6 +63,8 @@ function entrerSurLeSite(profil) {
 
 function changerProfilInterne(profil) {
     profilActuel = profil;
+    localStorage.setItem('auditpro_profil', profilActuel);
+    
     document.getElementById('btn-particulier').classList.remove('active');
     document.getElementById('btn-pro').classList.remove('active');
     
@@ -71,6 +90,7 @@ function changerProfilInterne(profil) {
         renderComparateur(); 
     }
     
+    chargerHistorique(); // On charge l'historique associé au profil (étanche)
     if(donneesAudit) afficherEcran(); 
 }
 
@@ -140,10 +160,8 @@ function changerCouleurParticulier(couleur) {
     }
     agenceCouleur = couleur;
     localStorage.setItem('auditpro_agence_couleur', agenceCouleur);
-    
     let inputPro = document.getElementById('couleurAgenceInput');
     if(inputPro) inputPro.value = agenceCouleur;
-    
     appliquerCouleurMarqueBlanche();
 }
 
@@ -153,13 +171,16 @@ function sauvegarderParametresParticulier() {
     }
     
     fraisNotaireEstimes = parseFloat(document.getElementById('fraisNotaireInput').value) || 8.0;
+    margeSecuriteTravaux = parseFloat(document.getElementById('margeSecuriteInput').value) || 0;
+    
     localStorage.setItem('auditpro_frais_notaire', fraisNotaireEstimes);
+    localStorage.setItem('auditpro_marge_secu', margeSecuriteTravaux);
     
     changerCouleurParticulier(document.getElementById('couleurParticulierInput').value);
     
     if(donneesAudit) afficherEcran();
     if (comparateur.length > 0) renderComparateur();
-    showToast("Paramètres sauvegardés avec succès !");
+    showToast("Paramètres d'Acheteur sauvegardés avec succès !");
 }
 
 function sauvegarderParametresPro() {
@@ -195,16 +216,19 @@ function reinitialiserMarqueBlanche() {
     localStorage.removeItem('auditpro_agence_logo');
     localStorage.removeItem('auditpro_crm_webhook');
     localStorage.removeItem('auditpro_frais_notaire');
+    localStorage.removeItem('auditpro_marge_secu');
     
     agenceNom = 'AuditPro';
     agenceCouleur = '#00d632';
     agenceLogoBase64 = null;
     fraisNotaireEstimes = 8.0;
+    margeSecuriteTravaux = 10.0;
     
     document.getElementById('nomAgenceInput').value = '';
     document.getElementById('couleurAgenceInput').value = '#00d632';
     document.getElementById('couleurParticulierInput').value = '#00d632';
     document.getElementById('fraisNotaireInput').value = '8';
+    document.getElementById('margeSecuriteInput').value = '10';
     document.getElementById('webhookCrmInput').value = '';
     document.getElementById('logo-preview').style.display = 'none';
     document.getElementById('logo-preview').src = '';
@@ -223,15 +247,20 @@ function accepterCookies() {
     showToast("Mode de sauvegarde locale activé.");
 }
 
+function getHistoriqueKey() {
+    return profilActuel === "professionnel" ? 'auditpro_historique_pro' : 'auditpro_historique_particulier';
+}
+
 function chargerHistorique() {
     const historiqueTable = document.getElementById('historiqueTableBody');
     if(!historiqueTable) return;
     
-    const historique = JSON.parse(localStorage.getItem('auditpro_historique_v2')) || [];
+    const histKey = getHistoriqueKey();
+    const historique = JSON.parse(localStorage.getItem(histKey)) || [];
     historiqueTable.innerHTML = '';
     
     if(historique.length === 0) {
-        historiqueTable.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #666; padding: 20px;">Aucun dossier généré pour le moment.</td></tr>';
+        historiqueTable.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #666; padding: 20px;">Aucun dossier généré pour le moment dans cet espace.</td></tr>';
         return;
     }
     
@@ -260,7 +289,8 @@ function chargerHistorique() {
 function ajouterAuHistorique(ville, prixInitial, donneesCompletes) {
     if (!localStorage.getItem('auditpro_cookies')) return;
     
-    const historique = JSON.parse(localStorage.getItem('auditpro_historique_v2')) || [];
+    const histKey = getHistoriqueKey();
+    const historique = JSON.parse(localStorage.getItem(histKey)) || [];
     historique.push({
         id: "AUDIT-" + Math.floor(Math.random() * 90000 + 10000),
         date: new Date().toLocaleDateString('fr-FR'),
@@ -269,7 +299,7 @@ function ajouterAuHistorique(ville, prixInitial, donneesCompletes) {
         data: donneesCompletes,
         loyer: loyerMensuelSaisi
     });
-    localStorage.setItem('auditpro_historique_v2', JSON.stringify(historique));
+    localStorage.setItem(histKey, JSON.stringify(historique));
     chargerHistorique();
 
     const webhook = localStorage.getItem('auditpro_crm_webhook');
@@ -286,12 +316,13 @@ function ajouterAuHistorique(ville, prixInitial, donneesCompletes) {
                 estimation_travaux: donneesCompletes.total_decote,
                 statut_dpe: donneesCompletes.dpe_lettre || "N/A"
             })
-        }).catch(e => console.log("Liaison CRM non active ou erreur."));
+        }).catch(e => console.log("Liaison CRM non active ou erreur de réseau."));
     }
 }
 
 function chargerDossierHistorique(index) {
-    const historique = JSON.parse(localStorage.getItem('auditpro_historique_v2')) || [];
+    const histKey = getHistoriqueKey();
+    const historique = JSON.parse(localStorage.getItem(histKey)) || [];
     const dossier = historique[index];
     
     donneesAudit = dossier.data;
@@ -342,8 +373,8 @@ function telechargerDirect(event, index) {
 }
 
 function viderHistorique() {
-    if(confirm("Êtes-vous sûr de vouloir supprimer définitivement tout l'historique de cet appareil ?")) {
-        localStorage.removeItem('auditpro_historique_v2');
+    if(confirm("Êtes-vous sûr de vouloir supprimer définitivement tout l'historique de cet espace ?")) {
+        localStorage.removeItem(getHistoriqueKey());
         chargerHistorique();
         showToast("Historique local effacé avec succès.");
     }
@@ -449,8 +480,8 @@ function switchProTab(tabId) {
 
 function ajouterComparateur() {
     if (!donneesAudit) return;
-    if (comparateur.length >= 3) {
-        return showToast("Le comparateur est plein (3 biens max). Supprimez-en un dans l'onglet 'Mon Comparateur'.", "error");
+    if (comparateur.length >= 6) {
+        return showToast("Le comparateur est plein (6 biens max). Supprimez-en un dans l'onglet 'Mon Comparateur'.", "error");
     }
     
     const inputLoyerTxt = document.getElementById('loyerMensuel').value.replace(/\s+/g, '');
@@ -459,12 +490,13 @@ function ajouterComparateur() {
     
     let taux = parseFloat(document.getElementById('tauxRenov')?.value || 0);
     let resteACharge = donneesAudit.total_decote * (1 - taux);
+    let travauxSecurises = resteACharge * (1 + (margeSecuriteTravaux / 100)); // On intègre la marge de sécurité imprévus !
 
     let bien = {
         id: idRapport,
         ville: donneesAudit.localisation_exacte,
         prix: prix,
-        travaux: resteACharge, // Enregistre le montant APRÈS aides
+        travaux: travauxSecurises,
         loyer: loyer,
         dpe: donneesAudit.dpe_lettre || "N/A",
         ges: donneesAudit.ges_lettre || "N/A"
@@ -474,7 +506,7 @@ function ajouterComparateur() {
     localStorage.setItem('auditpro_comparateur', JSON.stringify(comparateur));
     
     renderComparateur();
-    showToast(`Bien sauvegardé dans le comparateur (${comparateur.length}/3) !`);
+    showToast(`Bien sauvegardé dans le comparateur (${comparateur.length}/6) !`);
 }
 
 function supprimerComparateur(index) {
@@ -510,7 +542,7 @@ function renderComparateur() {
             
             <div class="compare-data-row"><span>Prix affiché</span> <span>${formatNumber(bien.prix)} €</span></div>
             <div class="compare-data-row"><span>Frais notaire (~${fraisNotaireEstimes}%)</span> <span>+ ${formatNumber(fraisNotaireActuels)} €</span></div>
-            <div class="compare-data-row"><span>Travaux (Après Prime)</span> <span style="color:#cc0000;">+ ${formatNumber(bien.travaux)} €</span></div>
+            <div class="compare-data-row"><span>Travaux (Sécurisés)</span> <span style="color:#cc0000;">+ ${formatNumber(bien.travaux)} €</span></div>
             <div class="compare-data-row" style="background:#f4fbf7; padding:10px;"><span>BUDGET GLOBAL</span> <span style="color:#00d632;">${formatNumber(budgetReelTotal)} €</span></div>
             
             <div class="compare-data-row" style="margin-top:15px;"><span>Rendement Brut</span> <span>${rentaBrute}</span></div>
@@ -653,16 +685,23 @@ function afficherEcran() {
     
     let taux = parseFloat(document.getElementById('tauxRenov')?.value || 0);
     let resteACharge = donneesAudit.total_decote * (1 - taux);
+    let travauxSecurises = profilActuel === 'particulier' ? resteACharge * (1 + (margeSecuriteTravaux / 100)) : resteACharge;
 
     let kpiRentabiliteHtml = "";
     if (loyerMensuelSaisi > 0) {
         let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitialClean) * 100;
         let fraisNotaireActuels = prixInitialClean * (fraisNotaireEstimes / 100);
-        let coutTotalReel = prixInitialClean + resteACharge + fraisNotaireActuels; 
+        
+        // Le budget global réel prend en charge la sécurité des travaux et le notaire si particulier
+        let coutTotalReel = profilActuel === 'particulier' 
+                            ? prixInitialClean + travauxSecurises + fraisNotaireActuels 
+                            : prixInitialClean + resteACharge; 
+                            
         let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
+        let titreRenta = profilActuel === 'particulier' ? "Rendement Réel (Travaux + Notaire)" : "Rendement Net (Post-Travaux)";
 
         kpiRentabiliteHtml = `
-        <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-top: 30px; margin-bottom: 15px;">Performance Locative Estimée (Budget Global inclus)</h3>
+        <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-top: 30px; margin-bottom: 15px;">Performance Locative Estimée (Budget Global)</h3>
         <div class="kpi-grid">
             <div class="kpi-box">
                 <div class="kpi-label">Loyer Annuel Théorique</div>
@@ -673,7 +712,7 @@ function afficherEcran() {
                 <div class="kpi-value" id="anim-renta-brute">0.00 %</div>
             </div>
             <div class="kpi-box main">
-                <div class="kpi-label" style="color: #fff;">Rendement Réel (Post-Travaux & Notaire)</div>
+                <div class="kpi-label" style="color: #fff;">${titreRenta}</div>
                 <div class="kpi-value" id="anim-renta-nette">0.00 %</div>
             </div>
         </div>`;
@@ -730,6 +769,8 @@ NOTE D'UTILISATION :
 Ces données constituent une base indicative. Face au vendeur, elles appuient mathématiquement un ajustement du prix de présentation. Face à l'acquéreur, cette transparence permet de l'aider à anticiper son financement. Le client reste libre et responsable de confirmer ces données via des devis artisanaux.`;
     }
 
+    let libelleCoutTravaux = profilActuel === 'particulier' && margeSecuriteTravaux > 0 ? "Travaux à charge (Securisés)" : "Enveloppe Travaux (Est.)";
+
     let html = `
     <div style="border-bottom: 3px solid #0b1a14; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px;">
         <div>
@@ -756,7 +797,7 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
                 <div class="kpi-value" id="anim-prix-initial">0 €</div>
             </div>
             <div class="kpi-box">
-                <div class="kpi-label" style="color: #cc0000;">Enveloppe Travaux (Reste à charge estimé)</div>
+                <div class="kpi-label" style="color: #cc0000;">${libelleCoutTravaux}</div>
                 <div class="kpi-value" style="color: #cc0000;" id="anim-cout-travaux">-0 €</div>
             </div>
             <div class="kpi-box main">
@@ -811,14 +852,15 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
     appliquerCouleurMarqueBlanche();
 
     animateValue(document.getElementById('anim-prix-initial'), 0, prixInitialClean, 1500);
-    animateValue(document.getElementById('anim-cout-travaux'), 0, resteACharge, 1500, "-");
+    animateValue(document.getElementById('anim-cout-travaux'), 0, travauxSecurises, 1500, "-");
     animateValue(document.getElementById('anim-prix-net'), 0, donneesAudit.prix_net, 1500);
 
     if (loyerMensuelSaisi > 0) {
         let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitialClean) * 100;
         let fraisNotaireActuels = prixInitialClean * (fraisNotaireEstimes / 100);
-        let coutTotalReel = prixInitialClean + resteACharge + fraisNotaireActuels;
+        let coutTotalReel = profilActuel === 'particulier' ? prixInitialClean + travauxSecurises + fraisNotaireActuels : prixInitialClean + resteACharge;
         let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
+        
         animateValue(document.getElementById('anim-loyer'), 0, (loyerMensuelSaisi * 12), 1500);
         animateValuePercent(document.getElementById('anim-renta-brute'), 0, rentaInitiale, 1500);
         animateValuePercent(document.getElementById('anim-renta-nette'), 0, rentaFinale, 1500);
@@ -844,7 +886,7 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
         });
     }
 
-    // Gestion du bloc actions Pro
+    // Gestion du bloc actions Premium
     const actionContainer = document.getElementById('action-buttons-container');
     if (profilActuel === 'professionnel') {
         const isConfigured = localStorage.getItem('auditpro_agence_nom') && localStorage.getItem('auditpro_agence_nom') !== 'AuditPro';
@@ -856,7 +898,7 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
         } else {
             actionContainer.innerHTML = `
                 <div style="width: 100%; background: #f8f9fa; border: 1px solid #ced4da; padding: 15px; border-radius: 8px; font-size: 13px; color: #555;">
-                    <strong style="color: #0b1a14;">Outils Premium Verrouillés :</strong> Paramétrez votre Agence dans votre Tableau de Bord pour débloquer la génération d'annonces et de fiches vitrines.
+                    <strong style="color: #0b1a14;">🔒 Outils Premium Verrouillés :</strong> Paramétrez votre Agence dans votre Tableau de Bord pour débloquer la génération d'annonces et de fiches vitrines.
                 </div>
             `;
         }
@@ -873,28 +915,18 @@ function exporterPDF(action = 'download', targetWindow = null) {
     const btn = document.getElementById('btnExport');
     if(btn && action !== 'view') btn.innerText = "Édition du PDF en cours...";
     
-    // Pour pdfmake, il faut un pur SVG propre
-    function getCleanPdfSvg(lettre, type) {
-        lettre = lettre ? lettre.toUpperCase() : "?";
-        const colorsDPE = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F", "?": "#888888", "N/A": "#888888" };
-        const colorsGES = { "A": "#F2E8FA", "B": "#E1C9F2", "C": "#D0AAEA", "D": "#BF8BE2", "E": "#AE6CD9", "F": "#9D4DD1", "G": "#7A35A3", "?": "#888888", "N/A": "#888888" };
-        const color = type === "DPE" ? (colorsDPE[lettre] || "#888888") : (colorsGES[lettre] || "#888888");
-        const txtCol = (lettre === "C" || lettre === "D" || lettre === "?" || lettre === "N/A" || (type==="GES" && (lettre==="A"||lettre==="B"))) ? "#000000" : "#ffffff";
-        
-        return `<svg width="70" height="30" viewBox="0 0 70 30" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="0,0 50,0 70,15 50,30 0,30" fill="${color}" />
-            <text x="30" y="21" font-family="Helvetica, sans-serif" font-size="16" font-weight="bold" fill="${txtCol}" text-anchor="middle">${lettre}</text>
-        </svg>`;
-    }
-
     let dpeBadgeBlock = { stack: [ {text: 'ÉNERGIE (DPE)', fontSize: 7, bold:true, color:'#888', margin:[0,0,0,2]}, {svg: getCleanPdfSvg(donneesAudit.dpe_lettre, "DPE"), width: 60} ], margin: [0, 5, 5, 15] };
     let gesBadgeBlock = { stack: [ {text: 'CLIMAT (GES)', fontSize: 7, bold:true, color:'#888', margin:[0,0,0,2]}, {svg: getCleanPdfSvg(donneesAudit.ges_lettre, "GES"), width: 60} ], margin: [0, 5, 0, 15] };
 
     let prixInitFormate = formatNumber(document.getElementById('prixInitial').value.replace(/\s+/g, '')) + ' €';
     let taux = parseFloat(document.getElementById('tauxRenov')?.value || 0);
     let resteACharge = donneesAudit.total_decote * (1 - taux);
-    let decoteFormate = '-' + formatNumber(resteACharge) + ' €';
+    let travauxSecurises = profilActuel === 'particulier' ? resteACharge * (1 + (margeSecuriteTravaux / 100)) : resteACharge;
+    
+    let decoteFormate = '-' + formatNumber(travauxSecurises) + ' €';
     if (taux > 0) decoteFormate += "\n(Après aides ANAH)";
+    if (profilActuel === 'particulier' && margeSecuriteTravaux > 0) decoteFormate += `\n(+${margeSecuriteTravaux}% sécurité)`;
+
     let prixNetFormate = formatNumber(donneesAudit.prix_net) + ' €';
 
     let tableBody = [
@@ -949,7 +981,8 @@ function exporterPDF(action = 'download', targetWindow = null) {
         if (chartCanvas) {
             let dataUrl = chartCanvas.toDataURL('image/png', 1.0);
             if (dataUrl && dataUrl.length > 20) {
-                chartImageBlock = { image: dataUrl, width: 170, alignment: 'center', margin: [0, 10, 0, 0] };
+                // REDUCTION DE LA TAILLE ICI (width: 130 au lieu de 170 ou 190)
+                chartImageBlock = { image: dataUrl, width: 130, alignment: 'center', margin: [0, 10, 0, 0] };
             }
         }
     }
@@ -959,16 +992,19 @@ function exporterPDF(action = 'download', targetWindow = null) {
         let prixInitial = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
         let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitial) * 100;
         let fraisNotaireActuels = prixInitial * (fraisNotaireEstimes / 100);
-        let coutTotalReel = prixInitial + resteACharge + fraisNotaireActuels; 
+        
+        let coutTotalReel = profilActuel === 'particulier' ? prixInitial + travauxSecurises + fraisNotaireActuels : prixInitial + resteACharge; 
         let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
         
+        let headerRentaReel = profilActuel === 'particulier' ? 'Rendement Réel (Tvx + Notaire)' : 'Rendement Net (Post-Tvx)';
+
         rentaBlock = [
             { text: 'PERFORMANCE LOCATIVE (Budget Global inclus)', style: 'sectionTitle', color: agenceCouleur, margin: [0, 15, 0, 10] },
             {
                 table: {
                     widths: ['*', '*', '*'],
                     body: [
-                        [ { text: 'Loyer Annuel Théorique', style: 'kpiHeader' }, { text: 'Rendement Brut', style: 'kpiHeader' }, { text: 'Rendement Réel (Tvx + Notaire)', style: 'kpiHeader' } ],
+                        [ { text: 'Loyer Annuel Théorique', style: 'kpiHeader' }, { text: 'Rendement Brut', style: 'kpiHeader' }, { text: headerRentaReel, style: 'kpiHeader' } ],
                         [ { text: formatNumber(loyerMensuelSaisi * 12) + ' €', style: 'kpiValue' }, { text: rentaInitiale.toFixed(2) + ' %', style: 'kpiValue' }, { text: rentaFinale.toFixed(2) + ' %', style: 'kpiValueNet', color: agenceCouleur } ]
                     ]
                 },
@@ -983,7 +1019,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
             pageSize: 'A4',
             pageMargins: [ 50, 50, 40, 50 ], 
             background: function() {
-                // La fameuse bande de couleur façon "Grille" sur toute la hauteur
+                // Bande de couleur façon Grille sur toute la hauteur
                 return { canvas: [ { type: 'rect', x: 0, y: 0, w: 15, h: 842, color: agenceCouleur } ] };
             },
             header: function(currentPage) {
@@ -1010,9 +1046,10 @@ function exporterPDF(action = 'download', targetWindow = null) {
                 { text: 'Évaluation algorithmique des coûts de remise aux normes basée sur le DDT.', fontSize: 11, color: '#666', margin: [0, 0, 0, 25], italics: true },
                 
                 {
+                    // MODIFICATION DE LA TAILLE DES COLONNES ICI POUR LAISSER DE LA PLACE AU GRAPHIQUE
                     columns: [
                         {
-                            width: '55%',
+                            width: '60%',
                             stack: [
                                 { text: '1. SYNTHÈSE DES VALORISATIONS', style: 'sectionTitle', color: agenceCouleur },
                                 { columns: [dpeBadgeBlock, gesBadgeBlock], margin: [0, 5, 0, 15] },
@@ -1031,7 +1068,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
                             ]
                         },
                         {
-                            width: '45%',
+                            width: '40%',
                             stack: [
                                 anomalies.length > 0 ? { text: 'RÉPARTITION DU BUDGET ESTIMATIF', fontSize: 10, bold: true, alignment: 'center', color: '#666', margin: [0, 0, 0, 5] } : {},
                                 chartImageBlock
@@ -1109,17 +1146,24 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('cookie-banner').style.display = 'block';
     }
 
+    // Charger le profil actif
+    if (localStorage.getItem('auditpro_profil')) {
+        changerProfilInterne(localStorage.getItem('auditpro_profil'));
+    } else {
+        changerProfilInterne("particulier");
+    }
+
     document.getElementById('nomAgenceInput').value = agenceNom !== 'AuditPro' ? agenceNom : '';
     document.getElementById('couleurAgenceInput').value = agenceCouleur;
     document.getElementById('couleurParticulierInput').value = agenceCouleur;
     document.getElementById('fraisNotaireInput').value = fraisNotaireEstimes;
+    document.getElementById('margeSecuriteInput').value = margeSecuriteTravaux;
     document.getElementById('webhookCrmInput').value = localStorage.getItem('auditpro_crm_webhook') || '';
     if(agenceLogoBase64) {
         document.getElementById('logo-preview').src = agenceLogoBase64;
         document.getElementById('logo-preview').style.display = 'block';
     }
     appliquerCouleurMarqueBlanche();
-    chargerHistorique();
 
     document.querySelectorAll('.price-input').forEach(input => {
         input.addEventListener('input', formatInputNumber);
