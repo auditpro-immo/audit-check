@@ -3,9 +3,11 @@ let idRapport = "";
 let chartInstance = null;
 let loyerMensuelSaisi = 0;
 let profilActuel = "particulier";
-let comparateur = [];
 
-// VARIABLES MARQUE BLANCHE
+// Charger le comparateur depuis le navigateur
+let comparateur = JSON.parse(localStorage.getItem('auditpro_comparateur')) || [];
+
+// VARIABLES MARQUE BLANCHE & COULEUR
 let agenceNom = localStorage.getItem('auditpro_agence_nom') || 'AuditPro';
 let agenceCouleur = localStorage.getItem('auditpro_agence_couleur') || '#00d632';
 let agenceLogoBase64 = localStorage.getItem('auditpro_agence_logo') || null;
@@ -31,29 +33,36 @@ function changerProfilInterne(profil) {
     let btnActif = document.getElementById('btn-' + (profil === 'particulier' ? 'particulier' : 'pro'));
     if(btnActif) btnActif.classList.add('active');
 
+    // Gestion de l'affichage selon le profil
     document.getElementById('bloc-renov').style.display = profil === 'particulier' ? 'block' : 'none';
+    document.getElementById('bloc-couleur-particulier').style.display = profil === 'particulier' ? 'block' : 'none';
+    document.getElementById('nav-comparateur').style.display = profil === 'particulier' ? 'inline-block' : 'none';
+    document.getElementById('nav-pro').style.display = profil === 'professionnel' ? 'inline-block' : 'none';
+    
+    // Boutons des fonctionnalités Premium
     let btnVitrine = document.getElementById('btnVitrine');
-    if(btnVitrine) btnVitrine.style.display = profil === 'professionnel' ? 'inline-block' : 'none';
+    let btnAnnonce = document.getElementById('btnAnnonce');
     let btnComp = document.getElementById('btnComparateur');
+    
+    if(btnVitrine) btnVitrine.style.display = profil === 'professionnel' ? 'inline-block' : 'none';
+    if(btnAnnonce) btnAnnonce.style.display = profil === 'professionnel' ? 'inline-block' : 'none';
     if(btnComp) btnComp.style.display = profil === 'particulier' ? 'inline-block' : 'none';
 
+    // Textes d'accueil
     if(profil === "professionnel") {
         document.getElementById('hero-badge').innerText = "Espace Professionnels (B2B)";
         document.getElementById('hero-title').innerText = "Justifiez vos estimations et sécurisez vos transactions.";
-        document.getElementById('hero-desc').innerText = "Notre technologie d'analyse traduit instantanément les PDF de diagnostics en rapports chiffrés. Un outil pensé pour rassurer vos acquéreurs et obtenir l'exclusivité auprès des vendeurs.";
+        document.getElementById('hero-desc').innerText = "Notre technologie d'analyse traduit instantanément les PDF de diagnostics en rapports chiffrés pour convaincre vos clients.";
         document.getElementById('form-title').innerText = "Simulateur pour les agences";
-        document.getElementById('nav-pro').style.display = "inline-block";
     } else {
         document.getElementById('hero-badge').innerText = "Espace Particulier (B2C)";
         document.getElementById('hero-title').innerText = "Sécurisez votre achat en chiffrant les travaux cachés.";
-        document.getElementById('hero-desc').innerText = "Notre outil analyse l'ensemble des diagnostics obligatoires de la maison que vous visitez. Obtenez en 2 minutes le coût estimatif des remises aux normes.";
+        document.getElementById('hero-desc').innerText = "Notre outil analyse l'ensemble des diagnostics obligatoires de la maison que vous visitez. Obtenez le coût estimatif des remises aux normes.";
         document.getElementById('form-title').innerText = "Configuration de l'analyse";
-        document.getElementById('nav-pro').style.display = "none";
+        renderComparateur(); // Mettre à jour l'affichage de l'onglet comparateur
     }
     
-    if(donneesAudit) {
-        afficherEcran(); 
-    }
+    if(donneesAudit) afficherEcran(); 
 }
 
 document.getElementById('logoUploadInput').addEventListener('change', function(event) {
@@ -116,6 +125,26 @@ function appliquerCouleurMarqueBlanche() {
     `;
 }
 
+function changerCouleurParticulier(couleur) {
+    if (!localStorage.getItem('auditpro_cookies')) {
+        return showToast("Veuillez accepter la sauvegarde locale (bandeau en bas) pour activer cette fonction.", "error");
+    }
+    
+    agenceCouleur = couleur;
+    localStorage.setItem('auditpro_agence_couleur', agenceCouleur);
+    
+    // Synchroniser avec l'input Pro au cas où
+    let inputPro = document.getElementById('couleurAgenceInput');
+    if(inputPro) inputPro.value = agenceCouleur;
+    
+    appliquerCouleurMarqueBlanche();
+    
+    if(donneesAudit) afficherEcran();
+    if (comparateur.length > 0) renderComparateur();
+    
+    showToast("Thème visuel mis à jour avec succès !");
+}
+
 function sauvegarderParametresPro() {
     if (!localStorage.getItem('auditpro_cookies')) {
         return showToast("Veuillez accepter la sauvegarde locale (bandeau en bas) pour activer cette fonction.", "error");
@@ -134,12 +163,14 @@ function sauvegarderParametresPro() {
         localStorage.setItem('auditpro_agence_logo', agenceLogoBase64);
     }
     
+    // Synchroniser avec l'input Particulier
+    let inputParticulier = document.getElementById('couleurParticulierInput');
+    if(inputParticulier) inputParticulier.value = agenceCouleur;
+
     appliquerCouleurMarqueBlanche();
     chargerHistorique(); 
     
-    if(donneesAudit) {
-        afficherEcran(); 
-    }
+    if(donneesAudit) afficherEcran(); 
     
     showToast("Paramètres Agence sauvegardés localement avec succès !");
 }
@@ -156,6 +187,7 @@ function reinitialiserMarqueBlanche() {
     
     document.getElementById('nomAgenceInput').value = '';
     document.getElementById('couleurAgenceInput').value = '#00d632';
+    document.getElementById('couleurParticulierInput').value = '#00d632';
     document.getElementById('webhookCrmInput').value = '';
     document.getElementById('logo-preview').style.display = 'none';
     document.getElementById('logo-preview').src = '';
@@ -163,9 +195,8 @@ function reinitialiserMarqueBlanche() {
     appliquerCouleurMarqueBlanche(); 
     chargerHistorique(); 
     
-    if(donneesAudit) {
-        afficherEcran(); 
-    }
+    if(donneesAudit) afficherEcran(); 
+    if(comparateur.length > 0) renderComparateur();
     
     showToast("L'interface a retrouvé ses couleurs par défaut.");
 }
@@ -225,13 +256,22 @@ function ajouterAuHistorique(ville, prixInitial, donneesCompletes) {
     localStorage.setItem('auditpro_historique_v2', JSON.stringify(historique));
     chargerHistorique();
 
+    // Envoi silencieux au CRM de l'agence si le lien est renseigné
     const webhook = localStorage.getItem('auditpro_crm_webhook');
     if (webhook && profilActuel === "professionnel") {
         fetch(webhook, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: idRapport, ville: ville, prix: prixInitial, travaux: donneesCompletes.total_decote })
-        }).catch(e => console.error("Erreur de synchronisation CRM", e));
+            body: JSON.stringify({ 
+                source: "AuditPro_Immo",
+                agence: agenceNom,
+                id_dossier: idRapport, 
+                ville: ville, 
+                prix_affiche: prixInitial, 
+                estimation_travaux: donneesCompletes.total_decote,
+                statut_dpe: donneesCompletes.diagnostics.find(d => d.titre.includes("DPE"))?.detail || "Inconnu"
+            })
+        }).catch(e => console.log("Liaison CRM non active ou erreur de réseau."));
     }
 }
 
@@ -393,6 +433,106 @@ function switchProTab(tabId) {
     }
 }
 
+// ---------------- GESTION DU COMPARATEUR (B2C) ----------------
+
+function ajouterComparateur() {
+    if (!donneesAudit) return;
+    if (comparateur.length >= 3) {
+        return showToast("Le comparateur est plein (3 biens max). Supprimez-en un dans l'onglet 'Mon Comparateur'.", "error");
+    }
+    
+    // Sauvegarder les données essentielles du bien en cours
+    const loyer = Number(document.getElementById('loyerMensuel').value.replace(/\s+/g, '')) || 0;
+    const prix = Number(document.getElementById('prixInitial').value.replace(/\s+/g, '')) || donneesAudit.prix_initial;
+    
+    let bien = {
+        id: idRapport,
+        ville: donneesAudit.localisation_exacte,
+        prix: prix,
+        travaux: donneesAudit.total_decote,
+        prixNet: donneesAudit.prix_net,
+        loyer: loyer,
+        date: donneesAudit.date_audit,
+        dpe: donneesAudit.diagnostics.find(d => d.titre.includes("DPE"))?.detail.match(/classé\s([A-G])/i)?.[1] || "?"
+    };
+    
+    comparateur.push(bien);
+    localStorage.setItem('auditpro_comparateur', JSON.stringify(comparateur));
+    
+    renderComparateur();
+    showToast(`Bien sauvegardé dans le comparateur (${comparateur.length}/3) !`);
+}
+
+function supprimerComparateur(index) {
+    comparateur.splice(index, 1);
+    localStorage.setItem('auditpro_comparateur', JSON.stringify(comparateur));
+    renderComparateur();
+    showToast("Bien supprimé du comparateur.");
+}
+
+function renderComparateur() {
+    const grid = document.getElementById('comparateur-grid');
+    if (!grid) return;
+    
+    if (comparateur.length === 0) {
+        grid.innerHTML = `<div style="text-align: center; color: #aaa; padding: 50px; width: 100%;">Aucun bien dans le comparateur pour le moment.<br>Lancez une analyse et cliquez sur "Sauvegarder dans le comparateur".</div>`;
+        return;
+    }
+    
+    const dpeColors = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F", "?": "#888" };
+    
+    grid.innerHTML = comparateur.map((bien, index) => {
+        let rentaBrute = bien.loyer > 0 ? (((bien.loyer * 12) / bien.prix) * 100).toFixed(2) + " %" : "N/A";
+        let rentaNette = bien.loyer > 0 ? (((bien.loyer * 12) / (bien.prix + bien.travaux)) * 100).toFixed(2) + " %" : "N/A";
+        let colorDpe = dpeColors[bien.dpe.toUpperCase()] || "#888";
+        let textDpeColor = (bien.dpe.toUpperCase() === "D" || bien.dpe.toUpperCase() === "C") ? "#000" : "#fff";
+
+        return `
+        <div class="compare-card border-dynamic-color-top">
+            <h3>Bien à ${bien.ville.split(' ')[0]}</h3>
+            <div class="badge-dpe" style="background-color: ${colorDpe}; color: ${textDpeColor};">Classe DPE : ${bien.dpe.toUpperCase()}</div>
+            
+            <div class="compare-data-row"><span>Prix affiché</span> <span>${formatNumber(bien.prix)} €</span></div>
+            <div class="compare-data-row"><span>Travaux estimés</span> <span style="color:#cc0000;">+ ${formatNumber(bien.travaux)} €</span></div>
+            <div class="compare-data-row" style="background:#f4fbf7; padding:10px;"><span>Budget Global</span> <span style="color:#00d632;">${formatNumber(bien.prix + bien.travaux)} €</span></div>
+            
+            <div class="compare-data-row" style="margin-top:15px;"><span>Rendement Brut</span> <span>${rentaBrute}</span></div>
+            <div class="compare-data-row"><span>Rendement Réel (Post-tvx)</span> <span style="color:#0b1a14;">${rentaNette}</span></div>
+            
+            <div class="compare-action">
+                <button class="btn-remove-compare" onclick="supprimerComparateur(${index})">Retirer ce bien</button>
+            </div>
+        </div>
+        `;
+    }).join('');
+    appliquerCouleurMarqueBlanche(); 
+}
+
+// ---------------- GÉNÉRATEUR D'ANNONCE (B2B) ----------------
+
+function genererAnnonceLeBonCoin() {
+    if (!donneesAudit) return;
+    
+    let prixBase = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
+    let ville = donneesAudit.localisation_exacte.split(' ')[0];
+    let dpe = donneesAudit.diagnostics.find(d => d.titre.includes("DPE"))?.detail.match(/classé\s([A-G])/i)?.[1]?.toUpperCase() || "Non spécifié";
+    
+    let texteAnnonce = `🚀 NOUVEAUTÉ - Opportunité à ${ville} !
+
+Idéal investisseur ou premier achat. Nous vous proposons ce bien avec un fort potentiel, proposé au prix de ${formatNumber(prixBase)} €.
+
+📊 DPE : Classe ${dpe}
+Dans une démarche de transparence totale, notre agence a pré-chiffré l'évaluation technique du bien. Un budget d'environ ${formatNumber(donneesAudit.total_decote)} € est à anticiper pour une remise aux normes complète et/ou optimisation énergétique (dossier technique complet disponible sur demande après visite).
+
+Pourquoi c'est une affaire ? 
+Une fois les travaux réalisés à votre goût, ce bien révèlera toute sa valeur sur le marché de ${ville}. 
+
+📞 Contactez l'agence ${agenceNom} dès aujourd'hui pour organiser une visite et consulter notre dossier d'accompagnement !`;
+
+    document.getElementById('texteAnnonceAgenerer').innerText = texteAnnonce;
+    document.getElementById('modalAnnonce').style.display = 'flex';
+}
+
 function lancerDemo() {
     document.getElementById('prixInitial').value = "450 000";
     document.getElementById('loyerMensuel').value = "1 200";
@@ -412,11 +552,11 @@ function lancerDemo() {
         analyse_secteur: "Indice de marché local : 1.18",
         securite: "Vos données sont privées : Le PDF a été supprimé de nos serveurs.",
         diagnostics: [
-            {titre: "Électricité (Sécurité)", cout: 4500, loi: "Norme NF C 15-100", detail: "Défaut de mise à la terre ou matériel ancien identifié.", action: "Mise en sécurité du tableau électrique par un professionnel."},
-            {titre: "DPE (Énergie)", cout: 20000, loi: "Loi Climat & Résilience", detail: "Logement classé F (Passoire thermique). Pertes de chaleur majeures identifiées.", action: "Isolation des combles et installation d'une Pompe à Chaleur."},
-            {titre: "Amiante (Matériaux)", cout: 4200, loi: "Art. L1334-13", detail: "Présence de conduits en amiante-ciment dans la cave.", action: "Retrait et traitement des déchets par une société spécialisée."},
-            {titre: "Plomb (Peintures)", cout: 0, loi: "Art. L1334-1", detail: "Aucune trace de plomb au-dessus des seuils réglementaires détectée.", action: "Aucune intervention nécessaire sur les murs."},
-            {titre: "Gaz (Risque fuite)", cout: 0, loi: "Norme NF P 45-500", detail: "Installation étanche et valves de sécurité fonctionnelles.", action: "Entretien annuel classique de la chaudière suffisant."}
+            {titre: "Électricité (Sécurité)", cout: 4500, loi: "Norme NF C 15-100", detail: "Défaut de mise à la terre ou matériel ancien identifié.", action: "Mise en sécurité du tableau électrique par un professionnel.", statut: "Anomalie"},
+            {titre: "DPE (Énergie)", cout: 20000, loi: "Loi Climat & Résilience", detail: "Logement classé F (Passoire thermique). Pertes de chaleur majeures identifiées.", action: "Isolation des combles et installation d'une Pompe à Chaleur.", statut: "Anomalie"},
+            {titre: "Amiante (Matériaux)", cout: 4200, loi: "Art. L1334-13", detail: "Présence de conduits en amiante-ciment dans la cave.", action: "Retrait et traitement des déchets par une société spécialisée.", statut: "Anomalie"},
+            {titre: "Plomb (Peintures)", cout: 0, loi: "Art. L1334-1", detail: "Aucune trace de plomb au-dessus des seuils réglementaires détectée.", action: "Aucune intervention nécessaire sur les murs.", statut: "Conforme"},
+            {titre: "Gaz (Risque fuite)", cout: 0, loi: "Norme NF P 45-500", detail: "Installation étanche et valves de sécurité fonctionnelles.", action: "Entretien annuel classique de la chaudière suffisant.", statut: "Conforme"}
         ]
     };
     
@@ -911,12 +1051,6 @@ function exporterPDF(action = 'download', targetWindow = null) {
     }
 }
 
-function ajouterComparateur() {
-    if (comparateur.length >= 3) return showToast("Comparateur plein (3 biens max).", "error");
-    comparateur.push(donneesAudit);
-    showToast(`Bien ajouté au comparateur (${comparateur.length}/3).`);
-}
-
 function exporterFicheVitrine() {
     let docDefinition = {
         pageSize: 'A4',
@@ -937,6 +1071,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById('nomAgenceInput').value = agenceNom !== 'AuditPro' ? agenceNom : '';
     document.getElementById('couleurAgenceInput').value = agenceCouleur;
+    document.getElementById('couleurParticulierInput').value = agenceCouleur;
     document.getElementById('webhookCrmInput').value = localStorage.getItem('auditpro_crm_webhook') || '';
     if(agenceLogoBase64) {
         document.getElementById('logo-preview').src = agenceLogoBase64;
