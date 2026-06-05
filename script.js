@@ -4,9 +4,21 @@ let chartInstance = null;
 let loyerMensuelSaisi = 0;
 let profilActuel = localStorage.getItem('auditpro_profil') || "particulier";
 
-// SYSTÈME D'ABONNEMENT ET LIMITES
-let userPlan = localStorage.getItem('auditpro_plan') || 'gratuit'; 
-let analysesCount = parseInt(localStorage.getItem('auditpro_analyses_count')) || 0;
+// SYSTÈME D'ABONNEMENT SÉCURISÉ (Obfuscation locale)
+function lireAcces() {
+    try {
+        let tk = localStorage.getItem('_ap_xtk_');
+        if (!tk) return 'gratuit';
+        return atob(tk).split('|')[0]; 
+    } catch(e) { return 'gratuit'; }
+}
+
+function definirAcces(niveau) {
+    localStorage.setItem('_ap_xtk_', btoa(niveau + '|' + Date.now()));
+}
+
+let userPlan = lireAcces(); 
+let analysesCount = parseInt(localStorage.getItem('_ap_cnt_')) || 0;
 let logoClicks = 0;
 
 // Charger le comparateur depuis le stockage local (jusqu'à 6 biens)
@@ -17,7 +29,7 @@ let agenceNom = localStorage.getItem('auditpro_agence_nom') || 'AuditPro';
 let agenceCouleur = localStorage.getItem('auditpro_agence_couleur') || '#00d632';
 let agenceLogoBase64 = localStorage.getItem('auditpro_agence_logo') || null;
 
-// Nouveaux filtres de calcul du matelas acheteur
+// Filtres de calcul
 let fraisNotaireEstimes = parseFloat(localStorage.getItem('auditpro_frais_notaire')) || 8.0;
 let margeSecuriteTravaux = parseFloat(localStorage.getItem('auditpro_marge_secu')) || 10.0;
 
@@ -91,7 +103,6 @@ function changerProfilInterne(profil) {
     if(donneesAudit) afficherEcran(); 
 }
 
-// MISE A JOUR DU LOGO ET DU TEXTE DU FICHIER
 document.getElementById('logoUploadInput').addEventListener('change', function(event) {
     const file = event.target.files[0];
     const nomFichierSpan = document.getElementById('logo-file-name');
@@ -386,6 +397,10 @@ function voirPDFDirect(event, index) {
 
 function telechargerDirect(event, index) {
     event.stopPropagation();
+    if (userPlan === 'gratuit' && index > 0) {
+        document.querySelector('nav a[href="#abonnements"]').click();
+        return showToast("L'exportation illimitée de l'historique nécessite un abonnement.", "error");
+    }
     chargerDossierHistorique(index); 
     showToast("Génération du PDF en cours...");
     exporterPDF('download'); 
@@ -638,9 +653,9 @@ function lancerDemo() {
 }
 
 async function envoyer() {
-    if (userPlan === 'gratuit' && analysesCount >= 1) {
+    if (userPlan === 'gratuit' && analysesCount >= 3) {
         document.querySelector('nav a[href="#abonnements"]').click();
-        return showToast("Vous avez atteint votre limite d'une analyse gratuite par mois. Veuillez souscrire à une offre.", "error");
+        return showToast("Vous avez atteint votre limite de 3 analyses gratuites. Veuillez souscrire à une offre.", "error");
     }
 
     const input = document.getElementById('fichierPdf');
@@ -692,7 +707,7 @@ async function envoyer() {
         ajouterAuHistorique(donneesAudit.localisation_exacte, prixInput, donneesAudit);
 
         analysesCount++;
-        localStorage.setItem('auditpro_analyses_count', analysesCount);
+        localStorage.setItem('_ap_cnt_', analysesCount);
 
         showToast("Analyse effectuée avec succès.");
         document.getElementById('result-wrapper').style.display = "block";
@@ -1241,13 +1256,14 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ACCÈS GOD MODE (ADMIN) - Clic 5 fois sur le Logo
+   // ACCÈS GOD MODE (ADMIN)
     const headerLogo = document.querySelector('.logo');
     if (headerLogo) {
-        headerLogo.addEventListener('click', function() {
+        headerLogo.addEventListener('click', function(e) {
+            if (!e.shiftKey) { logoClicks = 0; return; }
             logoClicks++;
             if (logoClicks === 5) {
-                localStorage.setItem('auditpro_plan', 'pro');
+                definirAcces('pro');
                 userPlan = 'pro';
                 showToast("MODE ADMIN ACTIVÉ : Accès total illimité débloqué !", "success");
             }
