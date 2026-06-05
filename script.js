@@ -35,8 +35,9 @@ function changerProfilInterne(profil) {
 
     // Gestion de l'affichage selon le profil
     document.getElementById('bloc-renov').style.display = profil === 'particulier' ? 'block' : 'none';
-    document.getElementById('bloc-couleur-particulier').style.display = profil === 'particulier' ? 'block' : 'none';
+    
     document.getElementById('nav-comparateur').style.display = profil === 'particulier' ? 'inline-block' : 'none';
+    document.getElementById('nav-param-particulier').style.display = profil === 'particulier' ? 'inline-block' : 'none';
     document.getElementById('nav-pro').style.display = profil === 'professionnel' ? 'inline-block' : 'none';
     
     // Boutons des fonctionnalités Premium
@@ -59,7 +60,7 @@ function changerProfilInterne(profil) {
         document.getElementById('hero-title').innerText = "Sécurisez votre achat en chiffrant les travaux cachés.";
         document.getElementById('hero-desc').innerText = "Notre outil analyse l'ensemble des diagnostics obligatoires de la maison que vous visitez. Obtenez le coût estimatif des remises aux normes.";
         document.getElementById('form-title').innerText = "Configuration de l'analyse";
-        renderComparateur(); // Mettre à jour l'affichage de l'onglet comparateur
+        renderComparateur(); 
     }
     
     if(donneesAudit) afficherEcran(); 
@@ -133,7 +134,6 @@ function changerCouleurParticulier(couleur) {
     agenceCouleur = couleur;
     localStorage.setItem('auditpro_agence_couleur', agenceCouleur);
     
-    // Synchroniser avec l'input Pro au cas où
     let inputPro = document.getElementById('couleurAgenceInput');
     if(inputPro) inputPro.value = agenceCouleur;
     
@@ -163,7 +163,6 @@ function sauvegarderParametresPro() {
         localStorage.setItem('auditpro_agence_logo', agenceLogoBase64);
     }
     
-    // Synchroniser avec l'input Particulier
     let inputParticulier = document.getElementById('couleurParticulierInput');
     if(inputParticulier) inputParticulier.value = agenceCouleur;
 
@@ -256,7 +255,6 @@ function ajouterAuHistorique(ville, prixInitial, donneesCompletes) {
     localStorage.setItem('auditpro_historique_v2', JSON.stringify(historique));
     chargerHistorique();
 
-    // Envoi silencieux au CRM de l'agence si le lien est renseigné
     const webhook = localStorage.getItem('auditpro_crm_webhook');
     if (webhook && profilActuel === "professionnel") {
         fetch(webhook, {
@@ -269,7 +267,7 @@ function ajouterAuHistorique(ville, prixInitial, donneesCompletes) {
                 ville: ville, 
                 prix_affiche: prixInitial, 
                 estimation_travaux: donneesCompletes.total_decote,
-                statut_dpe: donneesCompletes.diagnostics.find(d => d.titre.includes("DPE"))?.detail || "Inconnu"
+                statut_dpe: donneesCompletes.dpe_lettre || "?"
             })
         }).catch(e => console.log("Liaison CRM non active ou erreur de réseau."));
     }
@@ -441,8 +439,8 @@ function ajouterComparateur() {
         return showToast("Le comparateur est plein (3 biens max). Supprimez-en un dans l'onglet 'Mon Comparateur'.", "error");
     }
     
-    // Sauvegarder les données essentielles du bien en cours
-    const loyer = Number(document.getElementById('loyerMensuel').value.replace(/\s+/g, '')) || 0;
+    const inputLoyerTxt = document.getElementById('loyerMensuel').value.replace(/\s+/g, '');
+    const loyer = Number(inputLoyerTxt) || loyerMensuelSaisi || 0;
     const prix = Number(document.getElementById('prixInitial').value.replace(/\s+/g, '')) || donneesAudit.prix_initial;
     
     let bien = {
@@ -450,10 +448,8 @@ function ajouterComparateur() {
         ville: donneesAudit.localisation_exacte,
         prix: prix,
         travaux: donneesAudit.total_decote,
-        prixNet: donneesAudit.prix_net,
         loyer: loyer,
-        date: donneesAudit.date_audit,
-        dpe: donneesAudit.diagnostics.find(d => d.titre.includes("DPE"))?.detail.match(/classé\s([A-G])/i)?.[1] || "?"
+        dpe: donneesAudit.dpe_lettre || "?"
     };
     
     comparateur.push(bien);
@@ -485,7 +481,7 @@ function renderComparateur() {
         let rentaBrute = bien.loyer > 0 ? (((bien.loyer * 12) / bien.prix) * 100).toFixed(2) + " %" : "N/A";
         let rentaNette = bien.loyer > 0 ? (((bien.loyer * 12) / (bien.prix + bien.travaux)) * 100).toFixed(2) + " %" : "N/A";
         let colorDpe = dpeColors[bien.dpe.toUpperCase()] || "#888";
-        let textDpeColor = (bien.dpe.toUpperCase() === "D" || bien.dpe.toUpperCase() === "C") ? "#000" : "#fff";
+        let textDpeColor = (bien.dpe.toUpperCase() === "D" || bien.dpe.toUpperCase() === "C" || bien.dpe.toUpperCase() === "?") ? "#000" : "#fff";
 
         return `
         <div class="compare-card border-dynamic-color-top">
@@ -515,7 +511,7 @@ function genererAnnonceLeBonCoin() {
     
     let prixBase = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
     let ville = donneesAudit.localisation_exacte.split(' ')[0];
-    let dpe = donneesAudit.diagnostics.find(d => d.titre.includes("DPE"))?.detail.match(/classé\s([A-G])/i)?.[1]?.toUpperCase() || "Non spécifié";
+    let dpe = donneesAudit.dpe_lettre || "Non spécifié";
     
     let texteAnnonce = `🚀 NOUVEAUTÉ - Opportunité à ${ville} !
 
@@ -549,6 +545,7 @@ function lancerDemo() {
         prix_initial: 450000,
         total_decote: 28700,
         prix_net: 421300,
+        dpe_lettre: "F",
         analyse_secteur: "Indice de marché local : 1.18",
         securite: "Vos données sont privées : Le PDF a été supprimé de nos serveurs.",
         diagnostics: [
@@ -577,7 +574,6 @@ async function envoyer() {
     if (prixInput <= 0) return showToast("Veuillez indiquer le prix de vente.", "error");
     if (!input.files.length) return showToast("Veuillez charger le fichier PDF.", "error");
 
-    // SÉCURITÉ : Bloquer les gros fichiers côté client pour protéger le serveur
     const maxSizeMB = 15;
     if (input.files[0].size > maxSizeMB * 1024 * 1024) {
         return showToast("Le fichier est trop lourd (Maximum 15 Mo).", "error");
@@ -818,9 +814,9 @@ function exporterPDF(action = 'download', targetWindow = null) {
     if(btn && action !== 'view') btn.innerText = "Édition du PDF en cours...";
     
     function getDpeSvg(lettre) {
-        const dpeColors = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F" };
+        const dpeColors = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F", "?": "#888888" };
         const color = dpeColors[lettre] || "#888888";
-        const textColor = (lettre === "D" || lettre === "C") ? "#000000" : "#ffffff";
+        const textColor = (lettre === "D" || lettre === "C" || lettre === "?") ? "#000000" : "#ffffff";
         return `
         <svg width="100" height="35" viewBox="0 0 100 35" xmlns="http://www.w3.org/2000/svg">
             <polygon points="0,0 80,0 100,17.5 80,35 0,35" fill="${color}" />
@@ -828,17 +824,19 @@ function exporterPDF(action = 'download', targetWindow = null) {
         </svg>`;
     }
 
-    let dpeMatch = donneesAudit.diagnostics.find(d => d.titre.toUpperCase().includes("DPE"));
     let dpeBadgeBlock = {};
-    if (dpeMatch) {
-        let matchLettre = dpeMatch.detail.match(/classé\s([A-G])/i);
-        if (matchLettre) {
-            dpeBadgeBlock = { svg: getDpeSvg(matchLettre[1].toUpperCase()), width: 80, margin: [0, 5, 0, 15] };
-        }
+    if (donneesAudit.dpe_lettre && donneesAudit.dpe_lettre !== "?") {
+        dpeBadgeBlock = { svg: getDpeSvg(donneesAudit.dpe_lettre), width: 80, margin: [0, 5, 0, 15] };
     }
 
     let prixInitFormate = formatNumber(document.getElementById('prixInitial').value.replace(/\s+/g, '')) + ' €';
-    let decoteFormate = '-' + formatNumber(donneesAudit.total_decote) + ' €';
+    
+    // Si prime renov est active
+    let taux = parseFloat(document.getElementById('tauxRenov')?.value || 0);
+    let resteACharge = donneesAudit.total_decote * (1 - taux);
+    let decoteFormate = '-' + formatNumber(resteACharge) + ' €';
+    if (taux > 0) decoteFormate += "\n(Après aides ANAH)";
+    
     let prixNetFormate = formatNumber(donneesAudit.prix_net) + ' €';
 
     let tableBody = [
@@ -907,7 +905,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
     if (loyerMensuelSaisi > 0) {
         let prixInitial = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
         let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitial) * 100;
-        let coutTotalReel = prixInitial + donneesAudit.total_decote;
+        let coutTotalReel = prixInitial + donneesAudit.total_decote; // La renta est tj calculé sur les vrais travaux, pas la prime renov
         let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
         
         rentaBlock = [
@@ -968,7 +966,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
                                         widths: ['*', '*'],
                                         body: [
                                             [ { text: 'Prix de Vente Initial', style: 'kpiHeaderLeft' }, { text: prixInitFormate, style: 'kpiValueLeft' } ],
-                                            [ { text: 'Enveloppe Travaux (Est.)', style: 'kpiHeaderLeft', color: '#cc0000' }, { text: decoteFormate, style: 'kpiValueLeft', color: '#cc0000' } ],
+                                            [ { text: 'Travaux à charge (Est.)', style: 'kpiHeaderLeft', color: '#cc0000' }, { text: decoteFormate, style: 'kpiValueLeft', color: '#cc0000', fontSize: 11 } ],
                                             [ { text: 'Valeur Nette Recommandée', style: 'kpiHeaderLeft', bold: true }, { text: prixNetFormate, style: 'kpiValueNetLeft', color: agenceCouleur } ]
                                         ]
                                     },
@@ -1049,19 +1047,6 @@ function exporterPDF(action = 'download', targetWindow = null) {
         }
         if(btn && action !== 'view') btn.innerText = "Télécharger le rapport détaillé (PDF)";
     }
-}
-
-function exporterFicheVitrine() {
-    let docDefinition = {
-        pageSize: 'A4',
-        content: [
-            { text: 'OPPORTUNITÉ', fontSize: 32, bold: true, alignment: 'center', margin: [0, 20, 0, 10], color: agenceCouleur },
-            { text: donneesAudit.localisation_exacte, fontSize: 20, alignment: 'center', margin: [0, 0, 0, 20] },
-            { text: 'Prix : ' + formatNumber(document.getElementById('prixInitial').value.replace(/\s+/g, '')) + ' €', fontSize: 24, alignment: 'center', bold: true },
-            { text: 'Travaux estimés : ' + formatNumber(donneesAudit.total_decote) + ' €', fontSize: 18, color: '#cc0000', alignment: 'center', margin: [0, 10, 0, 40] }
-        ]
-    };
-    pdfMake.createPdf(docDefinition).download(`Fiche_Vitrine_${idRapport}.pdf`);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
