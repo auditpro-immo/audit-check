@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Grille d'Auto-Évaluation Immobilière - AuditPro AI</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Remplacement de html2pdf par pdfMake pour un rendu ultra professionnel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 <style>
     body, h1, h3, p { margin: 0; padding: 0; box-sizing: border-box; }
@@ -255,28 +257,22 @@
                     </div>
                 </div>
             </section>
+            
             <button type="submit" class="submit-btn">Lancer l'analyse de ma grille par l'IA</button>
-        </form
-           <div style="margin-top: 40px; margin-bottom: 20px; padding: 30px 20px; background-color: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px; text-align: center;">
-        <h3 style="font-size: 18px; margin-bottom: 10px; font-weight: 700; color: #333; margin-top: 0;">Un problème technique ou une question ?</h3>
-        <p style="font-size: 14px; margin-bottom: 20px; color: #555; line-height: 1.6; max-width: 600px; margin-left: auto; margin-right: auto;">
-            Vous rencontrez un bug sur le site, un problème lors de la génération de votre rapport PDF, ou vous souhaitez simplement des informations sur le fonctionnement de l'outil ? N'hésitez pas à me contacter.
-        </p>
-        <a href="mailto:contact.auditpro.immo@gmail.com" style="display: inline-block; padding: 12px 25px; background: #333; color: #fff; text-decoration: none; font-weight: 600; border-radius: 6px; font-size: 14px; text-transform: uppercase;">
-            ✉️ CONTACTER LE SUPPORT
-        </a>
-        <p style="font-size: 13px; margin-top: 15px; margin-bottom: 0; color: #7f8c8d;">contact.auditpro.immo@gmail.com</p>
-    </div>
+        </form> <!-- CORRECTION ICI : LA BALISE ÉTAIT MAL FERMÉE -->
+
+        <div style="margin-top: 40px; margin-bottom: 20px; padding: 30px 20px; background-color: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px; text-align: center;">
+            <h3 style="font-size: 18px; margin-bottom: 10px; font-weight: 700; color: #333; margin-top: 0;">Un problème technique ou une question ?</h3>
+            <p style="font-size: 14px; margin-bottom: 20px; color: #555; line-height: 1.6; max-width: 600px; margin-left: auto; margin-right: auto;">
+                Vous rencontrez un bug sur le site, un problème lors de la génération de votre rapport PDF, ou vous souhaitez simplement des informations sur le fonctionnement de l'outil ? N'hésitez pas à me contacter.
+            </p>
+            <a href="mailto:contact.auditpro.immo@gmail.com" style="display: inline-block; padding: 12px 25px; background: #333; color: #fff; text-decoration: none; font-weight: 600; border-radius: 6px; font-size: 14px; text-transform: uppercase;">
+                ✉️ CONTACTER LE SUPPORT
+            </a>
+            <p style="font-size: 13px; margin-top: 15px; margin-bottom: 0; color: #7f8c8d;">contact.auditpro.immo@gmail.com</p>
+        </div>
     </div>
 
- <style>
-@media print {
-    body * { visibility: hidden; }
-    #reportArea, #reportArea * { visibility: visible; }
-    #reportArea { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; }
-    .no-print { display: none !important; }
-}
-</style>
 <script>
     document.getElementById('auditForm').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -323,7 +319,6 @@
                         .replace(/ACTIONS RECOMMANDÉES :/g, '<br><b style="color:#2980b9;">ACTIONS RECOMMANDÉES :</b><br>')
                         .replace(/\n/g, '<br>');
 
-                    // CORRECTION : J'ai retiré le code qui empêchait la ligne de se couper pour laisser l'outil respirer
                     return `
                     <tr style="border-bottom: 1px solid #ecf0f1;">
                         <td style="padding: 25px 15px; border-left: 5px solid ${isAnomalie ? '#cc0000' : '#00d632'} !important; vertical-align: top; width: 25%;">
@@ -380,48 +375,142 @@
                         </div>
 
                     </div>
-                    <button id="downloadPdfBtn" style="width: 100%; padding: 20px; background: #000; color: white; border: none; border-radius: 8px; font-weight: 800; font-size: 18px; cursor: pointer; margin-top: 25px; font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 1px;">TÉLÉCHARGER LE RAPPORT EXPERT (PDF)</button>
+                    <button type="button" id="downloadPdfBtn" style="width: 100%; padding: 20px; background: #000; color: white; border: none; border-radius: 8px; font-weight: 800; font-size: 18px; cursor: pointer; margin-top: 25px; font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 1px;">TÉLÉCHARGER LE RAPPORT EXPERT (PDF)</button>
                 </div>`;
                 
                 this.style.display = 'none';
                 this.insertAdjacentHTML('afterend', html);
 
-                // --- CORRECTION DU BUG PDF : PAGE BLANCHE ET DÉCALAGE ---
+                // --- GÉNÉRATION DU PDF AVEC PDFMAKE ---
                 document.getElementById('downloadPdfBtn').addEventListener('click', function() {
-                    // 1. Remonter tout en haut de la page corrige le bug de la 1ère page blanche
-                    window.scrollTo(0, 0); 
-                    
-                    const element = document.getElementById('reportArea');
-                    const opt = {
-                        margin: 15, // Marge simple et uniforme
-                        filename: 'AuditPro_Rapport_Expertise.pdf',
-                        image: { type: 'jpeg', quality: 1 },
-                        html2canvas: { 
-                            scale: 2, 
-                            useCORS: true,
-                            scrollY: 0 // 2. Force le PDF à démarrer tout en haut sans décalage
-                        },
-                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                        // 3. Plus de 'pagebreak' complexe, on laisse l'outil gérer naturellement
-                    };
-                    
-                    // Masquer le bouton pendant le téléchargement
                     const btnPdf = this;
                     btnPdf.innerText = "Génération du PDF en cours...";
                     btnPdf.disabled = true;
 
-                    html2pdf().set(opt).from(element).save().then(() => {
-                        // Remettre le bouton à la normale
+                    // Générateur du SVG DPE pour pdfMake
+                    function getDpeSvg(lettre) {
+                        return `<svg width="100" height="35" viewBox="0 0 100 35" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="0,0 80,0 100,17.5 80,35 0,35" fill="${bgColor}" />
+                            <text x="45" y="24" font-family="Helvetica, sans-serif" font-size="18" font-weight="bold" fill="${textColor}" text-anchor="middle">Classe ${lettre}</text>
+                        </svg>`;
+                    }
+
+                    // Préparation des données du tableau
+                    let tableBodyPdf = [
+                        [
+                            { text: 'DOMAINE CONTRÔLÉ', style: 'tableHeader' },
+                            { text: 'RÉFÉRENCE', style: 'tableHeader', alignment: 'center' },
+                            { text: 'CONSTAT & ACTIONS', style: 'tableHeader' },
+                            { text: 'PROVISION', style: 'tableHeader', alignment: 'right' }
+                        ]
+                    ];
+
+                    res.resultat.details.forEach((d, index) => {
+                        let isAnomalie = d.provision !== "0 €";
+                        let rowColor = (index % 2 === 0) ? '#f8f9fa' : '#ffffff';
+                        // Nettoyage des balises HTML pour garder un texte propre dans le PDF
+                        let cleanAnalyse = d.analyse.replace(/CONSTAT DÉTAILLÉ :|ACTIONS & CHIFFRAGE PRÉCIS :|ACTIONS RECOMMANDÉES :/g, '').trim();
+
+                        tableBodyPdf.push([
+                            { text: d.point, bold: true, fontSize: 10, color: '#1a1a1a', fillColor: rowColor, margin: [0, 10, 0, 10] },
+                            { text: d.loi, fontSize: 9, color: '#555', alignment: 'center', fillColor: rowColor, margin: [0, 10, 0, 10] },
+                            { text: cleanAnalyse, fontSize: 9, lineHeight: 1.4, color: '#4a4a4a', fillColor: rowColor, margin: [0, 10, 0, 10] },
+                            { text: d.provision, bold: true, fontSize: 11, color: isAnomalie ? '#cc0000' : '#00d632', alignment: 'right', fillColor: rowColor, margin: [0, 10, 0, 10] }
+                        ]);
+                    });
+
+                    const formatNumber = (num) => { return Number(num).toLocaleString('fr-FR').replace(/[\u202F\u00A0]/g, ' '); };
+
+                    // Définition de la structure du document
+                    let docDefinition = {
+                        pageSize: 'A4',
+                        pageMargins: [ 50, 50, 40, 50 ],
+                        background: function() { 
+                            return { canvas: [ { type: 'rect', x: 0, y: 0, w: 12, h: 842, color: '#00d632' } ] }; 
+                        },
+                        header: function(currentPage) {
+                            if (currentPage > 1) {
+                                return {
+                                    columns: [
+                                        { text: 'AUDITPRO - EXPERTISE PHYSIQUE', bold: true, color: '#888', fontSize: 9 },
+                                        { text: new Date().toLocaleDateString('fr-FR'), alignment: 'right', color: '#888', fontSize: 9 }
+                                    ], margin: [50, 20, 40, 0]
+                                };
+                            }
+                        },
+                        footer: function(currentPage, pageCount) {
+                            return {
+                                columns: [
+                                    { text: 'Auto-évaluation indicative. Ne remplace pas un diagnostic certifié.', fontSize: 8, color: '#aaa', italics: true },
+                                    { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#aaa', bold: true }
+                                ], margin: [50, 20, 40, 0]
+                            };
+                        },
+                        content: [
+                            { text: 'AUDITPRO AI', fontSize: 24, bold: true, color: '#00d632', alignment: 'left', letterSpacing: 1, margin: [0, 0, 0, 20] },
+                            { text: 'RAPPORT D\'ÉVALUATION PHYSIQUE', fontSize: 18, color: '#1a1a1a', bold: true, margin: [0, 0, 0, 5] },
+                            { text: 'Synthèse des constatations sur site et chiffrage prévisionnel.', fontSize: 11, color: '#666', margin: [0, 0, 0, 25], italics: true },
+
+                            {
+                                columns: [
+                                    {
+                                        width: '55%',
+                                        stack: [
+                                            { text: '1. BILAN GLOBAL', style: 'sectionTitle', color: '#00d632' },
+                                            { svg: getDpeSvg(dpeLettre), width: 80, margin: [0, 5, 0, 15] },
+                                            { text: 'État Général du Bien :', fontSize: 10, color: '#555', margin: [0, 5, 0, 2] },
+                                            { text: res.resultat.etat, fontSize: 11, bold: true, color: '#1a1a1a', margin: [0, 0, 0, 15] }
+                                        ]
+                                    },
+                                    {
+                                        width: '45%',
+                                        stack: [
+                                            { text: 'PROVISION TRAVAUX ESTIMÉE', fontSize: 10, bold: true, alignment: 'right', color: '#666', margin: [0, 30, 0, 5] },
+                                            { text: (res.resultat.decote_totale > 0 ? '-' : '') + formatNumber(res.resultat.decote_totale) + ' €', fontSize: 22, bold: true, alignment: 'right', color: res.resultat.decote_totale > 0 ? '#cc0000' : '#00d632' }
+                                        ]
+                                    }
+                                ],
+                                columnGap: 20
+                            },
+
+                            {
+                                table: { widths: ['*'], body: [ [ { stack: [ { text: 'STRATÉGIE CONSEILLÉE', fontSize: 10, bold: true, color: '#fff', margin: [0, 0, 0, 4] }, { text: res.resultat.strategie, fontSize: 9, color: '#eef2f5', lineHeight: 1.4 } ], padding: 12, fillColor: '#0b1a14' } ] ] },
+                                layout: 'noBorders', margin: [0, 10, 0, 30]
+                            },
+
+                            { text: '2. DÉTAILS DES ANOMALIES & CHIFFRAGE', style: 'sectionTitle', color: '#00d632', margin: [0, 10, 0, 10] },
+                            {
+                                table: { headerRows: 1, widths: ['25%', '20%', '40%', '15%'], body: tableBodyPdf },
+                                layout: {
+                                    hLineWidth: function (i, node) { return (i === 0 || i === 1 || i === node.table.body.length) ? 2 : 1; },
+                                    vLineWidth: function () { return 0; },
+                                    hLineColor: function (i, node) { return (i === 0 || i === node.table.body.length) ? '#00d632' : '#e0e0e0'; },
+                                    paddingTop: function() { return 6; },
+                                    paddingBottom: function() { return 6; }
+                                }
+                            }
+                        ],
+                        styles: {
+                            sectionTitle: { fontSize: 13, bold: true, margin: [0, 0, 0, 15], textTransform: 'uppercase' },
+                            tableHeader: { bold: true, fontSize: 9, color: '#ffffff', fillColor: '#00d632', margin: [0, 8, 0, 8] }
+                        }
+                    };
+
+                    pdfMake.createPdf(docDefinition).download('AuditPro_Evaluation_Physique.pdf');
+
+                    setTimeout(() => {
                         btnPdf.innerText = "TÉLÉCHARGER LE RAPPORT EXPERT (PDF)";
                         btnPdf.disabled = false;
-                    });
+                    }, 1500);
                 });
             }
         } catch (error) {
-            alert("Erreur serveur.");
+            alert("Erreur serveur ou de connexion.");
         } finally {
             btn.disabled = false;
             btn.innerText = "Lancer l'analyse de ma grille par l'IA";
         }
     });
 </script>
+</body>
+</html>
