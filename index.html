@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <link rel="stylesheet" href="style.css?v=23.0">
+    <link rel="stylesheet" href="style.css?v=24.0">
 </head>
 <body>
 
@@ -162,7 +162,10 @@
                         </div>
                         <div class="form-group" style="margin-top: 25px;">
                             <label>Couleur personnalisée de l'application</label>
-                            <input type="color" id="couleurParticulierInput" value="#00d632" style="width: 60px; height: 40px; cursor: pointer;">
+                            <div style="display: flex; align-items: center; gap: 15px; background: #f8f9fa; padding: 10px 15px; border-radius: 8px; border: 1px solid #ced4da;">
+                                <input type="color" id="couleurParticulierInput" value="#00d632" class="color-picker-custom">
+                                <span style="font-size: 13px; color: #555;">Cliquez sur la pastille pour changer la couleur</span>
+                            </div>
                         </div>
                         <button class="btn-solid btn-dynamic-color" style="width: 100%; margin-top: 25px;" onclick="sauvegarderParametresParticulier()">Sauvegarder mes réglages</button>
                     </div>
@@ -180,21 +183,48 @@
                     
                     <div id="pro-parametres" class="pro-pane active" style="display: flex; flex-wrap: wrap; gap: 30px;">
                         <div style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 4px solid #0b1a14;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 25px;">
                                 <h3 style="margin: 0; color: #0b1a14; font-size: 18px;">Configuration Marque Blanche</h3>
                                 <button onclick="reinitialiserMarqueBlanche()" class="btn-delete">Réinitialiser</button>
                             </div>
-                            <div class="form-group"><label>Nom de l'Agence</label><input type="text" id="nomAgenceInput" class="form-control"></div>
-                            <div class="form-group"><label>Lien Webhook de votre Logiciel Métier</label><input type="url" id="webhookCrmInput" class="form-control"></div>
-                            <div class="form-group"><label>Couleur de l'Agence</label><input type="color" id="couleurAgenceInput" value="#00d632"></div>
-                            <div class="form-group"><label>Logo Agence</label><input type="file" id="logoUploadInput" accept="image/*"></div>
-                            <img id="logo-preview" style="display: none; max-height: 40px; margin-top: 10px;">
-                            <button class="btn-solid btn-dynamic-color" style="width: 100%; margin-top: 15px;" onclick="sauvegarderParametresPro()">Activer mon agence</button>
+                            
+                            <div class="form-group">
+                                <label>Nom de l'Agence</label>
+                                <input type="text" id="nomAgenceInput" class="form-control" placeholder="Ex: Agence des Lilas">
+                            </div>
+                            <div class="form-group">
+                                <label>Lien Webhook de votre Logiciel Métier</label>
+                                <input type="url" id="webhookCrmInput" class="form-control" placeholder="https://...">
+                            </div>
+                            
+                            <div class="form-group" style="margin-top: 25px;">
+                                <label>Couleur principale de l'Agence</label>
+                                <div style="display: flex; align-items: center; gap: 15px; background: #f8f9fa; padding: 10px 15px; border-radius: 8px; border: 1px solid #ced4da;">
+                                    <input type="color" id="couleurAgenceInput" value="#00d632" class="color-picker-custom">
+                                    <span style="font-size: 13px; color: #555;">Cliquez sur la pastille</span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group" style="margin-top: 25px;">
+                                <label>Logo de l'Agence (Pour vos rapports PDF)</label>
+                                <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                    <label for="logoUploadInput" class="btn-demo" style="width: auto; margin: 0; padding: 10px 15px; cursor: pointer; display: flex; align-items: center; gap: 8px; border-color: #ced4da; color: #495057;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                        Parcourir...
+                                    </label>
+                                    <input type="file" id="logoUploadInput" accept="image/*" style="display: none;">
+                                    <span id="logo-file-name" style="font-size: 13px; color: #6c757d; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Aucun fichier</span>
+                                </div>
+                                <img id="logo-preview" style="display: none; max-height: 50px; margin-top: 15px; border-radius: 6px; border: 1px solid #eaeaea; padding: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                            </div>
+
+                            <button class="btn-solid btn-dynamic-color" style="width: 100%; margin-top: 20px;" onclick="sauvegarderParametresPro()">Activer mon agence</button>
                         </div>
+                        
                         <div style="flex: 2; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 4px solid #0b1a14; display: flex; flex-direction: column;">
                             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
                                 <h3 style="margin: 0; color: #0b1a14; font-size: 18px;">Historique Mandats Clients</h3>
-                                <button onclick="viderHistorique()" class="btn-delete">Purger</button>
+                                <button onclick="viderHistorique()" class="btn-delete">Purger l'historique</button>
                             </div>
                             <div class="table-responsive"><table style="width: 100%;"><thead><tr><th>Date</th><th>Ville</th><th>Prix</th><th style="text-align: right;">Action</th></tr></thead><tbody id="historiqueTableBody"></tbody></table></div>
                         </div>
