@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Grille d'Auto-Évaluation Immobilière - AuditPro AI</title>
-    <!-- Remplacement de html2pdf par pdfMake pour un rendu ultra professionnel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -259,7 +258,7 @@
             </section>
             
             <button type="submit" class="submit-btn">Lancer l'analyse de ma grille par l'IA</button>
-        </form> <!-- CORRECTION ICI : LA BALISE ÉTAIT MAL FERMÉE -->
+        </form>
 
         <div style="margin-top: 40px; margin-bottom: 20px; padding: 30px 20px; background-color: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px; text-align: center;">
             <h3 style="font-size: 18px; margin-bottom: 10px; font-weight: 700; color: #333; margin-top: 0;">Un problème technique ou une question ?</h3>
@@ -296,15 +295,31 @@
             if(res.success) {
                 
                 let dpeLettre = res.resultat.dpe || "D";
+                
+                // COULEURS DPE OFFICIELLES
                 let dpeColors = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F" };
-                let bgColor = dpeColors[dpeLettre] || "#000";
-                let textColor = (dpeLettre === "D" || dpeLettre === "C") ? "#000" : "#fff";
+                let bgDpeColor = dpeColors[dpeLettre] || "#000";
+                let textDpeColor = (dpeLettre === "D" || dpeLettre === "C") ? "#000" : "#fff";
 
+                // COULEURS GES OFFICIELLES (Dégradé Violet)
+                let gesColors = { "A": "#F2E8FA", "B": "#E1C9F2", "C": "#D0AAEA", "D": "#BF8BE2", "E": "#AE6CD9", "F": "#9D4DD1", "G": "#7A35A3" };
+                let bgGesColor = gesColors[dpeLettre] || "#000";
+                let textGesColor = (dpeLettre === "A" || dpeLettre === "B" || dpeLettre === "C") ? "#000" : "#fff";
+
+                // GÉNÉRATION DES BADGES SVG (WEB)
                 let badgeDPE = `
                 <div style="display: flex; justify-content: center; margin-top: 8px;">
-                    <svg width="90" height="40" viewBox="0 0 90 40">
-                        <polygon points="0,0 70,0 90,20 70,40 0,40" fill="${bgColor}" stroke="#333" stroke-width="1"/>
-                        <text x="40" y="28" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="${textColor}" text-anchor="middle">${dpeLettre}</text>
+                    <svg width="90" height="35" viewBox="0 0 90 35">
+                        <polygon points="0,0 70,0 90,17.5 70,35 0,35" fill="${bgDpeColor}" stroke="#333" stroke-width="1"/>
+                        <text x="40" y="24" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="${textDpeColor}" text-anchor="middle">${dpeLettre}</text>
+                    </svg>
+                </div>`;
+
+                let badgeGES = `
+                <div style="display: flex; justify-content: center; margin-top: 8px;">
+                    <svg width="90" height="35" viewBox="0 0 90 35">
+                        <polygon points="0,0 70,0 90,17.5 70,35 0,35" fill="${bgGesColor}" stroke="#333" stroke-width="1"/>
+                        <text x="40" y="24" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="${textGesColor}" text-anchor="middle">${dpeLettre}</text>
                     </svg>
                 </div>`;
                 
@@ -350,9 +365,10 @@
                         </div>
                         
                         <div style="display: flex; justify-content: space-between; margin-bottom: 40px; padding: 25px; background: #f8f9fa; border-radius: 8px; border: 1px solid #eee;">
-                            <div style="width: 30%;"><strong style="font-size: 12px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">Conclusion de l'audit</strong><br><span style="font-size: 18px; font-weight: 800; color: #000;">${res.resultat.etat}</span></div>
-                            <div style="width: 30%; text-align: center;"><strong style="font-size: 12px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">DPE Simulé</strong><br>${badgeDPE}</div>
-                            <div style="width: 30%; text-align: right;"><strong style="font-size: 12px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">Provision globale estimée</strong><br><span style="font-size: 24px; font-weight: 900; color: #000;">${res.resultat.decote_totale} €</span></div>
+                            <div style="width: 25%;"><strong style="font-size: 11px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">Conclusion globale</strong><br><span style="font-size: 16px; font-weight: 800; color: #000;">${res.resultat.etat}</span></div>
+                            <div style="width: 20%; text-align: center;"><strong style="font-size: 11px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">Énergie (DPE)</strong><br>${badgeDPE}</div>
+                            <div style="width: 20%; text-align: center;"><strong style="font-size: 11px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">Climat (GES)</strong><br>${badgeGES}</div>
+                            <div style="width: 30%; text-align: right;"><strong style="font-size: 11px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">Provision estimée</strong><br><span style="font-size: 22px; font-weight: 900; color: #000;">${res.resultat.decote_totale} €</span></div>
                         </div>
 
                         <table style="width: 100%; border-collapse: collapse; text-align: left; margin-bottom: 40px;">
@@ -389,9 +405,17 @@
 
                     // Générateur du SVG DPE pour pdfMake
                     function getDpeSvg(lettre) {
-                        return `<svg width="100" height="35" viewBox="0 0 100 35" xmlns="http://www.w3.org/2000/svg">
-                            <polygon points="0,0 80,0 100,17.5 80,35 0,35" fill="${bgColor}" />
-                            <text x="45" y="24" font-family="Helvetica, sans-serif" font-size="18" font-weight="bold" fill="${textColor}" text-anchor="middle">Classe ${lettre}</text>
+                        return `<svg width="85" height="30" viewBox="0 0 85 30" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="0,0 65,0 85,15 65,30 0,30" fill="${bgDpeColor}" />
+                            <text x="35" y="21" font-family="Helvetica, sans-serif" font-size="16" font-weight="bold" fill="${textDpeColor}" text-anchor="middle">Classe ${lettre}</text>
+                        </svg>`;
+                    }
+
+                    // Générateur du SVG GES pour pdfMake
+                    function getGesSvg(lettre) {
+                        return `<svg width="85" height="30" viewBox="0 0 85 30" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="0,0 65,0 85,15 65,30 0,30" fill="${bgGesColor}" />
+                            <text x="35" y="21" font-family="Helvetica, sans-serif" font-size="16" font-weight="bold" fill="${textGesColor}" text-anchor="middle">Classe ${lettre}</text>
                         </svg>`;
                     }
 
@@ -454,16 +478,23 @@
                             {
                                 columns: [
                                     {
-                                        width: '55%',
+                                        width: '60%',
                                         stack: [
-                                            { text: '1. BILAN GLOBAL', style: 'sectionTitle', color: '#00d632' },
-                                            { svg: getDpeSvg(dpeLettre), width: 80, margin: [0, 5, 0, 15] },
-                                            { text: 'État Général du Bien :', fontSize: 10, color: '#555', margin: [0, 5, 0, 2] },
+                                            { text: '1. BILAN ÉNERGIE & CLIMAT', style: 'sectionTitle', color: '#00d632' },
+                                            {
+                                                columns: [
+                                                    { width: 'auto', stack: [{ text: 'Énergie (DPE)', fontSize: 9, color: '#555', margin: [0, 0, 0, 4] }, { svg: getDpeSvg(dpeLettre), width: 75 }] },
+                                                    { width: 15, text: '' },
+                                                    { width: 'auto', stack: [{ text: 'Climat (GES)', fontSize: 9, color: '#555', margin: [0, 0, 0, 4] }, { svg: getGesSvg(dpeLettre), width: 75 }] }
+                                                ],
+                                                margin: [0, 5, 0, 20]
+                                            },
+                                            { text: 'État Général du Bien :', fontSize: 10, color: '#555', margin: [0, 0, 0, 2] },
                                             { text: res.resultat.etat, fontSize: 11, bold: true, color: '#1a1a1a', margin: [0, 0, 0, 15] }
                                         ]
                                     },
                                     {
-                                        width: '45%',
+                                        width: '40%',
                                         stack: [
                                             { text: 'PROVISION TRAVAUX ESTIMÉE', fontSize: 10, bold: true, alignment: 'right', color: '#666', margin: [0, 30, 0, 5] },
                                             { text: (res.resultat.decote_totale > 0 ? '-' : '') + formatNumber(res.resultat.decote_totale) + ' €', fontSize: 22, bold: true, alignment: 'right', color: res.resultat.decote_totale > 0 ? '#cc0000' : '#00d632' }
