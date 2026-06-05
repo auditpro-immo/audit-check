@@ -7,20 +7,22 @@ let profilActuel = "particulier";
 // Charger le comparateur depuis le navigateur
 let comparateur = JSON.parse(localStorage.getItem('auditpro_comparateur')) || [];
 
-// VARIABLES MARQUE BLANCHE & COULEUR
+// VARIABLES MARQUE BLANCHE & PARAMETRES
 let agenceNom = localStorage.getItem('auditpro_agence_nom') || 'AuditPro';
 let agenceCouleur = localStorage.getItem('auditpro_agence_couleur') || '#00d632';
 let agenceLogoBase64 = localStorage.getItem('auditpro_agence_logo') || null;
+let fraisNotaireEstimes = parseFloat(localStorage.getItem('auditpro_frais_notaire')) || 8.0;
 
 // GÉNÉRATEUR DE FLÈCHES SVG EXACTES POUR DPE ET GES (WEB ET PDF)
 function getSvgArrow(lettre, type) {
-    const colorsDPE = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F", "?": "#888888" };
-    const colorsGES = { "A": "#F2E8FA", "B": "#E1C9F2", "C": "#D0AAEA", "D": "#BF8BE2", "E": "#AE6CD9", "F": "#9D4DD1", "G": "#7A35A3", "?": "#888888" };
+    lettre = lettre ? lettre.toUpperCase() : "?";
+    const colorsDPE = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F" };
+    const colorsGES = { "A": "#F2E8FA", "B": "#E1C9F2", "C": "#D0AAEA", "D": "#BF8BE2", "E": "#AE6CD9", "F": "#9D4DD1", "G": "#7A35A3" };
     const color = type === "DPE" ? (colorsDPE[lettre] || "#888888") : (colorsGES[lettre] || "#888888");
     
     let txtCol = "#ffffff";
-    if (type === "DPE" && (lettre === "C" || lettre === "D" || lettre === "?")) txtCol = "#000000";
-    if (type === "GES" && (lettre === "A" || lettre === "B" || lettre === "C" || lettre === "?")) txtCol = "#000000";
+    if (type === "DPE" && (lettre === "C" || lettre === "D" || lettre === "?" || lettre === "N/A")) txtCol = "#000000";
+    if (type === "GES" && (lettre === "A" || lettre === "B" || lettre === "C" || lettre === "?" || lettre === "N/A")) txtCol = "#000000";
 
     return `
     <svg width="80" height="30" viewBox="0 0 100 35" xmlns="http://www.w3.org/2000/svg">
@@ -52,19 +54,9 @@ function changerProfilInterne(profil) {
 
     // Gestion de l'affichage selon le profil
     document.getElementById('bloc-renov').style.display = profil === 'particulier' ? 'block' : 'none';
-    
     document.getElementById('nav-comparateur').style.display = profil === 'particulier' ? 'inline-block' : 'none';
     document.getElementById('nav-param-particulier').style.display = profil === 'particulier' ? 'inline-block' : 'none';
     document.getElementById('nav-pro').style.display = profil === 'professionnel' ? 'inline-block' : 'none';
-    
-    // Boutons des fonctionnalités Premium
-    let btnVitrine = document.getElementById('btnVitrine');
-    let btnAnnonce = document.getElementById('btnAnnonce');
-    let btnComp = document.getElementById('btnComparateur');
-    
-    if(btnVitrine) btnVitrine.style.display = profil === 'professionnel' ? 'inline-block' : 'none';
-    if(btnAnnonce) btnAnnonce.style.display = profil === 'professionnel' ? 'inline-block' : 'none';
-    if(btnComp) btnComp.style.display = profil === 'particulier' ? 'inline-block' : 'none';
 
     if(profil === "professionnel") {
         document.getElementById('hero-badge').innerText = "Espace Professionnels (B2B)";
@@ -144,9 +136,8 @@ function appliquerCouleurMarqueBlanche() {
 
 function changerCouleurParticulier(couleur) {
     if (!localStorage.getItem('auditpro_cookies')) {
-        return showToast("Veuillez accepter la sauvegarde locale (bandeau en bas) pour activer cette fonction.", "error");
+        return showToast("Veuillez accepter la sauvegarde locale.", "error");
     }
-    
     agenceCouleur = couleur;
     localStorage.setItem('auditpro_agence_couleur', agenceCouleur);
     
@@ -154,11 +145,21 @@ function changerCouleurParticulier(couleur) {
     if(inputPro) inputPro.value = agenceCouleur;
     
     appliquerCouleurMarqueBlanche();
+}
+
+function sauvegarderParametresParticulier() {
+    if (!localStorage.getItem('auditpro_cookies')) {
+        return showToast("Veuillez accepter la sauvegarde locale (bandeau en bas) pour activer cette fonction.", "error");
+    }
+    
+    fraisNotaireEstimes = parseFloat(document.getElementById('fraisNotaireInput').value) || 8.0;
+    localStorage.setItem('auditpro_frais_notaire', fraisNotaireEstimes);
+    
+    changerCouleurParticulier(document.getElementById('couleurParticulierInput').value);
     
     if(donneesAudit) afficherEcran();
     if (comparateur.length > 0) renderComparateur();
-    
-    showToast("Thème visuel mis à jour avec succès !");
+    showToast("Paramètres sauvegardés avec succès !");
 }
 
 function sauvegarderParametresPro() {
@@ -179,14 +180,12 @@ function sauvegarderParametresPro() {
         localStorage.setItem('auditpro_agence_logo', agenceLogoBase64);
     }
     
-    let inputParticulier = document.getElementById('couleurParticulierInput');
-    if(inputParticulier) inputParticulier.value = agenceCouleur;
+    let inputPart = document.getElementById('couleurParticulierInput');
+    if(inputPart) inputPart.value = agenceCouleur;
 
     appliquerCouleurMarqueBlanche();
     chargerHistorique(); 
-    
     if(donneesAudit) afficherEcran(); 
-    
     showToast("Paramètres Agence sauvegardés localement avec succès !");
 }
 
@@ -195,14 +194,17 @@ function reinitialiserMarqueBlanche() {
     localStorage.removeItem('auditpro_agence_couleur');
     localStorage.removeItem('auditpro_agence_logo');
     localStorage.removeItem('auditpro_crm_webhook');
+    localStorage.removeItem('auditpro_frais_notaire');
     
     agenceNom = 'AuditPro';
-    agenceCouleur = '#00d632'; // Le vert de base
+    agenceCouleur = '#00d632';
     agenceLogoBase64 = null;
+    fraisNotaireEstimes = 8.0;
     
     document.getElementById('nomAgenceInput').value = '';
     document.getElementById('couleurAgenceInput').value = '#00d632';
     document.getElementById('couleurParticulierInput').value = '#00d632';
+    document.getElementById('fraisNotaireInput').value = '8';
     document.getElementById('webhookCrmInput').value = '';
     document.getElementById('logo-preview').style.display = 'none';
     document.getElementById('logo-preview').src = '';
@@ -212,8 +214,7 @@ function reinitialiserMarqueBlanche() {
     
     if(donneesAudit) afficherEcran(); 
     if(comparateur.length > 0) renderComparateur();
-    
-    showToast("L'interface a retrouvé ses couleurs par défaut.");
+    showToast("L'interface a retrouvé ses paramètres par défaut.");
 }
 
 function accepterCookies() {
@@ -283,9 +284,9 @@ function ajouterAuHistorique(ville, prixInitial, donneesCompletes) {
                 ville: ville, 
                 prix_affiche: prixInitial, 
                 estimation_travaux: donneesCompletes.total_decote,
-                statut_dpe: donneesCompletes.dpe_lettre || "?"
+                statut_dpe: donneesCompletes.dpe_lettre || "N/A"
             })
-        }).catch(e => console.log("Liaison CRM non active ou erreur de réseau."));
+        }).catch(e => console.log("Liaison CRM non active ou erreur."));
     }
 }
 
@@ -310,7 +311,6 @@ function chargerDossierHistorique(index) {
 function voirPDFDirect(event, index) {
     event.stopPropagation();
     chargerDossierHistorique(index);
-    
     const pdfWindow = window.open("", "_blank");
     if (pdfWindow) {
         pdfWindow.document.write(`
@@ -331,8 +331,6 @@ function voirPDFDirect(event, index) {
         showToast("Veuillez autoriser les pop-ups pour voir le rapport.", "error");
         return;
     }
-
-    showToast("Ouverture du rapport PDF en cours...");
     exporterPDF('view', pdfWindow);
 }
 
@@ -468,8 +466,8 @@ function ajouterComparateur() {
         prix: prix,
         travaux: resteACharge, // Enregistre le montant APRÈS aides
         loyer: loyer,
-        dpe: donneesAudit.dpe_lettre || "?",
-        ges: donneesAudit.ges_lettre || "?"
+        dpe: donneesAudit.dpe_lettre || "N/A",
+        ges: donneesAudit.ges_lettre || "N/A"
     };
     
     comparateur.push(bien);
@@ -496,20 +494,24 @@ function renderComparateur() {
     }
     
     grid.innerHTML = comparateur.map((bien, index) => {
-        let rentaBrute = bien.loyer > 0 ? (((bien.loyer * 12) / bien.prix) * 100).toFixed(2) + " %" : "N/A";
-        let rentaNette = bien.loyer > 0 ? (((bien.loyer * 12) / (bien.prix + bien.travaux)) * 100).toFixed(2) + " %" : "N/A";
+        let fraisNotaireActuels = bien.prix * (fraisNotaireEstimes / 100);
+        let budgetReelTotal = bien.prix + bien.travaux + fraisNotaireActuels;
         
+        let rentaBrute = bien.loyer > 0 ? (((bien.loyer * 12) / bien.prix) * 100).toFixed(2) + " %" : "N/A";
+        let rentaNette = bien.loyer > 0 ? (((bien.loyer * 12) / budgetReelTotal) * 100).toFixed(2) + " %" : "N/A";
+
         return `
         <div class="compare-card border-dynamic-color-top">
             <h3>Bien à ${bien.ville.split(' ')[0]}</h3>
             <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                ${getSvgArrow(bien.dpe.toUpperCase(), "DPE")}
-                ${getSvgArrow(bien.ges.toUpperCase(), "GES")}
+                <div style="width: 50%;">${getSvgArrow(bien.dpe, "DPE")}</div>
+                <div style="width: 50%;">${getSvgArrow(bien.ges, "GES")}</div>
             </div>
             
             <div class="compare-data-row"><span>Prix affiché</span> <span>${formatNumber(bien.prix)} €</span></div>
-            <div class="compare-data-row"><span>Travaux estimés</span> <span style="color:#cc0000;">+ ${formatNumber(bien.travaux)} €</span></div>
-            <div class="compare-data-row" style="background:#f4fbf7; padding:10px;"><span>Budget Global</span> <span style="color:#00d632;">${formatNumber(bien.prix + bien.travaux)} €</span></div>
+            <div class="compare-data-row"><span>Frais notaire (~${fraisNotaireEstimes}%)</span> <span>+ ${formatNumber(fraisNotaireActuels)} €</span></div>
+            <div class="compare-data-row"><span>Travaux (Après Prime)</span> <span style="color:#cc0000;">+ ${formatNumber(bien.travaux)} €</span></div>
+            <div class="compare-data-row" style="background:#f4fbf7; padding:10px;"><span>BUDGET GLOBAL</span> <span style="color:#00d632;">${formatNumber(budgetReelTotal)} €</span></div>
             
             <div class="compare-data-row" style="margin-top:15px;"><span>Rendement Brut</span> <span>${rentaBrute}</span></div>
             <div class="compare-data-row"><span>Rendement Réel (Post-tvx)</span> <span style="color:#0b1a14;">${rentaNette}</span></div>
@@ -554,7 +556,7 @@ function lancerDemo() {
     document.getElementById('codePostal').value = "35000";
     
     loyerMensuelSaisi = 1200;
-    idRapport = "DEMO-PRO-" + Math.floor(Math.random() * 90000 + 10000);
+    idRapport = "DEMO-" + Math.floor(Math.random() * 90000 + 10000);
     
     donneesAudit = {
         cp: "35000",
@@ -565,7 +567,7 @@ function lancerDemo() {
         total_decote: 28700,
         prix_net: 421300,
         dpe_lettre: "F",
-        ges_lettre: "F",
+        ges_lettre: "G",
         analyse_secteur: "Indice de marché local : 1.18",
         securite: "Vos données sont privées : Le PDF a été supprimé de nos serveurs.",
         diagnostics: [
@@ -655,12 +657,12 @@ function afficherEcran() {
     let kpiRentabiliteHtml = "";
     if (loyerMensuelSaisi > 0) {
         let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitialClean) * 100;
-        // Rentabilité calculée sur le VRAI reste à charge après prime
-        let coutTotalReel = prixInitialClean + resteACharge; 
+        let fraisNotaireActuels = prixInitialClean * (fraisNotaireEstimes / 100);
+        let coutTotalReel = prixInitialClean + resteACharge + fraisNotaireActuels; 
         let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
 
         kpiRentabiliteHtml = `
-        <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-top: 30px; margin-bottom: 15px;">Performance Locative Estimée</h3>
+        <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-top: 30px; margin-bottom: 15px;">Performance Locative Estimée (Budget Global inclus)</h3>
         <div class="kpi-grid">
             <div class="kpi-box">
                 <div class="kpi-label">Loyer Annuel Théorique</div>
@@ -671,14 +673,14 @@ function afficherEcran() {
                 <div class="kpi-value" id="anim-renta-brute">0.00 %</div>
             </div>
             <div class="kpi-box main">
-                <div class="kpi-label" style="color: #fff;">Rendement Réel (Post-Travaux)</div>
+                <div class="kpi-label" style="color: #fff;">Rendement Réel (Post-Travaux & Notaire)</div>
                 <div class="kpi-value" id="anim-renta-nette">0.00 %</div>
             </div>
         </div>`;
     }
 
-    let dpeLet = donneesAudit.dpe_lettre || "?";
-    let gesLet = donneesAudit.ges_lettre || "?";
+    let dpeLet = donneesAudit.dpe_lettre || "N/A";
+    let gesLet = donneesAudit.ges_lettre || "N/A";
 
     let badgesVisuelsHtml = `
     <div style="display: flex; gap: 15px; align-items: center;">
@@ -694,11 +696,9 @@ function afficherEcran() {
 
     let scriptNegoTxt = "";
     let titreSectionNego = "";
-    let nomOnglet3 = "";
     let defautsFormate = anomalies.length > 0 ? anomalies.map(a => "- " + a.titre).join('\n') : "- L'algorithme ne détecte aucun défaut technique justifiant une décote.";
     
     if (profilActuel === "particulier") {
-        nomOnglet3 = "3. Données d'Appui";
         titreSectionNego = "Aide à la Décision (Acquéreur)";
         scriptNegoTxt = `RÉSUMÉ FACTUEL POUR VOTRE DÉCISION :
 
@@ -711,9 +711,8 @@ function afficherEcran() {
 L'enveloppe de travaux s'appuie sur la lecture du rapport de diagnostic. Les points suivants nécessiteraient potentiellement une remise aux normes :
 ${defautsFormate}
 
-L'évaluation prend également en compte la zone de localisation (${donneesAudit.localisation_exacte}), ce qui permet de justifier la cohérence de l'estimation budgétaire. Ce document n'a pas de valeur légale et ne remplace pas l'avis d'un artisan certifié.`;
+L'évaluation prend également en compte la zone de localisation (${donneesAudit.localisation_exacte}). Ce document n'a pas de valeur légale et ne remplace pas l'avis d'un artisan certifié.`;
     } else {
-        nomOnglet3 = "3. Données d'Appui";
         titreSectionNego = "Éléments Factuels pour la Transaction (Professionnel)";
         scriptNegoTxt = `SYNTHÈSE FACTUELLE DU DOSSIER :
 
@@ -746,7 +745,7 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
     <div class="report-tabs">
         <button class="report-tab-btn active" onclick="switchReportTab('paneFinancier')">1. Synthèse Financière</button>
         <button class="report-tab-btn" onclick="switchReportTab('paneTechnique')">2. Bilan Technique (DDT)</button>
-        <button class="report-tab-btn" onclick="switchReportTab('paneStrategie')">${nomOnglet3}</button>
+        <button class="report-tab-btn" onclick="switchReportTab('paneStrategie')">3. Données d'Appui</button>
     </div>
     
     <div id="paneFinancier" class="report-pane active">
@@ -785,7 +784,7 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
                 ${donneesAudit.diagnostics.map(a => `
                 <tr style="border-bottom: 1px solid #ecf0f1;">
                     <td style="padding: 15px;" class="border-left-dynamic-color"><b>${a.titre}</b></td>
-                    <td style="padding: 15px; color: ${a.cout > 0 ? '#cc0000' : '#000000'}; font-weight: bold; text-align: center;">${a.cout > 0 ? 'ANOMALIE' : (a.statut === "Information" ? "INFO" : "AUCUN DÉFAUT")}</td>
+                    <td style="padding: 15px; color: ${a.cout > 0 ? '#cc0000' : '#000000'}; font-weight: bold; text-align: center;">${a.cout > 0 ? 'ANOMALIE' : (a.statut === "Information" ? "INFO" : "SANS DÉFAUT")}</td>
                     <td style="padding: 15px; font-size: 13px; color: #333; line-height: 1.5;"><b>Constat :</b> ${a.detail}<br>${a.cout > 0 ? `<b>Action recommandée :</b> ${a.action}` : ''}</td>
                     <td style="padding: 15px; font-weight:bold; text-align: right; font-size: 16px;">${a.cout > 0 ? `-${formatNumber(a.cout)} €` : '0 €'}</td>
                 </tr>`).join('')}
@@ -817,7 +816,8 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
 
     if (loyerMensuelSaisi > 0) {
         let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitialClean) * 100;
-        let coutTotalReel = prixInitialClean + resteACharge;
+        let fraisNotaireActuels = prixInitialClean * (fraisNotaireEstimes / 100);
+        let coutTotalReel = prixInitialClean + resteACharge + fraisNotaireActuels;
         let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
         animateValue(document.getElementById('anim-loyer'), 0, (loyerMensuelSaisi * 12), 1500);
         animateValuePercent(document.getElementById('anim-renta-brute'), 0, rentaInitiale, 1500);
@@ -843,38 +843,66 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
             }
         });
     }
+
+    // Gestion du bloc actions Pro
+    const actionContainer = document.getElementById('action-buttons-container');
+    if (profilActuel === 'professionnel') {
+        const isConfigured = localStorage.getItem('auditpro_agence_nom') && localStorage.getItem('auditpro_agence_nom') !== 'AuditPro';
+        if (isConfigured) {
+            actionContainer.innerHTML = `
+                <button class="btn-demo" onclick="exporterFicheVitrine()" style="flex: 1; border-color:#0b1a14!important; color:#0b1a14;">📄 Exporter Fiche Vitrine</button>
+                <button class="btn-demo" onclick="genererAnnonceLeBonCoin()" style="flex: 1; border-color:#0b1a14!important; color:#0b1a14;">📝 Générer texte d'annonce</button>
+            `;
+        } else {
+            actionContainer.innerHTML = `
+                <div style="width: 100%; background: #f8f9fa; border: 1px solid #ced4da; padding: 15px; border-radius: 8px; font-size: 13px; color: #555;">
+                    <strong style="color: #0b1a14;">Outils Premium Verrouillés :</strong> Paramétrez votre Agence dans votre Tableau de Bord pour débloquer la génération d'annonces et de fiches vitrines.
+                </div>
+            `;
+        }
+    } else {
+        actionContainer.innerHTML = `
+            <button class="btn-demo" onclick="ajouterComparateur()" style="flex: 1; border-color: #0b1a14!important; color:#0b1a14;">⭐ Sauvegarder dans le comparateur</button>
+        `;
+    }
 }
 
+// ======================== LE TOUT NOUVEAU GÉNÉRATEUR DE PDF (FAÇON GRILLE) ========================
 function exporterPDF(action = 'download', targetWindow = null) {
     if (!donneesAudit) return;
     const btn = document.getElementById('btnExport');
     if(btn && action !== 'view') btn.innerText = "Édition du PDF en cours...";
-
-    let dpeBadgeBlock = {};
-    if (donneesAudit.dpe_lettre) {
-        dpeBadgeBlock = { stack: [ {text: 'ÉNERGIE (DPE)', fontSize: 8, bold:true, color:'#888', margin:[0,0,0,2]}, {svg: getSvgArrow(donneesAudit.dpe_lettre, "DPE"), width: 80} ], margin: [0, 5, 10, 15] };
-    }
     
-    let gesBadgeBlock = {};
-    if (donneesAudit.ges_lettre) {
-        gesBadgeBlock = { stack: [ {text: 'CLIMAT (GES)', fontSize: 8, bold:true, color:'#888', margin:[0,0,0,2]}, {svg: getSvgArrow(donneesAudit.ges_lettre, "GES"), width: 80} ], margin: [0, 5, 0, 15] };
+    // Pour pdfmake, il faut un pur SVG propre
+    function getCleanPdfSvg(lettre, type) {
+        lettre = lettre ? lettre.toUpperCase() : "?";
+        const colorsDPE = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F", "?": "#888888", "N/A": "#888888" };
+        const colorsGES = { "A": "#F2E8FA", "B": "#E1C9F2", "C": "#D0AAEA", "D": "#BF8BE2", "E": "#AE6CD9", "F": "#9D4DD1", "G": "#7A35A3", "?": "#888888", "N/A": "#888888" };
+        const color = type === "DPE" ? (colorsDPE[lettre] || "#888888") : (colorsGES[lettre] || "#888888");
+        const txtCol = (lettre === "C" || lettre === "D" || lettre === "?" || lettre === "N/A" || (type==="GES" && (lettre==="A"||lettre==="B"))) ? "#000000" : "#ffffff";
+        
+        return `<svg width="70" height="30" viewBox="0 0 70 30" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="0,0 50,0 70,15 50,30 0,30" fill="${color}" />
+            <text x="30" y="21" font-family="Helvetica, sans-serif" font-size="16" font-weight="bold" fill="${txtCol}" text-anchor="middle">${lettre}</text>
+        </svg>`;
     }
+
+    let dpeBadgeBlock = { stack: [ {text: 'ÉNERGIE (DPE)', fontSize: 7, bold:true, color:'#888', margin:[0,0,0,2]}, {svg: getCleanPdfSvg(donneesAudit.dpe_lettre, "DPE"), width: 60} ], margin: [0, 5, 5, 15] };
+    let gesBadgeBlock = { stack: [ {text: 'CLIMAT (GES)', fontSize: 7, bold:true, color:'#888', margin:[0,0,0,2]}, {svg: getCleanPdfSvg(donneesAudit.ges_lettre, "GES"), width: 60} ], margin: [0, 5, 0, 15] };
 
     let prixInitFormate = formatNumber(document.getElementById('prixInitial').value.replace(/\s+/g, '')) + ' €';
-    
     let taux = parseFloat(document.getElementById('tauxRenov')?.value || 0);
     let resteACharge = donneesAudit.total_decote * (1 - taux);
     let decoteFormate = '-' + formatNumber(resteACharge) + ' €';
     if (taux > 0) decoteFormate += "\n(Après aides ANAH)";
-    
     let prixNetFormate = formatNumber(donneesAudit.prix_net) + ' €';
 
     let tableBody = [
         [
             { text: 'DOMAINE CONTRÔLÉ', style: 'tableHeader' },
-            { text: 'ÉTAT INDICATIF', style: 'tableHeader', alignment: 'center' },
+            { text: 'ÉTAT', style: 'tableHeader', alignment: 'center' },
             { text: 'DÉTAILS TECHNIQUES & ACTIONS', style: 'tableHeader' },
-            { text: 'BUDGET MOYEN', style: 'tableHeader', alignment: 'right' }
+            { text: 'BUDGET EST.', style: 'tableHeader', alignment: 'right' }
         ]
     ];
 
@@ -883,16 +911,16 @@ function exporterPDF(action = 'download', targetWindow = null) {
         let rowColor = (index % 2 === 0) ? '#f8f9fa' : '#ffffff'; 
         
         tableBody.push([
-            { text: a.titre, bold: true, fontSize: 10, color: '#1a1a1a', fillColor: rowColor, margin: [0, 10, 0, 10] },
-            { text: isAnomalie ? 'ANOMALIE' : (a.statut === "Information" ? 'INFO' : 'SANS DÉFAUT'), bold: true, fontSize: 9, color: isAnomalie ? '#cc0000' : agenceCouleur, alignment: 'center', fillColor: rowColor, margin: [0, 10, 0, 10] },
+            { text: a.titre, bold: true, fontSize: 9, color: '#1a1a1a', fillColor: rowColor, margin: [0, 10, 0, 10] },
+            { text: isAnomalie ? 'ANOMALIE' : (a.statut === "Information" ? 'INFO' : 'SANS DÉFAUT'), bold: true, fontSize: 8, color: isAnomalie ? '#cc0000' : agenceCouleur, alignment: 'center', fillColor: rowColor, margin: [0, 10, 0, 10] },
             { text: `Constat : ${a.detail}\n` + (isAnomalie ? `Action recommandée : ${a.action}` : ''), fontSize: 9, lineHeight: 1.4, color: '#4a4a4a', fillColor: rowColor, margin: [0, 10, 0, 10] },
-            { text: isAnomalie ? '-' + formatNumber(a.cout) + ' €' : '0 €', bold: true, fontSize: 11, color: isAnomalie ? '#cc0000' : '#1a1a1a', alignment: 'right', fillColor: rowColor, margin: [0, 10, 0, 10] }
+            { text: isAnomalie ? '-' + formatNumber(a.cout) + ' €' : '0 €', bold: true, fontSize: 10, color: isAnomalie ? '#cc0000' : '#1a1a1a', alignment: 'right', fillColor: rowColor, margin: [0, 10, 0, 10] }
         ]);
     });
 
     let logoBlock = agenceLogoBase64 
         ? { image: agenceLogoBase64, fit: [150, 55], alignment: 'left' }
-        : { text: agenceNom.toUpperCase(), fontSize: 22, bold: true, color: agenceCouleur, alignment: 'left', letterSpacing: 1 };
+        : { text: agenceNom.toUpperCase(), fontSize: 24, bold: true, color: agenceCouleur, alignment: 'left', letterSpacing: 1 };
 
     let headerTop = {
         columns: [
@@ -911,7 +939,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
                 layout: 'lightHorizontalLines'
             }
         ],
-        margin: [0, 0, 0, 30]
+        margin: [0, 0, 0, 40]
     };
 
     let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
@@ -921,12 +949,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
         if (chartCanvas) {
             let dataUrl = chartCanvas.toDataURL('image/png', 1.0);
             if (dataUrl && dataUrl.length > 20) {
-                chartImageBlock = {
-                    image: dataUrl,
-                    width: 190,
-                    alignment: 'center',
-                    margin: [0, 10, 0, 0]
-                };
+                chartImageBlock = { image: dataUrl, width: 170, alignment: 'center', margin: [0, 10, 0, 0] };
             }
         }
     }
@@ -935,16 +958,17 @@ function exporterPDF(action = 'download', targetWindow = null) {
     if (loyerMensuelSaisi > 0) {
         let prixInitial = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
         let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitial) * 100;
-        let coutTotalReel = prixInitial + resteACharge; 
+        let fraisNotaireActuels = prixInitial * (fraisNotaireEstimes / 100);
+        let coutTotalReel = prixInitial + resteACharge + fraisNotaireActuels; 
         let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
         
         rentaBlock = [
-            { text: 'PERFORMANCE LOCATIVE ESTIMÉE', style: 'sectionTitle', color: agenceCouleur, margin: [0, 15, 0, 10] },
+            { text: 'PERFORMANCE LOCATIVE (Budget Global inclus)', style: 'sectionTitle', color: agenceCouleur, margin: [0, 15, 0, 10] },
             {
                 table: {
                     widths: ['*', '*', '*'],
                     body: [
-                        [ { text: 'Loyer Annuel', style: 'kpiHeader' }, { text: 'Rendement Brut', style: 'kpiHeader' }, { text: 'Rendement Réel (Post-Travaux)', style: 'kpiHeader' } ],
+                        [ { text: 'Loyer Annuel Théorique', style: 'kpiHeader' }, { text: 'Rendement Brut', style: 'kpiHeader' }, { text: 'Rendement Réel (Tvx + Notaire)', style: 'kpiHeader' } ],
                         [ { text: formatNumber(loyerMensuelSaisi * 12) + ' €', style: 'kpiValue' }, { text: rentaInitiale.toFixed(2) + ' %', style: 'kpiValue' }, { text: rentaFinale.toFixed(2) + ' %', style: 'kpiValueNet', color: agenceCouleur } ]
                     ]
                 },
@@ -959,7 +983,8 @@ function exporterPDF(action = 'download', targetWindow = null) {
             pageSize: 'A4',
             pageMargins: [ 50, 50, 40, 50 ], 
             background: function() {
-                return { canvas: [ { type: 'rect', x: 0, y: 0, w: 12, h: 842, color: agenceCouleur } ] };
+                // La fameuse bande de couleur façon "Grille" sur toute la hauteur
+                return { canvas: [ { type: 'rect', x: 0, y: 0, w: 15, h: 842, color: agenceCouleur } ] };
             },
             header: function(currentPage) {
                 if (currentPage > 1) {
@@ -974,7 +999,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
             footer: function(currentPage, pageCount) {
                 return {
                     columns: [
-                        { text: 'Document algorithmique d\'aide à la décision. Ne se substitue pas à l\'avis d\'un artisan RGE.', fontSize: 8, color: '#aaa', italics: true },
+                        { text: 'Document d\'aide à la décision. Ne se substitue pas à l\'avis d\'un artisan RGE.', fontSize: 8, color: '#aaa', italics: true },
                         { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#aaa', bold: true }
                     ], margin: [50, 20, 40, 0]
                 };
@@ -996,7 +1021,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
                                         widths: ['*', '*'],
                                         body: [
                                             [ { text: 'Prix de Vente Initial', style: 'kpiHeaderLeft' }, { text: prixInitFormate, style: 'kpiValueLeft' } ],
-                                            [ { text: 'Travaux à charge (Est.)', style: 'kpiHeaderLeft', color: '#cc0000' }, { text: decoteFormate, style: 'kpiValueLeft', color: '#cc0000', fontSize: 11 } ],
+                                            [ { text: 'Travaux à charge (Est.)', style: 'kpiHeaderLeft', color: '#cc0000' }, { text: decoteFormate, style: 'kpiValueLeft', color: '#cc0000', fontSize: 10 } ],
                                             [ { text: 'Valeur Nette Recommandée', style: 'kpiHeaderLeft', bold: true }, { text: prixNetFormate, style: 'kpiValueNetLeft', color: agenceCouleur } ]
                                         ]
                                     },
@@ -1048,10 +1073,10 @@ function exporterPDF(action = 'download', targetWindow = null) {
                 kpiValueLeft: { fontSize: 14, bold: true, color: '#1a1a1a', alignment: 'right', margin: [0, 5, 0, 5] },
                 kpiValueNetLeft: { fontSize: 14, bold: true, alignment: 'right', margin: [0, 5, 0, 5] },
                 
-                kpiHeader: { alignment: 'center', fontSize: 9, color: '#888', bold: true, margin: [0, 5, 0, 5], textTransform: 'uppercase' },
-                kpiValue: { alignment: 'center', fontSize: 14, bold: true, color: '#1a1a1a', margin: [0, 10, 0, 10] },
-                kpiValueNet: { alignment: 'center', fontSize: 14, bold: true, margin: [0, 10, 0, 10] },
-                tableHeader: { bold: true, fontSize: 9, color: '#ffffff', fillColor: agenceCouleur, margin: [0, 8, 0, 8] }
+                kpiHeader: { alignment: 'center', fontSize: 8, color: '#888', bold: true, margin: [0, 5, 0, 5], textTransform: 'uppercase' },
+                kpiValue: { alignment: 'center', fontSize: 12, bold: true, color: '#1a1a1a', margin: [0, 10, 0, 10] },
+                kpiValueNet: { alignment: 'center', fontSize: 12, bold: true, margin: [0, 10, 0, 10] },
+                tableHeader: { bold: true, fontSize: 8, color: '#ffffff', fillColor: agenceCouleur, margin: [0, 8, 0, 8] }
             }
         };
 
@@ -1087,6 +1112,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('nomAgenceInput').value = agenceNom !== 'AuditPro' ? agenceNom : '';
     document.getElementById('couleurAgenceInput').value = agenceCouleur;
     document.getElementById('couleurParticulierInput').value = agenceCouleur;
+    document.getElementById('fraisNotaireInput').value = fraisNotaireEstimes;
     document.getElementById('webhookCrmInput').value = localStorage.getItem('auditpro_crm_webhook') || '';
     if(agenceLogoBase64) {
         document.getElementById('logo-preview').src = agenceLogoBase64;
