@@ -20,7 +20,7 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return {"status": "API AuditPro-Immo opérationnelle", "version": "1.1", "message": "Moteur d'analyse prêt."}
+    return {"status": "API AuditPro opérationnelle", "version": "1.2", "message": "Moteur d'analyse technique prêt."}
 
 def get_modulateur_marche(cp: str):
     mois_ecoules = (datetime.now().year - 2024) * 12 + datetime.now().month
@@ -82,13 +82,13 @@ def extraire_surface(texte: str) -> float:
 @app.post("/scan")
 async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: str = Form("")):
     checklist = {
-        "elec": {"titre": "Électricité (Sécurité des personnes)", "statut": "Conforme", "cout": 0, "loi": "Norme NF C 15-100", "detail": "L'installation électrique semble sûre et conforme aux normes de base.", "action": "Aucune action nécessaire dans l'immédiat."},
-        "gaz": {"titre": "Gaz (Risque de fuite)", "statut": "Conforme", "cout": 0, "loi": "Norme NF P 45-500", "detail": "La tuyauterie de gaz ne présente aucun défaut d'étanchéité.", "action": "Pensez simplement à faire entretenir la chaudière chaque année."},
-        "amiante": {"titre": "Amiante (Matériaux toxiques)", "statut": "Conforme", "cout": 0, "loi": "Art. L1334-13", "detail": "Aucune trace d'amiante détectée dans le logement.", "action": "Aucune action. Vous pouvez percer les murs en toute sécurité."},
-        "plomb": {"titre": "Plomb (Peintures anciennes)", "statut": "Conforme", "cout": 0, "loi": "Art. L1334-1", "detail": "Les peintures sont saines et sans danger pour les enfants.", "action": "Aucune action nécessaire."},
-        "dpe": {"titre": "DPE (Consommation d'énergie)", "statut": "Conforme", "cout": 0, "loi": "Loi Climat & Résilience 2021", "detail": "Le bien a une étiquette énergétique correcte et n'est pas une passoire thermique.", "action": "Vous avez le droit de le mettre en location sans problème."},
-        "parasite": {"titre": "Parasites (Bois et charpente)", "statut": "Conforme", "cout": 0, "loi": "Art. L133-6", "detail": "Aucun insecte mangeur de bois ni champignon destructeur détecté.", "action": "Le bois est sain."},
-        "erp": {"titre": "Risques Naturels (Inondations, Séismes)", "statut": "Conforme", "cout": 0, "loi": "Art. L125-5", "detail": "La maison n'est pas située dans une zone à haut risque naturel.", "action": "Aucun surcoût à prévoir pour votre assurance habitation."}
+        "elec": {"titre": "Électricité (Sécurité des personnes)", "statut": "Conforme", "cout": 0, "loi": "Norme NF C 15-100", "detail": "L'installation électrique ne présente aucune anomalie signalée.", "action": "Préconisation : Aucune intervention requise."},
+        "gaz": {"titre": "Gaz (Risque de fuite)", "statut": "Conforme", "cout": 0, "loi": "Norme NF P 45-500", "detail": "L'installation de gaz est jugée conforme.", "action": "Préconisation : Entretien annuel classique de la chaudière."},
+        "amiante": {"titre": "Amiante (Matériaux toxiques)", "statut": "Conforme", "cout": 0, "loi": "Art. L1334-13", "detail": "Aucun matériau contenant de l'amiante n'a été repéré.", "action": "Préconisation : Aucune action spécifique."},
+        "plomb": {"titre": "Plomb (Peintures anciennes)", "statut": "Conforme", "cout": 0, "loi": "Art. L1334-1", "detail": "Absence de revêtements contenant du plomb au-delà des seuils.", "action": "Préconisation : Aucune action spécifique."},
+        "dpe": {"titre": "DPE (Consommation d'énergie)", "statut": "Conforme", "cout": 0, "loi": "Loi Climat & Résilience", "detail": "Performance énergétique standard ou supérieure.", "action": "Préconisation : Aucune urgence de rénovation thermique."},
+        "parasite": {"titre": "Parasites (Bois et charpente)", "statut": "Conforme", "cout": 0, "loi": "Art. L133-6", "detail": "Aucune trace de termites ou de champignons lignivores.", "action": "Préconisation : La structure bois est saine."},
+        "erp": {"titre": "Risques Naturels (Inondations, Séismes)", "statut": "Conforme", "cout": 0, "loi": "Art. L125-5", "detail": "Le bien est hors zone de risques majeurs.", "action": "Préconisation : Conditions standard pour l'assurance habitation."}
     }
     
     solutions = []
@@ -102,70 +102,71 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
         texte_global = " ".join([page.extract_text() or "" for page in pdf.pages])
         
     surface = extraire_surface(texte_global)
-    mention_surface = f" (Calcul budgétaire basé sur ~{int(surface)} m²)"
+    mention_surface = f" (Base de calcul : ~{int(surface)} m²)"
 
-    if re.search(r"(anomalie|prise de terre|électrisation|contact direct|matériel vétuste)", texte_global, re.IGNORECASE):
+    # RECHERCHE PAR CODES D'ANOMALIES PRÉCIS
+    if re.search(r"(B\.3\.3\.6|B\.4\.3|B\.5\.2|défaut de mise à la terre|électrisation|contact direct|matériel vétuste|anomalie électrique)", texte_global, re.IGNORECASE):
         c = int((80 * surface) * indice)
         checklist["elec"].update({
-            "statut": "Anomalie", "cout": c, 
-            "detail": f"Défaut de mise à la terre ou matériel ancien identifié.{mention_surface}", 
-            "action": "Une mise en sécurité du tableau électrique par un professionnel est recommandée."
+            "statut": "Anomalie Identifiée", "cout": c, 
+            "detail": f"Anomalies électriques relevées (ex: type B.3.3.6, B.4, absence de terre).{mention_surface}", 
+            "action": "Préconisation : Faire chiffrer la mise en sécurité du tableau et des prises par un électricien qualifié."
         })
         total_decote += c
         securite_critique = True
         
-    if re.search(r"(anomalie de type A2|DGI|danger grave et immédiat|fuite.*gaz|conduite vétuste)", texte_global, re.IGNORECASE):
+    if re.search(r"(31c|32c|DGI|danger grave et immédiat|fuite.*gaz|conduite vétuste|anomalie gaz)", texte_global, re.IGNORECASE):
         c = int(3000 * indice)
         checklist["gaz"].update({
-            "statut": "Anomalie", "cout": c, 
-            "detail": "Une intervention immédiate sur le circuit de gaz est exigée par le diagnostiqueur.", 
-            "action": "Un professionnel certifié doit intervenir sur les conduites défectueuses."
+            "statut": "Intervention Prioritaire", "cout": c, 
+            "detail": "Anomalie majeure signalée (type 31c/32c ou DGI) sur le circuit de gaz.", 
+            "action": "Préconisation : L'installation nécessite une révision certifiée avant toute remise en service ou occupation."
         })
         total_decote += c
         securite_critique = True
 
-    if re.search(r"(amiante|fibro-ciment|matériaux de la liste A|matériaux de la liste B)", texte_global, re.IGNORECASE):
+    if re.search(r"(amiante|fibro-ciment|matériaux de la liste A|matériaux de la liste B|score 3)", texte_global, re.IGNORECASE):
         c = int((100 * surface) * indice)
         checklist["amiante"].update({
-            "statut": "Anomalie", "cout": c, 
-            "detail": f"Présence d'amiante confirmée dans certains matériaux de construction.{mention_surface}", 
-            "action": "Intervention d'une entreprise spécialisée nécessaire si des travaux sont prévus."
+            "statut": "Anomalie Identifiée", "cout": c, 
+            "detail": f"Présence de matériaux amiantés confirmée par le repérage.{mention_surface}", 
+            "action": "Préconisation : En cas de travaux, prévoir l'intervention d'une filière de désamiantage spécialisée."
         })
         total_decote += c
 
-    if re.search(r"(plomb|saturnisme|peinture.*dégradée|classe 3)", texte_global, re.IGNORECASE):
+    if re.search(r"(plomb|saturnisme|peinture.*dégradée|classe 3|concentration.*supérieure)", texte_global, re.IGNORECASE):
         c = int((50 * surface) * indice)
         checklist["plomb"].update({
-            "statut": "Anomalie", "cout": c, 
-            "detail": f"Traces de plomb détectées sur les peintures anciennes.{mention_surface}", 
-            "action": "Le recouvrement ou le décapage sécurisé des murs est conseillé."
+            "statut": "Anomalie Identifiée", "cout": c, 
+            "detail": f"Concentration en plomb supérieure au seuil légal sur certains revêtements.{mention_surface}", 
+            "action": "Préconisation : Prévoir un budget pour le recouvrement ou le décapage des surfaces dégradées."
         })
         total_decote += c
 
-    if re.search(r"(mérule|champignon.*lignivore)", texte_global, re.IGNORECASE):
+    if re.search(r"(mérule|champignon.*lignivore|coniophora)", texte_global, re.IGNORECASE):
         c = int((200 * surface) * indice)
         checklist["parasite"].update({
-            "statut": "Anomalie", "cout": c, 
-            "detail": f"Champignon lignivore (mérule) détecté, impactant la structure.{mention_surface}", 
-            "action": "Un traitement fongicide curatif profond est indispensable."
+            "statut": "Anomalie Identifiée", "cout": c, 
+            "detail": f"Présence confirmée de champignons lignivores impactant la structure.{mention_surface}", 
+            "action": "Préconisation : Traitement curatif lourd et reprise de la maçonnerie indispensables."
         })
         total_decote += c
         securite_critique = True
-    elif re.search(r"(termites|xylophages)", texte_global, re.IGNORECASE):
+    elif re.search(r"(termites|xylophages|vrillettes|capricornes)", texte_global, re.IGNORECASE):
         c = int((60 * surface) * indice)
         checklist["parasite"].update({
-            "statut": "Anomalie", "cout": c, 
-            "detail": f"Traces d'insectes xylophages détectées dans le bois.{mention_surface}", 
-            "action": "Un traitement chimique par injection de la charpente est préconisé."
+            "statut": "Anomalie Identifiée", "cout": c, 
+            "detail": f"Indices d'infestation d'insectes xylophages détectés.{mention_surface}", 
+            "action": "Préconisation : Programmer un traitement chimique des bois de charpente."
         })
         total_decote += c
 
-    if re.search(r"(dpe.*g\b|dpe.*f\b|passoire thermique)", texte_global, re.IGNORECASE):
+    if re.search(r"(dpe.*g\b|dpe.*f\b|passoire thermique|classe énergétique F|classe énergétique G)", texte_global, re.IGNORECASE):
         c = int((700 * surface) * indice)
         checklist["dpe"].update({
-            "statut": "Anomalie", "cout": c, 
-            "detail": f"Logement classé F ou G nécessitant une optimisation thermique.{mention_surface}", 
-            "action": "Une rénovation énergétique (isolation et chauffage) est requise pour une mise en location."
+            "statut": "Anomalie Identifiée", "cout": c, 
+            "detail": f"Classement F ou G. Le bien est considéré comme une passoire thermique.{mention_surface}", 
+            "action": "Préconisation : Rénovation globale (isolation + système de chauffage) pour mise en conformité locative."
         })
         total_decote += c
         bloquant_location = True
@@ -173,21 +174,21 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
     if re.search(r"(inondation|zone inondable|ppri|sismicité.*forte|séisme)", texte_global, re.IGNORECASE):
         c = int(4000 * indice)
         checklist["erp"].update({
-            "statut": "Anomalie", "cout": c, 
-            "detail": "Bien situé en zone d'exposition aux risques naturels majeurs.", 
-            "action": "Une adaptation des primes d'assurance habitation est à anticiper."
+            "statut": "Anomalie Identifiée", "cout": c, 
+            "detail": "Exposition avérée à des risques naturels ou technologiques majeurs.", 
+            "action": "Préconisation : Majoration à anticiper sur la prime d'assurance multirisque habitation."
         })
         total_decote += c
 
     if securite_critique:
-        solutions.append("MISE EN SÉCURITÉ : Le bien nécessite des interventions prioritaires liées à la sécurité des personnes (Électricité ou Gaz) avant occupation.")
+        solutions.append("MISE EN SÉCURITÉ : Le diagnostic relève des points critiques (électricité, gaz ou structure) nécessitant une intervention avant occupation.")
     if bloquant_location:
-        solutions.append("MISE EN CONFORMITÉ LOCATIVE : Le DPE impose une rénovation thermique globale pour respecter la législation en vigueur sur la location.")
+        solutions.append("MISE EN CONFORMITÉ : La performance énergétique actuelle expose à des contraintes réglementaires (gel des loyers, interdiction de louer).")
     if total_decote > 0:
-        solutions.append("JUSTIFICATION FINANCIÈRE : Ce document met en lumière l'état structurel du bien et permet d'ajuster équitablement la transaction.")
-        solutions.append("RECOMMANDATION : Il est conseillé de valider cette estimation par des devis d'artisans certifiés RGE locaux.")
+        solutions.append("ANALYSE FINANCIÈRE : Ce document met en lumière l'état technique du bien pour justifier un positionnement tarifaire cohérent.")
+        solutions.append("RECOMMANDATION : Il est conseillé d'appuyer cette estimation par des devis formels d'artisans locaux.")
     else:
-        solutions.append("CONCLUSION TECHNIQUE : Le dossier ne relève aucune anomalie critique. L'état général du bien justifie la valeur de présentation.")
+        solutions.append("CONCLUSION TECHNIQUE : Le dossier ne relève aucune anomalie bloquante. L'état général justifie le prix de présentation.")
 
     return {
         "diagnostics": list(checklist.values()),
@@ -272,6 +273,6 @@ async def analyze_grid(request: Request):
     dpe_estime = lettres_dpe[index]
 
     etat = "Vigilance : Budget travaux conséquent à prévoir" if decote > 0 else "Maison saine : Aucun gros travaux prévisibles"
-    strategie = f"Bilan d'évaluation : L'algorithme anticipe une enveloppe globale de {decote} € de travaux. Ce document permet de poser une base objective pour la discussion." if decote > 0 else "Bilan d'évaluation : Le bien ne présente aucun défaut majeur justifiant une décote technique."
+    strategie = f"Bilan d'évaluation : L'analyse technique anticipe une enveloppe globale de {decote} € de travaux. Ce document permet de poser une base objective pour la discussion." if decote > 0 else "Bilan d'évaluation : Le bien ne présente aucun défaut majeur justifiant une décote technique."
 
     return {"success": True, "resultat": {"etat": etat, "decote_totale": decote, "details": details, "strategie": strategie, "dpe": dpe_estime}}
