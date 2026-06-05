@@ -104,7 +104,6 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
     surface = extraire_surface(texte_global)
     mention_surface = f" (Base de calcul : ~{int(surface)} m²)"
 
-    # RECHERCHE PAR CODES D'ANOMALIES PRÉCIS
     if re.search(r"(B\.3\.3\.6|B\.4\.3|B\.5\.2|défaut de mise à la terre|électrisation|contact direct|matériel vétuste|anomalie électrique)", texte_global, re.IGNORECASE):
         c = int((80 * surface) * indice)
         checklist["elec"].update({
@@ -184,6 +183,10 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
         solutions.append("MISE EN SÉCURITÉ : Le diagnostic relève des points critiques (électricité, gaz ou structure) nécessitant une intervention avant occupation.")
     if bloquant_location:
         solutions.append("MISE EN CONFORMITÉ : La performance énergétique actuelle expose à des contraintes réglementaires (gel des loyers, interdiction de louer).")
+    
+    if re.search(r"date de réalisation.*(201[0-9]|202[0-3])", texte_global, re.IGNORECASE):
+        solutions.append("⚠️ ALERTE EXPIRATION : Un document (DPE ou Plomb) semble antérieur à 2024 et nécessite une vérification légale.")
+
     if total_decote > 0:
         solutions.append("ANALYSE FINANCIÈRE : Ce document met en lumière l'état technique du bien pour justifier un positionnement tarifaire cohérent.")
         solutions.append("RECOMMANDATION : Il est conseillé d'appuyer cette estimation par des devis formels d'artisans locaux.")
