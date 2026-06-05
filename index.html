@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuditPro-Immo | Le logiciel d'expertise et de chiffrage immobilier</title>
+    <title>AuditPro | Le logiciel d'expertise et de chiffrage immobilier</title>
     
-    <meta name="description" content="AuditPro-Immo : Testez et analysez les diagnostics de votre bien immobilier en 2 min. Chiffrage précis des travaux de rénovation et de mise aux normes.">
-    <meta name="keywords" content="auditpro-immo, immobilier, chiffrage travaux, DPE, passoire thermique, investissement locatif, expertise, diagnostic, agent immobilier">
+    <meta name="description" content="AuditPro : Testez et analysez les diagnostics de votre bien immobilier en 2 min. Chiffrage précis des travaux de rénovation et de mise aux normes.">
+    <meta name="keywords" content="auditpro, immobilier, chiffrage travaux, DPE, passoire thermique, investissement locatif, expertise, diagnostic, agent immobilier">
     <meta name="author" content="AuditPro">
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230b1a14'/><path d='M50 22 L82 72 L68 72 L50 44 L32 72 L18 72 Z' fill='%2300d632'/><path d='M50 35 L70 66 L59 66 L50 51 L41 66 L30 66 Z' fill='%23ffffff' opacity='0.85'/></svg>">
@@ -138,57 +138,72 @@
                 </div>
             </div>
 
-            <!-- TAB ABONNEMENTS PARTICULIERS -->
+            <!-- TAB ABONNEMENTS (COMMUN PARTICULIERS & PROS) -->
             <div id="abonnements-tab" class="tab-content">
                 <section id="abonnements" class="content-section">
                     <h2 class="section-title">Nos Offres & Tarifs</h2>
                     <p style="font-size: 16px; color: #495057; max-width: 800px; margin: 0 auto 50px auto; text-align: center;">
-                        Des solutions adaptées à vos besoins, que vous soyez un acheteur ponctuel, un investisseur à la recherche de rentabilité ou un professionnel de l'immobilier.
+                        Des fonctionnalités pensées pour vous faire gagner du temps, que vous soyez en pleine recherche immobilière ou un professionnel souhaitant muscler son argumentaire de vente.
                     </p>
                     
-                    <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; align-items: flex-end;">
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; align-items: stretch;">
+                        
                         <!-- Offre Gratuite -->
-                        <div style="flex: 1; min-width: 250px; background: #fff; padding: 40px 30px; border-radius: 12px; border: 1px solid #eaeaea; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03);">
+                        <div style="flex: 1; min-width: 230px; background: #fff; padding: 40px 25px; border-radius: 12px; border: 1px solid #eaeaea; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column;">
                             <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 20px;">Découverte</h3>
                             <div style="font-size: 36px; font-weight: 800; color: #0b1a14; margin-bottom: 25px;">0 €</div>
-                            <ul style="text-align: left; font-size: 14px; color: #555; line-height: 2; padding-left: 20px; margin-bottom: 30px;">
-                                <li>1 analyse / mois</li>
+                            <ul style="text-align: left; font-size: 14px; color: #555; line-height: 1.8; padding-left: 20px; margin-bottom: 30px; flex-grow: 1;">
+                                <li>1 analyse ponctuelle / mois</li>
                                 <li>Rapport PDF standard</li>
-                                <li>Grille d'évaluation physique vierge</li>
+                                <li>Grille d'évaluation vierge</li>
                             </ul>
-                            <button class="btn-demo" style="width: 100%; border: 2px solid #ced4da!important;" onclick="document.querySelector('nav a[href=\'#audit\']').click();">Tester maintenant</button>
+                            <button class="btn-demo" style="width: 100%; border: 2px solid #ced4da!important;" onclick="document.querySelector('nav a[href=\'#audit\']').click();">Tester l'outil</button>
                         </div>
                         
-                        <!-- Offre Payante B2C -->
-                        <div class="border-dynamic-color-top" style="flex: 1; min-width: 280px; background: #fff; padding: 45px 30px; border-radius: 12px; border: 1px solid #eaeaea; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; z-index: 10; position: relative;">
-                            <div class="btn-dynamic-color" style="color: #fff; font-size: 11px; font-weight: bold; padding: 5px 12px; border-radius: 20px; display: inline-block; margin-bottom: 15px; text-transform: uppercase; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);">Pour les visites multiples</div>
-                            <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 22px;">Pass Acquéreur</h3>
-                            <div style="font-size: 42px; font-weight: 800; color: #0b1a14; margin-bottom: 25px;">9,99 €<span style="font-size: 14px; color: #6c757d;">/mois</span></div>
-                            <ul style="text-align: left; font-size: 14px; color: #333; line-height: 2; padding-left: 20px; margin-bottom: 30px; font-weight: 600;">
-                                <li>Analyses <span class="text-dynamic-color">illimitées</span></li>
-                                <li>Historique local des biens visités</li>
-                                <li>Rapports PDF illimités</li>
-                                <li>Sans engagement (annulable à tout moment)</li>
+                        <!-- Offre Payante Particulier -->
+                        <div style="flex: 1; min-width: 250px; background: #fff; padding: 40px 25px; border-radius: 12px; border: 1px solid #eaeaea; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column;">
+                            <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 20px;">Acquéreur Actif</h3>
+                            <div style="font-size: 36px; font-weight: 800; color: #0b1a14; margin-bottom: 25px;">9,99 €<span style="font-size: 14px; color: #6c757d;">/mois</span></div>
+                            <ul style="text-align: left; font-size: 14px; color: #333; line-height: 1.8; padding-left: 20px; margin-bottom: 30px; flex-grow: 1; font-weight: 500;">
+                                <li>Analyses illimitées</li>
+                                <li><b>Comparateur de biens :</b> Comparez les budgets travaux de 3 visites côte à côte</li>
+                                <li><b>Simulateur de Reste à Charge :</b> Déduction automatique des barèmes MaPrimeRénov'</li>
+                                <li>Historique et exports illimités</li>
+                                <li style="color: #6c757d; font-weight: normal;">Sans engagement</li>
                             </ul>
-                            <button class="btn-solid btn-dynamic-color" style="width: 100%;">S'abonner</button>
+                            <button class="btn-demo" style="width: 100%; border-color: #0b1a14!important; color: #0b1a14;">S'abonner</button>
+                        </div>
+
+                        <!-- Offre Premium Pro -->
+                        <div class="border-dynamic-color-top" style="flex: 1.2; min-width: 270px; background: #fff; padding: 45px 25px; border-radius: 12px; border: 1px solid #eaeaea; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; z-index: 10; position: relative; display: flex; flex-direction: column;">
+                            <div class="btn-dynamic-color" style="color: #fff; font-size: 11px; font-weight: bold; padding: 5px 12px; border-radius: 20px; display: inline-block; margin-bottom: 15px; text-transform: uppercase; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);">Pour les Agences</div>
+                            <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 22px;">Premium Pro</h3>
+                            <div style="font-size: 42px; font-weight: 800; color: #0b1a14; margin-bottom: 25px;">29,99 €<span style="font-size: 14px; color: #6c757d;">/mois</span></div>
+                            <ul style="text-align: left; font-size: 14px; color: #333; line-height: 1.8; padding-left: 20px; margin-bottom: 30px; font-weight: 600; flex-grow: 1;">
+                                <li>PDF <span class="text-dynamic-color">Marque Blanche</span> (Votre Logo)</li>
+                                <li><b>Générateur de Fiche Vitrine :</b> Un mini-rapport visuel prêt à être affiché en vitrine ou sur LeBonCoin</li>
+                                <li><b>Veille d'Expiration :</b> Alerte visuelle si un diagnostic de votre historique devient obsolète avant la vente</li>
+                                <li>Tableau de bord expert</li>
+                            </ul>
+                            <button class="btn-solid btn-dynamic-color" style="width: 100%;">Passer en Premium</button>
                         </div>
                         
-                        <!-- Lien vers Offre Pro -->
-                        <div style="flex: 1; min-width: 250px; background: #fff; padding: 40px 30px; border-radius: 12px; border: 1px solid #eaeaea; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03);">
-                            <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 20px;">Agences & Indépendants</h3>
-                            <div style="font-size: 36px; font-weight: 800; color: #0b1a14; margin-bottom: 25px;">Dès 29,99 €<span style="font-size: 14px; color: #6c757d;">/mois</span></div>
-                            <ul style="text-align: left; font-size: 14px; color: #555; line-height: 2; padding-left: 20px; margin-bottom: 30px;">
-                                <li>Rapports <b>Marque Blanche</b> (Logo + Charte)</li>
-                                <li>Outil de captation (Widget site web)</li>
-                                <li>Outils avancés & API</li>
+                        <!-- Offre Réseau -->
+                        <div style="flex: 1; min-width: 240px; background: #fff; padding: 40px 25px; border-radius: 12px; border: 1px solid #eaeaea; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column;">
+                            <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 20px;">Réseau / Franchise</h3>
+                            <div style="font-size: 36px; font-weight: 800; color: #0b1a14; margin-bottom: 25px;">79,99 €<span style="font-size: 14px; color: #6c757d;">/mois</span></div>
+                            <ul style="text-align: left; font-size: 14px; color: #555; line-height: 1.8; padding-left: 20px; margin-bottom: 30px; flex-grow: 1;">
+                                <li>Multi-comptes (10 accès)</li>
+                                <li><b>Outil de Captation (Widget) :</b> Générez des leads vendeurs depuis votre site</li>
+                                <li><b>Synchronisation CRM :</b> Export automatique vers votre logiciel métier (Hektor, Apimo, Netty...)</li>
                             </ul>
-                            <button class="btn-demo" style="width: 100%;" onclick="changerProfilInterne('professionnel'); document.querySelector('nav a[href=\'#pro\']').click(); setTimeout(() => switchProTab('pro-abonnement'), 100);">Voir les plans Pro</button>
+                            <button class="btn-demo" style="width: 100%;">Contacter les ventes</button>
                         </div>
                     </div>
                 </section>
             </div>
 
-            <!-- TAB PRO COMPLET -->
+            <!-- TAB PRO -->
             <div id="pro-tab" class="tab-content">
                 <section id="pro" class="content-section">
                     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; max-width: 1000px; margin-left: auto; margin-right: auto; flex-wrap: wrap; gap: 15px;">
@@ -205,7 +220,6 @@
                     <!-- ONGLETS INTERNES DU DASHBOARD PRO -->
                     <div style="max-width: 1000px; margin: 0 auto 30px auto; border-bottom: 2px solid #eaeaea; display: flex; gap: 20px; overflow-x: auto; white-space: nowrap;">
                         <button class="btn-pro-tab active" onclick="switchProTab('pro-parametres')" style="background: none; border: none; font-size: 15px; font-weight: bold; padding: 10px 0; color: #00d632; border-bottom: 3px solid #00d632; cursor: pointer; transition: 0.3s; outline: none;">Mes Paramètres & Historique</button>
-                        <button class="btn-pro-tab" onclick="switchProTab('pro-abonnement')" style="background: none; border: none; font-size: 15px; font-weight: bold; padding: 10px 0; color: #6c757d; border-bottom: 3px solid transparent; cursor: pointer; transition: 0.3s; outline: none;">Abonnement SaaS</button>
                         <button class="btn-pro-tab" onclick="switchProTab('pro-widget')" style="background: none; border: none; font-size: 15px; font-weight: bold; padding: 10px 0; color: #6c757d; border-bottom: 3px solid transparent; cursor: pointer; transition: 0.3s; outline: none;">Outil de Captation (Widget)</button>
                     </div>
                     
@@ -269,50 +283,7 @@
                         </div>
                     </div>
 
-                    <!-- PANNEAU 2 : GRILLE TARIFAIRE -->
-                    <div id="pro-abonnement" class="pro-pane" style="display: none; max-width: 1000px; margin: 0 auto; padding-bottom: 60px; animation: fadeIn 0.4s ease;">
-                        <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; align-items: flex-end;">
-                            
-                            <div style="flex: 1; min-width: 250px; background: #fff; padding: 40px 30px; border-radius: 12px; border: 1px solid #eaeaea; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03);">
-                                <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 20px;">Découverte</h3>
-                                <div style="font-size: 36px; font-weight: 800; color: #0b1a14; margin-bottom: 25px;">0 €<span style="font-size: 14px; color: #6c757d;">/mois</span></div>
-                                <ul style="text-align: left; font-size: 14px; color: #555; line-height: 2; padding-left: 20px; margin-bottom: 30px;">
-                                    <li>3 analyses / mois</li>
-                                    <li>Rapport PDF standard</li>
-                                    <li style="color: #adb5bd; text-decoration: line-through;">Marque blanche PDF</li>
-                                    <li style="color: #adb5bd; text-decoration: line-through;">Historique des dossiers</li>
-                                </ul>
-                                <button class="btn-demo" style="width: 100%; border: 2px solid #ced4da!important;">Plan Actuel</button>
-                            </div>
-                            
-                            <div class="border-dynamic-color-top" style="flex: 1; min-width: 280px; background: #fff; padding: 45px 30px; border-radius: 12px; border: 1px solid #eaeaea; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; z-index: 10; position: relative;">
-                                <div class="btn-dynamic-color" style="color: #fff; font-size: 11px; font-weight: bold; padding: 5px 12px; border-radius: 20px; display: inline-block; margin-bottom: 15px; text-transform: uppercase; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);">Le plus populaire</div>
-                                <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 22px;">Premium</h3>
-                                <div style="font-size: 42px; font-weight: 800; color: #0b1a14; margin-bottom: 25px;">29,99 €<span style="font-size: 14px; color: #6c757d;">/mois</span></div>
-                                <ul style="text-align: left; font-size: 14px; color: #333; line-height: 2; padding-left: 20px; margin-bottom: 30px; font-weight: 600;">
-                                    <li>Analyses <span class="text-dynamic-color">illimitées</span></li>
-                                    <li>Rapport PDF <span class="text-dynamic-color">Marque Blanche</span></li>
-                                    <li>Insertion de votre logo</li>
-                                    <li>Historique local sécurisé</li>
-                                </ul>
-                                <button class="btn-solid btn-dynamic-color" style="width: 100%;">Passer en Premium</button>
-                            </div>
-                            
-                            <div style="flex: 1; min-width: 250px; background: #fff; padding: 40px 30px; border-radius: 12px; border: 1px solid #eaeaea; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03);">
-                                <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 20px;">Réseau / Agence</h3>
-                                <div style="font-size: 36px; font-weight: 800; color: #0b1a14; margin-bottom: 25px;">79,99 €<span style="font-size: 14px; color: #6c757d;">/mois</span></div>
-                                <ul style="text-align: left; font-size: 14px; color: #555; line-height: 2; padding-left: 20px; margin-bottom: 30px;">
-                                    <li>Tout du plan Premium</li>
-                                    <li>Jusqu'à 10 collaborateurs</li>
-                                    <li>Accès API & Webhooks</li>
-                                    <li><b>Outil de Captation (Widget)</b></li>
-                                </ul>
-                                <button class="btn-demo" style="width: 100%;">Contacter les ventes</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- PANNEAU 3 : WIDGET LEAD GEN -->
+                    <!-- PANNEAU 2 : WIDGET LEAD GEN -->
                     <div id="pro-widget" class="pro-pane" style="display: none; max-width: 1000px; margin: 0 auto; padding-bottom: 60px; animation: fadeIn 0.4s ease;">
                         <div style="background: #0b1a14; color: white; padding: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
                             <div style="flex: 1.5; min-width: 300px;">
@@ -331,7 +302,7 @@
                                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-dynamic-color" style="margin-bottom: 15px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                                     <h4 style="margin: 0 0 10px 0; font-size: 18px; color: #fff;">Module Verrouillé</h4>
                                     <p style="font-size: 13px; color: #888; margin-bottom: 20px;">Cette fonctionnalité est réservée aux abonnements Réseau / Agence.</p>
-                                    <button class="btn-solid btn-dynamic-color" style="width: 100%; font-size: 14px;" onclick="switchProTab('pro-abonnement')">Débloquer cette fonction</button>
+                                    <button class="btn-solid btn-dynamic-color" style="width: 100%; font-size: 14px;" onclick="document.querySelector('nav a[href=\'#abonnements\']').click();">Débloquer cette fonction</button>
                                 </div>
                             </div>
                         </div>
