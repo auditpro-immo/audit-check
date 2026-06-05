@@ -46,7 +46,7 @@ function changerProfilInterne(profil) {
     } else {
         document.getElementById('hero-badge').innerText = "Espace Particulier (B2C)";
         document.getElementById('hero-title').innerText = "Sécurisez votre achat en chiffrant les travaux cachés.";
-        document.getElementById('hero-desc').innerText = "Notre outil analyse l'ensemble des diagnostics obligatoires de la maison que vous visitez. Obtenez en 2 minutes le vrai coût des remises aux normes.";
+        document.getElementById('hero-desc').innerText = "Notre outil analyse l'ensemble des diagnostics obligatoires de la maison que vous visitez. Obtenez en 2 minutes le coût estimatif des remises aux normes.";
         document.getElementById('form-title').innerText = "Configuration de l'analyse";
         document.getElementById('nav-pro').style.display = "none";
     }
@@ -231,7 +231,7 @@ function ajouterAuHistorique(ville, prixInitial, donneesCompletes) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id: idRapport, ville: ville, prix: prixInitial, travaux: donneesCompletes.total_decote })
-        }).catch(e => console.error("Erreur CRM", e));
+        }).catch(e => console.error("Erreur de synchronisation CRM", e));
     }
 }
 
@@ -262,7 +262,7 @@ function voirPDFDirect(event, index) {
         pdfWindow.document.write(`
             <html lang='fr'>
             <head>
-                <title>Rapport d'Expertise - ${agenceNom}</title>
+                <title>Rapport d'Analyse - ${agenceNom}</title>
                 <style>body, html { margin: 0; padding: 0; background-color: #525659; height: 100vh; overflow: hidden; }</style>
             </head>
             <body>
@@ -436,15 +436,21 @@ async function envoyer() {
     
     if (prixInput <= 0) return showToast("Veuillez indiquer le prix de vente.", "error");
     if (!input.files.length) return showToast("Veuillez charger le fichier PDF.", "error");
+
+    // SÉCURITÉ : Bloquer les gros fichiers côté client pour protéger le serveur
+    const maxSizeMB = 15;
+    if (input.files[0].size > maxSizeMB * 1024 * 1024) {
+        return showToast("Le fichier est trop lourd (Maximum 15 Mo).", "error");
+    }
     
     loyerMensuelSaisi = loyerInput;
     document.getElementById('loading-overlay').style.display = "flex";
 
     const messagesIA = [
-        "Lecture et structuration du document PDF...",
-        "Recherche de données réglementaires...",
+        "Lecture sécurisée et extraction du document...",
+        "Analyse réglementaire des diagnostics...",
         "Calcul des devis moyens pour le département...",
-        "Génération de la synthèse d'évaluation..."
+        "Suppression des données et finalisation du rapport..."
     ];
     let msgIndex = 0;
     const textElement = document.getElementById('loading-text');
@@ -460,7 +466,7 @@ async function envoyer() {
 
     try {
         const reponse = await fetch("https://audit-check-ktny.onrender.com/scan", { method: "POST", body: formData });
-        if (!reponse.ok) throw new Error("Erreur serveur");
+        if (!reponse.ok) throw new Error("Erreur de connexion au serveur");
         donneesAudit = await reponse.json();
         donneesAudit.cp = cpInput;
         idRapport = "AUDIT-" + Math.floor(Math.random() * 90000 + 10000);
@@ -478,7 +484,7 @@ async function envoyer() {
     } catch (e) {
         clearInterval(loadInterval);
         document.getElementById('loading-overlay').style.display = "none";
-        showToast("Erreur de traitement serveur.", "error");
+        showToast("Le document est illisible ou la connexion a échoué.", "error");
     }
 }
 
@@ -514,7 +520,7 @@ function afficherEcran() {
     let scriptNegoTxt = "";
     let titreSectionNego = "";
     let nomOnglet3 = "";
-    let defautsFormate = anomalies.length > 0 ? anomalies.map(a => "- " + a.titre).join('\n') : "- Aucun défaut technique majeur justifiant une décote.";
+    let defautsFormate = anomalies.length > 0 ? anomalies.map(a => "- " + a.titre).join('\n') : "- L'algorithme ne détecte aucun défaut technique justifiant une décote.";
     
     if (profilActuel === "particulier") {
         nomOnglet3 = "3. Données d'Appui";
@@ -524,20 +530,20 @@ function afficherEcran() {
 > VALEURS DE RÉFÉRENCE :
 - Prix affiché par le vendeur : ${formatNumber(prixInitialClean)} €
 - Total estimé des travaux de mise aux normes : ${formatNumber(donneesAudit.total_decote)} €
-- Juste valeur technique du bien : ${formatNumber(donneesAudit.prix_net)} €
+- Juste valeur technique indicative : ${formatNumber(donneesAudit.prix_net)} €
 
-> JUSTIFICATION DES TRAVAUX :
-L'enveloppe de travaux s'appuie sur le rapport de diagnostic. Les points suivants nécessitent une mise en sécurité ou une remise aux normes :
+> JUSTIFICATION ESTIMATIVE DES TRAVAUX :
+L'enveloppe de travaux s'appuie sur la lecture du rapport de diagnostic. Les points suivants nécessiteraient potentiellement une remise aux normes :
 ${defautsFormate}
 
-L'évaluation prend également en compte la zone de localisation (${donneesAudit.localisation_exacte}), ce qui permet de justifier la cohérence du budget travaux calculé.`;
+L'évaluation prend également en compte la zone de localisation (${donneesAudit.localisation_exacte}), ce qui permet de justifier la cohérence de l'estimation budgétaire. Ce document n'a pas de valeur légale et ne remplace pas l'avis d'un artisan certifié.`;
     } else {
         nomOnglet3 = "3. Données d'Appui";
         titreSectionNego = "Éléments Factuels pour la Transaction (Professionnel)";
         scriptNegoTxt = `SYNTHÈSE FACTUELLE DU DOSSIER :
 
 > DONNÉES FINANCIÈRES :
-- Écart technique calculé : ${formatNumber(donneesAudit.total_decote)} €
+- Écart technique calculé (estimatif) : ${formatNumber(donneesAudit.total_decote)} €
 - Valeur nette recommandée pour positionnement : ${formatNumber(donneesAudit.prix_net)} €
 
 > POINTS TECHNIQUES MAJEURS (ISSU DU DDT) :
@@ -547,7 +553,7 @@ ${defautsFormate}
 ${donneesAudit.impact_marche}
 
 NOTE D'UTILISATION :
-Ces données constituent une base objective. Face au vendeur, elles justifient mathématiquement un ajustement du prix de présentation. Face à l'acquéreur, cette transparence permet d'anticiper le financement global et de sécuriser la vente.`;
+Ces données constituent une base indicative. Face au vendeur, elles appuient mathématiquement un ajustement du prix de présentation. Face à l'acquéreur, cette transparence permet de l'aider à anticiper son financement. Le client reste libre et responsable de confirmer ces données via des devis artisanaux.`;
     }
 
     let html = `
@@ -575,7 +581,7 @@ Ces données constituent une base objective. Face au vendeur, elles justifient m
                 <div class="kpi-value" id="anim-prix-initial">0 €</div>
             </div>
             <div class="kpi-box">
-                <div class="kpi-label" style="color: #cc0000;">Enveloppe Travaux Globale</div>
+                <div class="kpi-label" style="color: #cc0000;">Enveloppe Travaux (Reste à charge estimé)</div>
                 <div class="kpi-value" style="color: #cc0000;" id="anim-cout-travaux">-0 €</div>
             </div>
             <div class="kpi-box main">
@@ -596,19 +602,20 @@ Ces données constituent une base objective. Face au vendeur, elles justifient m
             <table>
                 <tr>
                     <th style="width: 25%;">Domaine Contrôlé</th>
-                    <th style="width: 15%; text-align: center;">État</th>
+                    <th style="width: 15%; text-align: center;">État Indicatif</th>
                     <th style="width: 45%;">Détails & Préconisations</th>
-                    <th style="text-align: right; width: 15%;">Budget</th>
+                    <th style="text-align: right; width: 15%;">Budget Moyen</th>
                 </tr>
                 ${donneesAudit.diagnostics.map(a => `
                 <tr style="border-bottom: 1px solid #ecf0f1;">
                     <td style="padding: 15px;" class="border-left-dynamic-color"><b>${a.titre}</b></td>
-                    <td style="padding: 15px; color: ${a.cout > 0 ? '#cc0000' : '#000000'}; font-weight: bold; text-align: center;">${a.cout > 0 ? 'ANOMALIE' : 'CONFORME'}</td>
-                    <td style="padding: 15px; font-size: 13px; color: #333; line-height: 1.5;"><b>Constat :</b> ${a.detail}<br>${a.cout > 0 ? `<b>Action requise :</b> ${a.action}` : ''}</td>
+                    <td style="padding: 15px; color: ${a.cout > 0 ? '#cc0000' : '#000000'}; font-weight: bold; text-align: center;">${a.cout > 0 ? 'ANOMALIE' : (a.statut === "Information" ? "INFO" : "AUCUN DÉFAUT")}</td>
+                    <td style="padding: 15px; font-size: 13px; color: #333; line-height: 1.5;"><b>Constat :</b> ${a.detail}<br>${a.cout > 0 ? `<b>Action recommandée :</b> ${a.action}` : ''}</td>
                     <td style="padding: 15px; font-weight:bold; text-align: right; font-size: 16px;">${a.cout > 0 ? `-${formatNumber(a.cout)} €` : '0 €'}</td>
                 </tr>`).join('')}
             </table>
         </div>
+        <p style="font-size: 11px; color: #7f8c8d; margin-top: 15px;">*Ces budgets sont issus d'une moyenne statistique nationale indexée sur votre code postal et ne valent en aucun cas devis ferme.</p>
     </div>
     
     <div id="paneStrategie" class="report-pane">
@@ -621,7 +628,7 @@ Ces données constituent une base objective. Face au vendeur, elles justifient m
     </div>
     
     <div style="font-size: 10px; color: #adb5bd; text-align: justify; border-top: 1px solid #eaeaea; padding-top: 15px; margin-top: 40px;">
-        <b>CADRE D'APPLICATION :</b> Cette étude est une simulation macro-économique informatisée d'aide à la décision. Document non contractuel.
+        <b>CADRE D'APPLICATION :</b> Cette étude est une simulation algorithmique d'aide à la décision. Elle est purement indicative et n'a aucune valeur juridique devant notaire.
     </div>`;
 
     document.getElementById('contenu-ecran').innerHTML = html;
@@ -697,9 +704,9 @@ function exporterPDF(action = 'download', targetWindow = null) {
     let tableBody = [
         [
             { text: 'DOMAINE CONTRÔLÉ', style: 'tableHeader' },
-            { text: 'ÉTAT', style: 'tableHeader', alignment: 'center' },
+            { text: 'ÉTAT INDICATIF', style: 'tableHeader', alignment: 'center' },
             { text: 'DÉTAILS TECHNIQUES & ACTIONS', style: 'tableHeader' },
-            { text: 'BUDGET', style: 'tableHeader', alignment: 'right' }
+            { text: 'BUDGET MOYEN', style: 'tableHeader', alignment: 'right' }
         ]
     ];
 
@@ -709,8 +716,8 @@ function exporterPDF(action = 'download', targetWindow = null) {
         
         tableBody.push([
             { text: a.titre, bold: true, fontSize: 10, color: '#1a1a1a', fillColor: rowColor, margin: [0, 10, 0, 10] },
-            { text: isAnomalie ? 'ANOMALIE' : 'CONFORME', bold: true, fontSize: 9, color: isAnomalie ? '#cc0000' : agenceCouleur, alignment: 'center', fillColor: rowColor, margin: [0, 10, 0, 10] },
-            { text: `Constat : ${a.detail}\n` + (isAnomalie ? `Action : ${a.action}` : ''), fontSize: 9, lineHeight: 1.4, color: '#4a4a4a', fillColor: rowColor, margin: [0, 10, 0, 10] },
+            { text: isAnomalie ? 'ANOMALIE' : (a.statut === "Information" ? 'INFO' : 'SANS DÉFAUT'), bold: true, fontSize: 9, color: isAnomalie ? '#cc0000' : agenceCouleur, alignment: 'center', fillColor: rowColor, margin: [0, 10, 0, 10] },
+            { text: `Constat : ${a.detail}\n` + (isAnomalie ? `Action recommandée : ${a.action}` : ''), fontSize: 9, lineHeight: 1.4, color: '#4a4a4a', fillColor: rowColor, margin: [0, 10, 0, 10] },
             { text: isAnomalie ? '-' + formatNumber(a.cout) + ' €' : '0 €', bold: true, fontSize: 11, color: isAnomalie ? '#cc0000' : '#1a1a1a', alignment: 'right', fillColor: rowColor, margin: [0, 10, 0, 10] }
         ]);
     });
@@ -790,7 +797,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
                 if (currentPage > 1) {
                     return {
                         columns: [
-                            { text: agenceNom.toUpperCase() + ' - DOSSIER TECHNIQUE', bold: true, color: '#888', fontSize: 9 },
+                            { text: agenceNom.toUpperCase() + ' - DOSSIER ÉVALUATIF', bold: true, color: '#888', fontSize: 9 },
                             { text: 'Réf. ' + idRapport, alignment: 'right', color: '#888', fontSize: 9 }
                         ], margin: [50, 20, 40, 0]
                     };
@@ -799,14 +806,14 @@ function exporterPDF(action = 'download', targetWindow = null) {
             footer: function(currentPage, pageCount) {
                 return {
                     columns: [
-                        { text: 'Document d\'aide à la décision. Ne se substitue pas à l\'expertise d\'un artisan RGE.', fontSize: 8, color: '#aaa', italics: true },
+                        { text: 'Document algorithmique d\'aide à la décision. Ne se substitue pas à l\'avis d\'un artisan RGE.', fontSize: 8, color: '#aaa', italics: true },
                         { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#aaa', bold: true }
                     ], margin: [50, 20, 40, 0]
                 };
             },
             content: [
                 headerTop,
-                { text: 'RAPPORT D\'ANALYSE TECHNIQUE & FINANCIÈRE', fontSize: 18, color: '#1a1a1a', bold: true, margin: [0, 0, 0, 5] },
+                { text: 'RAPPORT D\'ANALYSE INDICATIVE', fontSize: 18, color: '#1a1a1a', bold: true, margin: [0, 0, 0, 5] },
                 { text: 'Évaluation algorithmique des coûts de remise aux normes basée sur le DDT.', fontSize: 11, color: '#666', margin: [0, 0, 0, 25], italics: true },
                 
                 {
@@ -821,8 +828,8 @@ function exporterPDF(action = 'download', targetWindow = null) {
                                         widths: ['*', '*'],
                                         body: [
                                             [ { text: 'Prix de Vente Initial', style: 'kpiHeaderLeft' }, { text: prixInitFormate, style: 'kpiValueLeft' } ],
-                                            [ { text: 'Enveloppe Travaux', style: 'kpiHeaderLeft', color: '#cc0000' }, { text: decoteFormate, style: 'kpiValueLeft', color: '#cc0000' } ],
-                                            [ { text: 'Valeur Nette Estimée', style: 'kpiHeaderLeft', bold: true }, { text: prixNetFormate, style: 'kpiValueNetLeft', color: agenceCouleur } ]
+                                            [ { text: 'Enveloppe Travaux (Est.)', style: 'kpiHeaderLeft', color: '#cc0000' }, { text: decoteFormate, style: 'kpiValueLeft', color: '#cc0000' } ],
+                                            [ { text: 'Valeur Nette Recommandée', style: 'kpiHeaderLeft', bold: true }, { text: prixNetFormate, style: 'kpiValueNetLeft', color: agenceCouleur } ]
                                         ]
                                     },
                                     layout: { hLineWidth: function() { return 1; }, vLineWidth: function() { return 0; }, hLineColor: function() { return '#eee'; }, paddingBottom: function() { return 8; }, paddingTop: function() { return 8; } },
@@ -833,7 +840,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
                         {
                             width: '45%',
                             stack: [
-                                anomalies.length > 0 ? { text: 'RÉPARTITION DU BUDGET', fontSize: 10, bold: true, alignment: 'center', color: '#666', margin: [0, 0, 0, 5] } : {},
+                                anomalies.length > 0 ? { text: 'RÉPARTITION DU BUDGET ESTIMATIF', fontSize: 10, bold: true, alignment: 'center', color: '#666', margin: [0, 0, 0, 5] } : {},
                                 chartImageBlock
                             ]
                         }
@@ -848,7 +855,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
                     layout: 'noBorders', margin: [0, 10, 0, 30]
                 },
                 
-                { text: '2. INVENTAIRE TECHNIQUE DÉTAILLÉ (DDT)', style: 'sectionTitle', color: agenceCouleur, margin: [0, 10, 0, 10] },
+                { text: '2. LECTURE ALGORITHMIQUE DU DDT', style: 'sectionTitle', color: agenceCouleur, margin: [0, 10, 0, 10] },
                 {
                     table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody },
                     layout: { 
@@ -860,8 +867,8 @@ function exporterPDF(action = 'download', targetWindow = null) {
                     }
                 },
 
-                { text: 'MÉTHODOLOGIE ET CADRE D\'APPLICATION', fontSize: 10, bold: true, color: '#1a1a1a', margin: [0, 30, 0, 5] },
-                { text: 'L\'estimation s\'appuie sur une analyse des anomalies répertoriées dans le Dossier de Diagnostic Technique (Art. L271-4 du CCH). Les tarifs sont pondérés selon l\'indice régional des coûts de construction. Clause de non-substitution : Cette simulation statistique a valeur d\'aide indicative. Les montants chiffrés ne se substituent en aucun cas à la passation de devis contradictoires établis par des artisans certifiés RGE.', fontSize: 8, color: '#666', alignment: 'justify', lineHeight: 1.4 }
+                { text: 'AVERTISSEMENT LÉGAL ET CADRE D\'UTILISATION', fontSize: 10, bold: true, color: '#1a1a1a', margin: [0, 30, 0, 5] },
+                { text: 'Cette analyse est le résultat d\'une lecture automatisée des documents fournis. Les tarifs indiqués sont des moyennes statistiques régionales pondérées par notre algorithme et n\'engagent en rien la responsabilité de l\'éditeur. Ce document n\'a pas de force probante chez le notaire et ne constitue pas une véritable expertise de bâtiment. Il incombe à l\'acquéreur ou au vendeur de faire confirmer ces estimations techniques par des devis formels délivrés par des artisans compétents et assurés.', fontSize: 8, color: '#666', alignment: 'justify', lineHeight: 1.4 }
             ],
             styles: {
                 coverTableTitle: { fontSize: 10, bold: true, color: '#1a1a1a', alignment: 'right', margin: [0, 6, 0, 6], letterSpacing: 1 },
@@ -887,11 +894,11 @@ function exporterPDF(action = 'download', targetWindow = null) {
                 const blobUrl = URL.createObjectURL(blob);
                 targetWindow.document.body.innerHTML = `<iframe src="${blobUrl}#view=FitH" style="width:100vw; height:100vh; border:none; margin:0; padding:0; display:block;"></iframe>`;
             });
-            if(btn) btn.innerText = "Télécharger le rapport PDF Officiel";
+            if(btn) btn.innerText = "Télécharger le rapport détaillé (PDF)";
         } else {
             pdf.download(agenceNom.replace(/\s+/g, '_') + '_Bilan_Technique_' + idRapport + '.pdf');
             if(btn) {
-                setTimeout(() => { btn.innerText = "Télécharger le rapport PDF Officiel"; }, 1500);
+                setTimeout(() => { btn.innerText = "Télécharger le rapport détaillé (PDF)"; }, 1500);
             }
         }
     } catch(err) {
@@ -900,7 +907,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
         if (targetWindow) {
             targetWindow.document.body.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100vh; color:white; font-family:sans-serif; background-color:#cc0000;"><h3>Erreur. Veuillez fermer cet onglet et réessayer.</h3></div>`;
         }
-        if(btn && action !== 'view') btn.innerText = "Télécharger le rapport PDF Officiel";
+        if(btn && action !== 'view') btn.innerText = "Télécharger le rapport détaillé (PDF)";
     }
 }
 
@@ -985,7 +992,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ['dragleave', 'drop'].forEach(eventName => { dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false); });
         fileInput.addEventListener('change', function() {
             if (this.files && this.files.length > 0) {
-                dropZoneText.innerHTML = `Document chargé : <b>${this.files[0].name}</b>`;
+                dropZoneText.innerHTML = `Document prêt : <b>${this.files[0].name}</b>`;
                 dropZone.style.borderColor = agenceCouleur;
                 dropZone.style.background = "#f4fbf7";
                 document.querySelector('.drop-icon').style.color = agenceCouleur;
