@@ -66,6 +66,7 @@
         </header>
 
         <main>
+            <!-- ONGLET 1 : L'ANALYSE (SIMULATEUR) -->
             <div id="audit-tab" class="tab-content active">
                 <section class="hero" id="audit">
                     <div class="hero-content">
@@ -145,11 +146,13 @@
                         <button class="btn-solid btn-dynamic-color" id="btnExport" style="padding: 16px 40px; font-size: 16px; width: 100%; max-width: 500px;" onclick="exporterPDF('download')">Télécharger le rapport détaillé (PDF)</button>
                         
                         <div id="action-buttons-container" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; width: 100%; max-width: 600px;">
-                            </div>
+                            <!-- Les boutons Premium s'afficheront ici dynamiquement -->
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- ONGLET 2 : LE COMPARATEUR (ESPACE PARTICULIER PREMIUM) -->
             <div id="comparateur-tab" class="tab-content">
                 <section class="content-section" style="padding: 80px 50px; max-width: 1200px; margin: 0 auto; border-bottom: 1px solid #eaeaea;">
                     <h2 class="section-title" style="font-size: 30px; color: #0b1a14; margin-bottom: 40px; text-align: center; font-weight: 800;">Mon Comparateur de Biens</h2>
@@ -163,6 +166,7 @@
                 </section>
             </div>
 
+            <!-- ONGLET 2 BIS : PARAMÈTRES PARTICULIER -->
             <div id="parametres-particulier-tab" class="tab-content">
                 <section class="content-section" style="padding: 80px 50px; max-width: 1200px; margin: 0 auto; border-bottom: 1px solid #eaeaea;">
                     <h2 class="section-title" style="font-size: 30px; color: #0b1a14; margin-bottom: 40px; text-align: center; font-weight: 800;">Mes Paramètres d'Acheteur</h2>
@@ -194,6 +198,7 @@
                 </section>
             </div>
 
+            <!-- ONGLET 3 : DASHBOARD PRO (MARQUE BLANCHE & CRM) -->
             <div id="pro-tab" class="tab-content">
                 <section id="pro" class="content-section" style="padding: 80px 50px; max-width: 1200px; margin: 0 auto; border-bottom: 1px solid #eaeaea;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; max-width: 1000px; margin-left: auto; margin-right: auto; flex-wrap: wrap; gap: 15px;">
@@ -314,7 +319,7 @@
                         </div>
                         
                         <div style="flex: 1; min-width: 230px; background: #fff; padding: 40px 25px; border-radius: 12px; border: 1px solid #eaeaea; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column;">
-                            <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 20px;">Acquéreur</h3>
+                            <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 20px;">Particulier</h3>
                             <div style="font-size: 36px; font-weight: 800; color: #0b1a14; margin-bottom: 25px;">9,99 €<span style="font-size: 14px; color: #6c757d;">/mois</span></div>
                             <ul style="text-align: left; font-size: 14px; color: #333; line-height: 2; padding-left: 20px; margin-bottom: 30px; flex-grow: 1;">
                                 <li>Analyses illimitées</li>
@@ -324,7 +329,7 @@
                                 <li>Thème visuel personnalisable</li>
                                 <li>Sans engagement</li>
                             </ul>
-                            <button class="btn-demo" style="width: 100%; border-color: #0b1a14!important; color: #0b1a14;">S'abonner</button>
+                            <a href="https://buy.stripe.com/7sYaEYcY79Gq1WU3oIaR200" target="_blank" class="btn-demo" style="width: 100%; border-color: #0b1a14!important; color: #0b1a14; text-decoration: none;">S'abonner</a>
                         </div>
 
                         <div class="border-dynamic-color-top" style="flex: 1.2; min-width: 260px; background: #fff; padding: 45px 25px; border-radius: 12px; border: 1px solid #eaeaea; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; z-index: 10; position: relative; display: flex; flex-direction: column;">
@@ -337,7 +342,7 @@
                                 <li>Insertion de votre logo</li>
                                 <li>Outils Pros (Annonce IA, Vitrine)</li>
                             </ul>
-                            <button class="btn-solid btn-dynamic-color" style="width: 100%;">Passer en Premium</button>
+                            <a href="https://buy.stripe.com/bJeaEY8HRaKu596f7qaR201" target="_blank" class="btn-solid btn-dynamic-color" style="width: 100%; text-decoration: none;">Passer en Premium Pro</a>
                         </div>
                     </div>
                 </section>
@@ -446,6 +451,7 @@
             </div>
         </main>
 
+        <!-- MODAL TEXTE ANNONCE PRO -->
         <div id="modalAnnonce" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.9); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
             <div style="background: #fff; max-width: 600px; width: 100%; padding: 40px; border-radius: 12px; position: relative; text-align: left;">
                 <button onclick="document.getElementById('modalAnnonce').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: #cc0000; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">X</button>
@@ -463,6 +469,7 @@
         </footer>
     </div>
 
+    <!-- MODAL LÉGALE -->
     <div id="modalLegale" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.9); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
         <div style="background: #fff; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 40px; border-radius: 12px; position: relative; text-align: left;">
             <button onclick="document.getElementById('modalLegale').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: #cc0000; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">Fermer X</button>
@@ -476,6 +483,7 @@
         </div>
     </div>
 
+    <!-- BANDEAU COOKIES -->
     <div id="cookie-banner" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: #0b1a14; color: #fff; padding: 20px; z-index: 10000; box-sizing: border-box; text-align: center; border-top: 4px solid #00d632;" class="border-dynamic-color-top">
         <p style="margin: 0 0 15px 0; font-size: 14px;">
             <strong>Fonctionnement "Hybride Sécurisé" :</strong> Ce site utilise le stockage local de votre navigateur pour sauvegarder vos paramètres (Marque Blanche, Comparateur) et votre historique sur cet appareil. Vos PDF sont traités de façon éphémère par notre algorithme et détruits instantanément. Acceptez-vous ce fonctionnement ?
