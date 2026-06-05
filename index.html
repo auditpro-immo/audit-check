@@ -139,70 +139,93 @@
 
             <div id="pro-tab" class="tab-content">
                 <section id="pro" class="content-section">
-                    <h2 class="section-title">Tableau de Bord Professionnel</h2>
-                    <p style="font-size: 16px; color: #495057; max-width: 800px; margin: 0 auto 50px auto; text-align: center;">
-                        Configurez votre espace de travail. Pour garantir une totale confidentialité vis-à-vis de vos clients, <strong>vos paramètres et historiques sont sauvegardés localement sur le navigateur de cet appareil</strong>, et non sur nos serveurs.
-                    </p>
-                    
-                    <div style="display: flex; flex-wrap: wrap; gap: 30px; margin-bottom: 60px;">
-                        <div style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 4px solid #0b1a14;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
-                                <h3 style="margin: 0; color: #0b1a14;">Marque Blanche</h3>
-                                <button onclick="reinitialiserMarqueBlanche()" class="btn-delete" style="font-weight: 600;">
-                                    Réinitialiser
-                                </button>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Nom de l'Agence / Réseau</label>
-                                <input type="text" id="nomAgenceInput" class="form-control" placeholder="Ex: Century 21, Orpi, IAD...">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>Logo de l'Agence (Pour le PDF)</label>
-                                <div style="display: flex; align-items: center; gap: 15px;">
-                                    <div style="position: relative; overflow: hidden; display: inline-block;">
-                                        <button class="btn-demo" style="padding: 8px 15px; font-size: 12px;">Parcourir le fichier...</button>
-                                        <input type="file" id="logoUploadInput" accept="image/png, image/jpeg, image/jpg" style="position: absolute; top: 0; left: 0; opacity: 0; cursor: pointer; height: 100%;">
-                                    </div>
-                                    <img id="logo-preview" style="display: none; max-height: 40px; max-width: 100px; object-fit: contain; border-radius: 4px; border: 1px solid #eee; padding: 2px;">
-                                </div>
-                                <span style="font-size: 11px; color: #888; display: block; margin-top: 5px;">Format PNG ou JPG.</span>
-                            </div>
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; max-width: 1000px; margin-left: auto; margin-right: auto;">
+        <div>
+            <h2 class="section-title" style="margin-bottom: 5px; text-align: left;">Espace Agence & Copilote</h2>
+            <p style="font-size: 15px; color: #6c757d; margin: 0;">Configurez votre outil. Vous gardez le contrôle total sur les données présentées à vos clients.</p>
+        </div>
+        <div style="background: #eaf9f0; border: 1px solid #00d632; padding: 8px 15px; border-radius: 6px; font-size: 12px; color: #0b1a14; font-weight: bold; display: inline-flex; align-items: center; gap: 8px;">
+            <span style="display: inline-block; width: 8px; height: 8px; background: #00d632; border-radius: 50%;"></span>
+            Base réglementaire à jour : Juin 2026
+        </div>
+    </div>
 
-                            <div class="form-group">
-                                <label>Couleur principale</label>
-                                <div style="display: flex; gap: 10px; align-items: center;">
-                                    <input type="color" id="couleurAgenceInput" value="#00d632" style="width: 50px; height: 40px; border: none; cursor: pointer; border-radius: 4px;">
-                                    <span style="font-size: 12px; color: #666;">Appliquée à l'interface et au PDF.</span>
-                                </div>
-                            </div>
-                            <button class="btn-solid btn-dynamic-color" style="width: 100%; margin-top: 10px; padding: 12px;" onclick="sauvegarderParametresPro()">Enregistrer les paramètres</button>
-                        </div>
-
-                        <div style="flex: 2; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 4px solid #0b1a14; display: flex; flex-direction: column;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
-                                <h3 style="margin: 0; color: #0b1a14;">Historique Local</h3>
-                                <button onclick="viderHistorique()" class="btn-delete">Supprimer l'historique</button>
-                            </div>
-                            
-                            <div class="table-responsive" style="margin-bottom: 0; flex: 1; overflow-y: auto; max-height: 250px;">
-                                <table style="min-width: 100%;">
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Secteur</th>
-                                            <th>Prix Initial</th>
-                                            <th style="text-align: right;">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="historiqueTableBody">
-                                        </tbody>
-                                </table>
-                            </div>
-                        </div>
+    <div style="max-width: 1000px; margin: 0 auto 30px auto; border-bottom: 2px solid #eaeaea; display: flex; gap: 20px;">
+        <button style="background: none; border: none; font-size: 15px; font-weight: bold; padding: 10px 0; color: #0b1a14; border-bottom: 3px solid #00d632; cursor: pointer;">Mes Paramètres & Historique</button>
+        <button style="background: none; border: none; font-size: 15px; font-weight: bold; padding: 10px 0; color: #6c757d; cursor: pointer;">Abonnement SaaS</button>
+        <button style="background: none; border: none; font-size: 15px; font-weight: bold; padding: 10px 0; color: #6c757d; cursor: pointer;">Outil de Captation (Widget)</button>
+    </div>
+    
+    <div style="display: flex; flex-wrap: wrap; gap: 30px; margin-bottom: 60px; max-width: 1000px; margin-left: auto; margin-right: auto;">
+        <div style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 4px solid #0b1a14;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: #0b1a14; font-size: 18px;">Personnalisation (Marque Blanche)</h3>
+                <button onclick="reinitialiserMarqueBlanche()" class="btn-delete" style="font-weight: 600;">Réinitialiser</button>
+            </div>
+            
+            <div class="form-group">
+                <label>Nom de l'Agence / Réseau</label>
+                <input type="text" id="nomAgenceInput" class="form-control" placeholder="Ex: Agence du Centre">
+            </div>
+            
+            <div class="form-group">
+                <label>Logo de l'Agence (Pour le PDF)</label>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="position: relative; overflow: hidden; display: inline-block;">
+                        <button class="btn-demo" style="padding: 8px 15px; font-size: 12px;">Parcourir le fichier...</button>
+                        <input type="file" id="logoUploadInput" accept="image/png, image/jpeg" style="position: absolute; top: 0; left: 0; opacity: 0; cursor: pointer; height: 100%;">
                     </div>
-                </section>
+                    <img id="logo-preview" style="display: none; max-height: 40px; max-width: 100px; object-fit: contain; border-radius: 4px; border: 1px solid #eee; padding: 2px;">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Couleur d'accentuation</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="color" id="couleurAgenceInput" value="#00d632" style="width: 50px; height: 40px; border: none; cursor: pointer; border-radius: 4px;">
+                    <span style="font-size: 12px; color: #666;">Harmonise l'outil avec votre charte graphique.</span>
+                </div>
+            </div>
+            <button class="btn-solid btn-dynamic-color" style="width: 100%; margin-top: 10px; padding: 12px;" onclick="sauvegarderParametresPro()">Enregistrer les préférences</button>
+        </div>
+
+        <div style="flex: 2; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 4px solid #0b1a14; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: #0b1a14; font-size: 18px;">Mes Dossiers Clients (Mode Local)</h3>
+                <button onclick="viderHistorique()" class="btn-delete">Effacer l'historique</button>
+            </div>
+            
+            <div class="table-responsive" style="margin-bottom: 0; flex: 1; overflow-y: auto; max-height: 250px;">
+                <table style="min-width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="font-size: 10px;">Date</th>
+                            <th style="font-size: 10px;">Secteur</th>
+                            <th style="font-size: 10px;">Prix Initial</th>
+                            <th style="text-align: right; font-size: 10px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historiqueTableBody">
+                    </tbody>
+                </table>
+            </div>
+            <p style="font-size: 11px; color: #adb5bd; margin-top: 15px; text-align: center;">Ces données sont privées et ne quittent jamais cet ordinateur.</p>
+        </div>
+    </div>
+
+    <div style="max-width: 1000px; margin: 0 auto; background: #0b1a14; color: white; padding: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="max-width: 60%;">
+            <h3 style="margin-top: 0; color: #00d632;">Outil de Captation (Widget Vendeur)</h3>
+            <p style="font-size: 14px; line-height: 1.6; color: #d1d5db;">Intégrez notre calculateur allégé directement sur le site web de votre agence. Vos prospects testent leurs diagnostics, et vous recevez immédiatement leurs coordonnées et l'adresse du bien pour les recontacter.</p>
+            <div style="background: rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 6px; font-family: monospace; font-size: 12px; color: #a3e635;">
+                &lt;iframe src="https://auditpro.immo/widget/votre-id-agence" width="100%" height="400"&gt;&lt;/iframe&gt;
+            </div>
+        </div>
+        <div>
+            <button class="btn-solid" style="background: #fff; color: #0b1a14;">Activer le module</button>
+        </div>
+    </div>
+</section>
             </div>
 
             <div id="informations-tab" class="tab-content">
