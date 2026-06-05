@@ -20,7 +20,7 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return {"status": "API AuditPro opérationnelle", "version": "1.6", "message": "Moteur d'analyse prédictive prêt avec DPE/GES."}
+    return {"status": "API AuditPro opérationnelle", "version": "1.7", "message": "Moteur d'analyse prédictive avec IA DPE prêt."}
 
 def get_modulateur_marche(cp: str):
     mois_ecoules = (datetime.now().year - 2024) * 12 + datetime.now().month
@@ -104,14 +104,12 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
     surface = extraire_surface(texte_global)
     mention_surface = f" (Base de calcul estimative : ~{int(surface)} m²)"
 
-    # Extraction très robuste des lettres DPE et GES
-    dpe_letter = "N/A"
-    ges_letter = "N/A"
+    dpe_letter = "?"
+    ges_letter = "?"
     
     match_dpe = re.search(r"(?:dpe|classe(?:ment)?(?:\s+énergétique)?)\s*:\s*([A-G])\b", texte_global, re.IGNORECASE)
     if not match_dpe:
         match_dpe = re.search(r"class[ée]\s+([A-G])\b", texte_global, re.IGNORECASE)
-    
     match_ges = re.search(r"(?:ges|effet de serre).*?class[ée]?\s+([A-G])\b", texte_global, re.IGNORECASE)
     
     if match_dpe: 
@@ -121,8 +119,6 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
         
     if match_ges:
         ges_letter = match_ges.group(1).upper()
-    elif dpe_letter != "N/A":
-        ges_letter = dpe_letter
         
     if re.search(r"(B\.3\.3\.6|B\.4\.3|B\.5\.2|défaut de mise à la terre|électrisation|contact direct|matériel vétuste|anomalie électrique)", texte_global, re.IGNORECASE):
         c = int((80 * surface) * indice)
@@ -180,17 +176,29 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
         })
         total_decote += c
 
+    # IA de Déduction DPE si non trouvé
+    if dpe_letter == "?" or dpe_letter == "N/A":
+        ratio_cout = (total_decote / surface) if surface > 0 else 0
+        if ratio_cout > 350: dpe_letter = "G"
+        elif ratio_cout > 250: dpe_letter = "F"
+        elif ratio_cout > 150: dpe_letter = "E"
+        elif ratio_cout > 70: dpe_letter = "D"
+        else: dpe_letter = "C"
+
+    if ges_letter == "?" or ges_letter == "N/A":
+        ges_letter = dpe_letter 
+
     if dpe_letter in ["F", "G"]:
         c = int((700 * surface) * indice)
         checklist["dpe"].update({
             "statut": "Anomalie", "cout": c, 
-            "detail": f"Classement {dpe_letter} (Passoire thermique).{mention_surface}", 
+            "detail": f"Classement évalué {dpe_letter} (Passoire thermique).{mention_surface}", 
             "action": "À prévoir : Rénovation globale (isolation + chauffage) pour louer à terme."
         })
         total_decote += c
         bloquant_location = True
     else:
-        checklist["dpe"]["detail"] = f"Le bien est classé {dpe_letter}."
+        checklist["dpe"]["detail"] = f"Le bien est estimé ou classé {dpe_letter}."
         
     if re.search(r"(inondation|zone inondable|ppri|sismicité.*forte|séisme)", texte_global, re.IGNORECASE):
         c = int(4000 * indice)
