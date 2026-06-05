@@ -99,6 +99,17 @@
                             <label>Prix de vente affiché (€) *</label>
                             <input type="text" inputmode="numeric" id="prixInitial" class="form-control price-input" placeholder="Ex : 350 000">
                         </div>
+                        
+                        <div class="form-group" id="bloc-renov" style="display:none;">
+                            <label>Profil MaPrimeRénov'</label>
+                            <select id="tauxRenov" class="form-control">
+                                <option value="0">Standard (0%)</option>
+                                <option value="0.4">Aisé - Rose (40% d'aide)</option>
+                                <option value="0.6">Intermédiaire - Violet (60% d'aide)</option>
+                                <option value="0.9">Très Modeste - Bleu (90% d'aide)</option>
+                            </select>
+                        </div>
+
                         <div class="form-group">
                             <label>Loyer mensuel espéré (€) *Optionnel</label>
                             <input type="text" inputmode="numeric" id="loyerMensuel" class="form-control price-input" placeholder="Ex : 850">
@@ -134,6 +145,10 @@
                     <div id="contenu-ecran"></div>
                     <div style="text-align: center; margin-top: 40px;">
                         <button class="btn-solid btn-dynamic-color" id="btnExport" style="padding: 16px 40px; font-size: 16px;" onclick="exporterPDF('download')">Télécharger le rapport PDF Officiel</button>
+                        <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+                            <button class="btn-demo" id="btnComparateur" onclick="ajouterComparateur()" style="display:none; width:auto;">Ajouter au comparateur (Max 3)</button>
+                            <button class="btn-demo" id="btnVitrine" onclick="exporterFicheVitrine()" style="display:none; width:auto;">Générer Fiche Vitrine (A4)</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -143,7 +158,7 @@
                 <section id="abonnements" class="content-section">
                     <h2 class="section-title">Nos Offres & Tarifs</h2>
                     <p style="font-size: 16px; color: #495057; max-width: 800px; margin: 0 auto 50px auto; text-align: center;">
-                        Des fonctionnalités pensées pour vous faire gagner du temps, que vous soyez en pleine recherche immobilière ou un professionnel souhaitant muscler son argumentaire de vente.
+                        Des solutions adaptées à vos besoins, que vous soyez un acheteur ponctuel, un investisseur à la recherche de rentabilité ou un professionnel de l'immobilier.
                     </p>
                     
                     <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; align-items: stretch;">
@@ -152,8 +167,8 @@
                         <div style="flex: 1; min-width: 230px; background: #fff; padding: 40px 25px; border-radius: 12px; border: 1px solid #eaeaea; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column;">
                             <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 20px;">Découverte</h3>
                             <div style="font-size: 36px; font-weight: 800; color: #0b1a14; margin-bottom: 25px;">0 €</div>
-                            <ul style="text-align: left; font-size: 14px; color: #555; line-height: 1.8; padding-left: 20px; margin-bottom: 30px; flex-grow: 1;">
-                                <li>1 analyse ponctuelle / mois</li>
+                            <ul style="text-align: left; font-size: 14px; color: #555; line-height: 2; padding-left: 20px; margin-bottom: 30px; flex-grow: 1;">
+                                <li>1 analyse / mois</li>
                                 <li>Rapport PDF standard</li>
                                 <li>Grille d'évaluation vierge</li>
                             </ul>
@@ -161,41 +176,42 @@
                         </div>
                         
                         <!-- Offre Payante Particulier -->
-                        <div style="flex: 1; min-width: 250px; background: #fff; padding: 40px 25px; border-radius: 12px; border: 1px solid #eaeaea; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column;">
-                            <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 20px;">Acquéreur Actif</h3>
+                        <div style="flex: 1; min-width: 230px; background: #fff; padding: 40px 25px; border-radius: 12px; border: 1px solid #eaeaea; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column;">
+                            <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 20px;">Acquéreur</h3>
                             <div style="font-size: 36px; font-weight: 800; color: #0b1a14; margin-bottom: 25px;">9,99 €<span style="font-size: 14px; color: #6c757d;">/mois</span></div>
-                            <ul style="text-align: left; font-size: 14px; color: #333; line-height: 1.8; padding-left: 20px; margin-bottom: 30px; flex-grow: 1; font-weight: 500;">
+                            <ul style="text-align: left; font-size: 14px; color: #333; line-height: 2; padding-left: 20px; margin-bottom: 30px; flex-grow: 1;">
                                 <li>Analyses illimitées</li>
-                                <li><b>Comparateur de biens :</b> Comparez les budgets travaux de 3 visites côte à côte</li>
-                                <li><b>Simulateur de Reste à Charge :</b> Déduction automatique des barèmes MaPrimeRénov'</li>
-                                <li>Historique et exports illimités</li>
-                                <li style="color: #6c757d; font-weight: normal;">Sans engagement</li>
+                                <li>Historique local des visites</li>
+                                <li>Rapports PDF illimités</li>
+                                <li>Comparateur de biens</li>
+                                <li>Sans engagement</li>
                             </ul>
                             <button class="btn-demo" style="width: 100%; border-color: #0b1a14!important; color: #0b1a14;">S'abonner</button>
                         </div>
 
                         <!-- Offre Premium Pro -->
-                        <div class="border-dynamic-color-top" style="flex: 1.2; min-width: 270px; background: #fff; padding: 45px 25px; border-radius: 12px; border: 1px solid #eaeaea; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; z-index: 10; position: relative; display: flex; flex-direction: column;">
+                        <div class="border-dynamic-color-top" style="flex: 1.2; min-width: 260px; background: #fff; padding: 45px 25px; border-radius: 12px; border: 1px solid #eaeaea; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; z-index: 10; position: relative; display: flex; flex-direction: column;">
                             <div class="btn-dynamic-color" style="color: #fff; font-size: 11px; font-weight: bold; padding: 5px 12px; border-radius: 20px; display: inline-block; margin-bottom: 15px; text-transform: uppercase; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);">Pour les Agences</div>
                             <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 22px;">Premium Pro</h3>
                             <div style="font-size: 42px; font-weight: 800; color: #0b1a14; margin-bottom: 25px;">29,99 €<span style="font-size: 14px; color: #6c757d;">/mois</span></div>
-                            <ul style="text-align: left; font-size: 14px; color: #333; line-height: 1.8; padding-left: 20px; margin-bottom: 30px; font-weight: 600; flex-grow: 1;">
-                                <li>PDF <span class="text-dynamic-color">Marque Blanche</span> (Votre Logo)</li>
-                                <li><b>Générateur de Fiche Vitrine :</b> Un mini-rapport visuel prêt à être affiché en vitrine ou sur LeBonCoin</li>
-                                <li><b>Veille d'Expiration :</b> Alerte visuelle si un diagnostic de votre historique devient obsolète avant la vente</li>
-                                <li>Tableau de bord expert</li>
+                            <ul style="text-align: left; font-size: 14px; color: #333; line-height: 2; padding-left: 20px; margin-bottom: 30px; font-weight: 600; flex-grow: 1;">
+                                <li>Analyses <span class="text-dynamic-color">illimitées</span></li>
+                                <li>Rapports PDF <span class="text-dynamic-color">Marque Blanche</span></li>
+                                <li>Insertion de votre logo</li>
+                                <li>Alerte Veille Expiration</li>
+                                <li>Export Fiche Vitrine</li>
                             </ul>
                             <button class="btn-solid btn-dynamic-color" style="width: 100%;">Passer en Premium</button>
                         </div>
                         
                         <!-- Offre Réseau -->
-                        <div style="flex: 1; min-width: 240px; background: #fff; padding: 40px 25px; border-radius: 12px; border: 1px solid #eaeaea; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column;">
+                        <div style="flex: 1; min-width: 230px; background: #fff; padding: 40px 25px; border-radius: 12px; border: 1px solid #eaeaea; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column;">
                             <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 20px;">Réseau / Franchise</h3>
                             <div style="font-size: 36px; font-weight: 800; color: #0b1a14; margin-bottom: 25px;">79,99 €<span style="font-size: 14px; color: #6c757d;">/mois</span></div>
-                            <ul style="text-align: left; font-size: 14px; color: #555; line-height: 1.8; padding-left: 20px; margin-bottom: 30px; flex-grow: 1;">
+                            <ul style="text-align: left; font-size: 14px; color: #555; line-height: 2; padding-left: 20px; margin-bottom: 30px; flex-grow: 1;">
                                 <li>Multi-comptes (10 accès)</li>
-                                <li><b>Outil de Captation (Widget) :</b> Générez des leads vendeurs depuis votre site</li>
-                                <li><b>Synchronisation CRM :</b> Export automatique vers votre logiciel métier (Hektor, Apimo, Netty...)</li>
+                                <li><b>Outil de Captation (Widget)</b></li>
+                                <li>API & Intégration CRM</li>
                             </ul>
                             <button class="btn-demo" style="width: 100%;">Contacter les ventes</button>
                         </div>
@@ -256,6 +272,13 @@
                                     <span style="font-size: 12px; color: #666;">Appliquée à l'interface et au PDF.</span>
                                 </div>
                             </div>
+                            
+                            <div class="form-group" style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+                                <label>Webhook CRM (Apimo, Hektor, Netty...)</label>
+                                <input type="url" id="webhookCrmInput" class="form-control" placeholder="https://api.votre-crm.com/webhook">
+                                <span style="font-size: 11px; color: #888; display: block; margin-top: 5px;">Synchronisation des audits.</span>
+                            </div>
+                            
                             <button class="btn-solid btn-dynamic-color" style="width: 100%; margin-top: 10px; padding: 12px;" onclick="sauvegarderParametresPro()">Enregistrer les paramètres</button>
                         </div>
 
@@ -265,7 +288,7 @@
                                 <button onclick="viderHistorique()" class="btn-delete">Supprimer l'historique</button>
                             </div>
                             
-                            <div class="table-responsive" style="margin-bottom: 0; flex: 1; overflow-y: auto; max-height: 250px;">
+                            <div class="table-responsive" style="margin-bottom: 0; flex: 1; overflow-y: auto; max-height: 380px;">
                                 <table style="min-width: 100%;">
                                     <thead>
                                         <tr>
@@ -401,7 +424,7 @@
                         <details><summary>10. Quelle est la différence de risque entre l'amiante et le plomb ?</summary><p>L'amiante est une fibre (souvent dans les toits en fibrociment ou les dalles) qui est cancérigène si on la respire en la cassant. Le plomb est présent dans les vieilles peintures et provoque une maladie grave (le saturnisme).</p></details>
                         <details><summary>11. Qu'est-ce qu'un DGI (Danger Grave et Immédiat) ?</summary><p>C'est le niveau d'alerte maximum, extrêmement fréquent sur les anciennes chaudières au gaz. Si le diagnostiqueur repère un DGI, il a l'obligation légale de condamner l'installation sur le champ. Elle ne pourra être rouverte qu'après réparation par un pro.</p></details>
                         <details><summary>12. Suis-je obligé de faire les travaux si une anomalie est détectée ?</summary><p>Le vendeur n'a aucune obligation de travaux (sauf en cas de DGI), il doit juste informer l'acheteur en toute transparence. En tant qu'acheteur, la loi ne vous y oblige pas, mais les banques exigent souvent la mise aux normes pour vous accorder le prêt immobilier.</p></details>
-                        <details><summary>13. Le calcul prend-il en compte les aides de l'État (MaPrimeRénov') ?</summary><p>Non. L'outil vous indique le coût global brut des travaux. Les aides de l'État (MaPrimeRénov', CEE) étant calculées en fonction de vos revenus fiscaux personnels, c'est à vous de les déduire de l'enveloppe finale estimée.</p></details>
+                        <details><summary>13. Le calcul prend-il en compte les aides de l'État (MaPrimeRénov') ?</summary><p>L'outil estime désormais le reste à charge si vous sélectionnez votre profil MaPrimeRénov' dans les paramètres de la simulation.</p></details>
                         <details><summary>14. Le rapport est-il adapté aux tarifs des artisans de ma région ?</summary><p>Oui. L'algorithme lit le code postal que vous avez renseigné et applique un coefficient multiplicateur reflétant la tension du marché de la construction dans votre département.</p></details>
                         <details><summary>15. Comment le programme calcule-t-il les prix des travaux ?</summary><p>Il repère dans le PDF la surface totale du bien, identifie le type de problème relevé par l'expert, et multiplie la surface par le coût moyen au mètre carré pratiqué pour ce type de réparation spécifique.</p></details>
                         <details><summary>16. Mes données personnelles et mon document PDF sont-ils conservés ?</summary><p>Absolument pas. Nous appliquons la règle stricte du "Zéro Stockage" serveur. Votre PDF est scanné en quelques secondes par la mémoire vive, puis il est immédiatement et définitivement supprimé. Vos historiques sont stockés sur votre propre ordinateur.</p></details>
