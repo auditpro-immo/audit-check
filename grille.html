@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Grille d'Auto-Évaluation Immobilière - AuditPro AI</title>
+<title>Grille d'Auto-Évaluation Immobilière - AuditPro</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -33,10 +33,10 @@
     <div class="container">
         <header>
             <div class="brand-logo">AUDITPRO</div>
-            <div class="brand-title">L'expertise immobilière propulsée par l'IA</div>
+            <div class="brand-title">Logiciel d'analyse technique et financière</div>
         </header>
 
-        <h1>Grille d'Auto-Évaluation Immobilière</h1>
+        <h1>Grille d'Évaluation Physique</h1>
 
         <form id="auditForm">
             <section class="audit-section">
@@ -257,7 +257,7 @@
                 </div>
             </section>
             
-            <button type="submit" class="submit-btn">Lancer l'analyse de ma grille par l'IA</button>
+            <button type="submit" class="submit-btn">Générer le rapport d'évaluation</button>
         </form>
 
         <div style="margin-top: 40px; margin-bottom: 20px; padding: 30px 20px; background-color: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px; text-align: center;">
@@ -301,25 +301,32 @@
                 let bgDpeColor = dpeColors[dpeLettre] || "#000";
                 let textDpeColor = (dpeLettre === "D" || dpeLettre === "C") ? "#000" : "#fff";
 
-                // COULEURS GES OFFICIELLES (Dégradé Violet)
+                // COULEURS GES OFFICIELLES
                 let gesColors = { "A": "#F2E8FA", "B": "#E1C9F2", "C": "#D0AAEA", "D": "#BF8BE2", "E": "#AE6CD9", "F": "#9D4DD1", "G": "#7A35A3" };
                 let bgGesColor = gesColors[dpeLettre] || "#000";
                 let textGesColor = (dpeLettre === "A" || dpeLettre === "B" || dpeLettre === "C") ? "#000" : "#fff";
 
-                // GÉNÉRATION DES BADGES SVG (WEB)
+                // EXPLICATION TEXTUELLE DU DPE
+                let dpeExplanation = `Le bien obtient une classification énergétique estimée à la lettre ${dpeLettre}. `;
+                if(dpeLettre === 'A' || dpeLettre === 'B') dpeExplanation += `Il s'agit d'un logement très performant. Aucune contrainte réglementaire à la location.`;
+                else if(dpeLettre === 'C' || dpeLettre === 'D') dpeExplanation += `Performance énergétique standard. Des améliorations sont possibles pour valoriser le bien, mais elles ne revêtent aucun caractère d'urgence légale.`;
+                else if(dpeLettre === 'E') dpeExplanation += `Logement énergivore. Un audit énergétique réglementaire sera obligatoire lors de la vente. Une interdiction de louer est prévue à l'horizon 2034 par la Loi Climat.`;
+                else dpeExplanation += `Le bien est catégorisé comme "passoire thermique" (F ou G). Il subit un gel des loyers immédiat et une interdiction de louer progressive (2025/2028). Une rénovation globale est incontournable.`;
+
+                // GÉNÉRATION DES BADGES SVG (WEB) - SEULE LA LETTRE EST AFFICHÉE
                 let badgeDPE = `
                 <div style="display: flex; justify-content: center; margin-top: 8px;">
-                    <svg width="90" height="35" viewBox="0 0 90 35">
-                        <polygon points="0,0 70,0 90,17.5 70,35 0,35" fill="${bgDpeColor}" stroke="#333" stroke-width="1"/>
-                        <text x="40" y="24" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="${textDpeColor}" text-anchor="middle">${dpeLettre}</text>
+                    <svg width="70" height="35" viewBox="0 0 70 35">
+                        <polygon points="0,0 50,0 70,17.5 50,35 0,35" fill="${bgDpeColor}" stroke="#333" stroke-width="1"/>
+                        <text x="30" y="24" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="${textDpeColor}" text-anchor="middle">${dpeLettre}</text>
                     </svg>
                 </div>`;
 
                 let badgeGES = `
                 <div style="display: flex; justify-content: center; margin-top: 8px;">
-                    <svg width="90" height="35" viewBox="0 0 90 35">
-                        <polygon points="0,0 70,0 90,17.5 70,35 0,35" fill="${bgGesColor}" stroke="#333" stroke-width="1"/>
-                        <text x="40" y="24" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="${textGesColor}" text-anchor="middle">${dpeLettre}</text>
+                    <svg width="70" height="35" viewBox="0 0 70 35">
+                        <polygon points="0,0 50,0 70,17.5 50,35 0,35" fill="${bgGesColor}" stroke="#333" stroke-width="1"/>
+                        <text x="30" y="24" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="${textGesColor}" text-anchor="middle">${dpeLettre}</text>
                     </svg>
                 </div>`;
                 
@@ -359,8 +366,8 @@
                                 <p style="font-size: 14px; color: #7f8c8d; margin-top: 5px;">Analyse réglementaire approfondie et chiffrage des non-conformités</p>
                             </div>
                             <div style="text-align: right;">
-                                <p style="font-size: 16px; font-weight: 900; color: #000; margin: 0;">AUDITPRO AI</p>
-                                <p style="font-size: 11px; color: #7f8c8d; margin: 0;">Document certifié généré automatiquement</p>
+                                <p style="font-size: 16px; font-weight: 900; color: #000; margin: 0;">AUDITPRO</p>
+                                <p style="font-size: 11px; color: #7f8c8d; margin: 0;">Document d'aide à la décision immobilière</p>
                             </div>
                         </div>
                         
@@ -370,6 +377,10 @@
                             <div style="width: 20%; text-align: center;"><strong style="font-size: 11px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">Climat (GES)</strong><br>${badgeGES}</div>
                             <div style="width: 30%; text-align: right;"><strong style="font-size: 11px; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px;">Provision estimée</strong><br><span style="font-size: 22px; font-weight: 900; color: #000;">${res.resultat.decote_totale} €</span></div>
                         </div>
+                        
+                        <p style="font-size: 13px; color: #495057; background: #eaf9f0; padding: 15px; border-radius: 6px; border-left: 4px solid #00d632; margin-bottom: 40px;">
+                            <strong>Analyse de la performance thermique :</strong> ${dpeExplanation}
+                        </p>
 
                         <table style="width: 100%; border-collapse: collapse; text-align: left; margin-bottom: 40px;">
                             <thead>
@@ -384,7 +395,7 @@
 
                         <div style="background: #f8f9fa; padding: 25px; border-left: 5px solid #000; border-radius: 4px; margin-top: 20px;">
                             <strong style="font-size: 15px; text-transform: uppercase; color: #000; font-weight: 800;">Avis d'Expert & Stratégie Commerciale</strong>
-                            <p style="font-size: 14px; margin-top: 10px; line-height: 1.6; color: #000; text-align: justify;">${res.resultat.strategie}</p>
+                            <p style="font-size: 14px; margin-top: 10px; line-height: 1.6; color: #000; text-align: justify;">${res.resultat.strategie.replace("L'algorithme anticipe", "L'analyse technique anticipe")}</p>
                             <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
                             <p style="font-size: 11px; color: #7f8c8d; font-style: italic; text-align: justify; line-height: 1.4;">Avertissement juridique : Ce document constitue une pré-évaluation basée sur des données déclaratives et des ratios standards de la profession. Il ne remplace en aucun cas un Diagnostic de Performance Énergétique (DPE) opposable, ni un audit légal réalisé par un diagnostiqueur certifié.</p>
                             <p style="font-size: 12px; color: #555; margin-top: 10px; line-height: 1.5;"><strong>Sources Officielles :</strong> Ministère de la Transition Écologique (Loi Climat & Résilience), Légifrance (Code de la Construction et de l'Habitation), Normes AFNOR (NF C 15-100, NF P 45-500).</p>
@@ -403,19 +414,18 @@
                     btnPdf.innerText = "Génération du PDF en cours...";
                     btnPdf.disabled = true;
 
-                    // Générateur du SVG DPE pour pdfMake
+                    // Générateur SVG pour pdfMake - SEULE LA LETTRE EST AFFICHÉE
                     function getDpeSvg(lettre) {
-                        return `<svg width="85" height="30" viewBox="0 0 85 30" xmlns="http://www.w3.org/2000/svg">
-                            <polygon points="0,0 65,0 85,15 65,30 0,30" fill="${bgDpeColor}" />
-                            <text x="35" y="21" font-family="Helvetica, sans-serif" font-size="16" font-weight="bold" fill="${textDpeColor}" text-anchor="middle">Classe ${lettre}</text>
+                        return `<svg width="70" height="30" viewBox="0 0 70 30" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="0,0 50,0 70,15 50,30 0,30" fill="${bgDpeColor}" />
+                            <text x="30" y="21" font-family="Helvetica, sans-serif" font-size="16" font-weight="bold" fill="${textDpeColor}" text-anchor="middle">${lettre}</text>
                         </svg>`;
                     }
 
-                    // Générateur du SVG GES pour pdfMake
                     function getGesSvg(lettre) {
-                        return `<svg width="85" height="30" viewBox="0 0 85 30" xmlns="http://www.w3.org/2000/svg">
-                            <polygon points="0,0 65,0 85,15 65,30 0,30" fill="${bgGesColor}" />
-                            <text x="35" y="21" font-family="Helvetica, sans-serif" font-size="16" font-weight="bold" fill="${textGesColor}" text-anchor="middle">Classe ${lettre}</text>
+                        return `<svg width="70" height="30" viewBox="0 0 70 30" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="0,0 50,0 70,15 50,30 0,30" fill="${bgGesColor}" />
+                            <text x="30" y="21" font-family="Helvetica, sans-serif" font-size="16" font-weight="bold" fill="${textGesColor}" text-anchor="middle">${lettre}</text>
                         </svg>`;
                     }
 
@@ -432,7 +442,6 @@
                     res.resultat.details.forEach((d, index) => {
                         let isAnomalie = d.provision !== "0 €";
                         let rowColor = (index % 2 === 0) ? '#f8f9fa' : '#ffffff';
-                        // Nettoyage des balises HTML pour garder un texte propre dans le PDF
                         let cleanAnalyse = d.analyse.replace(/CONSTAT DÉTAILLÉ :|ACTIONS & CHIFFRAGE PRÉCIS :|ACTIONS RECOMMANDÉES :/g, '').trim();
 
                         tableBodyPdf.push([
@@ -445,7 +454,7 @@
 
                     const formatNumber = (num) => { return Number(num).toLocaleString('fr-FR').replace(/[\u202F\u00A0]/g, ' '); };
 
-                    // Définition de la structure du document
+                    // Définition de la structure du document complet
                     let docDefinition = {
                         pageSize: 'A4',
                         pageMargins: [ 50, 50, 40, 50 ],
@@ -471,9 +480,9 @@
                             };
                         },
                         content: [
-                            { text: 'AUDITPRO AI', fontSize: 24, bold: true, color: '#00d632', alignment: 'left', letterSpacing: 1, margin: [0, 0, 0, 20] },
+                            { text: 'AUDITPRO', fontSize: 24, bold: true, color: '#00d632', alignment: 'left', letterSpacing: 1, margin: [0, 0, 0, 20] },
                             { text: 'RAPPORT D\'ÉVALUATION PHYSIQUE', fontSize: 18, color: '#1a1a1a', bold: true, margin: [0, 0, 0, 5] },
-                            { text: 'Synthèse des constatations sur site et chiffrage prévisionnel.', fontSize: 11, color: '#666', margin: [0, 0, 0, 25], italics: true },
+                            { text: 'Synthèse détaillée des constatations sur site et chiffrage prévisionnel.', fontSize: 11, color: '#666', margin: [0, 0, 0, 25], italics: true },
 
                             {
                                 columns: [
@@ -483,21 +492,23 @@
                                             { text: '1. BILAN ÉNERGIE & CLIMAT', style: 'sectionTitle', color: '#00d632' },
                                             {
                                                 columns: [
-                                                    { width: 'auto', stack: [{ text: 'Énergie (DPE)', fontSize: 9, color: '#555', margin: [0, 0, 0, 4] }, { svg: getDpeSvg(dpeLettre), width: 75 }] },
-                                                    { width: 15, text: '' },
-                                                    { width: 'auto', stack: [{ text: 'Climat (GES)', fontSize: 9, color: '#555', margin: [0, 0, 0, 4] }, { svg: getGesSvg(dpeLettre), width: 75 }] }
+                                                    { width: 'auto', stack: [{ text: 'Énergie (DPE)', fontSize: 9, color: '#555', margin: [0, 0, 0, 4] }, { svg: getDpeSvg(dpeLettre), width: 60 }] },
+                                                    { width: 25, text: '' },
+                                                    { width: 'auto', stack: [{ text: 'Climat (GES)', fontSize: 9, color: '#555', margin: [0, 0, 0, 4] }, { svg: getGesSvg(dpeLettre), width: 60 }] }
                                                 ],
-                                                margin: [0, 5, 0, 20]
+                                                margin: [0, 5, 0, 15]
                                             },
-                                            { text: 'État Général du Bien :', fontSize: 10, color: '#555', margin: [0, 0, 0, 2] },
-                                            { text: res.resultat.etat, fontSize: 11, bold: true, color: '#1a1a1a', margin: [0, 0, 0, 15] }
+                                            { text: 'Explication du classement :', fontSize: 10, bold: true, color: '#555', margin: [0, 0, 0, 2] },
+                                            { text: dpeExplanation, fontSize: 10, color: '#1a1a1a', alignment: 'justify', lineHeight: 1.3, margin: [0, 0, 0, 15] }
                                         ]
                                     },
                                     {
                                         width: '40%',
                                         stack: [
                                             { text: 'PROVISION TRAVAUX ESTIMÉE', fontSize: 10, bold: true, alignment: 'right', color: '#666', margin: [0, 30, 0, 5] },
-                                            { text: (res.resultat.decote_totale > 0 ? '-' : '') + formatNumber(res.resultat.decote_totale) + ' €', fontSize: 22, bold: true, alignment: 'right', color: res.resultat.decote_totale > 0 ? '#cc0000' : '#00d632' }
+                                            { text: (res.resultat.decote_totale > 0 ? '-' : '') + formatNumber(res.resultat.decote_totale) + ' €', fontSize: 22, bold: true, alignment: 'right', color: res.resultat.decote_totale > 0 ? '#cc0000' : '#00d632' },
+                                            { text: 'État Général du Bien :', fontSize: 10, color: '#555', alignment: 'right', margin: [0, 15, 0, 2] },
+                                            { text: res.resultat.etat, fontSize: 10, bold: true, color: '#1a1a1a', alignment: 'right', margin: [0, 0, 0, 15] }
                                         ]
                                     }
                                 ],
@@ -505,11 +516,11 @@
                             },
 
                             {
-                                table: { widths: ['*'], body: [ [ { stack: [ { text: 'STRATÉGIE CONSEILLÉE', fontSize: 10, bold: true, color: '#fff', margin: [0, 0, 0, 4] }, { text: res.resultat.strategie, fontSize: 9, color: '#eef2f5', lineHeight: 1.4 } ], padding: 12, fillColor: '#0b1a14' } ] ] },
+                                table: { widths: ['*'], body: [ [ { stack: [ { text: 'STRATÉGIE CONSEILLÉE', fontSize: 10, bold: true, color: '#fff', margin: [0, 0, 0, 4] }, { text: res.resultat.strategie.replace("L'algorithme anticipe", "L'analyse technique anticipe"), fontSize: 9, color: '#eef2f5', lineHeight: 1.4 } ], padding: 12, fillColor: '#0b1a14' } ] ] },
                                 layout: 'noBorders', margin: [0, 10, 0, 30]
                             },
 
-                            { text: '2. DÉTAILS DES ANOMALIES & CHIFFRAGE', style: 'sectionTitle', color: '#00d632', margin: [0, 10, 0, 10] },
+                            { text: '2. INVENTAIRE TECHNIQUE DÉTAILLÉ (DDT)', style: 'sectionTitle', color: '#00d632', margin: [0, 10, 0, 10] },
                             {
                                 table: { headerRows: 1, widths: ['25%', '20%', '40%', '15%'], body: tableBodyPdf },
                                 layout: {
@@ -519,6 +530,28 @@
                                     paddingTop: function() { return 6; },
                                     paddingBottom: function() { return 6; }
                                 }
+                            },
+
+                            // BLOC RAPPELS RÉGLEMENTAIRES POUR DONNER DE LA MATIÈRE
+                            { text: '3. RAPPELS RÉGLEMENTAIRES ET JURIDIQUES', style: 'sectionTitle', color: '#00d632', margin: [0, 30, 0, 10], pageBreak: 'before' },
+                            {
+                                columns: [
+                                    {
+                                        width: '50%',
+                                        stack: [
+                                            { text: 'LOI CLIMAT ET RÉSILIENCE', fontSize: 10, bold: true, color: '#1a1a1a', margin: [0, 0, 0, 5] },
+                                            { text: 'Adoptée pour lutter contre le dérèglement climatique, cette loi impacte directement le marché immobilier. Elle prévoit le gel des loyers pour les passoires thermiques (classes F et G), ainsi que leur interdiction progressive à la location (2025 pour G, 2028 pour F, 2034 pour E). Un audit énergétique complet devient obligatoire lors de la vente de ces biens.', fontSize: 9, color: '#444', alignment: 'justify', lineHeight: 1.4 }
+                                        ]
+                                    },
+                                    {
+                                        width: '50%',
+                                        stack: [
+                                            { text: 'OBLIGATIONS DE MISE EN SÉCURITÉ', fontSize: 10, bold: true, color: '#1a1a1a', margin: [0, 0, 0, 5] },
+                                            { text: 'Les diagnostics techniques (DDT) ont pour but d\'informer l\'acquéreur en toute transparence mais n\'obligent pas le vendeur à faire les travaux, sauf en cas de Danger Grave et Immédiat (DGI) repéré sur le gaz. Toutefois, la présence avérée d\'anomalies (amiante, électricité vétuste, plomb) justifie pleinement une décote sur le prix de présentation pour financer la remise en conformité.', fontSize: 9, color: '#444', alignment: 'justify', lineHeight: 1.4 }
+                                        ]
+                                    }
+                                ],
+                                columnGap: 20
                             }
                         ],
                         styles: {
@@ -539,7 +572,7 @@
             alert("Erreur serveur ou de connexion.");
         } finally {
             btn.disabled = false;
-            btn.innerText = "Lancer l'analyse de ma grille par l'IA";
+            btn.innerText = "Générer le rapport d'évaluation";
         }
     });
 </script>
