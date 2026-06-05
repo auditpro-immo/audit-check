@@ -4,6 +4,11 @@ let chartInstance = null;
 let loyerMensuelSaisi = 0;
 let profilActuel = localStorage.getItem('auditpro_profil') || "particulier";
 
+// SYSTÈME D'ABONNEMENT ET LIMITES
+let userPlan = localStorage.getItem('auditpro_plan') || 'gratuit'; 
+let analysesCount = parseInt(localStorage.getItem('auditpro_analyses_count')) || 0;
+let logoClicks = 0;
+
 // Charger le comparateur depuis le stockage local (jusqu'à 6 biens)
 let comparateur = JSON.parse(localStorage.getItem('auditpro_comparateur')) || [];
 
@@ -31,7 +36,6 @@ function getSvgArrow(lettre, type) {
     </svg>`;
 }
 
-// Fonction SVG optimisée pour le PDF (taille réduite pour éviter les superpositions)
 function getCleanPdfSvg(lettre, type) {
     lettre = lettre ? lettre.toUpperCase() : "N/A";
     const color = type === "DPE" ? (colorConfigDPE[lettre] || "#888888") : (colorConfigGES[lettre] || "#888888");
@@ -65,7 +69,6 @@ function changerProfilInterne(profil) {
     let btnActif = document.getElementById('btn-' + profil);
     if(btnActif) btnActif.classList.add('active');
 
-    // Gestion de l'affichage selon le profil (LA CORRECTION EST ICI)
     document.getElementById('bloc-renov').style.display = profil === 'particulier' ? 'block' : 'none';
     document.getElementById('nav-comparateur').style.display = profil === 'particulier' ? 'inline-block' : 'none';
     document.getElementById('nav-param-particulier').style.display = profil === 'particulier' ? 'inline-block' : 'none';
@@ -88,9 +91,16 @@ function changerProfilInterne(profil) {
     if(donneesAudit) afficherEcran(); 
 }
 
+// MISE A JOUR DU LOGO ET DU TEXTE DU FICHIER
 document.getElementById('logoUploadInput').addEventListener('change', function(event) {
     const file = event.target.files[0];
+    const nomFichierSpan = document.getElementById('logo-file-name');
+    
     if (file) {
+        nomFichierSpan.innerText = file.name;
+        nomFichierSpan.style.color = "#0b1a14";
+        nomFichierSpan.style.fontWeight = "bold";
+        
         const reader = new FileReader();
         reader.onload = function(e) {
             agenceLogoBase64 = e.target.result;
@@ -98,6 +108,10 @@ document.getElementById('logoUploadInput').addEventListener('change', function(e
             document.getElementById('logo-preview').style.display = 'block';
         }
         reader.readAsDataURL(file);
+    } else {
+        nomFichierSpan.innerText = "Aucun fichier";
+        nomFichierSpan.style.color = "#6c757d";
+        nomFichierSpan.style.fontWeight = "normal";
     }
 });
 
@@ -162,6 +176,10 @@ function changerCouleurParticulier(couleur) {
 }
 
 function sauvegarderParametresParticulier() {
+    if (userPlan === 'gratuit') {
+        document.querySelector('nav a[href="#abonnements"]').click();
+        return showToast("Option verrouillée. Passez à l'abonnement Particulier pour personnaliser vos réglages.", "error");
+    }
     if (!localStorage.getItem('auditpro_cookies')) {
         return showToast("Veuillez accepter la sauvegarde locale (bandeau en bas) pour activer cette fonction.", "error");
     }
@@ -181,6 +199,10 @@ function sauvegarderParametresParticulier() {
 }
 
 function sauvegarderParametresPro() {
+    if (userPlan !== 'pro') {
+        document.querySelector('nav a[href="#abonnements"]').click();
+        return showToast("Verrouillé. L'espace Agence nécessite l'abonnement Premium Pro.", "error");
+    }
     if (!localStorage.getItem('auditpro_cookies')) {
         return showToast("Veuillez accepter la sauvegarde locale (bandeau en bas) pour activer cette fonction.", "error");
     }
@@ -226,6 +248,9 @@ function reinitialiserMarqueBlanche() {
     document.getElementById('webhookCrmInput').value = '';
     document.getElementById('logo-preview').style.display = 'none';
     document.getElementById('logo-preview').src = '';
+    document.getElementById('logo-file-name').innerText = "Aucun fichier";
+    document.getElementById('logo-file-name').style.color = "#6c757d";
+    document.getElementById('logo-file-name').style.fontWeight = "normal";
     
     appliquerCouleurMarqueBlanche(); 
     chargerHistorique(); 
@@ -470,9 +495,12 @@ function switchProTab(tabId) {
     }
 }
 
-// ---------------- GESTION DU COMPARATEUR (B2C) ----------------
-
 function ajouterComparateur() {
+    if (userPlan === 'gratuit') {
+        document.querySelector('nav a[href="#abonnements"]').click();
+        return showToast("Le comparateur est réservé aux abonnements Premium et Particulier.", "error");
+    }
+
     if (!donneesAudit) return;
     if (comparateur.length >= 6) {
         return showToast("Le comparateur est plein (6 biens max). Supprimez-en un dans l'onglet 'Mon Comparateur'.", "error");
@@ -551,8 +579,6 @@ function renderComparateur() {
     appliquerCouleurMarqueBlanche(); 
 }
 
-// ---------------- GÉNÉRATEUR D'ANNONCE (B2B) ----------------
-
 function genererAnnonceLeBonCoin() {
     if (!donneesAudit) return;
     
@@ -612,6 +638,11 @@ function lancerDemo() {
 }
 
 async function envoyer() {
+    if (userPlan === 'gratuit' && analysesCount >= 1) {
+        document.querySelector('nav a[href="#abonnements"]').click();
+        return showToast("Vous avez atteint votre limite d'une analyse gratuite par mois. Veuillez souscrire à une offre.", "error");
+    }
+
     const input = document.getElementById('fichierPdf');
     const prixInputBrut = document.getElementById('prixInitial').value.replace(/\s+/g, '');
     const prixInput = Number(prixInputBrut) || 0;
@@ -659,6 +690,9 @@ async function envoyer() {
         document.getElementById('loading-overlay').style.display = "none";
         
         ajouterAuHistorique(donneesAudit.localisation_exacte, prixInput, donneesAudit);
+
+        analysesCount++;
+        localStorage.setItem('auditpro_analyses_count', analysesCount);
 
         showToast("Analyse effectuée avec succès.");
         document.getElementById('result-wrapper').style.display = "block";
@@ -879,11 +913,9 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
         });
     }
 
-    // Gestion du bloc actions Premium
     const actionContainer = document.getElementById('action-buttons-container');
     if (profilActuel === 'professionnel') {
-        const isConfigured = localStorage.getItem('auditpro_agence_nom') && localStorage.getItem('auditpro_agence_nom') !== 'AuditPro';
-        if (isConfigured) {
+        if (userPlan === 'pro') {
             actionContainer.innerHTML = `
                 <button class="btn-demo" onclick="exporterFicheVitrine()" style="flex: 1; border-color:#0b1a14!important; color:#0b1a14;">📄 Exporter Fiche Vitrine</button>
                 <button class="btn-demo" onclick="genererAnnonceLeBonCoin()" style="flex: 1; border-color:#0b1a14!important; color:#0b1a14;">📝 Générer texte d'annonce</button>
@@ -891,7 +923,7 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
         } else {
             actionContainer.innerHTML = `
                 <div style="width: 100%; background: #f8f9fa; border: 1px solid #ced4da; padding: 15px; border-radius: 8px; font-size: 13px; color: #555;">
-                    <strong style="color: #0b1a14;">🔒 Outils Premium Verrouillés :</strong> Paramétrez votre Agence dans votre Tableau de Bord pour débloquer la génération d'annonces et de fiches vitrines.
+                    <strong style="color: #0b1a14;">🔒 Outils Premium Verrouillés :</strong> Souscrivez à l'abonnement Premium Pro pour débloquer ces options.
                 </div>
             `;
         }
@@ -902,7 +934,6 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
     }
 }
 
-// ======================== LE TOUT NOUVEAU GÉNÉRATEUR DE PDF (FAÇON GRILLE) ========================
 function exporterPDF(action = 'download', targetWindow = null) {
     if (!donneesAudit) return;
     const btn = document.getElementById('btnExport');
@@ -974,7 +1005,6 @@ function exporterPDF(action = 'download', targetWindow = null) {
         if (chartCanvas) {
             let dataUrl = chartCanvas.toDataURL('image/png', 1.0);
             if (dataUrl && dataUrl.length > 20) {
-                // REDUCTION DE LA TAILLE ICI (width: 130 au lieu de 170 ou 190)
                 chartImageBlock = { image: dataUrl, width: 130, alignment: 'center', margin: [0, 10, 0, 0] };
             }
         }
@@ -1012,7 +1042,6 @@ function exporterPDF(action = 'download', targetWindow = null) {
             pageSize: 'A4',
             pageMargins: [ 50, 50, 40, 50 ], 
             background: function() {
-                // Bande de couleur façon Grille sur toute la hauteur
                 return { canvas: [ { type: 'rect', x: 0, y: 0, w: 15, h: 842, color: agenceCouleur } ] };
             },
             header: function(currentPage) {
@@ -1039,7 +1068,6 @@ function exporterPDF(action = 'download', targetWindow = null) {
                 { text: 'Évaluation algorithmique des coûts de remise aux normes basée sur le DDT.', fontSize: 11, color: '#666', margin: [0, 0, 0, 25], italics: true },
                 
                 {
-                    // MODIFICATION DE LA TAILLE DES COLONNES ICI POUR LAISSER DE LA PLACE AU GRAPHIQUE
                     columns: [
                         {
                             width: '60%',
@@ -1139,7 +1167,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('cookie-banner').style.display = 'block';
     }
 
-    // Charger le profil actif
     if (localStorage.getItem('auditpro_profil')) {
         changerProfilInterne(localStorage.getItem('auditpro_profil'));
     } else {
@@ -1155,6 +1182,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(agenceLogoBase64) {
         document.getElementById('logo-preview').src = agenceLogoBase64;
         document.getElementById('logo-preview').style.display = 'block';
+        document.getElementById('logo-file-name').innerText = "Logo enregistré";
     }
     appliquerCouleurMarqueBlanche();
 
@@ -1209,6 +1237,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 dropZone.style.borderColor = agenceCouleur;
                 dropZone.style.background = "#f4fbf7";
                 document.querySelector('.drop-icon').style.color = agenceCouleur;
+            }
+        });
+    }
+
+    // ACCÈS GOD MODE (ADMIN) - Clic 5 fois sur le Logo
+    const headerLogo = document.querySelector('.logo');
+    if (headerLogo) {
+        headerLogo.addEventListener('click', function() {
+            logoClicks++;
+            if (logoClicks === 5) {
+                localStorage.setItem('auditpro_plan', 'pro');
+                userPlan = 'pro';
+                showToast("MODE ADMIN ACTIVÉ : Accès total illimité débloqué !", "success");
             }
         });
     }
