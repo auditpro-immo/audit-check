@@ -21,7 +21,7 @@ let userPlan = lireAcces();
 let analysesCount = parseInt(localStorage.getItem('_ap_cnt_')) || 0;
 let logoClicks = 0;
 
-// Charger le comparateur depuis le stockage local (jusqu'à 6 biens)
+// Charger le comparateur
 let comparateur = JSON.parse(localStorage.getItem('auditpro_comparateur')) || [];
 
 // VARIABLES CONFIG VISUELLE
@@ -173,16 +173,8 @@ function appliquerCouleurMarqueBlanche() {
     `;
 }
 
-function changerCouleurParticulier(couleur) {
-    if (!localStorage.getItem('auditpro_cookies')) {
-        return showToast("Veuillez accepter la sauvegarde locale.", "error");
-    }
+function changerCouleurParticulierTemporaire(couleur) {
     agenceCouleur = couleur;
-    localStorage.setItem('auditpro_agence_couleur', agenceCouleur);
-    
-    let inputPro = document.getElementById('couleurAgenceInput');
-    if(inputPro) inputPro.value = agenceCouleur;
-    
     appliquerCouleurMarqueBlanche();
 }
 
@@ -195,7 +187,7 @@ function sauvegarderParametresParticulier() {
         return showToast("Veuillez accepter la sauvegarde locale (bandeau en bas) pour activer cette fonction.", "error");
     }
     
-    fraisNotaireEstimes = parseFloat(document.getElementById('fraisNotaireInput').value) || 8.0;
+    fraisNotaireEstimes = parseFloat(document.getElementById('fraisNotaireInput').value) || 0;
     margeSecuriteTravaux = parseFloat(document.getElementById('margeSecuriteInput').value) || 0;
     agenceCouleur = document.getElementById('couleurParticulierInput').value;
 
@@ -206,7 +198,29 @@ function sauvegarderParametresParticulier() {
     appliquerCouleurMarqueBlanche();
     if(donneesAudit) afficherEcran();
     if(comparateur.length > 0) renderComparateur();
-    showToast("Paramètres d'Acheteur sauvegardés avec succès !");
+    showToast("Paramètres sauvegardés avec succès !");
+}
+
+function reinitialiserParametresParticulier() {
+    localStorage.removeItem('auditpro_frais_notaire');
+    localStorage.removeItem('auditpro_marge_secu');
+    localStorage.removeItem('auditpro_agence_couleur');
+
+    fraisNotaireEstimes = 8.0;
+    margeSecuriteTravaux = 10.0;
+    agenceCouleur = '#00d632';
+
+    document.getElementById('fraisNotaireInput').value = '8';
+    document.getElementById('margeSecuriteInput').value = '10';
+    document.getElementById('couleurParticulierInput').value = '#00d632';
+
+    let inputPro = document.getElementById('couleurAgenceInput');
+    if(inputPro) inputPro.value = '#00d632';
+
+    appliquerCouleurMarqueBlanche();
+    if(donneesAudit) afficherEcran();
+    if(comparateur.length > 0) renderComparateur();
+    showToast("Réinitialisation effectuée.");
 }
 
 function sauvegarderParametresPro() {
@@ -1256,7 +1270,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-   // ACCÈS GOD MODE (ADMIN)
+    // ACCÈS GOD MODE (ADMIN) - Reste appuyé sur MAJ + clique 5 fois sur le Logo
     const headerLogo = document.querySelector('.logo');
     if (headerLogo) {
         headerLogo.addEventListener('click', function(e) {
