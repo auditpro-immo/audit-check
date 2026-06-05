@@ -20,7 +20,7 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return {"status": "API AuditPro opérationnelle", "version": "1.3", "message": "Moteur d'analyse prédictive prêt."}
+    return {"status": "API AuditPro opérationnelle", "version": "1.4", "message": "Moteur d'analyse prédictive prêt."}
 
 def get_modulateur_marche(cp: str):
     mois_ecoules = (datetime.now().year - 2024) * 12 + datetime.now().month
@@ -98,13 +98,19 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
     bloquant_location = False
     
     texte_global = ""
-    # Extraction sécurisée et éphémère (le fichier n'est pas sauvegardé sur le disque dur)
     with pdfplumber.open(fichier.file) as pdf:
         texte_global = " ".join([page.extract_text() or "" for page in pdf.pages])
         
     surface = extraire_surface(texte_global)
     mention_surface = f" (Base de calcul estimative : ~{int(surface)} m²)"
 
+    dpe_letter = "?"
+    match_dpe = re.search(r"class[ée]\s+([A-G])\b", texte_global, re.IGNORECASE)
+    if match_dpe:
+        dpe_letter = match_dpe.group(1).upper()
+    elif re.search(r"(passoire thermique|classe énergétique F|classe énergétique G)", texte_global, re.IGNORECASE):
+        dpe_letter = "F"
+        
     if re.search(r"(B\.3\.3\.6|B\.4\.3|B\.5\.2|défaut de mise à la terre|électrisation|contact direct|matériel vétuste|anomalie électrique)", texte_global, re.IGNORECASE):
         c = int((80 * surface) * indice)
         checklist["elec"].update({
@@ -161,15 +167,17 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
         })
         total_decote += c
 
-    if re.search(r"(dpe.*g\b|dpe.*f\b|passoire thermique|classe énergétique F|classe énergétique G)", texte_global, re.IGNORECASE):
+    if dpe_letter in ["F", "G"] or re.search(r"(passoire thermique|classe énergétique F|classe énergétique G)", texte_global, re.IGNORECASE):
         c = int((700 * surface) * indice)
         checklist["dpe"].update({
             "statut": "Anomalie", "cout": c, 
-            "detail": f"Classement F ou G (Passoire thermique).{mention_surface}", 
+            "detail": f"Classement {dpe_letter} (Passoire thermique).{mention_surface}", 
             "action": "À prévoir : Rénovation globale (isolation + chauffage) pour louer à terme."
         })
         total_decote += c
         bloquant_location = True
+    else:
+        checklist["dpe"]["detail"] = f"Le bien est classé {dpe_letter}."
         
     if re.search(r"(inondation|zone inondable|ppri|sismicité.*forte|séisme)", texte_global, re.IGNORECASE):
         c = int(4000 * indice)
@@ -203,6 +211,7 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
         "analyse_secteur": f"Rapport d'indice local : {indice}",
         "localisation_exacte": nom_ville,
         "impact_marche": texte_impact,
+        "dpe_lettre": dpe_letter,
         "date_audit": datetime.now().strftime("%d/%m/%Y"),
         "securite": "Confidentialité totale : Le document a été traité dans la mémoire vive et détruit."
     }
