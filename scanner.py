@@ -20,7 +20,7 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return {"status": "API AuditPro opérationnelle", "version": "1.4", "message": "Moteur d'analyse prédictive prêt."}
+    return {"status": "API AuditPro opérationnelle", "version": "1.5", "message": "Moteur d'analyse prédictive prêt avec DPE/GES."}
 
 def get_modulateur_marche(cp: str):
     mois_ecoules = (datetime.now().year - 2024) * 12 + datetime.now().month
@@ -104,12 +104,22 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
     surface = extraire_surface(texte_global)
     mention_surface = f" (Base de calcul estimative : ~{int(surface)} m²)"
 
+    # Extraction des lettres DPE et GES
     dpe_letter = "?"
+    ges_letter = "?"
+    
     match_dpe = re.search(r"class[ée]\s+([A-G])\b", texte_global, re.IGNORECASE)
-    if match_dpe:
+    match_ges = re.search(r"(?:ges|effet de serre).*?class[ée]?\s+([A-G])\b", texte_global, re.IGNORECASE)
+    
+    if match_dpe: 
         dpe_letter = match_dpe.group(1).upper()
     elif re.search(r"(passoire thermique|classe énergétique F|classe énergétique G)", texte_global, re.IGNORECASE):
         dpe_letter = "F"
+        
+    if match_ges:
+        ges_letter = match_ges.group(1).upper()
+    elif dpe_letter != "?":
+        ges_letter = dpe_letter # Sur les nouveaux DPE, le GES est souvent aligné sur le DPE
         
     if re.search(r"(B\.3\.3\.6|B\.4\.3|B\.5\.2|défaut de mise à la terre|électrisation|contact direct|matériel vétuste|anomalie électrique)", texte_global, re.IGNORECASE):
         c = int((80 * surface) * indice)
@@ -167,7 +177,7 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
         })
         total_decote += c
 
-    if dpe_letter in ["F", "G"] or re.search(r"(passoire thermique|classe énergétique F|classe énergétique G)", texte_global, re.IGNORECASE):
+    if dpe_letter in ["F", "G"]:
         c = int((700 * surface) * indice)
         checklist["dpe"].update({
             "statut": "Anomalie", "cout": c, 
@@ -212,6 +222,7 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
         "localisation_exacte": nom_ville,
         "impact_marche": texte_impact,
         "dpe_lettre": dpe_letter,
+        "ges_lettre": ges_letter,
         "date_audit": datetime.now().strftime("%d/%m/%Y"),
         "securite": "Confidentialité totale : Le document a été traité dans la mémoire vive et détruit."
     }
@@ -288,4 +299,4 @@ async def analyze_grid(request: Request):
     etat = "Vigilance : Budget travaux indicatif à prévoir" if decote > 0 else "Aucun gros travaux décelés via cette grille"
     strategie = f"Bilan : L'analyse indique une enveloppe de ~{decote} € de travaux. Ceci permet de poser une base de discussion, à valider impérativement par des artisans." if decote > 0 else "Bilan : L'évaluation ne détecte aucun défaut justifiant une décote technique."
 
-    return {"success": True, "resultat": {"etat": etat, "decote_totale": decote, "details": details, "strategie": strategie, "dpe": dpe_estime}}
+    return {"success": True, "resultat": {"etat": etat, "decote_totale": decote, "details": details, "strategie": strategie, "dpe": dpe_estime, "ges": dpe_estime}}
