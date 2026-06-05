@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuditPro | Le logiciel d'expertise et de chiffrage immobilier</title>
+    <title>AuditPro | Le logiciel d'analyse et d'estimation immobilière</title>
     
-    <meta name="description" content="AuditPro : Testez et analysez les diagnostics de votre bien immobilier en 2 min. Chiffrage précis des travaux de rénovation et de mise aux normes.">
-    <meta name="keywords" content="auditpro, immobilier, chiffrage travaux, DPE, passoire thermique, investissement locatif, expertise, diagnostic, agent immobilier">
-    <meta name="author" content="AuditPro">
+    <meta name="description" content="AuditPro : Testez et analysez les diagnostics de votre bien immobilier. Chiffrage estimatif des travaux de rénovation et de mise aux normes.">
+    <meta name="keywords" content="auditpro, immobilier, chiffrage travaux, DPE, passoire thermique, investissement locatif, analyse, diagnostic, agent immobilier">
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230b1a14'/><path d='M50 22 L82 72 L68 72 L50 44 L32 72 L18 72 Z' fill='%2300d632'/><path d='M50 35 L70 66 L59 66 L50 51 L41 66 L30 66 Z' fill='%23ffffff' opacity='0.85'/></svg>">
 
@@ -16,7 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <link rel="stylesheet" href="style.css?v=13.1">
+    <link rel="stylesheet" href="style.css?v=14.0">
 </head>
 <body>
 
@@ -32,7 +31,7 @@
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00d632" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     </div>
                     <h3>Espace Particulier</h3>
-                    <p>Analysez les diagnostics d'un bien en quelques secondes pour anticiper le coût des travaux et formuler une offre d'achat sécurisée.</p>
+                    <p>Analysez les diagnostics d'un bien en quelques secondes pour anticiper une estimation du coût des travaux et formuler une offre d'achat éclairée.</p>
                     <div class="card-action">Accéder au simulateur →</div>
                 </div>
                 
@@ -41,13 +40,13 @@
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00d632" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
                     </div>
                     <h3>Espace Professionnel</h3>
-                    <p>Justifiez objectivement vos estimations, rassurez vos clients et éditez des rapports d'expertise personnalisés aux couleurs de votre agence.</p>
+                    <p>Appuyez vos estimations sur des données factuelles, rassurez vos clients et éditez des bilans indicatifs personnalisés aux couleurs de votre agence.</p>
                     <div class="card-action">Accéder au tableau de bord →</div>
                 </div>
             </div>
             <div class="portal-footer">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 5px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                Connexion sécurisée • Vos données restent chiffrées et stockées localement sur cet appareil.
+                Connexion sécurisée • Vos paramètres d'interface sont stockés localement.
             </div>
         </div>
     </div>
@@ -56,7 +55,7 @@
         <header>
             <div class="logo"><span id="header-logo-text">Audit</span><span id="header-logo-color" style="color: #00d632;">Pro</span></div>
            <nav>
-                <a href="#audit" class="active">Le Diagnostic</a>
+                <a href="#audit" class="active">L'Analyse</a>
                 <a href="#abonnements">Abonnements</a>
                 <a href="#pro" id="nav-pro" style="display: none;">Mon Tableau de Bord Pro</a>
                 <a href="#informations">Ressources & Grille</a>
@@ -64,19 +63,19 @@
                 <a href="#faq">FAQ</a>
                 <a href="#contact">Contact</a>
             </nav>
-            <button class="btn-solid btn-dynamic-color" onclick="document.querySelector('nav a[href=\'#audit\']').click();">Nouveau Diagnostic</button>
+            <button class="btn-solid btn-dynamic-color" onclick="document.querySelector('nav a[href=\'#audit\']').click();">Nouvelle Analyse</button>
         </header>
 
         <main>
             <div id="audit-tab" class="tab-content active">
                 <section class="hero" id="audit">
                     <div class="hero-content">
-                        <div id="hero-badge" style="display: inline-block; background: #0b1a14; color: #00d632; font-size: 12px; font-weight: bold; padding: 5px 12px; border-radius: 20px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Technologie Certifiée</div>
+                        <div id="hero-badge" style="display: inline-block; background: #0b1a14; color: #00d632; font-size: 12px; font-weight: bold; padding: 5px 12px; border-radius: 20px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Algorithme Prédictif</div>
                         <h1 id="hero-title">Traduisez les diagnostics techniques en opportunités.</h1>
-                        <p id="hero-desc">Notre algorithme extrait, vulgarise et chiffre l'ensemble des travaux de mise aux normes d'un bien immobilier en moins de 2 minutes pour vous aider à prendre la bonne décision.</p>
+                        <p id="hero-desc">Notre algorithme extrait, vulgarise et estime l'ensemble des travaux de mise aux normes d'un bien immobilier en moins de 2 minutes pour vous aider à prendre la bonne décision.</p>
                         <ul>
-                            <li><strong>Analyse exhaustive</strong> du Dossier de Diagnostics Techniques (DDT)</li>
-                            <li><strong>Calculateur de prix</strong> indexé sur les tarifs de votre région</li>
+                            <li><strong>Lecture automatisée</strong> du Dossier de Diagnostics Techniques (DDT)</li>
+                            <li><strong>Calculateur estimatif</strong> basé sur les moyennes de votre région</li>
                             <li><strong>Générateur d'approche</strong> pour une transaction équitable</li>
                         </ul>
                     </div>
@@ -101,13 +100,17 @@
                         </div>
                         
                         <div class="form-group" id="bloc-renov" style="display:none;">
-                            <label>Profil MaPrimeRénov'</label>
+                            <label style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>Profil MaPrimeRénov'</span>
+                                <a href="https://france-renov.gouv.fr/aides/simulateur" target="_blank" style="font-size: 11px; color: #00d632; text-decoration: none; font-weight: bold;">(Estimer mon profil)</a>
+                            </label>
                             <select id="tauxRenov" class="form-control">
-                                <option value="0">Standard (0%)</option>
-                                <option value="0.4">Aisé - Rose (40% d'aide)</option>
-                                <option value="0.6">Intermédiaire - Violet (60% d'aide)</option>
-                                <option value="0.9">Très Modeste - Bleu (90% d'aide)</option>
+                                <option value="0">Standard (Pas d'aide ou revenus hauts)</option>
+                                <option value="0.4">Aisé / Rose (~40% de subvention)</option>
+                                <option value="0.6">Intermédiaire / Violet (~60% de subvention)</option>
+                                <option value="0.9">Modeste à Très Modeste / Bleu (~90%)</option>
                             </select>
+                            <div style="font-size: 11px; color: #888; margin-top: 5px; line-height: 1.3;">Simulation théorique. Le montant final est soumis à l'approbation de l'ANAH.</div>
                         </div>
 
                         <div class="form-group">
@@ -124,9 +127,10 @@
                                 <span class="drop-zone-text">Glissez-déposez votre PDF ici ou cliquez</span>
                                 <input type="file" id="fichierPdf" class="drop-zone-input" accept="application/pdf">
                             </div>
+                            <div style="font-size: 11px; color: #888; margin-top: 5px; text-align: center;">Taille maximum : 15 Mo. Traitement éphémère.</div>
                         </div>
                         
-                        <button class="btn-submit btn-dynamic-color" id="btnSubmit" onclick="envoyer()">Générer l'audit complet</button>
+                        <button class="btn-submit btn-dynamic-color" id="btnSubmit" onclick="envoyer()">Générer le bilan estimatif</button>
                         
                         <div style="text-align: center; margin-top: 15px;">
                             <button type="button" class="btn-demo" onclick="lancerDemo()">
@@ -144,7 +148,7 @@
                 <div id="result-wrapper">
                     <div id="contenu-ecran"></div>
                     <div style="text-align: center; margin-top: 40px;">
-                        <button class="btn-solid btn-dynamic-color" id="btnExport" style="padding: 16px 40px; font-size: 16px;" onclick="exporterPDF('download')">Télécharger le rapport PDF Officiel</button>
+                        <button class="btn-solid btn-dynamic-color" id="btnExport" style="padding: 16px 40px; font-size: 16px;" onclick="exporterPDF('download')">Télécharger le rapport détaillé (PDF)</button>
                         <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
                             <button class="btn-demo" id="btnComparateur" onclick="ajouterComparateur()" style="display:none; width:auto;">Ajouter au comparateur (Max 3)</button>
                             <button class="btn-demo" id="btnVitrine" onclick="exporterFicheVitrine()" style="display:none; width:auto;">Générer Fiche Vitrine (A4)</button>
@@ -412,10 +416,10 @@
                 <section id="faq" class="content-section">
                     <h2 class="section-title">FAQ</h2>
                     <div class="faq-container">
-                        <details><summary>1. Qu'est-ce qu'un audit technique pré-acquisition ?</summary><p>C'est une analyse détaillée de la santé d'un bâtiment. Notre programme interprète les documents obligatoires du vendeur pour en déduire les risques financiers et estimer le budget nécessaire pour la mise aux normes.</p></details>
-                        <details><summary>2. Le rapport d'AuditPro a-t-il une valeur légale chez le notaire ?</summary><p>Non. Le rapport généré est un outil d'aide à la décision visant la transparence commerciale. Chez le notaire, seul le Dossier de Diagnostic Technique (DDT) réalisé physiquement par l'expert certifié a une valeur juridique absolue.</p></details>
-                        <details><summary>3. Puis-je utiliser ce chiffrage pour discuter du prix de vente ?</summary><p>Absolument, c'est l'objectif principal. En présentant un rapport clair chiffrant les anomalies techniques, vous disposez d'une base objective et neutre pour trouver un accord équitable avec le vendeur.</p></details>
-                        <details><summary>4. L'outil remplace-t-il le devis d'un artisan professionnel ?</summary><p>Non. L'application calcule une enveloppe budgétaire moyenne basée sur des statistiques régionales. Avant d'acheter, il est toujours conseillé de faire confirmer ces montants précis par le devis d'un artisan local certifié RGE.</p></details>
+                        <details><summary>1. Qu'est-ce qu'une analyse estimative pré-acquisition ?</summary><p>C'est une lecture algorithmique détaillée de la santé d'un bâtiment. Notre programme interprète les documents obligatoires du vendeur pour en déduire les risques financiers et estimer, à titre indicatif, le budget nécessaire pour la mise aux normes.</p></details>
+                        <details><summary>2. Le rapport d'AuditPro a-t-il une valeur légale chez le notaire ?</summary><p>Non, aucune. Le rapport généré est un outil d'aide à la décision visant la transparence commerciale. Chez le notaire, seul le Dossier de Diagnostic Technique (DDT) réalisé physiquement par le diagnostiqueur certifié a une valeur juridique absolue.</p></details>
+                        <details><summary>3. Puis-je utiliser ce chiffrage pour discuter du prix de vente ?</summary><p>Absolument, c'est l'objectif principal. En présentant un rapport clair chiffrant les anomalies techniques, vous disposez d'une base de discussion argumentée pour trouver un accord avec le vendeur.</p></details>
+                        <details><summary>4. L'outil remplace-t-il le devis d'un artisan professionnel ?</summary><p>En aucun cas. L'application calcule une enveloppe budgétaire moyenne basée sur des statistiques régionales. Avant d'acheter, vous devez impérativement faire confirmer ces montants précis par le devis d'un artisan local certifié RGE.</p></details>
                         <details><summary>5. Quels sont les diagnostics immobiliers obligatoires pour vendre ?</summary><p>Le vendeur doit fournir : le DPE (énergie), le constat plomb (si construction avant 1949), l'amiante (avant 1997), l'électricité et le gaz (installations de plus de 15 ans), l'ERP (risques naturels), et l'état parasitaire selon l'arrêté de la ville.</p></details>
                         <details><summary>6. Quelle est la durée de validité du DPE ?</summary><p>Un DPE est valable 10 ans. Attention toutefois, depuis le 1er janvier 2025, tous les DPE réalisés avec l'ancienne méthode (avant juillet 2021) ne sont officiellement plus valables.</p></details>
                         <details><summary>7. Qu'est-ce qu'exactement une "passoire thermique" ?</summary><p>C'est un logement classé F ou G sur le DPE. Il consomme énormément de chauffage. La loi française interdit progressivement la mise en location de ces biens pour protéger les locataires.</p></details>
@@ -424,11 +428,11 @@
                         <details><summary>10. Quelle est la différence de risque entre l'amiante et le plomb ?</summary><p>L'amiante est une fibre (souvent dans les toits en fibrociment ou les dalles) qui est cancérigène si on la respire en la cassant. Le plomb est présent dans les vieilles peintures et provoque une maladie grave (le saturnisme).</p></details>
                         <details><summary>11. Qu'est-ce qu'un DGI (Danger Grave et Immédiat) ?</summary><p>C'est le niveau d'alerte maximum, extrêmement fréquent sur les anciennes chaudières au gaz. Si le diagnostiqueur repère un DGI, il a l'obligation légale de condamner l'installation sur le champ. Elle ne pourra être rouverte qu'après réparation par un pro.</p></details>
                         <details><summary>12. Suis-je obligé de faire les travaux si une anomalie est détectée ?</summary><p>Le vendeur n'a aucune obligation de travaux (sauf en cas de DGI), il doit juste informer l'acheteur en toute transparence. En tant qu'acheteur, la loi ne vous y oblige pas, mais les banques exigent souvent la mise aux normes pour vous accorder le prêt immobilier.</p></details>
-                        <details><summary>13. Le calcul prend-il en compte les aides de l'État (MaPrimeRénov') ?</summary><p>L'outil estime désormais le reste à charge si vous sélectionnez votre profil MaPrimeRénov' dans les paramètres de la simulation.</p></details>
-                        <details><summary>14. Le rapport est-il adapté aux tarifs des artisans de ma région ?</summary><p>Oui. L'algorithme lit le code postal que vous avez renseigné et applique un coefficient multiplicateur reflétant la tension du marché de la construction dans votre département.</p></details>
+                        <details><summary>13. Le calcul prend-il en compte les aides de l'État (MaPrimeRénov') ?</summary><p>L'outil estime désormais le reste à charge indicatif si vous sélectionnez votre profil MaPrimeRénov' dans les paramètres de la simulation. L'attribution finale relève exclusivement de l'ANAH.</p></details>
+                        <details><summary>14. Le rapport est-il adapté aux tarifs des artisans de ma région ?</summary><p>Oui. L'algorithme lit le code postal que vous avez renseigné et applique un coefficient multiplicateur reflétant la tension du marché de la construction dans votre secteur.</p></details>
                         <details><summary>15. Comment le programme calcule-t-il les prix des travaux ?</summary><p>Il repère dans le PDF la surface totale du bien, identifie le type de problème relevé par l'expert, et multiplie la surface par le coût moyen au mètre carré pratiqué pour ce type de réparation spécifique.</p></details>
-                        <details><summary>16. Mes données personnelles et mon document PDF sont-ils conservés ?</summary><p>Absolument pas. Nous appliquons la règle stricte du "Zéro Stockage" serveur. Votre PDF est scanné en quelques secondes par la mémoire vive, puis il est immédiatement et définitivement supprimé. Vos historiques sont stockés sur votre propre ordinateur.</p></details>
-                        <details><summary>17. Le programme peut-il lire un PDF de plus de 100 pages ?</summary><p>Oui, c'est toute la force de l'outil technique. L'algorithme est conçu pour scanner instantanément l'intégralité du document et cibler uniquement les tableaux de synthèses et les mots-clés de conformité.</p></details>
+                        <details><summary>16. Mes données personnelles et mon document PDF sont-ils conservés ?</summary><p>Absolument pas. Votre PDF est envoyé de manière sécurisée et éphémère à notre moteur d'analyse, scanné dans la mémoire vive, puis il est immédiatement et définitivement détruit. Il n'y a aucun stockage côté serveur.</p></details>
+                        <details><summary>17. Le programme peut-il lire un PDF de plus de 100 pages ?</summary><p>Oui, c'est toute la force de l'outil technique. L'algorithme est conçu pour scanner instantanément l'intégralité du document et cibler uniquement les tableaux de synthèses et les mots-clés (Taille maximale de 15 Mo pour des raisons de sécurité serveur).</p></details>
                         <details><summary>18. Que se passe-t-il s'il manque un diagnostic obligatoire lors de la vente ?</summary><p>Le notaire bloquera généralement la vente le jour de la signature. Si elle se fait quand même (erreur), l'acheteur pourra plus tard attaquer le vendeur en justice pour "vice caché" et demander l'annulation de la vente.</p></details>
                         <details><summary>19. L'outil fonctionne-t-il pour les locaux commerciaux ou industriels ?</summary><p>Actuellement non. Les règles de sécurité (normes incendie, accès ERP handicapés) et les prix au mètre carré pour les locaux commerciaux sont fondamentalement différents. L'outil est calibré exclusivement pour l'immobilier d'habitation.</p></details>
                         <details><summary>20. Je suis un professionnel de l'immobilier, puis-je utiliser la plateforme ?</summary><p>Oui, l'outil dispose d'un écran de bienvenue avec sélection de profil. En choisissant "Espace Professionnel", l'algorithme vous offrira les outils nécessaires pour structurer factuellement vos documents d'appui.</p></details>
@@ -450,9 +454,9 @@
         </main>
 
        <footer>
-           © 2026 AuditPro. Tous droits réservés. | Logiciel d'analyse immobilière.<br>
-           Ce rapport d'expertise ne se substitue pas à un devis d'artisan.<br>
-           <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" class="text-dynamic-color" style="text-decoration: underline; margin-top: 15px; display: inline-block;">Mentions Légales & Confidentialité</a>
+           © 2026 AuditPro. Tous droits réservés. | Outil d'analyse immobilière estimative.<br>
+           L'ensemble des chiffrages sont indicatifs et ne se substituent en aucun cas à un devis d'artisan RGE.<br>
+           <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" class="text-dynamic-color" style="text-decoration: underline; margin-top: 15px; display: inline-block;">Mentions Légales & Traitement des Données</a>
         </footer>
     </div>
 
@@ -461,17 +465,17 @@
             <button onclick="document.getElementById('modalLegale').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: #cc0000; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">Fermer X</button>
             <h2 style="color: #0b1a14; border-bottom: 2px solid #eee; padding-bottom: 10px;">Mentions Légales & Conditions d'Utilisation</h2>
             <h3 style="font-size: 16px; margin-top: 20px;">1. Édition et Hébergement</h3>
-            <p style="font-size: 14px; color: #555;">Interface publique hébergée par GitHub Pages. Moteur d'analyse hébergé par Render.</p>
+            <p style="font-size: 14px; color: #555;">Interface publique hébergée par GitHub Pages. Moteur d'analyse hébergé sur environnement sécurisé (Render).</p>
             <h3 style="font-size: 16px; margin-top: 20px;">2. Traitement des Données (RGPD)</h3>
-            <p style="font-size: 14px; color: #555;">Le respect de la vie privée est absolu. "Zéro Stockage" du côté serveur. Vos paramètres (Marque Blanche, Historique) sont stockés localement sur votre propre navigateur via les Cookies/LocalStorage.</p>
-            <h3 style="font-size: 16px; margin-top: 20px;">3. Limites de Responsabilité</h3>
-            <p style="font-size: 14px; color: #555;">Les chiffrages proposés sont des estimations statistiques macro-économiques. L'éditeur décline toute responsabilité quant aux décisions financières prises sur la base de ces rapports.</p>
+            <p style="font-size: 14px; color: #555;">Le respect de la vie privée est une priorité. Lors de l'analyse, votre fichier PDF est transmis de manière cryptée à notre serveur pour une lecture éphémère dans la mémoire vive. Il est <strong>immédiatement et définitivement détruit</strong> après l'extraction des données. Aucun document n'est sauvegardé sur nos disques. Vos paramètres (historique, personnalisation) sont stockés localement sur votre propre navigateur via LocalStorage.</p>
+            <h3 style="font-size: 16px; margin-top: 20px;">3. Limites de Responsabilité Juridique</h3>
+            <p style="font-size: 14px; color: #555;">AuditPro est un outil informatique d'aide à la décision. Les chiffrages proposés sont des estimations statistiques macro-économiques fournies à titre purement indicatif. AuditPro n'est ni un bureau d'études, ni une entreprise de diagnostic certifiée, ni une entreprise de bâtiment. L'éditeur décline toute responsabilité quant aux décisions financières ou juridiques prises sur la base de ces rapports. Avant tout achat immobilier, il est de votre responsabilité de faire confirmer ces estimations par des devis contradictoires établis par des artisans certifiés RGE.</p>
         </div>
     </div>
 
     <div id="cookie-banner" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: #0b1a14; color: #fff; padding: 20px; z-index: 10000; box-sizing: border-box; text-align: center; border-top: 4px solid #00d632;" class="border-dynamic-color-top">
         <p style="margin: 0 0 15px 0; font-size: 14px;">
-            <strong>Fonctionnement "Local-First" :</strong> Ce site utilise le stockage local de votre navigateur pour sauvegarder vos paramètres d'agence (Marque Blanche) et votre historique de rapports sur cet appareil, sans jamais les envoyer sur nos serveurs. Acceptez-vous ce fonctionnement ?
+            <strong>Fonctionnement "Hybride Sécurisé" :</strong> Ce site utilise le stockage local de votre navigateur pour sauvegarder vos paramètres (Marque Blanche) et votre historique sur cet appareil. Vos PDF sont traités de façon éphémère par notre algorithme et détruits instantanément. Acceptez-vous ce fonctionnement ?
         </p>
         <button onclick="accepterCookies()" class="btn-solid btn-dynamic-color" style="padding: 10px 30px; font-size: 14px;">J'accepte et j'active mon espace</button>
     </div>
