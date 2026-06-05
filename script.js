@@ -65,11 +65,11 @@ function changerProfilInterne(profil) {
     let btnActif = document.getElementById('btn-' + profil);
     if(btnActif) btnActif.classList.add('active');
 
-    // Gestion de l'affichage selon le profil (On force le nav-pro a toujours etre visible)
+    // Gestion de l'affichage selon le profil (LA CORRECTION EST ICI)
     document.getElementById('bloc-renov').style.display = profil === 'particulier' ? 'block' : 'none';
     document.getElementById('nav-comparateur').style.display = profil === 'particulier' ? 'inline-block' : 'none';
     document.getElementById('nav-param-particulier').style.display = profil === 'particulier' ? 'inline-block' : 'none';
-    document.getElementById('nav-pro').style.display = 'inline-block'; // Toujours visible pour switcher facilement
+    document.getElementById('nav-pro').style.display = profil === 'professionnel' ? 'inline-block' : 'none';
 
     if(profil === "professionnel") {
         document.getElementById('hero-badge').innerText = "Espace Professionnels (B2B)";
