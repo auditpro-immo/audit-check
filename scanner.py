@@ -20,7 +20,7 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return {"status": "API AuditPro opérationnelle", "version": "1.5", "message": "Moteur d'analyse prédictive prêt avec DPE/GES."}
+    return {"status": "API AuditPro opérationnelle", "version": "1.6", "message": "Moteur d'analyse prédictive prêt avec DPE/GES."}
 
 def get_modulateur_marche(cp: str):
     mois_ecoules = (datetime.now().year - 2024) * 12 + datetime.now().month
@@ -104,11 +104,14 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
     surface = extraire_surface(texte_global)
     mention_surface = f" (Base de calcul estimative : ~{int(surface)} m²)"
 
-    # Extraction des lettres DPE et GES
-    dpe_letter = "?"
-    ges_letter = "?"
+    # Extraction très robuste des lettres DPE et GES
+    dpe_letter = "N/A"
+    ges_letter = "N/A"
     
-    match_dpe = re.search(r"class[ée]\s+([A-G])\b", texte_global, re.IGNORECASE)
+    match_dpe = re.search(r"(?:dpe|classe(?:ment)?(?:\s+énergétique)?)\s*:\s*([A-G])\b", texte_global, re.IGNORECASE)
+    if not match_dpe:
+        match_dpe = re.search(r"class[ée]\s+([A-G])\b", texte_global, re.IGNORECASE)
+    
     match_ges = re.search(r"(?:ges|effet de serre).*?class[ée]?\s+([A-G])\b", texte_global, re.IGNORECASE)
     
     if match_dpe: 
@@ -118,8 +121,8 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
         
     if match_ges:
         ges_letter = match_ges.group(1).upper()
-    elif dpe_letter != "?":
-        ges_letter = dpe_letter # Sur les nouveaux DPE, le GES est souvent aligné sur le DPE
+    elif dpe_letter != "N/A":
+        ges_letter = dpe_letter
         
     if re.search(r"(B\.3\.3\.6|B\.4\.3|B\.5\.2|défaut de mise à la terre|électrisation|contact direct|matériel vétuste|anomalie électrique)", texte_global, re.IGNORECASE):
         c = int((80 * surface) * indice)
