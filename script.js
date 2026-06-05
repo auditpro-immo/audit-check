@@ -12,9 +12,22 @@ let agenceNom = localStorage.getItem('auditpro_agence_nom') || 'AuditPro';
 let agenceCouleur = localStorage.getItem('auditpro_agence_couleur') || '#00d632';
 let agenceLogoBase64 = localStorage.getItem('auditpro_agence_logo') || null;
 
-// Couleurs officielles de l'État pour les étiquettes
-const colorConfigDPE = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F", "?": "#888888" };
-const colorConfigGES = { "A": "#F2E8FA", "B": "#E1C9F2", "C": "#D0AAEA", "D": "#BF8BE2", "E": "#AE6CD9", "F": "#9D4DD1", "G": "#7A35A3", "?": "#888888" };
+// GÉNÉRATEUR DE FLÈCHES SVG EXACTES POUR DPE ET GES (WEB ET PDF)
+function getSvgArrow(lettre, type) {
+    const colorsDPE = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F", "?": "#888888" };
+    const colorsGES = { "A": "#F2E8FA", "B": "#E1C9F2", "C": "#D0AAEA", "D": "#BF8BE2", "E": "#AE6CD9", "F": "#9D4DD1", "G": "#7A35A3", "?": "#888888" };
+    const color = type === "DPE" ? (colorsDPE[lettre] || "#888888") : (colorsGES[lettre] || "#888888");
+    
+    let txtCol = "#ffffff";
+    if (type === "DPE" && (lettre === "C" || lettre === "D" || lettre === "?")) txtCol = "#000000";
+    if (type === "GES" && (lettre === "A" || lettre === "B" || lettre === "C" || lettre === "?")) txtCol = "#000000";
+
+    return `
+    <svg width="80" height="30" viewBox="0 0 100 35" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="0,0 80,0 100,17.5 80,35 0,35" fill="${color}" />
+        <text x="45" y="24" font-family="Helvetica, sans-serif" font-size="18" font-weight="bold" fill="${txtCol}" text-anchor="middle">${lettre}</text>
+    </svg>`;
+}
 
 function entrerSurLeSite(profil) {
     const portal = document.getElementById('welcome-portal');
@@ -53,7 +66,6 @@ function changerProfilInterne(profil) {
     if(btnAnnonce) btnAnnonce.style.display = profil === 'professionnel' ? 'inline-block' : 'none';
     if(btnComp) btnComp.style.display = profil === 'particulier' ? 'inline-block' : 'none';
 
-    // Textes d'accueil
     if(profil === "professionnel") {
         document.getElementById('hero-badge').innerText = "Espace Professionnels (B2B)";
         document.getElementById('hero-title').innerText = "Justifiez vos estimations et sécurisez vos transactions.";
@@ -447,11 +459,14 @@ function ajouterComparateur() {
     const loyer = Number(inputLoyerTxt) || loyerMensuelSaisi || 0;
     const prix = Number(document.getElementById('prixInitial').value.replace(/\s+/g, '')) || donneesAudit.prix_initial;
     
+    let taux = parseFloat(document.getElementById('tauxRenov')?.value || 0);
+    let resteACharge = donneesAudit.total_decote * (1 - taux);
+
     let bien = {
         id: idRapport,
         ville: donneesAudit.localisation_exacte,
         prix: prix,
-        travaux: donneesAudit.total_decote,
+        travaux: resteACharge, // Enregistre le montant APRÈS aides
         loyer: loyer,
         dpe: donneesAudit.dpe_lettre || "?",
         ges: donneesAudit.ges_lettre || "?"
@@ -484,18 +499,12 @@ function renderComparateur() {
         let rentaBrute = bien.loyer > 0 ? (((bien.loyer * 12) / bien.prix) * 100).toFixed(2) + " %" : "N/A";
         let rentaNette = bien.loyer > 0 ? (((bien.loyer * 12) / (bien.prix + bien.travaux)) * 100).toFixed(2) + " %" : "N/A";
         
-        let colorDpe = colorConfigDPE[bien.dpe.toUpperCase()] || "#888";
-        let textDpeColor = (bien.dpe.toUpperCase() === "D" || bien.dpe.toUpperCase() === "C" || bien.dpe.toUpperCase() === "?") ? "#000" : "#fff";
-
-        let colorGes = colorConfigGES[bien.ges.toUpperCase()] || "#888";
-        let textGesColor = (bien.ges.toUpperCase() === "A" || bien.ges.toUpperCase() === "B" || bien.ges.toUpperCase() === "C" || bien.ges.toUpperCase() === "?") ? "#000" : "#fff";
-
         return `
         <div class="compare-card border-dynamic-color-top">
             <h3>Bien à ${bien.ville.split(' ')[0]}</h3>
             <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <div class="badge-dpe" style="background-color: ${colorDpe}; color: ${textDpeColor}; margin: 0; padding: 6px 12px;">DPE : ${bien.dpe.toUpperCase()}</div>
-                <div class="badge-dpe" style="background-color: ${colorGes}; color: ${textGesColor}; margin: 0; padding: 6px 12px;">GES : ${bien.ges.toUpperCase()}</div>
+                ${getSvgArrow(bien.dpe.toUpperCase(), "DPE")}
+                ${getSvgArrow(bien.ges.toUpperCase(), "GES")}
             </div>
             
             <div class="compare-data-row"><span>Prix affiché</span> <span>${formatNumber(bien.prix)} €</span></div>
@@ -640,10 +649,14 @@ function afficherEcran() {
     let prixInitialClean = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
     if(prixInitialClean === 0 && donneesAudit.prix_initial > 0) prixInitialClean = donneesAudit.prix_initial;
     
+    let taux = parseFloat(document.getElementById('tauxRenov')?.value || 0);
+    let resteACharge = donneesAudit.total_decote * (1 - taux);
+
     let kpiRentabiliteHtml = "";
     if (loyerMensuelSaisi > 0) {
         let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitialClean) * 100;
-        let coutTotalReel = prixInitialClean + donneesAudit.total_decote;
+        // Rentabilité calculée sur le VRAI reste à charge après prime
+        let coutTotalReel = prixInitialClean + resteACharge; 
         let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
 
         kpiRentabiliteHtml = `
@@ -658,7 +671,7 @@ function afficherEcran() {
                 <div class="kpi-value" id="anim-renta-brute">0.00 %</div>
             </div>
             <div class="kpi-box main">
-                <div class="kpi-label" style="color: #fff;">Rendement Net (Post-Travaux)</div>
+                <div class="kpi-label" style="color: #fff;">Rendement Réel (Post-Travaux)</div>
                 <div class="kpi-value" id="anim-renta-nette">0.00 %</div>
             </div>
         </div>`;
@@ -666,28 +679,16 @@ function afficherEcran() {
 
     let dpeLet = donneesAudit.dpe_lettre || "?";
     let gesLet = donneesAudit.ges_lettre || "?";
-    
-    let colorDpe = colorConfigDPE[dpeLet] || "#888";
-    let textDpeColor = (dpeLet === "D" || dpeLet === "C" || dpeLet === "?") ? "#000" : "#fff";
-    
-    let colorGes = colorConfigGES[gesLet] || "#888";
-    let textGesColor = (gesLet === "A" || gesLet === "B" || gesLet === "C" || gesLet === "?") ? "#000" : "#fff";
 
     let badgesVisuelsHtml = `
     <div style="display: flex; gap: 15px; align-items: center;">
         <div style="text-align: center;">
             <div style="font-size: 10px; font-weight: bold; color: #6c757d; margin-bottom: 4px; text-transform: uppercase;">Énergie (DPE)</div>
-            <svg width="70" height="30" viewBox="0 0 100 35" xmlns="http://www.w3.org/2000/svg">
-                <polygon points="0,0 80,0 100,17.5 80,35 0,35" fill="${colorDpe}" />
-                <text x="45" y="24" font-family="Helvetica, sans-serif" font-size="18" font-weight="bold" fill="${textDpeColor}" text-anchor="middle">Classe ${dpeLet}</text>
-            </svg>
+            ${getSvgArrow(dpeLet, "DPE")}
         </div>
         <div style="text-align: center;">
             <div style="font-size: 10px; font-weight: bold; color: #6c757d; margin-bottom: 4px; text-transform: uppercase;">Climat (GES)</div>
-            <svg width="70" height="30" viewBox="0 0 100 35" xmlns="http://www.w3.org/2000/svg">
-                <polygon points="0,0 80,0 100,17.5 80,35 0,35" fill="${colorGes}" />
-                <text x="45" y="24" font-family="Helvetica, sans-serif" font-size="18" font-weight="bold" fill="${textGesColor}" text-anchor="middle">Classe ${gesLet}</text>
-            </svg>
+            ${getSvgArrow(gesLet, "GES")}
         </div>
     </div>`;
 
@@ -810,16 +811,13 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
     
     appliquerCouleurMarqueBlanche();
 
-    let taux = parseFloat(document.getElementById('tauxRenov')?.value || 0);
-    let resteACharge = donneesAudit.total_decote * (1 - taux);
-
     animateValue(document.getElementById('anim-prix-initial'), 0, prixInitialClean, 1500);
     animateValue(document.getElementById('anim-cout-travaux'), 0, resteACharge, 1500, "-");
     animateValue(document.getElementById('anim-prix-net'), 0, donneesAudit.prix_net, 1500);
 
     if (loyerMensuelSaisi > 0) {
         let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitialClean) * 100;
-        let coutTotalReel = prixInitialClean + donneesAudit.total_decote;
+        let coutTotalReel = prixInitialClean + resteACharge;
         let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
         animateValue(document.getElementById('anim-loyer'), 0, (loyerMensuelSaisi * 12), 1500);
         animateValuePercent(document.getElementById('anim-renta-brute'), 0, rentaInitiale, 1500);
@@ -851,35 +849,15 @@ function exporterPDF(action = 'download', targetWindow = null) {
     if (!donneesAudit) return;
     const btn = document.getElementById('btnExport');
     if(btn && action !== 'view') btn.innerText = "Édition du PDF en cours...";
-    
-    function getDpeSvg(lettre) {
-        const color = colorConfigDPE[lettre] || "#888888";
-        const textColor = (lettre === "D" || lettre === "C" || lettre === "?") ? "#000000" : "#ffffff";
-        return `
-        <svg width="100" height="35" viewBox="0 0 100 35" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="0,0 80,0 100,17.5 80,35 0,35" fill="${color}" />
-            <text x="45" y="24" font-family="Helvetica, sans-serif" font-size="18" font-weight="bold" fill="${textColor}" text-anchor="middle">Classe ${lettre}</text>
-        </svg>`;
-    }
-    
-    function getGesSvg(lettre) {
-        const color = colorConfigGES[lettre] || "#888888";
-        const textColor = (lettre === "A" || lettre === "B" || lettre === "C" || lettre === "?") ? "#000000" : "#ffffff";
-        return `
-        <svg width="100" height="35" viewBox="0 0 100 35" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="0,0 80,0 100,17.5 80,35 0,35" fill="${color}" />
-            <text x="45" y="24" font-family="Helvetica, sans-serif" font-size="18" font-weight="bold" fill="${textColor}" text-anchor="middle">Classe ${lettre}</text>
-        </svg>`;
-    }
 
     let dpeBadgeBlock = {};
-    if (donneesAudit.dpe_lettre && donneesAudit.dpe_lettre !== "?") {
-        dpeBadgeBlock = { stack: [ {text: 'ÉNERGIE (DPE)', fontSize: 8, bold:true, color:'#888', margin:[0,0,0,2]}, {svg: getDpeSvg(donneesAudit.dpe_lettre), width: 80} ], margin: [0, 5, 10, 15] };
+    if (donneesAudit.dpe_lettre) {
+        dpeBadgeBlock = { stack: [ {text: 'ÉNERGIE (DPE)', fontSize: 8, bold:true, color:'#888', margin:[0,0,0,2]}, {svg: getSvgArrow(donneesAudit.dpe_lettre, "DPE"), width: 80} ], margin: [0, 5, 10, 15] };
     }
     
     let gesBadgeBlock = {};
-    if (donneesAudit.ges_lettre && donneesAudit.ges_lettre !== "?") {
-        gesBadgeBlock = { stack: [ {text: 'CLIMAT (GES)', fontSize: 8, bold:true, color:'#888', margin:[0,0,0,2]}, {svg: getGesSvg(donneesAudit.ges_lettre), width: 80} ], margin: [0, 5, 0, 15] };
+    if (donneesAudit.ges_lettre) {
+        gesBadgeBlock = { stack: [ {text: 'CLIMAT (GES)', fontSize: 8, bold:true, color:'#888', margin:[0,0,0,2]}, {svg: getSvgArrow(donneesAudit.ges_lettre, "GES"), width: 80} ], margin: [0, 5, 0, 15] };
     }
 
     let prixInitFormate = formatNumber(document.getElementById('prixInitial').value.replace(/\s+/g, '')) + ' €';
@@ -957,7 +935,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
     if (loyerMensuelSaisi > 0) {
         let prixInitial = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
         let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitial) * 100;
-        let coutTotalReel = prixInitial + donneesAudit.total_decote; 
+        let coutTotalReel = prixInitial + resteACharge; 
         let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
         
         rentaBlock = [
@@ -966,7 +944,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
                 table: {
                     widths: ['*', '*', '*'],
                     body: [
-                        [ { text: 'Loyer Annuel', style: 'kpiHeader' }, { text: 'Rendement Brut', style: 'kpiHeader' }, { text: 'Rendement Net (Post-Travaux)', style: 'kpiHeader' } ],
+                        [ { text: 'Loyer Annuel', style: 'kpiHeader' }, { text: 'Rendement Brut', style: 'kpiHeader' }, { text: 'Rendement Réel (Post-Travaux)', style: 'kpiHeader' } ],
                         [ { text: formatNumber(loyerMensuelSaisi * 12) + ' €', style: 'kpiValue' }, { text: rentaInitiale.toFixed(2) + ' %', style: 'kpiValue' }, { text: rentaFinale.toFixed(2) + ' %', style: 'kpiValueNet', color: agenceCouleur } ]
                     ]
                 },
