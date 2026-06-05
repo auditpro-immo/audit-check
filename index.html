@@ -148,10 +148,16 @@
             </div>
 
             <!-- ONGLET 2 BIS : PARAMÈTRES PARTICULIER -->
-            <div id="parametres-particulier-tab" class="tab-content">
+           <div id="parametres-particulier-tab" class="tab-content">
                 <section class="content-section">
                     <h2 class="section-title">Mes Paramètres de Calcul</h2>
                     <div style="background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); max-width: 600px; margin: 0 auto; border-top: 4px solid #00d632;" class="border-dynamic-color-top">
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 25px;">
+                            <h3 style="margin: 0; color: #0b1a14; font-size: 18px;">Configuration</h3>
+                            <button onclick="reinitialiserParametresParticulier()" class="btn-delete">Réinitialiser</button>
+                        </div>
+
                         <div class="form-group">
                             <label>Frais de notaire par défaut (%)</label>
                             <input type="number" id="fraisNotaireInput" class="form-control" value="8">
@@ -171,7 +177,6 @@
                     </div>
                 </section>
             </div>
-
             <!-- ONGLET 3 : TABLEAU DE BORD PRO -->
             <div id="pro-tab" class="tab-content">
                 <section id="pro" class="content-section">
