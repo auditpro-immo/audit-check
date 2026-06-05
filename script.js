@@ -62,19 +62,15 @@ document.getElementById('logoUploadInput').addEventListener('change', function(e
     }
 });
 
-// CORRECTION MAJEURE : CRÉATION D'UN THÈME GLOBAL POUR ÉCRASER TOUT LE VERT
 function appliquerCouleurMarqueBlanche() {
-    // 1. Textes du Header
     document.getElementById('header-logo-text').innerText = agenceNom === 'AuditPro' ? 'Audit' : agenceNom;
     document.getElementById('header-logo-color').innerText = agenceNom === 'AuditPro' ? 'Pro' : 'Immo';
     
-    // 2. Boutons principaux et ombres
     document.querySelectorAll('.btn-dynamic-color').forEach(btn => { 
         btn.style.backgroundColor = agenceCouleur; 
         btn.style.boxShadow = `0 4px 15px ${agenceCouleur}40`;
     });
     
-    // 3. Injection d'une balise <style> dynamique pour écraser les CSS récalcitrants
     let dynamicStyle = document.getElementById('dynamic-agency-style');
     if (!dynamicStyle) {
         dynamicStyle = document.createElement('style');
@@ -82,7 +78,6 @@ function appliquerCouleurMarqueBlanche() {
         document.head.appendChild(dynamicStyle);
     }
 
-    // Extraction RGB de la couleur HEX pour gérer les transparences des ombres (box-shadow)
     let r = 0, g = 214, b = 50; 
     if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(agenceCouleur)){
         let c = agenceCouleur.substring(1).split('');
@@ -94,39 +89,23 @@ function appliquerCouleurMarqueBlanche() {
     }
 
     dynamicStyle.innerHTML = `
-        /* Bordures des cartes, formulaires et indicateurs */
         .form-container, .info-card, .avis-card { border-top-color: ${agenceCouleur} !important; }
-        
-        /* Textes, Titres et Badges (ex: Technologie certifiée) */
         #hero-badge, .text-dynamic-color, #header-logo-color { color: ${agenceCouleur} !important; }
-        
-        /* Bandeau de terrain et séparateurs */
         .border-dynamic-color, .border-dynamic-color-top { border-top-color: ${agenceCouleur} !important; }
         .border-left-dynamic-color { border-left-color: ${agenceCouleur} !important; }
-        
-        /* Zone de Glisser-Déposer (Hover & Active) */
         .drop-zone:hover, .drop-zone.dragover { border-color: ${agenceCouleur} !important; background-color: rgba(${r}, ${g}, ${b}, 0.05) !important; }
         .drop-zone:hover .drop-icon, .drop-zone.dragover .drop-icon { color: ${agenceCouleur} !important; }
         .drop-icon { color: ${agenceCouleur} !important; }
-        
-        /* Portail d'accueil */
         .portal-card:hover { border-top-color: ${agenceCouleur} !important; box-shadow: 0 15px 35px rgba(${r}, ${g}, ${b}, 0.15) !important; }
         .card-icon-svg, .card-icon-svg svg, .card-action { color: ${agenceCouleur} !important; stroke: ${agenceCouleur} !important; }
-        
-        /* Navigation & Menus */
         nav a.active { color: ${agenceCouleur} !important; border-bottom-color: ${agenceCouleur} !important; }
-        
-        /* Boutons de Profil (Acquéreur / Pro) */
         .profile-btn.active { border-color: ${agenceCouleur} !important; color: ${agenceCouleur} !important; }
-        
-        /* Boutons d'Historique */
         .btn-pdf { background-color: ${agenceCouleur} !important; }
         .btn-voir:hover { color: ${agenceCouleur} !important; border-color: ${agenceCouleur} !important; }
-        
-        /* Écran de Résultats (Kpis) */
         .kpi-box.main { background-color: ${agenceCouleur} !important; }
         .report-tab-btn.active { color: ${agenceCouleur} !important; border-bottom-color: ${agenceCouleur} !important; }
         .script-box { border-left-color: ${agenceCouleur} !important; }
+        .btn-pro-tab.active { color: ${agenceCouleur} !important; border-bottom-color: ${agenceCouleur} !important; }
     `;
 }
 
@@ -248,15 +227,12 @@ function chargerDossierHistorique(index) {
     if(loyerMensuelSaisi > 0) document.getElementById('loyerMensuel').value = formatNumber(loyerMensuelSaisi);
     
     document.getElementById('result-wrapper').style.display = "block";
-    
-    // Scroll fluide uniquement si on est sur l'onglet principal
     if (document.getElementById('audit-tab').classList.contains('active')) {
         document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
     }
     afficherEcran();
 }
 
-// AFFICHAGE DU PDF EN DIRECT
 function voirPDFDirect(event, index) {
     event.stopPropagation();
     chargerDossierHistorique(index);
@@ -367,6 +343,35 @@ function switchReportTab(tabId) {
     if(activeBtn) activeBtn.classList.add('active');
     
     document.getElementById(tabId).classList.add('active');
+}
+
+// NOUVELLE FONCTION : CHANGEMENT D'ONGLET DANS LE DASHBOARD PRO
+function switchProTab(tabId) {
+    document.querySelectorAll('.pro-pane').forEach(pane => {
+        pane.style.display = 'none';
+        pane.classList.remove('active');
+    });
+    document.querySelectorAll('.btn-pro-tab').forEach(btn => {
+        btn.style.color = '#6c757d';
+        btn.style.borderBottomColor = 'transparent';
+        btn.classList.remove('active');
+    });
+
+    const activePane = document.getElementById(tabId);
+    if(activePane) {
+        if(tabId === 'pro-parametres') {
+            activePane.style.display = 'flex';
+        } else {
+            activePane.style.display = 'block';
+        }
+        activePane.classList.add('active');
+    }
+
+    const activeBtn = document.querySelector(`[onclick="switchProTab('${tabId}')"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+        appliquerCouleurMarqueBlanche(); // Met à jour la couleur pour le bouton cliqué
+    }
 }
 
 function lancerDemo() {
@@ -602,7 +607,6 @@ Ces données constituent une base objective. Face au vendeur, elles justifient m
 
     document.getElementById('contenu-ecran').innerHTML = html;
     
-    // Réappliquer immédiatement la feuille de style dynamique pour colorer le nouveau DOM injecté
     appliquerCouleurMarqueBlanche();
 
     animateValue(document.getElementById('anim-prix-initial'), 0, prixInitialClean, 1500);
