@@ -28,9 +28,7 @@ function changerProfilInterne(profil) {
     document.getElementById('btn-pro').classList.remove('active');
     
     let btnActif = document.getElementById('btn-' + (profil === 'particulier' ? 'particulier' : 'pro'));
-    btnActif.classList.add('active');
-    btnActif.style.borderColor = agenceCouleur;
-    btnActif.style.color = agenceCouleur;
+    if(btnActif) btnActif.classList.add('active');
 
     if(profil === "professionnel") {
         document.getElementById('hero-badge').innerText = "Espace Professionnels (B2B)";
@@ -64,47 +62,72 @@ document.getElementById('logoUploadInput').addEventListener('change', function(e
     }
 });
 
+// CORRECTION MAJEURE : CRÉATION D'UN THÈME GLOBAL POUR ÉCRASER TOUT LE VERT
 function appliquerCouleurMarqueBlanche() {
+    // 1. Textes du Header
     document.getElementById('header-logo-text').innerText = agenceNom === 'AuditPro' ? 'Audit' : agenceNom;
     document.getElementById('header-logo-color').innerText = agenceNom === 'AuditPro' ? 'Pro' : 'Immo';
-    document.getElementById('header-logo-color').style.color = agenceCouleur;
     
+    // 2. Boutons principaux et ombres
     document.querySelectorAll('.btn-dynamic-color').forEach(btn => { 
         btn.style.backgroundColor = agenceCouleur; 
         btn.style.boxShadow = `0 4px 15px ${agenceCouleur}40`;
     });
     
-    document.querySelectorAll('.text-dynamic-color').forEach(txt => { txt.style.color = agenceCouleur; });
-    document.querySelectorAll('.border-dynamic-color').forEach(b => { b.style.borderTopColor = agenceCouleur; });
-    document.querySelectorAll('.border-left-dynamic-color').forEach(b => { b.style.borderLeftColor = agenceCouleur; });
-    document.querySelectorAll('.border-dynamic-color-top').forEach(b => { b.style.borderTopColor = agenceCouleur; });
-    
-    document.querySelectorAll('nav a').forEach(a => {
-        a.style.color = '#fff';
-        a.style.borderBottomColor = 'transparent';
-    });
-    const lienActif = document.querySelector('nav a.active');
-    if (lienActif) {
-        lienActif.style.color = agenceCouleur;
-        lienActif.style.borderBottom = `2px solid ${agenceCouleur}`;
+    // 3. Injection d'une balise <style> dynamique pour écraser les CSS récalcitrants
+    let dynamicStyle = document.getElementById('dynamic-agency-style');
+    if (!dynamicStyle) {
+        dynamicStyle = document.createElement('style');
+        dynamicStyle.id = 'dynamic-agency-style';
+        document.head.appendChild(dynamicStyle);
     }
-    
-    document.querySelectorAll('.profile-btn').forEach(btn => {
-        btn.style.borderColor = 'transparent';
-        btn.style.color = '#6c757d';
-    });
-    const activeBtn = document.querySelector('.profile-btn.active');
-    if(activeBtn) {
-        activeBtn.style.borderColor = agenceCouleur;
-        activeBtn.style.color = agenceCouleur;
+
+    // Extraction RGB de la couleur HEX pour gérer les transparences des ombres (box-shadow)
+    let r = 0, g = 214, b = 50; 
+    if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(agenceCouleur)){
+        let c = agenceCouleur.substring(1).split('');
+        if(c.length === 3){ c = [c[0], c[0], c[1], c[1], c[2], c[2]]; }
+        c = '0x' + c.join('');
+        r = (c >> 16) & 255;
+        g = (c >> 8) & 255;
+        b = c & 255;
     }
-    
-    const dropIcon = document.querySelector('.drop-icon');
-    if(dropIcon) dropIcon.style.color = agenceCouleur;
-    
-    document.querySelectorAll('.btn-pdf').forEach(btn => {
-        btn.style.backgroundColor = agenceCouleur;
-    });
+
+    dynamicStyle.innerHTML = `
+        /* Bordures des cartes, formulaires et indicateurs */
+        .form-container, .info-card, .avis-card { border-top-color: ${agenceCouleur} !important; }
+        
+        /* Textes, Titres et Badges (ex: Technologie certifiée) */
+        #hero-badge, .text-dynamic-color, #header-logo-color { color: ${agenceCouleur} !important; }
+        
+        /* Bandeau de terrain et séparateurs */
+        .border-dynamic-color, .border-dynamic-color-top { border-top-color: ${agenceCouleur} !important; }
+        .border-left-dynamic-color { border-left-color: ${agenceCouleur} !important; }
+        
+        /* Zone de Glisser-Déposer (Hover & Active) */
+        .drop-zone:hover, .drop-zone.dragover { border-color: ${agenceCouleur} !important; background-color: rgba(${r}, ${g}, ${b}, 0.05) !important; }
+        .drop-zone:hover .drop-icon, .drop-zone.dragover .drop-icon { color: ${agenceCouleur} !important; }
+        .drop-icon { color: ${agenceCouleur} !important; }
+        
+        /* Portail d'accueil */
+        .portal-card:hover { border-top-color: ${agenceCouleur} !important; box-shadow: 0 15px 35px rgba(${r}, ${g}, ${b}, 0.15) !important; }
+        .card-icon-svg, .card-icon-svg svg, .card-action { color: ${agenceCouleur} !important; stroke: ${agenceCouleur} !important; }
+        
+        /* Navigation & Menus */
+        nav a.active { color: ${agenceCouleur} !important; border-bottom-color: ${agenceCouleur} !important; }
+        
+        /* Boutons de Profil (Acquéreur / Pro) */
+        .profile-btn.active { border-color: ${agenceCouleur} !important; color: ${agenceCouleur} !important; }
+        
+        /* Boutons d'Historique */
+        .btn-pdf { background-color: ${agenceCouleur} !important; }
+        .btn-voir:hover { color: ${agenceCouleur} !important; border-color: ${agenceCouleur} !important; }
+        
+        /* Écran de Résultats (Kpis) */
+        .kpi-box.main { background-color: ${agenceCouleur} !important; }
+        .report-tab-btn.active { color: ${agenceCouleur} !important; border-bottom-color: ${agenceCouleur} !important; }
+        .script-box { border-left-color: ${agenceCouleur} !important; }
+    `;
 }
 
 function sauvegarderParametresPro() {
@@ -139,7 +162,7 @@ function reinitialiserMarqueBlanche() {
     localStorage.removeItem('auditpro_agence_logo');
     
     agenceNom = 'AuditPro';
-    agenceCouleur = '#00d632'; 
+    agenceCouleur = '#00d632'; // Le vert de base
     agenceLogoBase64 = null;
     
     document.getElementById('nomAgenceInput').value = '';
@@ -179,15 +202,15 @@ function chargerHistorique() {
         let realIndex = historique.length - 1 - index;
         historiqueTable.innerHTML += `
             <tr class="history-row">
-                <td>${dossier.date}</td>
-                <td><strong>${dossier.ville}</strong></td>
-                <td>${formatNumber(dossier.prixInitial)} €</td>
+                <td style="font-size: 13px;">${dossier.date}</td>
+                <td style="font-size: 13px;"><strong>${dossier.ville}</strong></td>
+                <td style="font-size: 13px;">${formatNumber(dossier.prixInitial)} €</td>
                 <td style="text-align: right;">
                     <div style="display:flex; justify-content:flex-end; gap:5px;">
-                        <button class="btn-voir" onmouseover="this.style.color='${agenceCouleur}'; this.style.borderColor='${agenceCouleur}'" onmouseout="this.style.color='#0b1a14'; this.style.borderColor='#ced4da'" onclick="voirPDFDirect(event, ${realIndex})">
+                        <button class="btn-voir" onclick="voirPDFDirect(event, ${realIndex})">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Voir
                         </button>
-                        <button class="btn-pdf" style="background-color: ${agenceCouleur}; color: #fff;" onclick="telechargerDirect(event, ${realIndex})">
+                        <button class="btn-pdf" style="color: #fff;" onclick="telechargerDirect(event, ${realIndex})">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> PDF
                         </button>
                     </div>
@@ -225,19 +248,19 @@ function chargerDossierHistorique(index) {
     if(loyerMensuelSaisi > 0) document.getElementById('loyerMensuel').value = formatNumber(loyerMensuelSaisi);
     
     document.getElementById('result-wrapper').style.display = "block";
-    // Évite de scroller vers le bas automatiquement si on est sur l'onglet Pro
+    
+    // Scroll fluide uniquement si on est sur l'onglet principal
     if (document.getElementById('audit-tab').classList.contains('active')) {
         document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
     }
     afficherEcran();
 }
 
-// CORRECTION BUG PAGE BLANCHE / PLANTAGE : SYNCHRONE ET SECURISÉ
+// AFFICHAGE DU PDF EN DIRECT
 function voirPDFDirect(event, index) {
     event.stopPropagation();
-    chargerDossierHistorique(index); 
+    chargerDossierHistorique(index);
     
-    // On ouvre l'onglet AVANT que le bloqueur de pop-up ne panique
     const pdfWindow = window.open("", "_blank");
     if (pdfWindow) {
         pdfWindow.document.write(`
@@ -337,15 +360,11 @@ function copierScript(idElement) {
 function switchReportTab(tabId) {
     document.querySelectorAll('.report-tab-btn').forEach(btn => {
         btn.classList.remove('active');
-        btn.style.color = '#6c757d';
-        btn.style.borderBottomColor = 'transparent';
     });
     document.querySelectorAll('.report-pane').forEach(pane => pane.classList.remove('active'));
     
     let activeBtn = document.querySelector(`[onclick="switchReportTab('${tabId}')"]`);
-    activeBtn.classList.add('active');
-    activeBtn.style.color = agenceCouleur;
-    activeBtn.style.borderBottomColor = agenceCouleur;
+    if(activeBtn) activeBtn.classList.add('active');
     
     document.getElementById(tabId).classList.add('active');
 }
@@ -461,7 +480,7 @@ function afficherEcran() {
                 <div class="kpi-label">Rendement Brut Hors Travaux</div>
                 <div class="kpi-value" id="anim-renta-brute">0.00 %</div>
             </div>
-            <div class="kpi-box main" style="background: ${agenceCouleur}; color: #fff;">
+            <div class="kpi-box main">
                 <div class="kpi-label" style="color: #fff;">Rendement Net (Post-Travaux)</div>
                 <div class="kpi-value" id="anim-renta-nette">0.00 %</div>
             </div>
@@ -519,7 +538,7 @@ Ces données constituent une base objective. Face au vendeur, elles justifient m
     </div>
     
     <div class="report-tabs">
-        <button class="report-tab-btn active" onclick="switchReportTab('paneFinancier')" style="color: ${agenceCouleur}; border-bottom-color: ${agenceCouleur};">1. Synthèse Financière</button>
+        <button class="report-tab-btn active" onclick="switchReportTab('paneFinancier')">1. Synthèse Financière</button>
         <button class="report-tab-btn" onclick="switchReportTab('paneTechnique')">2. Bilan Technique (DDT)</button>
         <button class="report-tab-btn" onclick="switchReportTab('paneStrategie')">${nomOnglet3}</button>
     </div>
@@ -535,7 +554,7 @@ Ces données constituent une base objective. Face au vendeur, elles justifient m
                 <div class="kpi-label" style="color: #cc0000;">Enveloppe Travaux Globale</div>
                 <div class="kpi-value" style="color: #cc0000;" id="anim-cout-travaux">-0 €</div>
             </div>
-            <div class="kpi-box main" style="background-color: ${agenceCouleur};">
+            <div class="kpi-box main">
                 <div class="kpi-label" style="color: #fff;">Valeur Nette Recommandée</div>
                 <div class="kpi-value" id="anim-prix-net">0 €</div>
             </div>
@@ -559,7 +578,7 @@ Ces données constituent une base objective. Face au vendeur, elles justifient m
                 </tr>
                 ${donneesAudit.diagnostics.map(a => `
                 <tr style="border-bottom: 1px solid #ecf0f1;">
-                    <td style="padding: 15px; border-left: 4px solid ${a.cout > 0 ? '#cc0000' : agenceCouleur};"><b>${a.titre}</b></td>
+                    <td style="padding: 15px;" class="border-left-dynamic-color"><b>${a.titre}</b></td>
                     <td style="padding: 15px; color: ${a.cout > 0 ? '#cc0000' : '#000000'}; font-weight: bold; text-align: center;">${a.cout > 0 ? 'ANOMALIE' : 'CONFORME'}</td>
                     <td style="padding: 15px; font-size: 13px; color: #333; line-height: 1.5;"><b>Constat :</b> ${a.detail}<br>${a.cout > 0 ? `<b>Action requise :</b> ${a.action}` : ''}</td>
                     <td style="padding: 15px; font-weight:bold; text-align: right; font-size: 16px;">${a.cout > 0 ? `-${formatNumber(a.cout)} €` : '0 €'}</td>
@@ -571,7 +590,7 @@ Ces données constituent une base objective. Face au vendeur, elles justifient m
     <div id="paneStrategie" class="report-pane">
         <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-bottom: 10px;">${titreSectionNego}</h3>
         <p style="font-size: 14px; color: #495057; margin-bottom: 15px; text-align: left;">Voici la synthèse chiffrée extraite de l'analyse, prête à appuyer vos arguments :</p>
-        <div class="script-box" style="border-left-color: ${agenceCouleur}; font-style: normal; font-family: 'Inter', sans-serif;">
+        <div class="script-box" style="font-style: normal; font-family: 'Inter', sans-serif;">
             <button class="btn-copy" onclick="copierScript('texteScript')">Copier les données</button>
             <div id="texteScript">${scriptNegoTxt}</div>
         </div>
@@ -582,6 +601,9 @@ Ces données constituent une base objective. Face au vendeur, elles justifient m
     </div>`;
 
     document.getElementById('contenu-ecran').innerHTML = html;
+    
+    // Réappliquer immédiatement la feuille de style dynamique pour colorer le nouveau DOM injecté
+    appliquerCouleurMarqueBlanche();
 
     animateValue(document.getElementById('anim-prix-initial'), 0, prixInitialClean, 1500);
     animateValue(document.getElementById('anim-cout-travaux'), 0, donneesAudit.total_decote, 1500, "-");
@@ -610,14 +632,14 @@ Ces données constituent une base objective. Face au vendeur, elles justifient m
             },
             options: { 
                 animation: false, 
-                responsive: false, // CRUCIAL : Force la taille du graphique même sur un onglet caché !
+                responsive: false, 
                 plugins: { legend: { position: 'bottom' } } 
             }
         });
     }
 }
 
-// FONCTION EXPORT PDF SÉCURISÉE
+// EXPORT PDF
 function exporterPDF(action = 'download', targetWindow = null) {
     if (!donneesAudit) return;
     const btn = document.getElementById('btnExport');
@@ -662,7 +684,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
         
         tableBody.push([
             { text: a.titre, bold: true, fontSize: 10, color: '#1a1a1a', fillColor: rowColor, margin: [0, 10, 0, 10] },
-            { text: isAnomalie ? 'ANOMALIE' : 'CONFORME', bold: true, fontSize: 9, color: isAnomalie ? '#cc0000' : '#00d632', alignment: 'center', fillColor: rowColor, margin: [0, 10, 0, 10] },
+            { text: isAnomalie ? 'ANOMALIE' : 'CONFORME', bold: true, fontSize: 9, color: isAnomalie ? '#cc0000' : agenceCouleur, alignment: 'center', fillColor: rowColor, margin: [0, 10, 0, 10] },
             { text: `Constat : ${a.detail}\n` + (isAnomalie ? `Action : ${a.action}` : ''), fontSize: 9, lineHeight: 1.4, color: '#4a4a4a', fillColor: rowColor, margin: [0, 10, 0, 10] },
             { text: isAnomalie ? '-' + formatNumber(a.cout) + ' €' : '0 €', bold: true, fontSize: 11, color: isAnomalie ? '#cc0000' : '#1a1a1a', alignment: 'right', fillColor: rowColor, margin: [0, 10, 0, 10] }
         ]);
@@ -698,7 +720,6 @@ function exporterPDF(action = 'download', targetWindow = null) {
         let chartCanvas = document.getElementById('coutChart');
         if (chartCanvas) {
             let dataUrl = chartCanvas.toDataURL('image/png', 1.0);
-            // SÉCURITÉ : Vérifie que le canvas n'a pas rendu une image vide à cause du display: none
             if (dataUrl && dataUrl.length > 20) {
                 chartImageBlock = {
                     image: dataUrl,
@@ -841,6 +862,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
                 const blobUrl = URL.createObjectURL(blob);
                 targetWindow.document.body.innerHTML = `<iframe src="${blobUrl}#view=FitH" style="width:100vw; height:100vh; border:none; margin:0; padding:0; display:block;"></iframe>`;
             });
+            if(btn) btn.innerText = "Télécharger le rapport PDF Officiel";
         } else {
             pdf.download(agenceNom.replace(/\s+/g, '_') + '_Bilan_Technique_' + idRapport + '.pdf');
             if(btn) {
