@@ -520,7 +520,7 @@
                                 layout: 'noBorders', margin: [0, 10, 0, 30]
                             },
 
-                            { text: '2. INVENTAIRE TECHNIQUE DÉTAILLÉ (DDT)', style: 'sectionTitle', color: '#00d632', margin: [0, 10, 0, 10] },
+                            { text: '2. DÉTAILS DES ANOMALIES & CHIFFRAGE', style: 'sectionTitle', color: '#00d632', margin: [0, 10, 0, 10] },
                             {
                                 table: { headerRows: 1, widths: ['25%', '20%', '40%', '15%'], body: tableBodyPdf },
                                 layout: {
@@ -533,8 +533,9 @@
                             },
 
                             // BLOC RAPPELS RÉGLEMENTAIRES POUR DONNER DE LA MATIÈRE
-                            { text: '3. RAPPELS RÉGLEMENTAIRES ET JURIDIQUES', style: 'sectionTitle', color: '#00d632', margin: [0, 30, 0, 10], pageBreak: 'before' },
+                            { text: '3. RAPPELS RÉGLEMENTAIRES ET JURIDIQUES', style: 'sectionTitle', color: '#00d632', margin: [0, 30, 0, 10] },
                             {
+                                unbreakable: true,
                                 columns: [
                                     {
                                         width: '50%',
