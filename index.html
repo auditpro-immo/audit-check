@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <link rel="stylesheet" href="style.css?v=22.0">
+    <link rel="stylesheet" href="style.css?v=23.0">
 </head>
 <body>
 
@@ -67,6 +67,7 @@
         </header>
 
         <main>
+            <!-- ONGLET 1 : L'ANALYSE -->
             <div id="audit-tab" class="tab-content active">
                 <section class="hero" id="audit">
                     <div class="hero-content">
@@ -137,6 +138,7 @@
                 </div>
             </div>
 
+            <!-- ONGLET 2 : LE COMPARATEUR -->
             <div id="comparateur-tab" class="tab-content">
                 <section class="content-section">
                     <h2 class="section-title">Mon Comparateur de Biens</h2>
@@ -145,6 +147,7 @@
                 </section>
             </div>
 
+            <!-- ONGLET 2 BIS : PARAMÈTRES PARTICULIER -->
             <div id="parametres-particulier-tab" class="tab-content">
                 <section class="content-section">
                     <h2 class="section-title">Mes Paramètres de Calcul</h2>
@@ -166,17 +169,21 @@
                 </section>
             </div>
 
+            <!-- ONGLET 3 : TABLEAU DE BORD PRO -->
             <div id="pro-tab" class="tab-content">
                 <section id="pro" class="content-section">
                     <h2 class="section-title">Espace Agence Professionnelle</h2>
                     <div style="max-width: 1000px; margin: 0 auto 30px auto; border-bottom: 2px solid #eaeaea; display: flex; gap: 20px;">
-                        <button class="btn-pro-tab active" onclick="switchProTab('pro-parametres')">Mes Réglages Agence</button>
-                        <button class="btn-pro-tab" onclick="switchProTab('pro-widget')">Outil de Captation (Widget)</button>
+                        <button class="btn-pro-tab active" onclick="switchProTab('pro-parametres')" style="background: none; border: none; font-size: 15px; font-weight: bold; padding: 10px 0; color: #00d632; border-bottom: 3px solid #00d632; cursor: pointer;">Mes Réglages Agence</button>
+                        <button class="btn-pro-tab" onclick="switchProTab('pro-widget')" style="background: none; border: none; font-size: 15px; font-weight: bold; padding: 10px 0; color: #6c757d; border-bottom: 3px solid transparent; cursor: pointer;">Outil de Captation (Widget)</button>
                     </div>
                     
                     <div id="pro-parametres" class="pro-pane active" style="display: flex; flex-wrap: wrap; gap: 30px;">
-                        <div style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-                            <h3>Configuration Marque Blanche</h3>
+                        <div style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 4px solid #0b1a14;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
+                                <h3 style="margin: 0; color: #0b1a14; font-size: 18px;">Configuration Marque Blanche</h3>
+                                <button onclick="reinitialiserMarqueBlanche()" class="btn-delete">Réinitialiser</button>
+                            </div>
                             <div class="form-group"><label>Nom de l'Agence</label><input type="text" id="nomAgenceInput" class="form-control"></div>
                             <div class="form-group"><label>Lien Webhook de votre Logiciel Métier</label><input type="url" id="webhookCrmInput" class="form-control"></div>
                             <div class="form-group"><label>Couleur de l'Agence</label><input type="color" id="couleurAgenceInput" value="#00d632"></div>
@@ -184,8 +191,11 @@
                             <img id="logo-preview" style="display: none; max-height: 40px; margin-top: 10px;">
                             <button class="btn-solid btn-dynamic-color" style="width: 100%; margin-top: 15px;" onclick="sauvegarderParametresPro()">Activer mon agence</button>
                         </div>
-                        <div style="flex: 2; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-                            <h3>Historique Mandats Clients</h3>
+                        <div style="flex: 2; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 4px solid #0b1a14; display: flex; flex-direction: column;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+                                <h3 style="margin: 0; color: #0b1a14; font-size: 18px;">Historique Mandats Clients</h3>
+                                <button onclick="viderHistorique()" class="btn-delete">Purger</button>
+                            </div>
                             <div class="table-responsive"><table style="width: 100%;"><thead><tr><th>Date</th><th>Ville</th><th>Prix</th><th style="text-align: right;">Action</th></tr></thead><tbody id="historiqueTableBody"></tbody></table></div>
                         </div>
                     </div>
@@ -200,6 +210,7 @@
                 </section>
             </div>
 
+            <!-- ONGLET 4 : OFFRES -->
             <div id="abonnements-tab" class="tab-content">
                 <section id="abonnements" class="content-section">
                     <h2 class="section-title">Nos Offres & Tarifs</h2>
@@ -207,6 +218,7 @@
                     
                     <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; align-items: stretch;">
                         
+                        <!-- CARTE 1 -->
                         <div style="flex: 1; min-width: 230px; background: #fff; padding: 40px 25px; border-radius: 12px; border: 1px solid #eaeaea; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column; box-sizing: border-box;">
                             <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 20px;">Découverte</h3>
                             <div style="font-size: 36px; font-weight: 800; color: #0b1a14; margin-bottom: 25px;">0 €</div>
@@ -218,6 +230,7 @@
                             <button class="btn-demo" style="width: 100%; border: 2px solid #ced4da!important; box-sizing: border-box; margin-top: auto;" onclick="document.querySelector('nav a[href=\'#audit\']').click();">Tester l'outil</button>
                         </div>
                         
+                        <!-- CARTE 2 -->
                         <div style="flex: 1; min-width: 230px; background: #fff; padding: 40px 25px; border-radius: 12px; border: 1px solid #eaeaea; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column; box-sizing: border-box;">
                             <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 20px;">Particulier</h3>
                             <div style="font-size: 36px; font-weight: 800; color: #0b1a14; margin-bottom: 25px;">9,99 €<span style="font-size: 14px; color: #6c757d;">/mois</span></div>
@@ -232,6 +245,7 @@
                             <a href="https://buy.stripe.com/7sYaEYcY79Gq1WU3oIaR200" target="_blank" class="btn-demo" style="width: 100%; border-color: #0b1a14!important; color: #0b1a14; text-decoration: none; display: block; box-sizing: border-box; margin-top: auto; text-align: center; line-height: 2;">S'abonner</a>
                         </div>
 
+                        <!-- CARTE 3 -->
                         <div class="border-dynamic-color-top" style="flex: 1.2; min-width: 260px; background: #fff; padding: 45px 25px; border-radius: 12px; border: 1px solid #eaeaea; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; z-index: 10; position: relative; display: flex; flex-direction: column; box-sizing: border-box;">
                             <div class="btn-dynamic-color" style="color: #fff; font-size: 11px; font-weight: bold; padding: 5px 12px; border-radius: 20px; display: inline-block; margin-bottom: 15px; text-transform: uppercase; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);">Pour les Agences</div>
                             <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 22px;">Premium Pro</h3>
@@ -248,6 +262,7 @@
                 </section>
             </div>
 
+            <!-- ONGLET 5 : RESSOURCES & REGLEMENTATION -->
             <div id="informations-tab" class="tab-content">
                 <section id="informations" class="content-section">
                     <div style="background-color: #f8f9fa; padding: 40px 20px; text-align: center; border-radius: 12px; margin: 0 auto 60px auto; border: 1px solid #ced4da; max-width: 800px;">
@@ -300,6 +315,7 @@
                 </section>
             </div>
 
+            <!-- ONGLET 6 : AVIS -->
             <div id="avis-tab" class="tab-content">
                <section id="avis" class="content-section" style="background-color: #f8f9fa;">
                 <h2 class="section-title">Avis de nos utilisateurs</h2>
@@ -322,6 +338,7 @@
             </section>
             </div>
 
+            <!-- ONGLET 7 : FAQ -->
             <div id="faq-tab" class="tab-content">
                 <section id="faq" class="content-section">
                     <h2 class="section-title">FAQ</h2>
@@ -350,6 +367,7 @@
                 </section>
             </div>
 
+            <!-- ONGLET 8 : CONTACT -->
             <div id="contact-tab" class="tab-content">
                 <section id="contact" class="content-section" style="text-align: center;">
                     <h2 class="section-title">Besoin d'aide ou un bug à signaler ?</h2>
@@ -363,6 +381,7 @@
             </div>
         </main>
 
+        <!-- MODAL TEXTE ANNONCE PRO -->
         <div id="modalAnnonce" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.9); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
             <div style="background: #fff; max-width: 600px; width: 100%; padding: 40px; border-radius: 12px; position: relative; text-align: left;">
                 <button onclick="document.getElementById('modalAnnonce').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: #cc0000; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">X</button>
@@ -380,6 +399,7 @@
         </footer>
     </div>
 
+    <!-- MODAL LÉGALE -->
     <div id="modalLegale" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.9); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
         <div style="background: #fff; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 40px; border-radius: 12px; position: relative; text-align: left;">
             <button onclick="document.getElementById('modalLegale').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: #cc0000; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">Fermer X</button>
@@ -393,6 +413,7 @@
         </div>
     </div>
 
+    <!-- BANDEAU COOKIES -->
     <div id="cookie-banner" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: #0b1a14; color: #fff; padding: 20px; z-index: 10000; box-sizing: border-box; text-align: center; border-top: 4px solid #00d632;" class="border-dynamic-color-top">
         <p style="margin: 0 0 15px 0; font-size: 14px;">
             <strong>Fonctionnement "Hybride Sécurisé" :</strong> Ce site utilise le stockage local de votre navigateur pour sauvegarder vos paramètres (Marque Blanche, Comparateur) et votre historique sur cet appareil. Vos PDF sont traités de façon éphémère par notre algorithme et détruits instantanément. Acceptez-vous ce fonctionnement ?
