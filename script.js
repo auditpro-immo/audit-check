@@ -3,6 +3,7 @@ let idRapport = "";
 let chartInstance = null;
 let loyerMensuelSaisi = 0;
 let profilActuel = "particulier";
+let comparateur = [];
 
 // VARIABLES MARQUE BLANCHE
 let agenceNom = localStorage.getItem('auditpro_agence_nom') || 'AuditPro';
@@ -29,6 +30,12 @@ function changerProfilInterne(profil) {
     
     let btnActif = document.getElementById('btn-' + (profil === 'particulier' ? 'particulier' : 'pro'));
     if(btnActif) btnActif.classList.add('active');
+
+    document.getElementById('bloc-renov').style.display = profil === 'particulier' ? 'block' : 'none';
+    let btnVitrine = document.getElementById('btnVitrine');
+    if(btnVitrine) btnVitrine.style.display = profil === 'professionnel' ? 'inline-block' : 'none';
+    let btnComp = document.getElementById('btnComparateur');
+    if(btnComp) btnComp.style.display = profil === 'particulier' ? 'inline-block' : 'none';
 
     if(profil === "professionnel") {
         document.getElementById('hero-badge').innerText = "Espace Professionnels (B2B)";
@@ -115,12 +122,14 @@ function sauvegarderParametresPro() {
     }
     const inputNom = document.getElementById('nomAgenceInput').value.trim();
     const inputCouleur = document.getElementById('couleurAgenceInput').value;
+    const inputWebhook = document.getElementById('webhookCrmInput').value;
     
     agenceNom = inputNom !== "" ? inputNom : "AuditPro";
     agenceCouleur = inputCouleur;
     
     localStorage.setItem('auditpro_agence_nom', agenceNom);
     localStorage.setItem('auditpro_agence_couleur', agenceCouleur);
+    localStorage.setItem('auditpro_crm_webhook', inputWebhook);
     if(agenceLogoBase64) {
         localStorage.setItem('auditpro_agence_logo', agenceLogoBase64);
     }
@@ -139,6 +148,7 @@ function reinitialiserMarqueBlanche() {
     localStorage.removeItem('auditpro_agence_nom');
     localStorage.removeItem('auditpro_agence_couleur');
     localStorage.removeItem('auditpro_agence_logo');
+    localStorage.removeItem('auditpro_crm_webhook');
     
     agenceNom = 'AuditPro';
     agenceCouleur = '#00d632'; // Le vert de base
@@ -146,6 +156,7 @@ function reinitialiserMarqueBlanche() {
     
     document.getElementById('nomAgenceInput').value = '';
     document.getElementById('couleurAgenceInput').value = '#00d632';
+    document.getElementById('webhookCrmInput').value = '';
     document.getElementById('logo-preview').style.display = 'none';
     document.getElementById('logo-preview').src = '';
     
@@ -213,6 +224,15 @@ function ajouterAuHistorique(ville, prixInitial, donneesCompletes) {
     });
     localStorage.setItem('auditpro_historique_v2', JSON.stringify(historique));
     chargerHistorique();
+
+    const webhook = localStorage.getItem('auditpro_crm_webhook');
+    if (webhook && profilActuel === "professionnel") {
+        fetch(webhook, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: idRapport, ville: ville, prix: prixInitial, travaux: donneesCompletes.total_decote })
+        }).catch(e => console.error("Erreur CRM", e));
+    }
 }
 
 function chargerDossierHistorique(index) {
@@ -345,7 +365,6 @@ function switchReportTab(tabId) {
     document.getElementById(tabId).classList.add('active');
 }
 
-// NOUVELLE FONCTION : CHANGEMENT D'ONGLET DANS LE DASHBOARD PRO
 function switchProTab(tabId) {
     document.querySelectorAll('.pro-pane').forEach(pane => {
         pane.style.display = 'none';
@@ -370,7 +389,7 @@ function switchProTab(tabId) {
     const activeBtn = document.querySelector(`[onclick="switchProTab('${tabId}')"]`);
     if (activeBtn) {
         activeBtn.classList.add('active');
-        appliquerCouleurMarqueBlanche(); // Met à jour la couleur pour le bouton cliqué
+        appliquerCouleurMarqueBlanche();
     }
 }
 
@@ -609,8 +628,11 @@ Ces données constituent une base objective. Face au vendeur, elles justifient m
     
     appliquerCouleurMarqueBlanche();
 
+    let taux = parseFloat(document.getElementById('tauxRenov')?.value || 0);
+    let resteACharge = donneesAudit.total_decote * (1 - taux);
+
     animateValue(document.getElementById('anim-prix-initial'), 0, prixInitialClean, 1500);
-    animateValue(document.getElementById('anim-cout-travaux'), 0, donneesAudit.total_decote, 1500, "-");
+    animateValue(document.getElementById('anim-cout-travaux'), 0, resteACharge, 1500, "-");
     animateValue(document.getElementById('anim-prix-net'), 0, donneesAudit.prix_net, 1500);
 
     if (loyerMensuelSaisi > 0) {
@@ -643,7 +665,6 @@ Ces données constituent une base objective. Face au vendeur, elles justifient m
     }
 }
 
-// EXPORT PDF
 function exporterPDF(action = 'download', targetWindow = null) {
     if (!donneesAudit) return;
     const btn = document.getElementById('btnExport');
@@ -883,6 +904,25 @@ function exporterPDF(action = 'download', targetWindow = null) {
     }
 }
 
+function ajouterComparateur() {
+    if (comparateur.length >= 3) return showToast("Comparateur plein (3 biens max).", "error");
+    comparateur.push(donneesAudit);
+    showToast(`Bien ajouté au comparateur (${comparateur.length}/3).`);
+}
+
+function exporterFicheVitrine() {
+    let docDefinition = {
+        pageSize: 'A4',
+        content: [
+            { text: 'OPPORTUNITÉ', fontSize: 32, bold: true, alignment: 'center', margin: [0, 20, 0, 10], color: agenceCouleur },
+            { text: donneesAudit.localisation_exacte, fontSize: 20, alignment: 'center', margin: [0, 0, 0, 20] },
+            { text: 'Prix : ' + formatNumber(document.getElementById('prixInitial').value.replace(/\s+/g, '')) + ' €', fontSize: 24, alignment: 'center', bold: true },
+            { text: 'Travaux estimés : ' + formatNumber(donneesAudit.total_decote) + ' €', fontSize: 18, color: '#cc0000', alignment: 'center', margin: [0, 10, 0, 40] }
+        ]
+    };
+    pdfMake.createPdf(docDefinition).download(`Fiche_Vitrine_${idRapport}.pdf`);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     if (!localStorage.getItem('auditpro_cookies')) {
         document.getElementById('cookie-banner').style.display = 'block';
@@ -890,6 +930,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById('nomAgenceInput').value = agenceNom !== 'AuditPro' ? agenceNom : '';
     document.getElementById('couleurAgenceInput').value = agenceCouleur;
+    document.getElementById('webhookCrmInput').value = localStorage.getItem('auditpro_crm_webhook') || '';
     if(agenceLogoBase64) {
         document.getElementById('logo-preview').src = agenceLogoBase64;
         document.getElementById('logo-preview').style.display = 'block';
@@ -899,6 +940,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.querySelectorAll('.price-input').forEach(input => {
         input.addEventListener('input', formatInputNumber);
+    });
+
+    document.getElementById('tauxRenov').addEventListener('change', () => { 
+        if(donneesAudit) afficherEcran(); 
     });
 
     const liensMenu = document.querySelectorAll('nav a[href^="#"]');
