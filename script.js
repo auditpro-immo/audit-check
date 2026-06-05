@@ -12,6 +12,10 @@ let agenceNom = localStorage.getItem('auditpro_agence_nom') || 'AuditPro';
 let agenceCouleur = localStorage.getItem('auditpro_agence_couleur') || '#00d632';
 let agenceLogoBase64 = localStorage.getItem('auditpro_agence_logo') || null;
 
+// Couleurs officielles de l'État pour les étiquettes
+const colorConfigDPE = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F", "?": "#888888" };
+const colorConfigGES = { "A": "#F2E8FA", "B": "#E1C9F2", "C": "#D0AAEA", "D": "#BF8BE2", "E": "#AE6CD9", "F": "#9D4DD1", "G": "#7A35A3", "?": "#888888" };
+
 function entrerSurLeSite(profil) {
     const portal = document.getElementById('welcome-portal');
     const mainApp = document.getElementById('main-app');
@@ -449,7 +453,8 @@ function ajouterComparateur() {
         prix: prix,
         travaux: donneesAudit.total_decote,
         loyer: loyer,
-        dpe: donneesAudit.dpe_lettre || "?"
+        dpe: donneesAudit.dpe_lettre || "?",
+        ges: donneesAudit.ges_lettre || "?"
     };
     
     comparateur.push(bien);
@@ -475,18 +480,23 @@ function renderComparateur() {
         return;
     }
     
-    const dpeColors = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F", "?": "#888" };
-    
     grid.innerHTML = comparateur.map((bien, index) => {
         let rentaBrute = bien.loyer > 0 ? (((bien.loyer * 12) / bien.prix) * 100).toFixed(2) + " %" : "N/A";
         let rentaNette = bien.loyer > 0 ? (((bien.loyer * 12) / (bien.prix + bien.travaux)) * 100).toFixed(2) + " %" : "N/A";
-        let colorDpe = dpeColors[bien.dpe.toUpperCase()] || "#888";
+        
+        let colorDpe = colorConfigDPE[bien.dpe.toUpperCase()] || "#888";
         let textDpeColor = (bien.dpe.toUpperCase() === "D" || bien.dpe.toUpperCase() === "C" || bien.dpe.toUpperCase() === "?") ? "#000" : "#fff";
+
+        let colorGes = colorConfigGES[bien.ges.toUpperCase()] || "#888";
+        let textGesColor = (bien.ges.toUpperCase() === "A" || bien.ges.toUpperCase() === "B" || bien.ges.toUpperCase() === "C" || bien.ges.toUpperCase() === "?") ? "#000" : "#fff";
 
         return `
         <div class="compare-card border-dynamic-color-top">
             <h3>Bien à ${bien.ville.split(' ')[0]}</h3>
-            <div class="badge-dpe" style="background-color: ${colorDpe}; color: ${textDpeColor};">Classe DPE : ${bien.dpe.toUpperCase()}</div>
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <div class="badge-dpe" style="background-color: ${colorDpe}; color: ${textDpeColor}; margin: 0; padding: 6px 12px;">DPE : ${bien.dpe.toUpperCase()}</div>
+                <div class="badge-dpe" style="background-color: ${colorGes}; color: ${textGesColor}; margin: 0; padding: 6px 12px;">GES : ${bien.ges.toUpperCase()}</div>
+            </div>
             
             <div class="compare-data-row"><span>Prix affiché</span> <span>${formatNumber(bien.prix)} €</span></div>
             <div class="compare-data-row"><span>Travaux estimés</span> <span style="color:#cc0000;">+ ${formatNumber(bien.travaux)} €</span></div>
@@ -546,6 +556,7 @@ function lancerDemo() {
         total_decote: 28700,
         prix_net: 421300,
         dpe_lettre: "F",
+        ges_lettre: "F",
         analyse_secteur: "Indice de marché local : 1.18",
         securite: "Vos données sont privées : Le PDF a été supprimé de nos serveurs.",
         diagnostics: [
@@ -653,6 +664,33 @@ function afficherEcran() {
         </div>`;
     }
 
+    let dpeLet = donneesAudit.dpe_lettre || "?";
+    let gesLet = donneesAudit.ges_lettre || "?";
+    
+    let colorDpe = colorConfigDPE[dpeLet] || "#888";
+    let textDpeColor = (dpeLet === "D" || dpeLet === "C" || dpeLet === "?") ? "#000" : "#fff";
+    
+    let colorGes = colorConfigGES[gesLet] || "#888";
+    let textGesColor = (gesLet === "A" || gesLet === "B" || gesLet === "C" || gesLet === "?") ? "#000" : "#fff";
+
+    let badgesVisuelsHtml = `
+    <div style="display: flex; gap: 15px; align-items: center;">
+        <div style="text-align: center;">
+            <div style="font-size: 10px; font-weight: bold; color: #6c757d; margin-bottom: 4px; text-transform: uppercase;">Énergie (DPE)</div>
+            <svg width="70" height="30" viewBox="0 0 100 35" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="0,0 80,0 100,17.5 80,35 0,35" fill="${colorDpe}" />
+                <text x="45" y="24" font-family="Helvetica, sans-serif" font-size="18" font-weight="bold" fill="${textDpeColor}" text-anchor="middle">Classe ${dpeLet}</text>
+            </svg>
+        </div>
+        <div style="text-align: center;">
+            <div style="font-size: 10px; font-weight: bold; color: #6c757d; margin-bottom: 4px; text-transform: uppercase;">Climat (GES)</div>
+            <svg width="70" height="30" viewBox="0 0 100 35" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="0,0 80,0 100,17.5 80,35 0,35" fill="${colorGes}" />
+                <text x="45" y="24" font-family="Helvetica, sans-serif" font-size="18" font-weight="bold" fill="${textGesColor}" text-anchor="middle">Classe ${gesLet}</text>
+            </svg>
+        </div>
+    </div>`;
+
     let scriptNegoTxt = "";
     let titreSectionNego = "";
     let nomOnglet3 = "";
@@ -693,11 +731,12 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
     }
 
     let html = `
-    <div style="border-bottom: 3px solid #0b1a14; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
+    <div style="border-bottom: 3px solid #0b1a14; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px;">
         <div>
             <h2 style="font-size: 24px; color: #0b1a14; font-weight: 800; margin: 0;">Rapport d'Analyse Technique</h2>
             <div style="font-size: 14px; color: #6c757d; margin-top: 5px; font-weight: 600;">Secteur : ${donneesAudit.localisation_exacte}</div>
         </div>
+        ${badgesVisuelsHtml}
         <div style="text-align: right; font-size: 13px; color: #6c757d; font-weight: bold;">
             Dossier : ${idRapport}<br>Date : ${donneesAudit.date_audit}
         </div>
@@ -814,9 +853,18 @@ function exporterPDF(action = 'download', targetWindow = null) {
     if(btn && action !== 'view') btn.innerText = "Édition du PDF en cours...";
     
     function getDpeSvg(lettre) {
-        const dpeColors = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F", "?": "#888888" };
-        const color = dpeColors[lettre] || "#888888";
+        const color = colorConfigDPE[lettre] || "#888888";
         const textColor = (lettre === "D" || lettre === "C" || lettre === "?") ? "#000000" : "#ffffff";
+        return `
+        <svg width="100" height="35" viewBox="0 0 100 35" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="0,0 80,0 100,17.5 80,35 0,35" fill="${color}" />
+            <text x="45" y="24" font-family="Helvetica, sans-serif" font-size="18" font-weight="bold" fill="${textColor}" text-anchor="middle">Classe ${lettre}</text>
+        </svg>`;
+    }
+    
+    function getGesSvg(lettre) {
+        const color = colorConfigGES[lettre] || "#888888";
+        const textColor = (lettre === "A" || lettre === "B" || lettre === "C" || lettre === "?") ? "#000000" : "#ffffff";
         return `
         <svg width="100" height="35" viewBox="0 0 100 35" xmlns="http://www.w3.org/2000/svg">
             <polygon points="0,0 80,0 100,17.5 80,35 0,35" fill="${color}" />
@@ -826,12 +874,16 @@ function exporterPDF(action = 'download', targetWindow = null) {
 
     let dpeBadgeBlock = {};
     if (donneesAudit.dpe_lettre && donneesAudit.dpe_lettre !== "?") {
-        dpeBadgeBlock = { svg: getDpeSvg(donneesAudit.dpe_lettre), width: 80, margin: [0, 5, 0, 15] };
+        dpeBadgeBlock = { stack: [ {text: 'ÉNERGIE (DPE)', fontSize: 8, bold:true, color:'#888', margin:[0,0,0,2]}, {svg: getDpeSvg(donneesAudit.dpe_lettre), width: 80} ], margin: [0, 5, 10, 15] };
+    }
+    
+    let gesBadgeBlock = {};
+    if (donneesAudit.ges_lettre && donneesAudit.ges_lettre !== "?") {
+        gesBadgeBlock = { stack: [ {text: 'CLIMAT (GES)', fontSize: 8, bold:true, color:'#888', margin:[0,0,0,2]}, {svg: getGesSvg(donneesAudit.ges_lettre), width: 80} ], margin: [0, 5, 0, 15] };
     }
 
     let prixInitFormate = formatNumber(document.getElementById('prixInitial').value.replace(/\s+/g, '')) + ' €';
     
-    // Si prime renov est active
     let taux = parseFloat(document.getElementById('tauxRenov')?.value || 0);
     let resteACharge = donneesAudit.total_decote * (1 - taux);
     let decoteFormate = '-' + formatNumber(resteACharge) + ' €';
@@ -905,7 +957,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
     if (loyerMensuelSaisi > 0) {
         let prixInitial = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
         let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitial) * 100;
-        let coutTotalReel = prixInitial + donneesAudit.total_decote; // La renta est tj calculé sur les vrais travaux, pas la prime renov
+        let coutTotalReel = prixInitial + donneesAudit.total_decote; 
         let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
         
         rentaBlock = [
@@ -960,7 +1012,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
                             width: '55%',
                             stack: [
                                 { text: '1. SYNTHÈSE DES VALORISATIONS', style: 'sectionTitle', color: agenceCouleur },
-                                dpeBadgeBlock,
+                                { columns: [dpeBadgeBlock, gesBadgeBlock], margin: [0, 5, 0, 15] },
                                 {
                                     table: {
                                         widths: ['*', '*'],
