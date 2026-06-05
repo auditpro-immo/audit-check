@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <link rel="stylesheet" href="style.css?v=18.0">
+    <link rel="stylesheet" href="style.css?v=20.0">
 </head>
 <body>
 
@@ -123,7 +123,7 @@
                                 <span class="drop-zone-text">Glissez-déposez votre PDF ici ou cliquez</span>
                                 <input type="file" id="fichierPdf" class="drop-zone-input" accept="application/pdf">
                             </div>
-                            <div style="font-size: 11px; color: #888; margin-top: 5px; text-align: center;">Taille maximum : 15 Mo. Traitement éphémère.</div>
+                            <div style="font-size: 11px; color: #888; margin-top: 5px; text-align: center;">Taille max : 15 Mo. Traitement éphémère sécurisé.</div>
                         </div>
                         
                         <button class="btn-submit btn-dynamic-color" id="btnSubmit" onclick="envoyer()">Générer le bilan estimatif</button>
@@ -145,10 +145,8 @@
                     <div style="text-align: center; margin-top: 40px; display: flex; flex-direction: column; align-items: center; gap: 15px;">
                         <button class="btn-solid btn-dynamic-color" id="btnExport" style="padding: 16px 40px; font-size: 16px; width: 100%; max-width: 500px;" onclick="exporterPDF('download')">Télécharger le rapport détaillé (PDF)</button>
                         
-                        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; width: 100%; max-width: 500px;">
-                            <button class="btn-demo" id="btnComparateur" onclick="ajouterComparateur()" style="display:none; flex: 1; border-color: #0b1a14!important; color:#0b1a14;">⭐ Sauvegarder dans le comparateur</button>
-                            <button class="btn-demo" id="btnVitrine" onclick="exporterFicheVitrine()" style="display:none; flex: 1;">📄 Exporter Fiche Vitrine</button>
-                            <button class="btn-demo" id="btnAnnonce" onclick="genererAnnonceLeBonCoin()" style="display:none; flex: 1;">📝 Générer texte d'annonce</button>
+                        <div id="action-buttons-container" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; width: 100%; max-width: 600px;">
+                            <!-- Les boutons Premium s'afficheront ici dynamiquement -->
                         </div>
                     </div>
                 </div>
@@ -171,16 +169,25 @@
             <!-- ONGLET 2 BIS : PARAMÈTRES PARTICULIER -->
             <div id="parametres-particulier-tab" class="tab-content">
                 <section class="content-section" style="padding: 80px 50px; max-width: 1200px; margin: 0 auto; border-bottom: 1px solid #eaeaea;">
-                    <h2 class="section-title" style="font-size: 30px; color: #0b1a14; margin-bottom: 40px; text-align: center; font-weight: 800;">Mes Paramètres</h2>
+                    <h2 class="section-title" style="font-size: 30px; color: #0b1a14; margin-bottom: 40px; text-align: center; font-weight: 800;">Mes Paramètres d'Acheteur</h2>
+                    
                     <div style="background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); max-width: 600px; margin: 0 auto; border-top: 4px solid #00d632;" class="border-dynamic-color-top">
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label style="font-size: 16px; margin-bottom: 15px;">Personnaliser le thème visuel</label>
+                        
+                        <div class="form-group">
+                            <label style="font-size: 15px; margin-bottom: 8px;">Frais de notaire estimés (%)</label>
+                            <input type="number" id="fraisNotaireInput" class="form-control" value="8" step="0.1">
+                            <span style="font-size: 11px; color: #888;">Généralement 8% dans l'ancien, 2 à 3% dans le neuf.</span>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 25px;">
+                            <label style="font-size: 15px; margin-bottom: 8px;">Personnaliser le thème visuel</label>
                             <div style="display: flex; gap: 15px; align-items: center;">
-                                <input type="color" id="couleurParticulierInput" value="#00d632" style="width: 60px; height: 50px; border: none; cursor: pointer; border-radius: 6px; background: transparent;" onchange="changerCouleurParticulier(this.value)">
-                                <span style="font-size: 14px; color: #555; line-height: 1.5;">Personnalisez l'interface et vos rapports PDF à votre image. (Sauvegardé sur cet appareil).</span>
+                                <input type="color" id="couleurParticulierInput" value="#00d632" style="width: 60px; height: 50px; border: none; cursor: pointer; border-radius: 6px; background: transparent;">
+                                <span style="font-size: 12px; color: #555; line-height: 1.5;">Couleur appliquée à l'interface et vos PDF.</span>
                             </div>
                         </div>
-                        <button class="btn-delete" style="margin-top: 30px; width: 100%; justify-content: center;" onclick="reinitialiserMarqueBlanche()">Réinitialiser les paramètres par défaut</button>
+
+                        <button class="btn-solid btn-dynamic-color" style="width: 100%; margin-top: 25px;" onclick="sauvegarderParametresParticulier()">Enregistrer mes préférences</button>
                     </div>
                 </section>
             </div>
@@ -234,7 +241,7 @@
                                 <label style="color: #0b1a14; font-size: 14px;">Liaison avec votre logiciel d'agence (CRM)</label>
                                 <input type="url" id="webhookCrmInput" class="form-control" placeholder="Ex: https://api.votre-crm.com/webhook">
                                 <div style="font-size: 12px; color: #555; margin-top: 10px; line-height: 1.5; background: #f8f9fa; padding: 12px; border-radius: 6px; border-left: 3px solid #00d632;" class="border-left-dynamic-color">
-                                    <strong>À quoi ça sert ?</strong> Collez ici le lien de synchronisation (Webhook) fourni par votre logiciel métier (Apimo, Hektor, Netty...). Cela permet d'envoyer automatiquement les résultats de l'audit dans les fiches de vos mandats. Plus besoin de tout retaper à la main !
+                                    <strong>À quoi ça sert ?</strong> Collez ici le lien de synchronisation (Webhook) fourni par votre logiciel métier (Apimo, Hektor, Netty...). Cela permet d'envoyer automatiquement les résultats de l'audit dans les fiches de vos mandats.
                                 </div>
                             </div>
                             
@@ -327,9 +334,7 @@
                                 <li>Analyses <span class="text-dynamic-color">illimitées</span></li>
                                 <li>Rapports PDF <span class="text-dynamic-color">Marque Blanche</span></li>
                                 <li>Insertion de votre logo</li>
-                                <li>Alerte Veille Expiration</li>
-                                <li>Générateur d'annonce IA</li>
-                                <li>Export Fiche Vitrine (A4)</li>
+                                <li>Outils Pros (Annonce IA, Vitrine)</li>
                             </ul>
                             <button class="btn-solid btn-dynamic-color" style="width: 100%;">Passer en Premium</button>
                         </div>
@@ -446,9 +451,7 @@
                 <button onclick="document.getElementById('modalAnnonce').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: #cc0000; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">X</button>
                 <h2 style="color: #0b1a14; margin-top: 0; font-size: 20px;">Copilote IA : Votre annonce optimisée</h2>
                 <p style="font-size: 13px; color: #666; margin-bottom: 20px;">Texte généré à partir de l'audit, prêt à être copié-collé sur Leboncoin ou SeLoger.</p>
-                
                 <div class="script-box" style="margin-top: 0; background: #f8f9fa; border: 1px solid #ddd; border-left: 4px solid #00d632;" id="texteAnnonceAgenerer"></div>
-                
                 <button class="btn-solid btn-dynamic-color" onclick="copierScript('texteAnnonceAgenerer')" style="width: 100%; margin-top: 20px;">Copier le texte</button>
             </div>
         </div>
