@@ -139,93 +139,148 @@
 
             <div id="pro-tab" class="tab-content">
                 <section id="pro" class="content-section">
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; max-width: 1000px; margin-left: auto; margin-right: auto;">
-        <div>
-            <h2 class="section-title" style="margin-bottom: 5px; text-align: left;">Espace Agence & Copilote</h2>
-            <p style="font-size: 15px; color: #6c757d; margin: 0;">Configurez votre outil. Vous gardez le contrôle total sur les données présentées à vos clients.</p>
-        </div>
-        <div style="background: #eaf9f0; border: 1px solid #00d632; padding: 8px 15px; border-radius: 6px; font-size: 12px; color: #0b1a14; font-weight: bold; display: inline-flex; align-items: center; gap: 8px;">
-            <span style="display: inline-block; width: 8px; height: 8px; background: #00d632; border-radius: 50%;"></span>
-            Base réglementaire à jour : Juin 2026
-        </div>
-    </div>
-
-    <div style="max-width: 1000px; margin: 0 auto 30px auto; border-bottom: 2px solid #eaeaea; display: flex; gap: 20px;">
-        <button style="background: none; border: none; font-size: 15px; font-weight: bold; padding: 10px 0; color: #0b1a14; border-bottom: 3px solid #00d632; cursor: pointer;">Mes Paramètres & Historique</button>
-        <button style="background: none; border: none; font-size: 15px; font-weight: bold; padding: 10px 0; color: #6c757d; cursor: pointer;">Abonnement SaaS</button>
-        <button style="background: none; border: none; font-size: 15px; font-weight: bold; padding: 10px 0; color: #6c757d; cursor: pointer;">Outil de Captation (Widget)</button>
-    </div>
-    
-    <div style="display: flex; flex-wrap: wrap; gap: 30px; margin-bottom: 60px; max-width: 1000px; margin-left: auto; margin-right: auto;">
-        <div style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 4px solid #0b1a14;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
-                <h3 style="margin: 0; color: #0b1a14; font-size: 18px;">Personnalisation (Marque Blanche)</h3>
-                <button onclick="reinitialiserMarqueBlanche()" class="btn-delete" style="font-weight: 600;">Réinitialiser</button>
-            </div>
-            
-            <div class="form-group">
-                <label>Nom de l'Agence / Réseau</label>
-                <input type="text" id="nomAgenceInput" class="form-control" placeholder="Ex: Agence du Centre">
-            </div>
-            
-            <div class="form-group">
-                <label>Logo de l'Agence (Pour le PDF)</label>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <div style="position: relative; overflow: hidden; display: inline-block;">
-                        <button class="btn-demo" style="padding: 8px 15px; font-size: 12px;">Parcourir le fichier...</button>
-                        <input type="file" id="logoUploadInput" accept="image/png, image/jpeg" style="position: absolute; top: 0; left: 0; opacity: 0; cursor: pointer; height: 100%;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; max-width: 1000px; margin-left: auto; margin-right: auto; flex-wrap: wrap; gap: 15px;">
+                        <div>
+                            <h2 class="section-title" style="margin-bottom: 5px; text-align: left;">Espace Agence & Copilote</h2>
+                            <p style="font-size: 15px; color: #6c757d; margin: 0;">Configurez votre outil. Vous gardez le contrôle total sur les données présentées à vos clients.</p>
+                        </div>
+                        <div style="background: #eaf9f0; border: 1px solid #00d632; padding: 8px 15px; border-radius: 6px; font-size: 12px; color: #0b1a14; font-weight: bold; display: inline-flex; align-items: center; gap: 8px;">
+                            <span style="display: inline-block; width: 8px; height: 8px; background: #00d632; border-radius: 50%;"></span>
+                            Base réglementaire à jour : Juin 2026
+                        </div>
                     </div>
-                    <img id="logo-preview" style="display: none; max-height: 40px; max-width: 100px; object-fit: contain; border-radius: 4px; border: 1px solid #eee; padding: 2px;">
-                </div>
-            </div>
 
-            <div class="form-group">
-                <label>Couleur d'accentuation</label>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <input type="color" id="couleurAgenceInput" value="#00d632" style="width: 50px; height: 40px; border: none; cursor: pointer; border-radius: 4px;">
-                    <span style="font-size: 12px; color: #666;">Harmonise l'outil avec votre charte graphique.</span>
-                </div>
-            </div>
-            <button class="btn-solid btn-dynamic-color" style="width: 100%; margin-top: 10px; padding: 12px;" onclick="sauvegarderParametresPro()">Enregistrer les préférences</button>
-        </div>
+                    <div style="max-width: 1000px; margin: 0 auto 30px auto; border-bottom: 2px solid #eaeaea; display: flex; gap: 20px; overflow-x: auto; white-space: nowrap;">
+                        <button class="btn-pro-tab active" onclick="switchProTab('pro-parametres')" style="background: none; border: none; font-size: 15px; font-weight: bold; padding: 10px 0; color: #00d632; border-bottom: 3px solid #00d632; cursor: pointer; transition: 0.3s; outline: none;">Mes Paramètres & Historique</button>
+                        <button class="btn-pro-tab" onclick="switchProTab('pro-abonnement')" style="background: none; border: none; font-size: 15px; font-weight: bold; padding: 10px 0; color: #6c757d; border-bottom: 3px solid transparent; cursor: pointer; transition: 0.3s; outline: none;">Abonnement SaaS</button>
+                        <button class="btn-pro-tab" onclick="switchProTab('pro-widget')" style="background: none; border: none; font-size: 15px; font-weight: bold; padding: 10px 0; color: #6c757d; border-bottom: 3px solid transparent; cursor: pointer; transition: 0.3s; outline: none;">Outil de Captation (Widget)</button>
+                    </div>
+                    
+                    <div id="pro-parametres" class="pro-pane active" style="display: flex; flex-wrap: wrap; gap: 30px; margin-bottom: 60px; max-width: 1000px; margin-left: auto; margin-right: auto; animation: fadeIn 0.4s ease;">
+                        
+                        <div style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 4px solid #0b1a14;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
+                                <h3 style="margin: 0; color: #0b1a14; font-size: 18px;">Personnalisation (Marque Blanche)</h3>
+                                <button onclick="reinitialiserMarqueBlanche()" class="btn-delete" style="font-weight: 600;">Réinitialiser</button>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Nom de l'Agence / Réseau</label>
+                                <input type="text" id="nomAgenceInput" class="form-control" placeholder="Ex: Century 21, Orpi, IAD...">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Logo de l'Agence (Pour le PDF)</label>
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <div style="position: relative; overflow: hidden; display: inline-block;">
+                                        <button class="btn-demo" style="padding: 8px 15px; font-size: 12px;">Parcourir le fichier...</button>
+                                        <input type="file" id="logoUploadInput" accept="image/png, image/jpeg, image/jpg" style="position: absolute; top: 0; left: 0; opacity: 0; cursor: pointer; height: 100%;">
+                                    </div>
+                                    <img id="logo-preview" style="display: none; max-height: 40px; max-width: 100px; object-fit: contain; border-radius: 4px; border: 1px solid #eee; padding: 2px;">
+                                </div>
+                                <span style="font-size: 11px; color: #888; display: block; margin-top: 5px;">Format PNG ou JPG.</span>
+                            </div>
 
-        <div style="flex: 2; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 4px solid #0b1a14; display: flex; flex-direction: column;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
-                <h3 style="margin: 0; color: #0b1a14; font-size: 18px;">Mes Dossiers Clients (Mode Local)</h3>
-                <button onclick="viderHistorique()" class="btn-delete">Effacer l'historique</button>
-            </div>
-            
-            <div class="table-responsive" style="margin-bottom: 0; flex: 1; overflow-y: auto; max-height: 250px;">
-                <table style="min-width: 100%;">
-                    <thead>
-                        <tr>
-                            <th style="font-size: 10px;">Date</th>
-                            <th style="font-size: 10px;">Secteur</th>
-                            <th style="font-size: 10px;">Prix Initial</th>
-                            <th style="text-align: right; font-size: 10px;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="historiqueTableBody">
-                    </tbody>
-                </table>
-            </div>
-            <p style="font-size: 11px; color: #adb5bd; margin-top: 15px; text-align: center;">Ces données sont privées et ne quittent jamais cet ordinateur.</p>
-        </div>
-    </div>
+                            <div class="form-group">
+                                <label>Couleur principale</label>
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <input type="color" id="couleurAgenceInput" value="#00d632" style="width: 50px; height: 40px; border: none; cursor: pointer; border-radius: 4px;">
+                                    <span style="font-size: 12px; color: #666;">Harmonise l'outil avec votre charte graphique.</span>
+                                </div>
+                            </div>
+                            <button class="btn-solid btn-dynamic-color" style="width: 100%; margin-top: 10px; padding: 12px;" onclick="sauvegarderParametresPro()">Enregistrer les paramètres</button>
+                        </div>
 
-    <div style="max-width: 1000px; margin: 0 auto; background: #0b1a14; color: white; padding: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between;">
-        <div style="max-width: 60%;">
-            <h3 style="margin-top: 0; color: #00d632;">Outil de Captation (Widget Vendeur)</h3>
-            <p style="font-size: 14px; line-height: 1.6; color: #d1d5db;">Intégrez notre calculateur allégé directement sur le site web de votre agence. Vos prospects testent leurs diagnostics, et vous recevez immédiatement leurs coordonnées et l'adresse du bien pour les recontacter.</p>
-            <div style="background: rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 6px; font-family: monospace; font-size: 12px; color: #a3e635;">
-                &lt;iframe src="https://auditpro.immo/widget/votre-id-agence" width="100%" height="400"&gt;&lt;/iframe&gt;
-            </div>
-        </div>
-        <div>
-            <button class="btn-solid" style="background: #fff; color: #0b1a14;">Activer le module</button>
-        </div>
-    </div>
-</section>
+                        <div style="flex: 2; min-width: 300px; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-top: 4px solid #0b1a14; display: flex; flex-direction: column;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+                                <h3 style="margin: 0; color: #0b1a14; font-size: 18px;">Mes Dossiers Clients (Mode Local)</h3>
+                                <button onclick="viderHistorique()" class="btn-delete">Supprimer l'historique</button>
+                            </div>
+                            
+                            <div class="table-responsive" style="margin-bottom: 0; flex: 1; overflow-y: auto; max-height: 250px;">
+                                <table style="min-width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th style="font-size: 10px;">Date</th>
+                                            <th style="font-size: 10px;">Secteur</th>
+                                            <th style="font-size: 10px;">Prix Initial</th>
+                                            <th style="text-align: right; font-size: 10px;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="historiqueTableBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p style="font-size: 11px; color: #adb5bd; margin-top: 15px; text-align: center;">Ces données sont privées et ne quittent jamais cet ordinateur.</p>
+                        </div>
+                    </div>
+
+                    <div id="pro-abonnement" class="pro-pane" style="display: none; max-width: 1000px; margin: 0 auto; padding-bottom: 60px; animation: fadeIn 0.4s ease;">
+                        <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; align-items: flex-end;">
+                            
+                            <div style="flex: 1; min-width: 250px; background: #fff; padding: 40px 30px; border-radius: 12px; border: 1px solid #eaeaea; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03);">
+                                <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 20px;">Découverte</h3>
+                                <div style="font-size: 36px; font-weight: 800; color: #0b1a14; margin-bottom: 25px;">0 €<span style="font-size: 14px; color: #6c757d;">/mois</span></div>
+                                <ul style="text-align: left; font-size: 14px; color: #555; line-height: 2; padding-left: 20px; margin-bottom: 30px;">
+                                    <li>3 analyses / mois</li>
+                                    <li>Rapport PDF standard</li>
+                                    <li style="color: #adb5bd; text-decoration: line-through;">Marque blanche PDF</li>
+                                    <li style="color: #adb5bd; text-decoration: line-through;">Historique des dossiers</li>
+                                </ul>
+                                <button class="btn-demo" style="width: 100%; border: 2px solid #ced4da!important;">Plan Actuel</button>
+                            </div>
+                            
+                            <div class="border-dynamic-color-top" style="flex: 1; min-width: 280px; background: #fff; padding: 45px 30px; border-radius: 12px; border: 1px solid #eaeaea; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; z-index: 10; position: relative;">
+                                <div class="btn-dynamic-color" style="color: #fff; font-size: 11px; font-weight: bold; padding: 5px 12px; border-radius: 20px; display: inline-block; margin-bottom: 15px; text-transform: uppercase; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);">Le plus populaire</div>
+                                <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 22px;">Premium</h3>
+                                <div style="font-size: 42px; font-weight: 800; color: #0b1a14; margin-bottom: 25px;">29 €<span style="font-size: 14px; color: #6c757d;">/mois</span></div>
+                                <ul style="text-align: left; font-size: 14px; color: #333; line-height: 2; padding-left: 20px; margin-bottom: 30px; font-weight: 600;">
+                                    <li>Analyses <span class="text-dynamic-color">illimitées</span></li>
+                                    <li>Rapport PDF <span class="text-dynamic-color">Marque Blanche</span></li>
+                                    <li>Insertion de votre logo</li>
+                                    <li>Historique local sécurisé</li>
+                                </ul>
+                                <button class="btn-solid btn-dynamic-color" style="width: 100%;">Passer en Premium</button>
+                            </div>
+                            
+                            <div style="flex: 1; min-width: 250px; background: #fff; padding: 40px 30px; border-radius: 12px; border: 1px solid #eaeaea; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03);">
+                                <h3 style="margin: 0 0 10px 0; color: #0b1a14; font-size: 20px;">Réseau / Agence</h3>
+                                <div style="font-size: 36px; font-weight: 800; color: #0b1a14; margin-bottom: 25px;">79 €<span style="font-size: 14px; color: #6c757d;">/mois</span></div>
+                                <ul style="text-align: left; font-size: 14px; color: #555; line-height: 2; padding-left: 20px; margin-bottom: 30px;">
+                                    <li>Tout du plan Premium</li>
+                                    <li>Jusqu'à 10 collaborateurs</li>
+                                    <li>Accès API & Webhooks</li>
+                                    <li><b>Outil de Captation (Widget)</b></li>
+                                </ul>
+                                <button class="btn-demo" style="width: 100%;">Contacter les ventes</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="pro-widget" class="pro-pane" style="display: none; max-width: 1000px; margin: 0 auto; padding-bottom: 60px; animation: fadeIn 0.4s ease;">
+                        <div style="background: #0b1a14; color: white; padding: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                            <div style="flex: 1.5; min-width: 300px;">
+                                <h3 style="margin-top: 0; font-size: 22px;" class="text-dynamic-color">Outil de Captation (Widget Vendeur)</h3>
+                                <p style="font-size: 15px; line-height: 1.7; color: #d1d5db;">Intégrez le calculateur de travaux directement sur le site web de votre agence. Vos prospects (vendeurs ou acquéreurs) testent leurs propres diagnostics, et vous recevez immédiatement leurs coordonnées complètes (Lead) ainsi que l'adresse du bien pour les recontacter.</p>
+                                
+                                <div style="background: rgba(255,255,255,0.05); border-left: 4px solid #00d632; padding: 15px 20px; border-radius: 4px; margin-top: 25px;" class="border-left-dynamic-color">
+                                    <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #888; margin-bottom: 8px;">Code d'intégration (iFrame)</div>
+                                    <code style="font-size: 13px; color: #a3e635; word-break: break-all;">
+                                        &lt;iframe src="https://auditpro-immo.github.io/widget/lead-gen" width="100%" height="600" style="border:none; border-radius:12px;"&gt;&lt;/iframe&gt;
+                                    </code>
+                                </div>
+                            </div>
+                            <div style="flex: 1; text-align: center; min-width: 250px;">
+                                <div style="background: rgba(255,255,255,0.03); padding: 30px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-dynamic-color" style="margin-bottom: 15px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                                    <h4 style="margin: 0 0 10px 0; font-size: 18px; color: #fff;">Module Verrouillé</h4>
+                                    <p style="font-size: 13px; color: #888; margin-bottom: 20px;">Cette fonctionnalité est réservée aux abonnements Réseau / Agence.</p>
+                                    <button class="btn-solid btn-dynamic-color" style="width: 100%; font-size: 14px;" onclick="switchProTab('pro-abonnement')">Débloquer cette fonction</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
 
             <div id="informations-tab" class="tab-content">
@@ -345,7 +400,7 @@
         </main>
 
        <footer>
-           © 2026 AuditPro-Immo. Tous droits réservés. | Logiciel d'analyse immobilière.<br>
+           © 2026 AuditPro. Tous droits réservés. | Logiciel d'analyse immobilière.<br>
            Ce rapport d'expertise ne se substitue pas à un devis d'artisan.<br>
            <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" class="text-dynamic-color" style="text-decoration: underline; margin-top: 15px; display: inline-block;">Mentions Légales & Confidentialité</a>
         </footer>
