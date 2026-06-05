@@ -4,28 +4,25 @@ let chartInstance = null;
 let loyerMensuelSaisi = 0;
 let profilActuel = localStorage.getItem('auditpro_profil') || "particulier";
 
-// Charger le comparateur depuis le navigateur
+// Charger le comparateur depuis le stockage local (jusqu'à 6 biens)
 let comparateur = JSON.parse(localStorage.getItem('auditpro_comparateur')) || [];
 
-// VARIABLES MARQUE BLANCHE & PARAMETRES
+// VARIABLES CONFIG VISUELLE
 let agenceNom = localStorage.getItem('auditpro_agence_nom') || 'AuditPro';
 let agenceCouleur = localStorage.getItem('auditpro_agence_couleur') || '#00d632';
 let agenceLogoBase64 = localStorage.getItem('auditpro_agence_logo') || null;
 
-// Nouveaux paramètres acheteurs
+// Nouveaux filtres de calcul du matelas acheteur
 let fraisNotaireEstimes = parseFloat(localStorage.getItem('auditpro_frais_notaire')) || 8.0;
 let margeSecuriteTravaux = parseFloat(localStorage.getItem('auditpro_marge_secu')) || 10.0;
 
-// GÉNÉRATEUR DE FLÈCHES SVG EXACTES POUR DPE ET GES (WEB ET PDF)
+const colorConfigDPE = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F", "N/A": "#888888" };
+const colorConfigGES = { "A": "#F2E8FA", "B": "#E1C9F2", "C": "#D0AAEA", "D": "#BF8BE2", "E": "#AE6CD9", "F": "#9D4DD1", "G": "#7A35A3", "N/A": "#888888" };
+
 function getSvgArrow(lettre, type) {
-    lettre = lettre ? lettre.toUpperCase() : "?";
-    const colorsDPE = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F" };
-    const colorsGES = { "A": "#F2E8FA", "B": "#E1C9F2", "C": "#D0AAEA", "D": "#BF8BE2", "E": "#AE6CD9", "F": "#9D4DD1", "G": "#7A35A3" };
-    const color = type === "DPE" ? (colorsDPE[lettre] || "#888888") : (colorsGES[lettre] || "#888888");
-    
-    let txtCol = "#ffffff";
-    if (type === "DPE" && (lettre === "C" || lettre === "D" || lettre === "?" || lettre === "N/A")) txtCol = "#000000";
-    if (type === "GES" && (lettre === "A" || lettre === "B" || lettre === "C" || lettre === "?" || lettre === "N/A")) txtCol = "#000000";
+    lettre = lettre ? lettre.toUpperCase() : "N/A";
+    const color = type === "DPE" ? (colorConfigDPE[lettre] || "#888888") : (colorConfigGES[lettre] || "#888888");
+    let txtCol = (lettre === "C" || lettre === "D" || lettre === "N/A" || (type === "GES" && ["A","B","C"].includes(lettre))) ? "#000000" : "#ffffff";
 
     return `
     <svg width="80" height="30" viewBox="0 0 100 35" xmlns="http://www.w3.org/2000/svg">
@@ -36,27 +33,24 @@ function getSvgArrow(lettre, type) {
 
 // Fonction SVG optimisée pour le PDF (taille réduite pour éviter les superpositions)
 function getCleanPdfSvg(lettre, type) {
-    lettre = lettre ? lettre.toUpperCase() : "?";
-    const colorsDPE = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F" };
-    const colorsGES = { "A": "#F2E8FA", "B": "#E1C9F2", "C": "#D0AAEA", "D": "#BF8BE2", "E": "#AE6CD9", "F": "#9D4DD1", "G": "#7A35A3" };
-    const color = type === "DPE" ? (colorsDPE[lettre] || "#888888") : (colorsGES[lettre] || "#888888");
-    const txtCol = (lettre === "C" || lettre === "D" || lettre === "?" || lettre === "N/A" || (type==="GES" && (lettre==="A"||lettre==="B"||lettre==="C"))) ? "#000000" : "#ffffff";
+    lettre = lettre ? lettre.toUpperCase() : "N/A";
+    const color = type === "DPE" ? (colorConfigDPE[lettre] || "#888888") : (colorConfigGES[lettre] || "#888888");
+    const txtCol = (lettre === "C" || lettre === "D" || lettre === "N/A" || (type === "GES" && ["A","B","C"].includes(lettre))) ? "#000000" : "#ffffff";
     
-    return `<svg width="70" height="30" viewBox="0 0 70 30" xmlns="http://www.w3.org/2000/svg">
+    return `<svg width="65" height="26" viewBox="0 0 70 30" xmlns="http://www.w3.org/2000/svg">
         <polygon points="0,0 55,0 70,15 55,30 0,30" fill="${color}" />
-        <text x="32" y="21" font-family="Helvetica, sans-serif" font-size="15" font-weight="bold" fill="${txtCol}" text-anchor="middle">${lettre}</text>
+        <text x="30" y="21" font-family="Helvetica, sans-serif" font-size="15" font-weight="bold" fill="${txtCol}" text-anchor="middle">${lettre}</text>
     </svg>`;
 }
 
 function entrerSurLeSite(profil) {
     const portal = document.getElementById('welcome-portal');
     const mainApp = document.getElementById('main-app');
-    
     portal.style.opacity = '0';
     setTimeout(() => {
         portal.style.display = 'none';
         mainApp.style.display = 'block';
-        setTimeout(() => { mainApp.style.opacity = '1'; }, 50);
+        mainApp.style.opacity = '1';
         changerProfilInterne(profil);
     }, 500);
 }
@@ -68,14 +62,14 @@ function changerProfilInterne(profil) {
     document.getElementById('btn-particulier').classList.remove('active');
     document.getElementById('btn-pro').classList.remove('active');
     
-    let btnActif = document.getElementById('btn-' + (profil === 'particulier' ? 'particulier' : 'pro'));
+    let btnActif = document.getElementById('btn-' + profil);
     if(btnActif) btnActif.classList.add('active');
 
-    // Gestion de l'affichage selon le profil
+    // Gestion de l'affichage selon le profil (On force le nav-pro a toujours etre visible)
     document.getElementById('bloc-renov').style.display = profil === 'particulier' ? 'block' : 'none';
     document.getElementById('nav-comparateur').style.display = profil === 'particulier' ? 'inline-block' : 'none';
     document.getElementById('nav-param-particulier').style.display = profil === 'particulier' ? 'inline-block' : 'none';
-    document.getElementById('nav-pro').style.display = profil === 'professionnel' ? 'inline-block' : 'none';
+    document.getElementById('nav-pro').style.display = 'inline-block'; // Toujours visible pour switcher facilement
 
     if(profil === "professionnel") {
         document.getElementById('hero-badge').innerText = "Espace Professionnels (B2B)";
@@ -90,7 +84,7 @@ function changerProfilInterne(profil) {
         renderComparateur(); 
     }
     
-    chargerHistorique(); // On charge l'historique associé au profil (étanche)
+    chargerHistorique(); 
     if(donneesAudit) afficherEcran(); 
 }
 
@@ -160,8 +154,10 @@ function changerCouleurParticulier(couleur) {
     }
     agenceCouleur = couleur;
     localStorage.setItem('auditpro_agence_couleur', agenceCouleur);
+    
     let inputPro = document.getElementById('couleurAgenceInput');
     if(inputPro) inputPro.value = agenceCouleur;
+    
     appliquerCouleurMarqueBlanche();
 }
 
@@ -172,14 +168,15 @@ function sauvegarderParametresParticulier() {
     
     fraisNotaireEstimes = parseFloat(document.getElementById('fraisNotaireInput').value) || 8.0;
     margeSecuriteTravaux = parseFloat(document.getElementById('margeSecuriteInput').value) || 0;
-    
+    agenceCouleur = document.getElementById('couleurParticulierInput').value;
+
     localStorage.setItem('auditpro_frais_notaire', fraisNotaireEstimes);
     localStorage.setItem('auditpro_marge_secu', margeSecuriteTravaux);
+    localStorage.setItem('auditpro_agence_couleur', agenceCouleur);
     
-    changerCouleurParticulier(document.getElementById('couleurParticulierInput').value);
-    
+    appliquerCouleurMarqueBlanche();
     if(donneesAudit) afficherEcran();
-    if (comparateur.length > 0) renderComparateur();
+    if(comparateur.length > 0) renderComparateur();
     showToast("Paramètres d'Acheteur sauvegardés avec succès !");
 }
 
@@ -188,15 +185,12 @@ function sauvegarderParametresPro() {
         return showToast("Veuillez accepter la sauvegarde locale (bandeau en bas) pour activer cette fonction.", "error");
     }
     const inputNom = document.getElementById('nomAgenceInput').value.trim();
-    const inputCouleur = document.getElementById('couleurAgenceInput').value;
-    const inputWebhook = document.getElementById('webhookCrmInput').value;
-    
     agenceNom = inputNom !== "" ? inputNom : "AuditPro";
-    agenceCouleur = inputCouleur;
+    agenceCouleur = document.getElementById('couleurAgenceInput').value;
     
     localStorage.setItem('auditpro_agence_nom', agenceNom);
     localStorage.setItem('auditpro_agence_couleur', agenceCouleur);
-    localStorage.setItem('auditpro_crm_webhook', inputWebhook);
+    localStorage.setItem('auditpro_crm_webhook', document.getElementById('webhookCrmInput').value);
     if(agenceLogoBase64) {
         localStorage.setItem('auditpro_agence_logo', agenceLogoBase64);
     }
@@ -260,7 +254,7 @@ function chargerHistorique() {
     historiqueTable.innerHTML = '';
     
     if(historique.length === 0) {
-        historiqueTable.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #666; padding: 20px;">Aucun dossier généré pour le moment dans cet espace.</td></tr>';
+        historiqueTable.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #888; padding: 15px;">Aucun historique de simulation enregistré dans cet espace.</td></tr>';
         return;
     }
     
@@ -490,7 +484,7 @@ function ajouterComparateur() {
     
     let taux = parseFloat(document.getElementById('tauxRenov')?.value || 0);
     let resteACharge = donneesAudit.total_decote * (1 - taux);
-    let travauxSecurises = resteACharge * (1 + (margeSecuriteTravaux / 100)); // On intègre la marge de sécurité imprévus !
+    let travauxSecurises = resteACharge * (1 + (margeSecuriteTravaux / 100)); 
 
     let bien = {
         id: idRapport,
@@ -692,7 +686,6 @@ function afficherEcran() {
         let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitialClean) * 100;
         let fraisNotaireActuels = prixInitialClean * (fraisNotaireEstimes / 100);
         
-        // Le budget global réel prend en charge la sécurité des travaux et le notaire si particulier
         let coutTotalReel = profilActuel === 'particulier' 
                             ? prixInitialClean + travauxSecurises + fraisNotaireActuels 
                             : prixInitialClean + resteACharge; 
@@ -769,7 +762,7 @@ NOTE D'UTILISATION :
 Ces données constituent une base indicative. Face au vendeur, elles appuient mathématiquement un ajustement du prix de présentation. Face à l'acquéreur, cette transparence permet de l'aider à anticiper son financement. Le client reste libre et responsable de confirmer ces données via des devis artisanaux.`;
     }
 
-    let libelleCoutTravaux = profilActuel === 'particulier' && margeSecuriteTravaux > 0 ? "Travaux à charge (Securisés)" : "Enveloppe Travaux (Est.)";
+    let libelleCoutTravaux = profilActuel === 'particulier' && margeSecuriteTravaux > 0 ? "Travaux à charge (Sécurisés)" : "Enveloppe Travaux (Est.)";
 
     let html = `
     <div style="border-bottom: 3px solid #0b1a14; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px;">
