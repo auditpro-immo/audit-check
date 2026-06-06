@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <link rel="stylesheet" href="style.css?v=26.0">
+    <link rel="stylesheet" href="style.css?v=28.0">
 </head>
 <body>
 
@@ -51,12 +51,12 @@
 
     <div id="main-app" style="display: none; opacity: 0; transition: opacity 0.5s ease;">
         <header>
-            <div class="logo" style="cursor: pointer;"><span id="header-logo-text">Audit</span><span id="header-logo-color" style="color: #00d632;">Pro</span></div>
+            <div class="logo" style="cursor: pointer;" title="Zone d'activation Admin"><span id="header-logo-text">Audit</span><span id="header-logo-color" style="color: #00d632;">Pro</span></div>
            <nav>
                 <a href="#audit" class="active">L'Analyse</a>
-                <a href="#comparateur" id="nav-comparateur" style="display: none;">Mon Comparateur</a>
-                <a href="#parametres-particulier" id="nav-param-particulier" style="display: none;">Mes Paramètres</a>
-                <a href="#pro" id="nav-pro" style="display: none;">Tableau de Bord Agence</a>
+                <a href="#comparateur" id="nav-comparateur" style="display: none;">Mon Comparateur <span class="lock-icon" style="display: none;">🔒</span></a>
+                <a href="#parametres-particulier" id="nav-param-particulier" style="display: none;">Mes Paramètres <span class="lock-icon" style="display: none;">🔒</span></a>
+                <a href="#pro" id="nav-pro" style="display: none;">Tableau de Bord Agence <span class="lock-icon" style="display: none;">🔒</span></a>
                 <a href="#abonnements">Abonnements</a>
                 <a href="#informations">Ressources & Grille</a>
                 <a href="#avis">Avis Clients</a>
@@ -320,7 +320,7 @@
                     <div class="info-grid">
                         <div class="info-card">
                             <h3>Plomb (CREP)</h3>
-                            <p>Validité : <strong>1 an</strong> (en cas de présence avérée de plomb au-dessus des seuils).<br>Si la mesure est totalement négative, la validité devient alors <strong>illimitée</strong> pour les ventes futures.</p>
+                            <p>Validité : <strong>1 an</strong> (en cas de présence avérée de plomb au-dessus des seuils).<br>Si la mesure est totally négative, la validité devient alors <strong>illimitée</strong> pour les ventes futures.</p>
                         </div>
                         <div class="info-card">
                             <h3>Électricité & Gaz</h3>
@@ -404,16 +404,6 @@
                 </section>
             </div>
         </main>
-
-        <div id="modalAnnonce" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 20, 0.9); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
-            <div style="background: #fff; max-width: 600px; width: 100%; padding: 40px; border-radius: 12px; position: relative; text-align: left;">
-                <button onclick="document.getElementById('modalAnnonce').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: #cc0000; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">X</button>
-                <h2 style="color: #0b1a14; margin-top: 0; font-size: 20px;">Copilote IA : Votre annonce optimisée</h2>
-                <p style="font-size: 13px; color: #666; margin-bottom: 20px;">Texte généré à partir de l'audit, prêt à être copié-collé sur Leboncoin ou SeLoger.</p>
-                <div class="script-box" style="margin-top: 0; background: #f8f9fa; border: 1px solid #ddd; border-left: 4px solid #00d632;" id="texteAnnonceAgenerer"></div>
-                <button class="btn-solid btn-dynamic-color" onclick="copierScript('texteAnnonceAgenerer')" style="width: 100%; margin-top: 20px;">Copier le texte</button>
-            </div>
-        </div>
 
        <footer style="background-color: #1a1a1a; color: #ffffff; text-align: center; padding: 25px 0; font-size: 12px; border-top: 1px solid #333; margin-top: auto; line-height: 1.6;">
            © 2026 AuditPro. Tous droits réservés. | Outil d'analyse immobilière estimative.<br>
