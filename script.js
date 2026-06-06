@@ -1283,7 +1283,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ACCÈS GOD MODE (ADMIN) - Reste appuyé sur MAJ (Shift) + clique sur le Logo
+  // ACCÈS GOD MODE (ADMIN) - Reste appuyé sur MAJ (Shift) + clique sur le Logo
     const headerLogo = document.querySelector('.logo');
     if (headerLogo) {
         headerLogo.addEventListener('click', function(e) {
@@ -1292,11 +1292,10 @@ document.addEventListener("DOMContentLoaded", () => {
             if (logoClicks === 5) {
                 definirAcces('pro');
                 showToast("🔓 MODE ADMIN ACTIVÉ : Accès total illimité débloqué !", "success");
-                logoClicks = 0; // Réinitialise le compteur
             } else if (logoClicks === 10) {
                 definirAcces('gratuit');
                 showToast("🔒 MODE ADMIN DÉSACTIVÉ : Retour au compte gratuit.", "error");
-                logoClicks = 0; // Réinitialise le compteur
+                logoClicks = 0; // On réinitialise le compteur seulement à 10
             }
         });
     }
