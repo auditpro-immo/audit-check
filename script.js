@@ -1,10 +1,4 @@
-let donneesAudit = null;
-let idRapport = "";
-let chartInstance = null;
-let loyerMensuelSaisi = 0;
-let profilActuel = localStorage.getItem('auditpro_profil') || "particulier";
-
-// SYSTÈME D'ABONNEMENT SÉCURISÉ (Obfuscation locale)
+// --- SÉCURITÉ : SYSTÈME D'ABONNEMENT SÉCURISÉ (Obfuscation locale en attendant la BDD) ---
 function lireAcces() {
     try {
         let tk = localStorage.getItem('_ap_xtk_');
@@ -15,11 +9,19 @@ function lireAcces() {
 
 function definirAcces(niveau) {
     localStorage.setItem('_ap_xtk_', btoa(niveau + '|' + Date.now()));
+    userPlan = niveau;
 }
 
 let userPlan = lireAcces(); 
 let analysesCount = parseInt(localStorage.getItem('_ap_cnt_')) || 0;
 let logoClicks = 0;
+// --------------------------------------------------------------------------------------
+
+let donneesAudit = null;
+let idRapport = "";
+let chartInstance = null;
+let loyerMensuelSaisi = 0;
+let profilActuel = localStorage.getItem('auditpro_profil') || "particulier";
 
 // Charger le comparateur
 let comparateur = JSON.parse(localStorage.getItem('auditpro_comparateur')) || [];
@@ -1270,7 +1272,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ACCÈS GOD MODE (ADMIN) - Reste appuyé sur MAJ + clique 5 fois sur le Logo
+    // ACCÈS GOD MODE (ADMIN) - Reste appuyé sur MAJ (Shift) + clique 5 fois sur le Logo
     const headerLogo = document.querySelector('.logo');
     if (headerLogo) {
         headerLogo.addEventListener('click', function(e) {
@@ -1278,7 +1280,6 @@ document.addEventListener("DOMContentLoaded", () => {
             logoClicks++;
             if (logoClicks === 5) {
                 definirAcces('pro');
-                userPlan = 'pro';
                 showToast("MODE ADMIN ACTIVÉ : Accès total illimité débloqué !", "success");
             }
         });
