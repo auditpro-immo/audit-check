@@ -1,10 +1,15 @@
-from fastapi import FastAPI, UploadFile, File, Form, Request
+from fastapi import FastAPI, UploadFile, File, Form, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import pdfplumber
 import re
 from datetime import datetime
+import stripe
+import os
 
 app = FastAPI()
+
+# CONFIGURATION STRIPE (A METTRE A JOUR AVEC TES CLES REELLES)
+stripe.api_key = "sk_test_VOTRE_CLE_SECRETE"
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,7 +25,33 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return {"status": "API AuditPro opérationnelle", "version": "1.8", "message": "Moteur d'analyse prédictive avec IA DPE prêt."}
+    return {"status": "API AuditPro opérationnelle", "version": "1.9", "message": "Moteur d'analyse prédictive et sécurité activés."}
+
+# ROUTE WEBHOOK STRIPE
+@app.post("/webhook")
+async def stripe_webhook(request: Request):
+    payload = await request.body()
+    sig_header = request.headers.get('Stripe-Signature')
+    try:
+        # Remplace par ta vraie clé Webhook "whsec_..."
+        event = stripe.Webhook.construct_event(payload, sig_header, "whsec_VOTRE_CLE_WEBHOOK")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Erreur signature Stripe")
+
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        email = session['customer_details']['email']
+        print(f"✅ Paiement reçu pour l'email : {email}")
+        # ICI : Il faudra lier une base de données pour enregistrer que cet email est devenu "pro"
+        
+    return {"status": "success"}
+
+# ROUTE DE VERIFICATION SECURITE
+@app.post("/check-access")
+async def check_access(data: dict):
+    email = data.get("email")
+    # ICI : Interroger la BDD. Pour l'instant, on retourne gratuit par défaut.
+    return {"plan": "gratuit"}
 
 def get_modulateur_marche(cp: str):
     mois_ecoules = (datetime.now().year - 2024) * 12 + datetime.now().month
@@ -104,7 +135,6 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
     surface = extraire_surface(texte_global)
     mention_surface = f" (Base de calcul estimative : ~{int(surface)} m²)"
 
-    # Extraction sécurisée DPE et GES
     dpe_letter = "N/A"
     ges_letter = "N/A"
     
@@ -122,7 +152,7 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
     if match_ges:
         ges_letter = match_ges.group(1).upper()
     elif dpe_letter != "N/A":
-        ges_letter = dpe_letter # Par défaut, on aligne le GES sur le DPE si non trouvé
+        ges_letter = dpe_letter
         
     if re.search(r"(B\.3\.3\.6|B\.4\.3|B\.5\.2|défaut de mise à la terre|électrisation|contact direct|matériel vétuste|anomalie électrique)", texte_global, re.IGNORECASE):
         c = int((80 * surface) * indice)
@@ -180,7 +210,6 @@ async def analyser(fichier: UploadFile = File(...), prix: float = Form(0), cp: s
         })
         total_decote += c
 
-    # IA de Déduction DPE si non trouvé et s'il y a des coûts d'isolation
     if dpe_letter == "N/A":
         ratio_cout = (total_decote / surface) if surface > 0 else 0
         if ratio_cout > 350: dpe_letter = "G"
