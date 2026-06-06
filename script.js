@@ -181,18 +181,28 @@ function changerCouleurParticulierTemporaire(couleur) {
 }
 
 function sauvegarderParametresParticulier() {
-    if (userPlan === 'gratuit') {
-        document.querySelector('nav a[href="#abonnements"]').click();
-        return showToast("Option verrouillée. Passez à l'abonnement Particulier pour personnaliser vos réglages.", "error");
-    }
     if (!localStorage.getItem('auditpro_cookies')) {
         return showToast("Veuillez accepter la sauvegarde locale (bandeau en bas) pour activer cette fonction.", "error");
     }
     
     fraisNotaireEstimes = parseFloat(document.getElementById('fraisNotaireInput').value) || 0;
     margeSecuriteTravaux = parseFloat(document.getElementById('margeSecuriteInput').value) || 0;
-    agenceCouleur = document.getElementById('couleurParticulierInput').value;
+    let couleurChoisie = document.getElementById('couleurParticulierInput').value;
 
+    // Blocage sélectif : Les gratuits peuvent sauvegarder les frais, mais pas la couleur
+    if (userPlan === 'gratuit' && couleurChoisie !== '#00d632') {
+        localStorage.setItem('auditpro_frais_notaire', fraisNotaireEstimes);
+        localStorage.setItem('auditpro_marge_secu', margeSecuriteTravaux);
+        
+        document.getElementById('couleurParticulierInput').value = '#00d632';
+        changerCouleurParticulierTemporaire('#00d632');
+        
+        if(donneesAudit) afficherEcran();
+        
+        return showToast("Le thème visuel nécessite l'abonnement Particulier. Vos autres réglages (Notaire, Matelas) ont été sauvegardés.", "error");
+    }
+
+    agenceCouleur = couleurChoisie;
     localStorage.setItem('auditpro_frais_notaire', fraisNotaireEstimes);
     localStorage.setItem('auditpro_marge_secu', margeSecuriteTravaux);
     localStorage.setItem('auditpro_agence_couleur', agenceCouleur);
@@ -527,6 +537,7 @@ function switchProTab(tabId) {
 }
 
 function ajouterComparateur() {
+    // Si l'utilisateur est gratuit, on bloque le comparateur
     if (userPlan === 'gratuit') {
         document.querySelector('nav a[href="#abonnements"]').click();
         return showToast("Le comparateur est réservé aux abonnements Premium et Particulier.", "error");
@@ -1272,7 +1283,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ACCÈS GOD MODE (ADMIN) - Reste appuyé sur MAJ (Shift) + clique 5 fois sur le Logo
+    // ACCÈS GOD MODE (ADMIN) - Reste appuyé sur MAJ (Shift) + clique sur le Logo
     const headerLogo = document.querySelector('.logo');
     if (headerLogo) {
         headerLogo.addEventListener('click', function(e) {
@@ -1280,7 +1291,12 @@ document.addEventListener("DOMContentLoaded", () => {
             logoClicks++;
             if (logoClicks === 5) {
                 definirAcces('pro');
-                showToast("MODE ADMIN ACTIVÉ : Accès total illimité débloqué !", "success");
+                showToast("🔓 MODE ADMIN ACTIVÉ : Accès total illimité débloqué !", "success");
+                logoClicks = 0; // Réinitialise le compteur
+            } else if (logoClicks === 10) {
+                definirAcces('gratuit');
+                showToast("🔒 MODE ADMIN DÉSACTIVÉ : Retour au compte gratuit.", "error");
+                logoClicks = 0; // Réinitialise le compteur
             }
         });
     }
