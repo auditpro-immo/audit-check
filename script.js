@@ -1,4 +1,4 @@
-// --- SÉCURITÉ : SYSTÈME D'ABONNEMENT SÉCURISÉ (Obfuscation locale en attendant la BDD) ---
+// --- SÉCURITÉ : SYSTÈME D'ABONNEMENT SÉCURISÉ ---
 function lireAcces() {
     try {
         let tk = localStorage.getItem('_ap_xtk_');
@@ -15,7 +15,7 @@ function definirAcces(niveau) {
 let userPlan = lireAcces(); 
 let analysesCount = parseInt(localStorage.getItem('_ap_cnt_')) || 0;
 let logoClicks = 0;
-// --------------------------------------------------------------------------------------
+// --------------------------------------------------
 
 let donneesAudit = null;
 let idRapport = "";
@@ -73,6 +73,17 @@ function entrerSurLeSite(profil) {
     }, 500);
 }
 
+// MISE A JOUR DES CADENAS SUR LE MENU
+function updateNavLocks() {
+    const lockComparateur = document.querySelector('#nav-comparateur .lock-icon');
+    const lockParam = document.querySelector('#nav-param-particulier .lock-icon');
+    const lockPro = document.querySelector('#nav-pro .lock-icon');
+
+    if(lockComparateur) lockComparateur.style.display = userPlan === 'gratuit' ? 'inline' : 'none';
+    if(lockParam) lockParam.style.display = userPlan === 'gratuit' ? 'inline' : 'none';
+    if(lockPro) lockPro.style.display = userPlan !== 'pro' ? 'inline' : 'none';
+}
+
 function changerProfilInterne(profil) {
     profilActuel = profil;
     localStorage.setItem('auditpro_profil', profilActuel);
@@ -87,6 +98,8 @@ function changerProfilInterne(profil) {
     document.getElementById('nav-comparateur').style.display = profil === 'particulier' ? 'inline-block' : 'none';
     document.getElementById('nav-param-particulier').style.display = profil === 'particulier' ? 'inline-block' : 'none';
     document.getElementById('nav-pro').style.display = profil === 'professionnel' ? 'inline-block' : 'none';
+
+    updateNavLocks();
 
     if(profil === "professionnel") {
         document.getElementById('hero-badge').innerText = "Espace Professionnels (B2B)";
@@ -189,7 +202,6 @@ function sauvegarderParametresParticulier() {
     margeSecuriteTravaux = parseFloat(document.getElementById('margeSecuriteInput').value) || 0;
     let couleurChoisie = document.getElementById('couleurParticulierInput').value;
 
-    // Blocage sélectif : Les gratuits peuvent sauvegarder les frais, mais pas la couleur
     if (userPlan === 'gratuit' && couleurChoisie !== '#00d632') {
         localStorage.setItem('auditpro_frais_notaire', fraisNotaireEstimes);
         localStorage.setItem('auditpro_marge_secu', margeSecuriteTravaux);
@@ -357,23 +369,6 @@ function ajouterAuHistorique(ville, prixInitial, donneesCompletes) {
     });
     localStorage.setItem(histKey, JSON.stringify(historique));
     chargerHistorique();
-
-    const webhook = localStorage.getItem('auditpro_crm_webhook');
-    if (webhook && profilActuel === "professionnel") {
-        fetch(webhook, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                source: "AuditPro_Immo",
-                agence: agenceNom,
-                id_dossier: idRapport, 
-                ville: ville, 
-                prix_affiche: prixInitial, 
-                estimation_travaux: donneesCompletes.total_decote,
-                statut_dpe: donneesCompletes.dpe_lettre || "N/A"
-            })
-        }).catch(e => console.log("Liaison CRM non active ou erreur de réseau."));
-    }
 }
 
 function chargerDossierHistorique(index) {
@@ -537,7 +532,6 @@ function switchProTab(tabId) {
 }
 
 function ajouterComparateur() {
-    // Si l'utilisateur est gratuit, on bloque le comparateur
     if (userPlan === 'gratuit') {
         document.querySelector('nav a[href="#abonnements"]').click();
         return showToast("Le comparateur est réservé aux abonnements Premium et Particulier.", "error");
@@ -1236,6 +1230,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if(donneesAudit) afficherEcran(); 
     });
 
+    // C'EST ICI QU'ON INTERCEPTE LES CLICS SUR LES MENUS PAYANTS
     const liensMenu = document.querySelectorAll('nav a[href^="#"]');
     const blocsOnglets = document.querySelectorAll('.tab-content');
 
@@ -1258,8 +1253,20 @@ document.addEventListener("DOMContentLoaded", () => {
     liensMenu.forEach(lien => {
         lien.addEventListener('click', function(e) {
             e.preventDefault();
+            const targetId = this.getAttribute('href');
+
+            // VERIFICATION SECURITE (PAYWALL)
+            if (userPlan === 'gratuit' && (targetId === '#comparateur' || targetId === '#parametres-particulier')) {
+                changerOnglet('#abonnements');
+                return showToast("🔒 Cette fonctionnalité est verrouillée. Veuillez choisir une offre.", "error");
+            }
+            if (userPlan !== 'pro' && targetId === '#pro') {
+                changerOnglet('#abonnements');
+                return showToast("🔒 L'Espace Agence nécessite l'abonnement Premium Pro.", "error");
+            }
+
             liensMenu.forEach(l => { l.style.color = '#fff'; l.style.borderBottomColor = 'transparent'; });
-            changerOnglet(this.getAttribute('href'));
+            changerOnglet(targetId);
         });
     });
 
@@ -1283,7 +1290,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-  // ACCÈS GOD MODE (ADMIN) - Reste appuyé sur MAJ (Shift) + clique sur le Logo
+    // ACCÈS GOD MODE (ADMIN) - Reste appuyé sur MAJ (Shift) + clique sur le Logo
     const headerLogo = document.querySelector('.logo');
     if (headerLogo) {
         headerLogo.addEventListener('click', function(e) {
@@ -1291,11 +1298,13 @@ document.addEventListener("DOMContentLoaded", () => {
             logoClicks++;
             if (logoClicks === 5) {
                 definirAcces('pro');
+                updateNavLocks();
                 showToast("🔓 MODE ADMIN ACTIVÉ : Accès total illimité débloqué !", "success");
             } else if (logoClicks === 10) {
                 definirAcces('gratuit');
+                updateNavLocks();
                 showToast("🔒 MODE ADMIN DÉSACTIVÉ : Retour au compte gratuit.", "error");
-                logoClicks = 0; // On réinitialise le compteur seulement à 10
+                logoClicks = 0; // On réinitialise le compteur
             }
         });
     }
