@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <link rel="stylesheet" href="style.css?v=31.0">
+    <link rel="stylesheet" href="style.css?v=32.0">
 </head>
 <body>
 
@@ -52,7 +52,7 @@
     <div id="main-app" style="display: none; opacity: 0; transition: opacity 0.5s ease;">
         <header>
             <div class="logo" style="cursor: pointer;" title="Zone d'activation Admin">
-                Audit<span id="header-logo-color" style="color: #3B82F6;">Pro</span>
+                Audit<span class="theme-text">Pro</span>
             </div>
            <nav>
                 <a href="#audit" class="active">L'Analyse</a>
@@ -64,35 +64,44 @@
                 <a href="#avis">Avis Clients</a>
                 <a href="#faq">FAQ</a>
             </nav>
-            <button class="btn-solid btn-dynamic-color" onclick="document.querySelector('nav a[href=\'#audit\']').click();">Nouvelle Analyse</button>
+            <button class="btn-solid theme-bg" onclick="document.querySelector('nav a[href=\'#audit\']').click();">Nouvelle Analyse</button>
         </header>
 
         <main>
-            <div id="audit-tab" class="tab-content active">
+            <div id="audit-tab" class="tab-content active" style="display: block;">
                 <section class="hero" id="audit">
-                    <div class="hero-glow"></div>
-                    
                     <div class="hero-content">
-                        <div id="hero-badge" style="display: inline-block; background: #fff; border: 1px solid #E2E8F0; color: #0F172A; font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">L'intelligence au service de l'immo</div>
+                        <div id="hero-badge" class="theme-text" style="display: inline-block; background: #fff; border: 1px solid #E2E8F0; font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">L'intelligence au service de l'immo</div>
                         <h1 id="hero-title">Traduisez les diagnostics techniques en opportunités.</h1>
                         <p id="hero-desc">Notre algorithme extrait, vulgarise et estime l'ensemble des travaux de mise aux normes d'un bien immobilier en moins de 2 minutes.</p>
                         
-                        <ul style="margin-bottom: 40px;">
-                            <li class="li-dynamic"><strong>Le Dossier Technique vulgarisé :</strong> Fini le jargon incompréhensible.</li>
-                            <li class="li-dynamic"><strong>Calculateur de prix local :</strong> Indexé sur les artisans de votre région.</li>
-                            <li class="li-dynamic"><strong>Aide à la négociation :</strong> Des arguments mathématiques solides.</li>
-                        </ul>
-
-                        <div class="trust-badge-container">
-                            <div class="avatars-group">
-                                <img src="https://i.pravatar.cc/100?img=11" alt="User">
-                                <img src="https://i.pravatar.cc/100?img=32" alt="User">
-                                <img src="https://i.pravatar.cc/100?img=44" alt="User">
-                                <div class="avatars-more">+</div>
+                        <div class="hero-features-grid">
+                            <div class="feature-item">
+                                <div class="feature-icon theme-bg-light theme-text">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                </div>
+                                <div>
+                                    <strong>Lecture PDF intelligente</strong>
+                                    <span>Vulgarise le jargon technique (DPE, Amiante, Électricité)</span>
+                                </div>
                             </div>
-                            <div class="trust-text">
-                                <div class="stars">★★★★★</div>
-                                <div>Adopté par plus de <strong>2 500 professionnels</strong></div>
+                            <div class="feature-item">
+                                <div class="feature-icon theme-bg-light theme-text">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                </div>
+                                <div>
+                                    <strong>Chiffrage Localisé</strong>
+                                    <span>Base de données indexée sur les coûts de votre département</span>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon theme-bg-light theme-text">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                </div>
+                                <div>
+                                    <strong>100% Anonyme & RGPD</strong>
+                                    <span>Les documents sont détruits immédiatement après analyse</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -115,6 +124,7 @@
                         <div class="form-group" id="bloc-renov" style="display:none;">
                             <label style="display: flex; justify-content: space-between; align-items: center;">
                                 <span>Profil MaPrimeRénov'</span>
+                                <a href="https://mesaides.france-renov.gouv.fr/" target="_blank" class="theme-text" style="font-size: 11px; text-decoration: none; font-weight: 700;">(Calculer mon profil)</a>
                             </label>
                             <select id="tauxRenov" class="form-control" onchange="if(donneesAudit) afficherEcran();">
                                 <option value="0">Standard (Pas d'aides)</option>
@@ -134,21 +144,21 @@
                         </div>
                         <div class="form-group" style="margin-bottom: 30px;">
                             <label>Dossier PDF (DPE / Diagnostics) *</label>
-                            <div id="drop-zone" class="drop-zone">
-                                <svg class="drop-icon" style="margin-bottom: 15px; color: #3B82F6;" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg><br>
+                            <div id="drop-zone" class="drop-zone theme-border-hover">
+                                <svg class="drop-icon theme-text" style="margin-bottom: 15px;" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg><br>
                                 <span class="drop-zone-text">Cliquez ou déposez votre fichier ici</span>
                                 <input type="file" id="fichierPdf" class="drop-zone-input" accept="application/pdf">
                             </div>
                         </div>
                         
-                        <button class="btn-submit btn-dynamic-color" id="btnSubmit" onclick="envoyer()">Lancer l'audit technique</button>
+                        <button class="btn-submit theme-bg" id="btnSubmit" onclick="envoyer()">Lancer l'audit technique</button>
                     </div>
                 </section>
 
                 <div id="result-wrapper">
                     <div id="contenu-ecran"></div>
                     <div style="text-align: center; margin-top: 50px; display: flex; flex-direction: column; align-items: center; gap: 20px;">
-                        <button class="btn-solid btn-dynamic-color" id="btnExport" style="padding: 18px 40px; font-size: 16px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);" onclick="exporterPDF('download')">Télécharger le Rapport (PDF)</button>
+                        <button class="btn-solid theme-bg" id="btnExport" style="padding: 18px 40px; font-size: 16px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);" onclick="exporterPDF('download')">Télécharger le Rapport (PDF)</button>
                         <div id="action-buttons-container" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; width: 100%; max-width: 600px;"></div>
                     </div>
                 </div>
@@ -165,7 +175,7 @@
             <div id="parametres-particulier-tab" class="tab-content">
                 <section class="content-section">
                     <h2 class="section-title">Mes Paramètres</h2>
-                    <div style="background: #fff; padding: 50px; border-radius: 24px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05); max-width: 550px; margin: 0 auto; border: 1px solid #F1F5F9;">
+                    <div class="theme-border-top" style="background: #fff; padding: 50px; border-radius: 24px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05); max-width: 550px; margin: 0 auto; border-left: 1px solid #F1F5F9; border-right: 1px solid #F1F5F9; border-bottom: 1px solid #F1F5F9;">
                         
                         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F1F5F9; padding-bottom: 20px; margin-bottom: 30px;">
                             <h3 style="margin: 0; color: #0F172A; font-size: 20px; font-weight: 700;">Configuration des calculs</h3>
@@ -187,7 +197,7 @@
                                 <span style="font-size: 14px; color: #64748B; font-weight: 500;">Cliquez sur la pastille</span>
                             </div>
                         </div>
-                        <button class="btn-solid btn-dynamic-color" style="width: 100%; margin-top: 30px;" onclick="sauvegarderParametresParticulier()">Sauvegarder</button>
+                        <button class="btn-solid theme-bg" style="width: 100%; margin-top: 30px;" onclick="sauvegarderParametresParticulier()">Sauvegarder</button>
                     </div>
                 </section>
             </div>
@@ -236,7 +246,7 @@
                                 <img id="logo-preview" style="display: none; max-height: 60px; margin-top: 20px; border-radius: 8px; border: 1px solid #F1F5F9; padding: 5px;">
                             </div>
 
-                            <button class="btn-solid btn-dynamic-color" style="width: 100%; margin-top: 30px;" onclick="sauvegarderParametresPro()">Activer la Marque Blanche</button>
+                            <button class="btn-solid theme-bg" style="width: 100%; margin-top: 30px;" onclick="sauvegarderParametresPro()">Activer la Marque Blanche</button>
                         </div>
                         
                         <div style="flex: 2; min-width: 400px; background: #fff; padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05); border: 1px solid #F1F5F9; display: flex; flex-direction: column;">
@@ -252,7 +262,7 @@
                         <div style="background: #0F172A; color: white; padding: 50px; border-radius: 24px; text-align: center;">
                             <h3 style="font-size: 24px; font-weight: 700; margin-top:0;">Widget de Captation (Leads Vendeurs)</h3>
                             <p style="color: #94A3B8; font-size: 16px; margin-bottom: 30px;">Intégrez le moteur AuditPro directement sur le site web de votre agence immobilière pour récolter les coordonnées des vendeurs locaux.</p>
-                            <button class="btn-solid btn-dynamic-color" onclick="document.querySelector('nav a[href=\'#abonnements\']').click();">Débloquer cette option</button>
+                            <button class="btn-solid theme-bg" onclick="document.querySelector('nav a[href=\'#abonnements\']').click();">Débloquer cette option</button>
                         </div>
                     </div>
                 </section>
@@ -273,7 +283,7 @@
                                 <li>✓ Rapport PDF standard</li>
                                 <li>✓ Grille d'évaluation vierge</li>
                             </ul>
-                            <button class="btn-demo" style="margin-top: auto;" onclick="document.querySelector('nav a[href=\'#audit\']').click();">Créer un compte</button>
+                            <button class="btn-demo" style="margin-top: auto;" onclick="document.querySelector('nav a[href=\'#audit\']').click();">Tester l'outil</button>
                         </div>
                         
                         <div style="flex: 1; min-width: 280px; max-width: 320px; background: #fff; padding: 50px 30px; border-radius: 24px; border: 1px solid #E2E8F0; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.02); display: flex; flex-direction: column;">
@@ -281,26 +291,26 @@
                             <div style="font-size: 46px; font-weight: 800; color: #0F172A; margin-bottom: 30px; letter-spacing: -0.02em;">9,99 €<span style="font-size: 14px; color: #94A3B8; font-weight: 500;">/mois</span></div>
                             <ul style="text-align: left; font-size: 15px; color: #475569; line-height: 2.2; padding-left: 10px; margin-bottom: 40px; flex-grow: 1; list-style: none;">
                                 <li>✓ Analyses illimitées</li>
+                                <li>✓ Historique local des visites</li>
                                 <li>✓ Rapports PDF illimités</li>
                                 <li>✓ Comparateur (6 biens)</li>
-                                <li>✓ Personnalisation couleurs</li>
-                                <li>✓ Sans engagement</li>
+                                <li>✓ Thème visuel personnalisable</li>
                             </ul>
                             <a href="https://buy.stripe.com/7sYaEYcY79Gq1WU3oIaR200" target="_blank" class="btn-solid" style="background: #0F172A; color: #fff; text-decoration: none; display: block; margin-top: auto; text-align: center;">S'abonner</a>
                         </div>
 
-                        <div class="premium-card-accent" style="flex: 1.1; min-width: 300px; max-width: 340px; background: #fff; padding: 60px 30px; border-radius: 24px; border: 1px solid #E2E8F0; box-shadow: 0 30px 60px -15px rgba(0,0,0,0.1); text-align: center; position: relative; display: flex; flex-direction: column; transform: translateY(-10px);">
-                            <div class="btn-dynamic-color" style="color: #fff; font-size: 12px; font-weight: 800; padding: 6px 16px; border-radius: 20px; display: inline-block; text-transform: uppercase; position: absolute; top: -14px; left: 50%; transform: translateX(-50%); letter-spacing: 0.05em;">Pour les Agences</div>
+                        <div class="theme-border-top" style="flex: 1.1; min-width: 300px; max-width: 340px; background: #fff; padding: 60px 30px; border-radius: 24px; border-left: 1px solid #E2E8F0; border-right: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; box-shadow: 0 30px 60px -15px rgba(0,0,0,0.1); text-align: center; position: relative; display: flex; flex-direction: column; transform: translateY(-10px);">
+                            <div class="theme-bg" style="color: #fff; font-size: 12px; font-weight: 800; padding: 6px 16px; border-radius: 20px; display: inline-block; text-transform: uppercase; position: absolute; top: -14px; left: 50%; transform: translateX(-50%); letter-spacing: 0.05em;">Pour les Agences</div>
                             <h3 style="margin: 0 0 15px 0; color: #0F172A; font-size: 24px; font-weight: 800;">Premium Pro</h3>
                             <div style="font-size: 52px; font-weight: 800; color: #0F172A; margin-bottom: 30px; letter-spacing: -0.03em;">29,99 €<span style="font-size: 15px; color: #94A3B8; font-weight: 500;">/mois</span></div>
                             <ul style="text-align: left; font-size: 15px; color: #334155; line-height: 2.2; padding-left: 10px; margin-bottom: 40px; font-weight: 600; flex-grow: 1; list-style: none;">
-                                <li>✓ Analyses <span class="text-dynamic-color">illimitées</span></li>
-                                <li>✓ PDF en <span class="text-dynamic-color">Marque Blanche</span></li>
+                                <li>✓ Analyses <span class="theme-text">illimitées</span></li>
+                                <li>✓ PDF en <span class="theme-text">Marque Blanche</span></li>
                                 <li>✓ Insertion du Logo Agence</li>
                                 <li>✓ Outils Pros (Annonces IA)</li>
                                 <li>✓ Support prioritaire</li>
                             </ul>
-                            <a href="https://buy.stripe.com/bJeaEY8HRaKu596f7qaR201" target="_blank" class="btn-solid btn-dynamic-color" style="text-decoration: none; display: block; margin-top: auto; text-align: center;">Devenir Partenaire</a>
+                            <a href="https://buy.stripe.com/bJeaEY8HRaKu596f7qaR201" target="_blank" class="btn-solid theme-bg" style="text-decoration: none; display: block; margin-top: auto; text-align: center;">Devenir Partenaire</a>
                         </div>
                     </div>
                 </section>
@@ -308,23 +318,23 @@
 
             <div id="informations-tab" class="tab-content">
                 <section id="informations" class="content-section">
-                    <div style="background-color: #fff; padding: 50px; text-align: center; border-radius: 24px; margin: 0 auto 80px auto; border: 1px solid #E2E8F0; max-width: 800px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05);">
+                    <div style="background-color: #fff; padding: 50px; text-align: center; border-radius: 24px; margin: 0 auto 80px auto; border: 1px solid #E2E8F0; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05);">
                         <h2 style="color: #0F172A; margin-top: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">La Grille d'Auto-Évaluation</h2>
                         <p style="color: #64748B; font-size: 16px; margin-bottom: 30px; line-height: 1.6;">Imprimez cette fiche de contrôle vierge. Elle vous guidera étape par étape pour inspecter les points critiques d'un bien lors de votre visite sur le terrain.</p>
-                        <a href="grille.html" target="_blank" class="btn-solid btn-dynamic-color" style="display: inline-block; text-decoration: none;">Télécharger la Grille (PDF)</a>
+                        <a href="grille.html" target="_blank" class="btn-solid theme-bg" style="display: inline-block; text-decoration: none;">Télécharger la Grille (PDF)</a>
                     </div>
                     
                     <h2 class="section-title">Actualités & Réglementation</h2>
                     <div class="info-grid" style="margin-bottom: 80px;">
-                        <div class="info-card">
+                        <div class="info-card theme-border-top">
                             <h3>Audit Énergétique Obligatoire</h3>
                             <p>En complément du DPE, la vente d'un logement classé E, F ou G impose un audit énergétique réglementaire détaillé des scénarios de travaux.</p>
                         </div>
-                        <div class="info-card">
+                        <div class="info-card theme-border-top">
                             <h3>Évolution MaPrimeRénov'</h3>
                             <p>Les aides de l'État favorisent les rénovations globales. L'accompagnement par "Mon Accompagnateur Rénov'" est devenu une obligation légale.</p>
                         </div>
-                        <div class="info-card">
+                        <div class="info-card theme-border-top">
                             <h3>Le Permis de Louer</h3>
                             <p>De plus en plus de communes exigent un Permis de Louer préalable. Les diagnostics électricité, gaz et plomb sont scrutés à la loupe.</p>
                         </div>
@@ -334,35 +344,14 @@
 
             <div id="avis-tab" class="tab-content">
                <section id="avis" class="content-section">
-                <h2 class="section-title">Ils l'utilisent au quotidien</h2>
-                <div id="listeAvis" class="avis-grid" style="display: flex; gap: 24px; margin-bottom: 60px; flex-wrap: wrap;">
-                    <div class="avis-card">
-                        <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px;">
-                            <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" style="width: 48px; height: 48px; border-radius: 50%; border: 2px solid #E2E8F0;">
-                            <div>
-                                <div style="font-weight: 700; font-size: 15px; color: #0F172A;">Marc D.</div>
-                                <div style="font-size: 13px; color: #64748B;">Investisseur locatif</div>
-                            </div>
-                        </div>
-                        <p style="font-size: 15px; color: #475569; line-height: 1.7; margin:0;">"L'approche proposée par le rapport est très fine. Cela m'a permis d'aborder la question des travaux d'électricité avec le vendeur de façon sereine et objective. Résultat : un accord équitable trouvé en 2h."</p>
-                    </div>
-                    <div class="avis-card">
-                        <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px;">
-                            <img src="https://i.pravatar.cc/150?img=32" alt="Avatar" style="width: 48px; height: 48px; border-radius: 50%; border: 2px solid #E2E8F0;">
-                            <div>
-                                <div style="font-weight: 700; font-size: 15px; color: #0F172A;">Sophie L.</div>
-                                <div style="font-size: 13px; color: #64748B;">Directrice d'Agence</div>
-                            </div>
-                        </div>
-                        <p style="font-size: 15px; color: #475569; line-height: 1.7; margin:0;">"Un outil fantastique pour la transparence. Je le présente désormais systématiquement à mes clients acquéreurs. Cela désamorce toutes leurs inquiétudes face au jargon technique des diagnostics."</p>
-                    </div>
-                </div>
+                <h2 class="section-title">Avis & Retours utilisateurs</h2>
                 
                 <div class="form-avis" style="background: #fff; padding: 40px; border-radius: 24px; border: 1px solid #E2E8F0; max-width: 600px; margin: 0 auto; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
                     <h3 style="margin-top: 0; color: #0F172A; font-weight: 700;">Vous avez utilisé AuditPro ?</h3>
+                    <p style="color: #64748B; font-size: 14px; margin-bottom: 25px;">Aidez-nous à améliorer l'algorithme en partageant votre expérience sur le terrain.</p>
                     <input type="text" id="nomAvis" placeholder="Votre Prénom & Fonction" class="form-control" style="margin-bottom: 15px;">
-                    <textarea id="texteAvis" placeholder="Racontez-nous comment le rapport vous a aidé..." class="form-control" style="margin-bottom: 20px; height: 100px;"></textarea>
-                    <button type="button" class="btn-solid btn-dynamic-color" onclick="ajouterAvis()" style="width: 100%;">Publier mon évaluation</button>
+                    <textarea id="texteAvis" placeholder="Ex: Ce rapport m'a permis d'aborder la question des travaux sereinement avec le vendeur..." class="form-control" style="margin-bottom: 20px; height: 100px;"></textarea>
+                    <button type="button" class="btn-solid theme-bg" onclick="ajouterAvis()" style="width: 100%;">Publier mon évaluation</button>
                 </div>
             </section>
             </div>
@@ -398,21 +387,21 @@
                 <button onclick="document.getElementById('modalAnnonce').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: #F1F5F9; color: #0F172A; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: 700;">✕</button>
                 <h2 style="color: #0F172A; margin-top: 0; font-size: 22px; font-weight: 800;">Copilote IA : Votre annonce</h2>
                 <p style="font-size: 14px; color: #64748B; margin-bottom: 25px;">Texte généré à partir de l'audit, prêt à être copié-collé.</p>
-                <div class="script-box" style="margin-top: 0; background: #F8FAFC; border: 1px solid #E2E8F0;" id="texteAnnonceAgenerer"></div>
-                <button class="btn-solid btn-dynamic-color" onclick="copierScript('texteAnnonceAgenerer')" style="width: 100%; margin-top: 25px;">Copier le texte</button>
+                <div class="script-box theme-border-left" style="margin-top: 0; background: #F8FAFC; border-top: 1px solid #E2E8F0; border-right: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;" id="texteAnnonceAgenerer"></div>
+                <button class="btn-solid theme-bg" onclick="copierScript('texteAnnonceAgenerer')" style="width: 100%; margin-top: 25px;">Copier le texte</button>
             </div>
         </div>
 
        <footer style="background-color: #0F172A; color: #94A3B8; text-align: center; padding: 50px 0; font-size: 13px; margin-top: auto; line-height: 1.8;">
            © 2026 AuditPro. Tous droits réservés.<br>
            L'ensemble des chiffrages sont indicatifs et ne se substituent en aucun cas à un devis d'artisan RGE.<br>
-           <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" class="text-dynamic-color" style="text-decoration: underline; margin-top: 15px; display: inline-block; font-weight: 600;">Mentions Légales & Traitement des Données RGPD</a>
+           <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" class="theme-text" style="text-decoration: underline; margin-top: 15px; display: inline-block; font-weight: 600;">Mentions Légales & Traitement des Données RGPD</a>
         </footer>
     </div>
 
     <div id="modalLegale" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(5px); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
         <div style="background: #fff; max-width: 800px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 50px; border-radius: 24px; position: relative; text-align: left; box-shadow: 0 30px 60px rgba(0,0,0,0.3);">
-            <button onclick="document.getElementById('modalLegale').style.display='none'" style="position: absolute; top: 25px; right: 25px; background: #F1F5F9; color: #0F172A; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 700;">Fermer ✕</button>
+            <button onclick="document.getElementById('modalLegale').style.display='none'" style="position: absolute; top: 25px; right: 25px; background: #F1F5F9; color: #0F172A; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 700; transition: background 0.2s;">Fermer ✕</button>
             <h2 style="color: #0F172A; border-bottom: 2px solid #F1F5F9; padding-bottom: 15px; font-weight: 800;">Mentions Légales & Conditions</h2>
             <h3 style="font-size: 16px; margin-top: 25px; color: #1E293B;">1. Édition et Hébergement</h3>
             <p style="font-size: 14px; color: #64748B;">Interface publique hébergée par GitHub Pages. Moteur d'analyse hébergé sur environnement sécurisé (Render).</p>
@@ -421,18 +410,18 @@
         </div>
     </div>
 
-    <div id="cookie-banner" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); color: #fff; padding: 25px; z-index: 10000; box-sizing: border-box; text-align: center; border-top: 1px solid rgba(255,255,255,0.1);">
+    <div id="cookie-banner" class="theme-border-top" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); color: #fff; padding: 25px; z-index: 10000; box-sizing: border-box; text-align: center; border-left: none; border-right: none; border-bottom: none;">
         <p style="margin: 0 0 15px 0; font-size: 14px; color: #E2E8F0;">
             <strong>Fonctionnement "Hybride Sécurisé" :</strong> Ce site utilise le stockage local de votre navigateur pour sauvegarder vos paramètres. Vos PDF sont traités de façon éphémère et détruits instantanément. Acceptez-vous ce fonctionnement ?
         </p>
-        <button onclick="accepterCookies()" class="btn-solid btn-dynamic-color" style="padding: 12px 30px; font-size: 14px; box-shadow: none;">Accepter & Continuer</button>
+        <button onclick="accepterCookies()" class="btn-solid theme-bg" style="padding: 12px 30px; font-size: 14px; box-shadow: none;">Accepter & Continuer</button>
     </div>
 
     <div id="toast-container"></div>
     <div id="loading-overlay">
         <div class="spinner"></div>
         <h3 style="color: white; margin-top: 25px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 20px;" id="loading-text">Analyse en cours...</h3>
-        <p class="text-dynamic-color" style="font-weight: 600; font-size: 14px;">Extraction des données du document réglementaire</p>
+        <p class="theme-text" style="font-weight: 600; font-size: 14px;">Extraction des données du document réglementaire</p>
     </div>
 
     <script src="script.js"></script>
