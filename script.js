@@ -23,10 +23,8 @@ let chartInstance = null;
 let loyerMensuelSaisi = 0;
 let profilActuel = localStorage.getItem('auditpro_profil') || "particulier";
 
-// Charger le comparateur
 let comparateur = JSON.parse(localStorage.getItem('auditpro_comparateur')) || [];
 
-// VARIABLES CONFIG VISUELLE - NOUVEAU THEME BLEU PAR DEFAUT
 let agenceNom = localStorage.getItem('auditpro_agence_nom') || 'AuditPro';
 let agenceCouleur = localStorage.getItem('auditpro_agence_couleur') || '#3B82F6';
 let agenceLogoBase64 = localStorage.getItem('auditpro_agence_logo') || null;
@@ -138,53 +136,15 @@ document.getElementById('logoUploadInput').addEventListener('change', function(e
 
 function appliquerCouleurMarqueBlanche() {
     document.getElementById('header-logo-text').innerText = agenceNom === 'AuditPro' ? 'Audit' : agenceNom;
-    document.getElementById('header-logo-color').innerText = agenceNom === 'AuditPro' ? 'Pro' : 'Immo';
     
-    document.querySelectorAll('.btn-dynamic-color').forEach(btn => { 
-        btn.style.backgroundColor = agenceCouleur; 
-        btn.style.color = '#fff';
-        btn.style.boxShadow = `0 4px 15px ${agenceCouleur}40`;
-    });
+    // Injection propre des variables CSS
+    document.documentElement.style.setProperty('--theme-color', agenceCouleur);
     
-    let dynamicStyle = document.getElementById('dynamic-agency-style');
-    if (!dynamicStyle) {
-        dynamicStyle = document.createElement('style');
-        dynamicStyle.id = 'dynamic-agency-style';
-        document.head.appendChild(dynamicStyle);
-    }
-
-    let r = 59, g = 130, b = 246; 
-    if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(agenceCouleur)){
-        let c = agenceCouleur.substring(1).split('');
-        if(c.length === 3){ c = [c[0], c[0], c[1], c[1], c[2], c[2]]; }
-        c = '0x' + c.join('');
-        r = (c >> 16) & 255;
-        g = (c >> 8) & 255;
-        b = c & 255;
-    }
-
-    // Le nouveau CSS Dynamique: beaucoup plus subtil et pro (Plus de grosses bordures laides)
-    dynamicStyle.innerHTML = `
-        .text-dynamic-color, #header-logo-color { color: ${agenceCouleur} !important; }
-        .drop-zone:hover, .drop-zone.dragover { border-color: ${agenceCouleur} !important; background-color: rgba(${r}, ${g}, ${b}, 0.03) !important; }
-        .drop-zone:hover .drop-icon, .drop-zone.dragover .drop-icon { color: ${agenceCouleur} !important; }
-        .drop-icon { color: ${agenceCouleur} !important; }
-        .card-icon-svg svg, .card-action { stroke: ${agenceCouleur} !important; color: ${agenceCouleur} !important; }
-        nav a.active { color: ${agenceCouleur} !important; font-weight: 700; }
-        nav a:hover { color: ${agenceCouleur} !important; }
-        .profile-btn.active { background: #fff !important; color: ${agenceCouleur} !important; box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important; }
-        .btn-pdf { background-color: ${agenceCouleur} !important; color: #fff !important; }
-        .btn-voir:hover { color: ${agenceCouleur} !important; border-color: ${agenceCouleur} !important; }
-        .kpi-box.main { background-color: ${agenceCouleur} !important; box-shadow: 0 10px 25px rgba(${r}, ${g}, ${b}, 0.25) !important; }
-        .report-tab-btn.active::after { background: ${agenceCouleur} !important; }
-        .report-tab-btn.active { color: ${agenceCouleur} !important; }
-        .script-box { border-left-color: ${agenceCouleur} !important; }
-        .btn-pro-tab.active { color: ${agenceCouleur} !important; }
-        .btn-pro-tab.active::after { background: ${agenceCouleur} !important; }
-        .li-dynamic::before { color: ${agenceCouleur} !important; }
-        .premium-card-accent { border-top: 4px solid ${agenceCouleur} !important; }
-        .spinner { border-left-color: ${agenceCouleur} !important; }
-    `;
+    let hex = agenceCouleur.replace('#', '');
+    if(hex.length === 3) hex = hex.split('').map(x => x+x).join('');
+    let r = parseInt(hex.substring(0,2), 16), g = parseInt(hex.substring(2,4), 16), b = parseInt(hex.substring(4,6), 16);
+    
+    document.documentElement.style.setProperty('--theme-color-light', `rgba(${r}, ${g}, ${b}, 0.1)`);
 }
 
 function changerCouleurParticulierTemporaire(couleur) {
@@ -465,8 +425,7 @@ function showToast(message, type = "success") {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    if(type === "success") { toast.style.borderLeftColor = agenceCouleur; }
-    else { toast.style.borderLeftColor = '#EF4444'; }
+    if(type === "error") { toast.classList.add('error'); }
     toast.innerHTML = `<strong>${type === "success" ? "SUCCÈS :" : "ATTENTION :"}</strong> ${message}`;
     container.appendChild(toast);
     setTimeout(() => {
@@ -478,6 +437,36 @@ function showToast(message, type = "success") {
 function copierScript(idElement) {
     const texte = document.getElementById(idElement).innerText;
     navigator.clipboard.writeText(texte).then(() => { showToast("Texte copié dans le presse-papier."); });
+}
+
+// LOGIQUE DES ONGLETS CORRIGEE
+function changerOnglet(targetId) {
+    const blocsOnglets = document.querySelectorAll('.tab-content');
+    blocsOnglets.forEach(onglet => {
+        onglet.style.display = 'none';
+        onglet.classList.remove('active');
+    });
+
+    const cleanId = targetId.replace('#', '') + '-tab';
+    const ongletCible = document.getElementById(cleanId);
+    
+    if (ongletCible) {
+        ongletCible.style.display = 'block';
+        void ongletCible.offsetWidth; // Force le reflow pour l'animation
+        ongletCible.classList.add('active');
+    }
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Mise à jour de l'apparence des liens de menu
+    document.querySelectorAll('nav a').forEach(l => {
+        l.classList.remove('active');
+    });
+    
+    const lienActif = document.querySelector(`nav a[href="${targetId}"]`);
+    if (lienActif) {
+        lienActif.classList.add('active');
+    }
 }
 
 function switchReportTab(tabId) {
@@ -514,13 +503,12 @@ function switchProTab(tabId) {
     const activeBtn = document.querySelector(`[onclick="switchProTab('${tabId}')"]`);
     if (activeBtn) {
         activeBtn.classList.add('active');
-        appliquerCouleurMarqueBlanche();
     }
 }
 
 function ajouterComparateur() {
     if (userPlan === 'gratuit') {
-        document.querySelector('nav a[href="#abonnements"]').click();
+        changerOnglet('#abonnements');
         return showToast("Le comparateur est réservé aux abonnements Premium et Particulier.", "error");
     }
 
@@ -566,7 +554,7 @@ function renderComparateur() {
     if (!grid) return;
     
     if (comparateur.length === 0) {
-        grid.innerHTML = `<div style="text-align: center; color: #94A3B8; padding: 50px; width: 100%; font-weight: 500;">Aucun bien dans le comparateur pour le moment.<br>Lancez une analyse et cliquez sur "Sauvegarder dans le comparateur".</div>`;
+        grid.innerHTML = `<div class="comparateur-empty">Aucun bien dans le comparateur pour le moment.<br><br>Lancez une analyse et cliquez sur "Sauvegarder dans le comparateur".</div>`;
         return;
     }
     
@@ -578,7 +566,7 @@ function renderComparateur() {
         let rentaNette = bien.loyer > 0 ? (((bien.loyer * 12) / budgetReelTotal) * 100).toFixed(2) + " %" : "N/A";
 
         return `
-        <div class="compare-card premium-card-accent">
+        <div class="compare-card theme-border-top">
             <h3>Bien à ${bien.ville.split(' ')[0]}</h3>
             <div style="display: flex; gap: 10px; margin-bottom: 20px;">
                 <div style="width: 50%;">${getSvgArrow(bien.dpe, "DPE")}</div>
@@ -588,7 +576,7 @@ function renderComparateur() {
             <div class="compare-data-row"><span>Prix affiché</span> <span>${formatNumber(bien.prix)} €</span></div>
             <div class="compare-data-row"><span>Frais notaire (~${fraisNotaireEstimes}%)</span> <span>+ ${formatNumber(fraisNotaireActuels)} €</span></div>
             <div class="compare-data-row"><span>Travaux (Sécurisés)</span> <span style="color:#EF4444;">+ ${formatNumber(bien.travaux)} €</span></div>
-            <div class="compare-data-row" style="background:#F8FAFC; padding:12px; border-radius: 8px;"><span>BUDGET GLOBAL</span> <span style="color:${agenceCouleur};">${formatNumber(budgetReelTotal)} €</span></div>
+            <div class="compare-data-row" style="background:#F8FAFC; padding:12px; border-radius: 8px;"><span>BUDGET GLOBAL</span> <span class="theme-text">${formatNumber(budgetReelTotal)} €</span></div>
             
             <div class="compare-data-row" style="margin-top:15px;"><span>Rendement Brut</span> <span>${rentaBrute}</span></div>
             <div class="compare-data-row"><span>Rendement Réel (Post-tvx)</span> <span style="color:#0F172A;">${rentaNette}</span></div>
@@ -627,7 +615,7 @@ Une fois les travaux réalisés à votre goût, ce bien révèlera toute sa vale
 
 async function envoyer() {
     if (userPlan === 'gratuit' && analysesCount >= 3) {
-        document.querySelector('nav a[href="#abonnements"]').click();
+        changerOnglet('#abonnements');
         return showToast("Vous avez atteint votre limite de 3 analyses gratuites. Veuillez souscrire à une offre.", "error");
     }
 
@@ -707,7 +695,11 @@ function afficherEcran() {
     if (loyerMensuelSaisi > 0) {
         let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitialClean) * 100;
         let fraisNotaireActuels = prixInitialClean * (fraisNotaireEstimes / 100);
-        let coutTotalReel = profilActuel === 'particulier' ? prixInitialClean + travauxSecurises + fraisNotaireActuels : prixInitialClean + resteACharge; 
+        
+        let coutTotalReel = profilActuel === 'particulier' 
+                            ? prixInitialClean + travauxSecurises + fraisNotaireActuels 
+                            : prixInitialClean + resteACharge; 
+                            
         let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
         let titreRenta = profilActuel === 'particulier' ? "Rendement Réel (Travaux + Notaire)" : "Rendement Net (Post-Travaux)";
 
@@ -848,7 +840,7 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
     <div id="paneStrategie" class="report-pane">
         <h3 style="text-transform: uppercase; font-size: 13px; font-weight: 800; color: #0F172A; margin-bottom: 15px; letter-spacing: 0.05em;">${titreSectionNego}</h3>
         <p style="font-size: 15px; color: #475569; margin-bottom: 20px; text-align: left; line-height: 1.6;">Voici la synthèse chiffrée extraite de l'analyse, prête à appuyer vos arguments :</p>
-        <div class="script-box">
+        <div class="script-box theme-border-left">
             <button class="btn-copy" onclick="copierScript('texteScript')">Copier les données</button>
             <div id="texteScript">${scriptNegoTxt}</div>
         </div>
@@ -1000,8 +992,10 @@ function exporterPDF(action = 'download', targetWindow = null) {
         let prixInitial = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
         let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitial) * 100;
         let fraisNotaireActuels = prixInitial * (fraisNotaireEstimes / 100);
+        
         let coutTotalReel = profilActuel === 'particulier' ? prixInitial + travauxSecurises + fraisNotaireActuels : prixInitial + resteACharge; 
         let rentaFinale = ((loyerMensuelSaisi * 12) / coutTotalReel) * 100;
+        
         let headerRentaReel = profilActuel === 'particulier' ? 'Rendement Réel (Tvx + Notaire)' : 'Rendement Net (Post-Tvx)';
 
         rentaBlock = [
@@ -1173,34 +1167,15 @@ document.addEventListener("DOMContentLoaded", () => {
         input.addEventListener('input', formatInputNumber);
     });
 
-    document.getElementById('tauxRenov').addEventListener('change', () => { 
-        if(donneesAudit) afficherEcran(); 
-    });
-
+    // ÉCOUTEUR SUR LES ONGLETS PRINCIPAUX (MENU HAUT)
     const liensMenu = document.querySelectorAll('nav a[href^="#"]');
-    const blocsOnglets = document.querySelectorAll('.tab-content');
-
-    function changerOnglet(targetId) {
-        liensMenu.forEach(lien => lien.classList.remove('active'));
-        blocsOnglets.forEach(onglet => onglet.classList.remove('active'));
-
-        const lienActif = document.querySelector(`nav a[href="${targetId}"]`);
-        if (lienActif) {
-            lienActif.classList.add('active');
-            lienActif.style.color = agenceCouleur;
-            lienActif.style.fontWeight = '700';
-        }
-
-        const ongletCible = document.getElementById(`${targetId.substring(1)}-tab`);
-        if (ongletCible) ongletCible.classList.add('active');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
+    
     liensMenu.forEach(lien => {
         lien.addEventListener('click', function(e) {
             e.preventDefault();
             const targetId = this.getAttribute('href');
 
+            // VERIFICATION SECURITE (PAYWALL)
             if (userPlan === 'gratuit' && (targetId === '#comparateur' || targetId === '#parametres-particulier')) {
                 changerOnglet('#abonnements');
                 return showToast("🔒 Cette fonctionnalité est verrouillée. Veuillez choisir une offre.", "error");
@@ -1210,7 +1185,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 return showToast("🔒 L'Espace Agence nécessite l'abonnement Premium Pro.", "error");
             }
 
-            liensMenu.forEach(l => { l.style.color = '#475569'; l.style.fontWeight = '600'; });
             changerOnglet(targetId);
         });
     });
@@ -1235,7 +1209,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ACCÈS GOD MODE (ADMIN)
+    // ACCÈS GOD MODE (ADMIN) - Reste appuyé sur MAJ (Shift) + clique sur le Logo
     const headerLogo = document.querySelector('.logo');
     if (headerLogo) {
         headerLogo.addEventListener('click', function(e) {
