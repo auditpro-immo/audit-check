@@ -26,9 +26,9 @@ let profilActuel = localStorage.getItem('auditpro_profil') || "particulier";
 // Charger le comparateur
 let comparateur = JSON.parse(localStorage.getItem('auditpro_comparateur')) || [];
 
-// VARIABLES CONFIG VISUELLE
+// VARIABLES CONFIG VISUELLE - NOUVEAU THEME BLEU PAR DEFAUT
 let agenceNom = localStorage.getItem('auditpro_agence_nom') || 'AuditPro';
-let agenceCouleur = localStorage.getItem('auditpro_agence_couleur') || '#00d632';
+let agenceCouleur = localStorage.getItem('auditpro_agence_couleur') || '#3B82F6';
 let agenceLogoBase64 = localStorage.getItem('auditpro_agence_logo') || null;
 
 // Filtres de calcul
@@ -91,7 +91,6 @@ function changerProfilInterne(profil) {
     document.getElementById('btn-particulier').classList.remove('active');
     document.getElementById('btn-pro').classList.remove('active');
     
-    // CORRECTION DU BUG : On sélectionne le bon ID pour le bouton Professionnel
     let targetId = profil === 'professionnel' ? 'btn-pro' : 'btn-particulier';
     let btnActif = document.getElementById(targetId);
     if(btnActif) btnActif.classList.add('active');
@@ -126,7 +125,7 @@ document.getElementById('logoUploadInput').addEventListener('change', function(e
     
     if (file) {
         nomFichierSpan.innerText = file.name;
-        nomFichierSpan.style.color = "#0b1a14";
+        nomFichierSpan.style.color = "#0F172A";
         nomFichierSpan.style.fontWeight = "bold";
         
         const reader = new FileReader();
@@ -138,7 +137,7 @@ document.getElementById('logoUploadInput').addEventListener('change', function(e
         reader.readAsDataURL(file);
     } else {
         nomFichierSpan.innerText = "Aucun fichier";
-        nomFichierSpan.style.color = "#6c757d";
+        nomFichierSpan.style.color = "#64748B";
         nomFichierSpan.style.fontWeight = "normal";
     }
 });
@@ -149,6 +148,7 @@ function appliquerCouleurMarqueBlanche() {
     
     document.querySelectorAll('.btn-dynamic-color').forEach(btn => { 
         btn.style.backgroundColor = agenceCouleur; 
+        btn.style.color = '#fff';
         btn.style.boxShadow = `0 4px 15px ${agenceCouleur}40`;
     });
     
@@ -159,7 +159,7 @@ function appliquerCouleurMarqueBlanche() {
         document.head.appendChild(dynamicStyle);
     }
 
-    let r = 0, g = 214, b = 50; 
+    let r = 59, g = 130, b = 246; 
     if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(agenceCouleur)){
         let c = agenceCouleur.substring(1).split('');
         if(c.length === 3){ c = [c[0], c[0], c[1], c[1], c[2], c[2]]; }
@@ -181,7 +181,7 @@ function appliquerCouleurMarqueBlanche() {
         .card-icon-svg, .card-icon-svg svg, .card-action { color: ${agenceCouleur} !important; stroke: ${agenceCouleur} !important; }
         nav a.active { color: ${agenceCouleur} !important; border-bottom-color: ${agenceCouleur} !important; }
         .profile-btn.active { border-color: ${agenceCouleur} !important; color: ${agenceCouleur} !important; }
-        .btn-pdf { background-color: ${agenceCouleur} !important; }
+        .btn-pdf { background-color: ${agenceCouleur} !important; color: #fff !important; }
         .btn-voir:hover { color: ${agenceCouleur} !important; border-color: ${agenceCouleur} !important; }
         .kpi-box.main { background-color: ${agenceCouleur} !important; }
         .report-tab-btn.active { color: ${agenceCouleur} !important; border-bottom-color: ${agenceCouleur} !important; }
@@ -204,12 +204,12 @@ function sauvegarderParametresParticulier() {
     margeSecuriteTravaux = parseFloat(document.getElementById('margeSecuriteInput').value) || 0;
     let couleurChoisie = document.getElementById('couleurParticulierInput').value;
 
-    if (userPlan === 'gratuit' && couleurChoisie !== '#00d632') {
+    if (userPlan === 'gratuit' && couleurChoisie !== '#3B82F6') {
         localStorage.setItem('auditpro_frais_notaire', fraisNotaireEstimes);
         localStorage.setItem('auditpro_marge_secu', margeSecuriteTravaux);
         
-        document.getElementById('couleurParticulierInput').value = '#00d632';
-        changerCouleurParticulierTemporaire('#00d632');
+        document.getElementById('couleurParticulierInput').value = '#3B82F6';
+        changerCouleurParticulierTemporaire('#3B82F6');
         
         if(donneesAudit) afficherEcran();
         
@@ -234,14 +234,14 @@ function reinitialiserParametresParticulier() {
 
     fraisNotaireEstimes = 8.0;
     margeSecuriteTravaux = 10.0;
-    agenceCouleur = '#00d632';
+    agenceCouleur = '#3B82F6';
 
     document.getElementById('fraisNotaireInput').value = '8';
     document.getElementById('margeSecuriteInput').value = '10';
-    document.getElementById('couleurParticulierInput').value = '#00d632';
+    document.getElementById('couleurParticulierInput').value = '#3B82F6';
 
     let inputPro = document.getElementById('couleurAgenceInput');
-    if(inputPro) inputPro.value = '#00d632';
+    if(inputPro) inputPro.value = '#3B82F6';
 
     appliquerCouleurMarqueBlanche();
     if(donneesAudit) afficherEcran();
@@ -286,21 +286,21 @@ function reinitialiserMarqueBlanche() {
     localStorage.removeItem('auditpro_marge_secu');
     
     agenceNom = 'AuditPro';
-    agenceCouleur = '#00d632';
+    agenceCouleur = '#3B82F6';
     agenceLogoBase64 = null;
     fraisNotaireEstimes = 8.0;
     margeSecuriteTravaux = 10.0;
     
     document.getElementById('nomAgenceInput').value = '';
-    document.getElementById('couleurAgenceInput').value = '#00d632';
-    document.getElementById('couleurParticulierInput').value = '#00d632';
+    document.getElementById('couleurAgenceInput').value = '#3B82F6';
+    document.getElementById('couleurParticulierInput').value = '#3B82F6';
     document.getElementById('fraisNotaireInput').value = '8';
     document.getElementById('margeSecuriteInput').value = '10';
     document.getElementById('webhookCrmInput').value = '';
     document.getElementById('logo-preview').style.display = 'none';
     document.getElementById('logo-preview').src = '';
     document.getElementById('logo-file-name').innerText = "Aucun fichier";
-    document.getElementById('logo-file-name').style.color = "#6c757d";
+    document.getElementById('logo-file-name').style.color = "#64748B";
     document.getElementById('logo-file-name').style.fontWeight = "normal";
     
     appliquerCouleurMarqueBlanche(); 
@@ -479,7 +479,7 @@ function showToast(message, type = "success") {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     if(type === "success") { toast.style.borderLeftColor = agenceCouleur; }
-    else { toast.style.borderLeftColor = '#cc0000'; }
+    else { toast.style.borderLeftColor = '#EF4444'; }
     toast.innerHTML = `<strong>${type === "success" ? "SUCCÈS :" : "ATTENTION :"}</strong> ${message}`;
     container.appendChild(toast);
     setTimeout(() => {
@@ -511,7 +511,7 @@ function switchProTab(tabId) {
         pane.classList.remove('active');
     });
     document.querySelectorAll('.btn-pro-tab').forEach(btn => {
-        btn.style.color = '#6c757d';
+        btn.style.color = '#64748B';
         btn.style.borderBottomColor = 'transparent';
         btn.classList.remove('active');
     });
@@ -581,7 +581,7 @@ function renderComparateur() {
     if (!grid) return;
     
     if (comparateur.length === 0) {
-        grid.innerHTML = `<div style="text-align: center; color: #aaa; padding: 50px; width: 100%;">Aucun bien dans le comparateur pour le moment.<br>Lancez une analyse et cliquez sur "Sauvegarder dans le comparateur".</div>`;
+        grid.innerHTML = `<div style="text-align: center; color: #94A3B8; padding: 50px; width: 100%;">Aucun bien dans le comparateur pour le moment.<br>Lancez une analyse et cliquez sur "Sauvegarder dans le comparateur".</div>`;
         return;
     }
     
@@ -602,11 +602,11 @@ function renderComparateur() {
             
             <div class="compare-data-row"><span>Prix affiché</span> <span>${formatNumber(bien.prix)} €</span></div>
             <div class="compare-data-row"><span>Frais notaire (~${fraisNotaireEstimes}%)</span> <span>+ ${formatNumber(fraisNotaireActuels)} €</span></div>
-            <div class="compare-data-row"><span>Travaux (Sécurisés)</span> <span style="color:#cc0000;">+ ${formatNumber(bien.travaux)} €</span></div>
-            <div class="compare-data-row" style="background:#f4fbf7; padding:10px;"><span>BUDGET GLOBAL</span> <span style="color:#00d632;">${formatNumber(budgetReelTotal)} €</span></div>
+            <div class="compare-data-row"><span>Travaux (Sécurisés)</span> <span style="color:#EF4444;">+ ${formatNumber(bien.travaux)} €</span></div>
+            <div class="compare-data-row" style="background:#F8FAFC; padding:10px;"><span>BUDGET GLOBAL</span> <span style="color:${agenceCouleur};">${formatNumber(budgetReelTotal)} €</span></div>
             
             <div class="compare-data-row" style="margin-top:15px;"><span>Rendement Brut</span> <span>${rentaBrute}</span></div>
-            <div class="compare-data-row"><span>Rendement Réel (Post-tvx)</span> <span style="color:#0b1a14;">${rentaNette}</span></div>
+            <div class="compare-data-row"><span>Rendement Réel (Post-tvx)</span> <span style="color:#0F172A;">${rentaNette}</span></div>
             
             <div class="compare-action">
                 <button class="btn-remove-compare" onclick="supprimerComparateur(${index})">Retirer ce bien</button>
@@ -766,11 +766,11 @@ function afficherEcran() {
         let titreRenta = profilActuel === 'particulier' ? "Rendement Réel (Travaux + Notaire)" : "Rendement Net (Post-Travaux)";
 
         kpiRentabiliteHtml = `
-        <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-top: 30px; margin-bottom: 15px;">Performance Locative Estimée (Budget Global)</h3>
+        <h3 style="text-transform: uppercase; font-size: 14px; color: #0F172A; margin-top: 30px; margin-bottom: 15px;">Performance Locative Estimée (Budget Global)</h3>
         <div class="kpi-grid">
             <div class="kpi-box">
                 <div class="kpi-label">Loyer Annuel Théorique</div>
-                <div class="kpi-value" style="color: #0b1a14;" id="anim-loyer">0 €</div>
+                <div class="kpi-value" style="color: #0F172A;" id="anim-loyer">0 €</div>
             </div>
             <div class="kpi-box">
                 <div class="kpi-label">Rendement Brut Hors Travaux</div>
@@ -789,11 +789,11 @@ function afficherEcran() {
     let badgesVisuelsHtml = `
     <div style="display: flex; gap: 15px; align-items: center;">
         <div style="text-align: center;">
-            <div style="font-size: 10px; font-weight: bold; color: #6c757d; margin-bottom: 4px; text-transform: uppercase;">Énergie (DPE)</div>
+            <div style="font-size: 10px; font-weight: bold; color: #64748B; margin-bottom: 4px; text-transform: uppercase;">Énergie (DPE)</div>
             ${getSvgArrow(dpeLet, "DPE")}
         </div>
         <div style="text-align: center;">
-            <div style="font-size: 10px; font-weight: bold; color: #6c757d; margin-bottom: 4px; text-transform: uppercase;">Climat (GES)</div>
+            <div style="font-size: 10px; font-weight: bold; color: #64748B; margin-bottom: 4px; text-transform: uppercase;">Climat (GES)</div>
             ${getSvgArrow(gesLet, "GES")}
         </div>
     </div>`;
@@ -837,13 +837,13 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
     let libelleCoutTravaux = profilActuel === 'particulier' && margeSecuriteTravaux > 0 ? "Travaux à charge (Sécurisés)" : "Enveloppe Travaux (Est.)";
 
     let html = `
-    <div style="border-bottom: 3px solid #0b1a14; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px;">
+    <div style="border-bottom: 3px solid #0F172A; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px;">
         <div>
-            <h2 style="font-size: 24px; color: #0b1a14; font-weight: 800; margin: 0;">Rapport d'Analyse Technique</h2>
-            <div style="font-size: 14px; color: #6c757d; margin-top: 5px; font-weight: 600;">Secteur : ${donneesAudit.localisation_exacte}</div>
+            <h2 style="font-size: 24px; color: #0F172A; font-weight: 800; margin: 0;">Rapport d'Analyse Technique</h2>
+            <div style="font-size: 14px; color: #64748B; margin-top: 5px; font-weight: 600;">Secteur : ${donneesAudit.localisation_exacte}</div>
         </div>
         ${badgesVisuelsHtml}
-        <div style="text-align: right; font-size: 13px; color: #6c757d; font-weight: bold;">
+        <div style="text-align: right; font-size: 13px; color: #64748B; font-weight: bold;">
             Dossier : ${idRapport}<br>Date : ${donneesAudit.date_audit}
         </div>
     </div>
@@ -855,15 +855,15 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
     </div>
     
     <div id="paneFinancier" class="report-pane active">
-        <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-bottom: 15px;">Évaluation de la Balance Financière</h3>
+        <h3 style="text-transform: uppercase; font-size: 14px; color: #0F172A; margin-bottom: 15px;">Évaluation de la Balance Financière</h3>
         <div class="kpi-grid">
             <div class="kpi-box">
                 <div class="kpi-label">Prix de vente initial</div>
                 <div class="kpi-value" id="anim-prix-initial">0 €</div>
             </div>
             <div class="kpi-box">
-                <div class="kpi-label" style="color: #cc0000;">${libelleCoutTravaux}</div>
-                <div class="kpi-value" style="color: #cc0000;" id="anim-cout-travaux">-0 €</div>
+                <div class="kpi-label" style="color: #EF4444;">${libelleCoutTravaux}</div>
+                <div class="kpi-value" style="color: #EF4444;" id="anim-cout-travaux">-0 €</div>
             </div>
             <div class="kpi-box main">
                 <div class="kpi-label" style="color: #fff;">Valeur Nette Recommandée</div>
@@ -871,9 +871,9 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
             </div>
         </div>
         ${kpiRentabiliteHtml}
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 6px; margin-top: 20px; border: 1px solid #ced4da; text-align: left;">
-            <h4 style="margin: 0 0 8px 0; color: #0b1a14; text-transform: uppercase; font-size: 12px;">Contexte du secteur géographique</h4>
-            <p style="margin: 0; font-size: 14px; color: #495057; line-height: 1.5;">${donneesAudit.impact_marche}</p>
+        <div style="background: #F8FAFC; padding: 20px; border-radius: 6px; margin-top: 20px; border: 1px solid #E2E8F0; text-align: left;">
+            <h4 style="margin: 0 0 8px 0; color: #0F172A; text-transform: uppercase; font-size: 12px;">Contexte du secteur géographique</h4>
+            <p style="margin: 0; font-size: 14px; color: #475569; line-height: 1.5;">${donneesAudit.impact_marche}</p>
         </div>
     </div>
     
@@ -890,25 +890,25 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
                 ${donneesAudit.diagnostics.map(a => `
                 <tr style="border-bottom: 1px solid #ecf0f1;">
                     <td style="padding: 15px;" class="border-left-dynamic-color"><b>${a.titre}</b></td>
-                    <td style="padding: 15px; color: ${a.cout > 0 ? '#cc0000' : '#000000'}; font-weight: bold; text-align: center;">${a.cout > 0 ? 'ANOMALIE' : (a.statut === "Information" ? "INFO" : "SANS DÉFAUT")}</td>
+                    <td style="padding: 15px; color: ${a.cout > 0 ? '#EF4444' : '#000000'}; font-weight: bold; text-align: center;">${a.cout > 0 ? 'ANOMALIE' : (a.statut === "Information" ? "INFO" : "SANS DÉFAUT")}</td>
                     <td style="padding: 15px; font-size: 13px; color: #333; line-height: 1.5;"><b>Constat :</b> ${a.detail}<br>${a.cout > 0 ? `<b>Action recommandée :</b> ${a.action}` : ''}</td>
                     <td style="padding: 15px; font-weight:bold; text-align: right; font-size: 16px;">${a.cout > 0 ? `-${formatNumber(a.cout)} €` : '0 €'}</td>
                 </tr>`).join('')}
             </table>
         </div>
-        <p style="font-size: 11px; color: #7f8c8d; margin-top: 15px;">*Ces budgets sont issus d'une moyenne statistique nationale indexée sur votre code postal et ne valent en aucun cas devis ferme.</p>
+        <p style="font-size: 11px; color: #94A3B8; margin-top: 15px;">*Ces budgets sont issus d'une moyenne statistique nationale indexée sur votre code postal et ne valent en aucun cas devis ferme.</p>
     </div>
     
     <div id="paneStrategie" class="report-pane">
-        <h3 style="text-transform: uppercase; font-size: 14px; color: #0b1a14; margin-bottom: 10px;">${titreSectionNego}</h3>
-        <p style="font-size: 14px; color: #495057; margin-bottom: 15px; text-align: left;">Voici la synthèse chiffrée extraite de l'analyse, prête à appuyer vos arguments :</p>
+        <h3 style="text-transform: uppercase; font-size: 14px; color: #0F172A; margin-bottom: 10px;">${titreSectionNego}</h3>
+        <p style="font-size: 14px; color: #475569; margin-bottom: 15px; text-align: left;">Voici la synthèse chiffrée extraite de l'analyse, prête à appuyer vos arguments :</p>
         <div class="script-box" style="font-style: normal; font-family: 'Inter', sans-serif;">
             <button class="btn-copy" onclick="copierScript('texteScript')">Copier les données</button>
             <div id="texteScript">${scriptNegoTxt}</div>
         </div>
     </div>
     
-    <div style="font-size: 10px; color: #adb5bd; text-align: justify; border-top: 1px solid #eaeaea; padding-top: 15px; margin-top: 40px;">
+    <div style="font-size: 10px; color: #94A3B8; text-align: justify; border-top: 1px solid #E2E8F0; padding-top: 15px; margin-top: 40px;">
         <b>CADRE D'APPLICATION :</b> Cette étude est une simulation algorithmique d'aide à la décision. Elle est purement indicative et n'a aucune valeur juridique devant notaire.
     </div>`;
 
@@ -940,7 +940,7 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
                 labels: anomalies.map(a => a.titre),
                 datasets: [{ 
                     data: anomalies.map(a => a.cout), 
-                    backgroundColor: ['#1a1a1a', '#cc0000', '#555555', '#888888', '#aaaaaa', '#dddddd'] 
+                    backgroundColor: ['#0F172A', '#EF4444', '#334155', '#64748B', '#94A3B8', '#E2E8F0'] 
                 }]
             },
             options: { 
@@ -955,19 +955,19 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
     if (profilActuel === 'professionnel') {
         if (userPlan === 'pro') {
             actionContainer.innerHTML = `
-                <button class="btn-demo" onclick="exporterFicheVitrine()" style="flex: 1; border-color:#0b1a14!important; color:#0b1a14;">📄 Exporter Fiche Vitrine</button>
-                <button class="btn-demo" onclick="genererAnnonceLeBonCoin()" style="flex: 1; border-color:#0b1a14!important; color:#0b1a14;">📝 Générer texte d'annonce</button>
+                <button class="btn-demo" onclick="exporterFicheVitrine()" style="flex: 1; border-color:#0F172A!important; color:#0F172A;">📄 Exporter Fiche Vitrine</button>
+                <button class="btn-demo" onclick="genererAnnonceLeBonCoin()" style="flex: 1; border-color:#0F172A!important; color:#0F172A;">📝 Générer texte d'annonce</button>
             `;
         } else {
             actionContainer.innerHTML = `
-                <div style="width: 100%; background: #f8f9fa; border: 1px solid #ced4da; padding: 15px; border-radius: 8px; font-size: 13px; color: #555;">
-                    <strong style="color: #0b1a14;">🔒 Outils Premium Verrouillés :</strong> Souscrivez à l'abonnement Premium Pro pour débloquer ces options.
+                <div style="width: 100%; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 15px; border-radius: 8px; font-size: 13px; color: #475569;">
+                    <strong style="color: #0F172A;">🔒 Outils Premium Verrouillés :</strong> Souscrivez à l'abonnement Premium Pro pour débloquer ces options.
                 </div>
             `;
         }
     } else {
         actionContainer.innerHTML = `
-            <button class="btn-demo" onclick="ajouterComparateur()" style="flex: 1; border-color: #0b1a14!important; color:#0b1a14;">⭐ Sauvegarder dans le comparateur</button>
+            <button class="btn-demo" onclick="ajouterComparateur()" style="flex: 1; border-color: #0F172A!important; color:#0F172A;">⭐ Sauvegarder dans le comparateur</button>
         `;
     }
 }
@@ -977,8 +977,8 @@ function exporterPDF(action = 'download', targetWindow = null) {
     const btn = document.getElementById('btnExport');
     if(btn && action !== 'view') btn.innerText = "Édition du PDF en cours...";
     
-    let dpeBadgeBlock = { stack: [ {text: 'ÉNERGIE (DPE)', fontSize: 7, bold:true, color:'#888', margin:[0,0,0,2]}, {svg: getCleanPdfSvg(donneesAudit.dpe_lettre, "DPE"), width: 60} ], margin: [0, 5, 5, 15] };
-    let gesBadgeBlock = { stack: [ {text: 'CLIMAT (GES)', fontSize: 7, bold:true, color:'#888', margin:[0,0,0,2]}, {svg: getCleanPdfSvg(donneesAudit.ges_lettre, "GES"), width: 60} ], margin: [0, 5, 0, 15] };
+    let dpeBadgeBlock = { stack: [ {text: 'ÉNERGIE (DPE)', fontSize: 7, bold:true, color:'#64748B', margin:[0,0,0,2]}, {svg: getCleanPdfSvg(donneesAudit.dpe_lettre, "DPE"), width: 60} ], margin: [0, 5, 5, 15] };
+    let gesBadgeBlock = { stack: [ {text: 'CLIMAT (GES)', fontSize: 7, bold:true, color:'#64748B', margin:[0,0,0,2]}, {svg: getCleanPdfSvg(donneesAudit.ges_lettre, "GES"), width: 60} ], margin: [0, 5, 0, 15] };
 
     let prixInitFormate = formatNumber(document.getElementById('prixInitial').value.replace(/\s+/g, '')) + ' €';
     let taux = parseFloat(document.getElementById('tauxRenov')?.value || 0);
@@ -1002,13 +1002,13 @@ function exporterPDF(action = 'download', targetWindow = null) {
 
     donneesAudit.diagnostics.forEach((a, index) => {
         let isAnomalie = a.cout > 0;
-        let rowColor = (index % 2 === 0) ? '#f8f9fa' : '#ffffff'; 
+        let rowColor = (index % 2 === 0) ? '#F8FAFC' : '#ffffff'; 
         
         tableBody.push([
-            { text: a.titre, bold: true, fontSize: 9, color: '#1a1a1a', fillColor: rowColor, margin: [0, 10, 0, 10] },
-            { text: isAnomalie ? 'ANOMALIE' : (a.statut === "Information" ? 'INFO' : 'SANS DÉFAUT'), bold: true, fontSize: 8, color: isAnomalie ? '#cc0000' : agenceCouleur, alignment: 'center', fillColor: rowColor, margin: [0, 10, 0, 10] },
-            { text: `Constat : ${a.detail}\n` + (isAnomalie ? `Action recommandée : ${a.action}` : ''), fontSize: 9, lineHeight: 1.4, color: '#4a4a4a', fillColor: rowColor, margin: [0, 10, 0, 10] },
-            { text: isAnomalie ? '-' + formatNumber(a.cout) + ' €' : '0 €', bold: true, fontSize: 10, color: isAnomalie ? '#cc0000' : '#1a1a1a', alignment: 'right', fillColor: rowColor, margin: [0, 10, 0, 10] }
+            { text: a.titre, bold: true, fontSize: 9, color: '#0F172A', fillColor: rowColor, margin: [0, 10, 0, 10] },
+            { text: isAnomalie ? 'ANOMALIE' : (a.statut === "Information" ? 'INFO' : 'SANS DÉFAUT'), bold: true, fontSize: 8, color: isAnomalie ? '#EF4444' : agenceCouleur, alignment: 'center', fillColor: rowColor, margin: [0, 10, 0, 10] },
+            { text: `Constat : ${a.detail}\n` + (isAnomalie ? `Action recommandée : ${a.action}` : ''), fontSize: 9, lineHeight: 1.4, color: '#334155', fillColor: rowColor, margin: [0, 10, 0, 10] },
+            { text: isAnomalie ? '-' + formatNumber(a.cout) + ' €' : '0 €', bold: true, fontSize: 10, color: isAnomalie ? '#EF4444' : '#0F172A', alignment: 'right', fillColor: rowColor, margin: [0, 10, 0, 10] }
         ]);
     });
 
@@ -1086,8 +1086,8 @@ function exporterPDF(action = 'download', targetWindow = null) {
                 if (currentPage > 1) {
                     return {
                         columns: [
-                            { text: agenceNom.toUpperCase() + ' - DOSSIER ÉVALUATIF', bold: true, color: '#888', fontSize: 9 },
-                            { text: 'Réf. ' + idRapport, alignment: 'right', color: '#888', fontSize: 9 }
+                            { text: agenceNom.toUpperCase() + ' - DOSSIER ÉVALUATIF', bold: true, color: '#64748B', fontSize: 9 },
+                            { text: 'Réf. ' + idRapport, alignment: 'right', color: '#64748B', fontSize: 9 }
                         ], margin: [50, 20, 40, 0]
                     };
                 }
@@ -1095,15 +1095,15 @@ function exporterPDF(action = 'download', targetWindow = null) {
             footer: function(currentPage, pageCount) {
                 return {
                     columns: [
-                        { text: 'Document d\'aide à la décision. Ne se substitue pas à l\'avis d\'un artisan RGE.', fontSize: 8, color: '#aaa', italics: true },
-                        { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#aaa', bold: true }
+                        { text: 'Document d\'aide à la décision. Ne se substitue pas à l\'avis d\'un artisan RGE.', fontSize: 8, color: '#94A3B8', italics: true },
+                        { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#94A3B8', bold: true }
                     ], margin: [50, 20, 40, 0]
                 };
             },
             content: [
                 headerTop,
-                { text: 'RAPPORT D\'ANALYSE INDICATIVE', fontSize: 18, color: '#1a1a1a', bold: true, margin: [0, 0, 0, 5] },
-                { text: 'Évaluation algorithmique des coûts de remise aux normes basée sur le DDT.', fontSize: 11, color: '#666', margin: [0, 0, 0, 25], italics: true },
+                { text: 'RAPPORT D\'ANALYSE INDICATIVE', fontSize: 18, color: '#0F172A', bold: true, margin: [0, 0, 0, 5] },
+                { text: 'Évaluation algorithmique des coûts de remise aux normes basée sur le DDT.', fontSize: 11, color: '#475569', margin: [0, 0, 0, 25], italics: true },
                 
                 {
                     columns: [
@@ -1117,11 +1117,11 @@ function exporterPDF(action = 'download', targetWindow = null) {
                                         widths: ['*', '*'],
                                         body: [
                                             [ { text: 'Prix de Vente Initial', style: 'kpiHeaderLeft' }, { text: prixInitFormate, style: 'kpiValueLeft' } ],
-                                            [ { text: 'Travaux à charge (Est.)', style: 'kpiHeaderLeft', color: '#cc0000' }, { text: decoteFormate, style: 'kpiValueLeft', color: '#cc0000', fontSize: 10 } ],
+                                            [ { text: 'Travaux à charge (Est.)', style: 'kpiHeaderLeft', color: '#EF4444' }, { text: decoteFormate, style: 'kpiValueLeft', color: '#EF4444', fontSize: 10 } ],
                                             [ { text: 'Valeur Nette Recommandée', style: 'kpiHeaderLeft', bold: true }, { text: prixNetFormate, style: 'kpiValueNetLeft', color: agenceCouleur } ]
                                         ]
                                     },
-                                    layout: { hLineWidth: function() { return 1; }, vLineWidth: function() { return 0; }, hLineColor: function() { return '#eee'; }, paddingBottom: function() { return 8; }, paddingTop: function() { return 8; } },
+                                    layout: { hLineWidth: function() { return 1; }, vLineWidth: function() { return 0; }, hLineColor: function() { return '#E2E8F0'; }, paddingBottom: function() { return 8; }, paddingTop: function() { return 8; } },
                                     margin: [0, 0, 0, 20]
                                 }
                             ]
@@ -1129,7 +1129,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
                         {
                             width: '40%',
                             stack: [
-                                anomalies.length > 0 ? { text: 'RÉPARTITION DU BUDGET ESTIMATIF', fontSize: 10, bold: true, alignment: 'center', color: '#666', margin: [0, 0, 0, 5] } : {},
+                                anomalies.length > 0 ? { text: 'RÉPARTITION DU BUDGET ESTIMATIF', fontSize: 10, bold: true, alignment: 'center', color: '#475569', margin: [0, 0, 0, 5] } : {},
                                 chartImageBlock
                             ]
                         }
@@ -1140,7 +1140,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
                 ...rentaBlock,
 
                 {
-                    table: { widths: ['*'], body: [ [ { stack: [ { text: 'CONTEXTE MACRO-ÉCONOMIQUE', fontSize: 10, bold: true, color: '#fff', margin: [0, 0, 0, 4] }, { text: donneesAudit.impact_marche, fontSize: 9, color: '#eef2f5', lineHeight: 1.4 } ], padding: 12, fillColor: '#0b1a14' } ] ] },
+                    table: { widths: ['*'], body: [ [ { stack: [ { text: 'CONTEXTE MACRO-ÉCONOMIQUE', fontSize: 10, bold: true, color: '#fff', margin: [0, 0, 0, 4] }, { text: donneesAudit.impact_marche, fontSize: 9, color: '#F8FAFC', lineHeight: 1.4 } ], padding: 12, fillColor: '#0F172A' } ] ] },
                     layout: 'noBorders', margin: [0, 10, 0, 30]
                 },
                 
@@ -1150,27 +1150,27 @@ function exporterPDF(action = 'download', targetWindow = null) {
                     layout: { 
                         hLineWidth: function (i, node) { return (i === 0 || i === 1 || i === node.table.body.length) ? 2 : 1; }, 
                         vLineWidth: function () { return 0; }, 
-                        hLineColor: function (i, node) { return (i === 0 || i === node.table.body.length) ? agenceCouleur : '#e0e0e0'; },
+                        hLineColor: function (i, node) { return (i === 0 || i === node.table.body.length) ? agenceCouleur : '#E2E8F0'; },
                         paddingTop: function() { return 6; }, 
                         paddingBottom: function() { return 6; } 
                     }
                 },
 
-                { text: 'AVERTISSEMENT LÉGAL ET CADRE D\'UTILISATION', fontSize: 10, bold: true, color: '#1a1a1a', margin: [0, 30, 0, 5] },
-                { text: 'Cette analyse est le résultat d\'une lecture automatisée des documents fournis. Les tarifs indiqués sont des moyennes statistiques régionales pondérées par notre algorithme et n\'engagent en rien la responsabilité de l\'éditeur. Ce document n\'a pas de force probante chez le notaire et ne constitue pas une véritable expertise de bâtiment. Il incombe à l\'acquéreur ou au vendeur de faire confirmer ces estimations techniques par des devis formels délivrés par des artisans compétents et assurés.', fontSize: 8, color: '#666', alignment: 'justify', lineHeight: 1.4 }
+                { text: 'AVERTISSEMENT LÉGAL ET CADRE D\'UTILISATION', fontSize: 10, bold: true, color: '#0F172A', margin: [0, 30, 0, 5] },
+                { text: 'Cette analyse est le résultat d\'une lecture automatisée des documents fournis. Les tarifs indiqués sont des moyennes statistiques régionales pondérées par notre algorithme et n\'engagent en rien la responsabilité de l\'éditeur. Ce document n\'a pas de force probante chez le notaire et ne constitue pas une véritable expertise de bâtiment. Il incombe à l\'acquéreur ou au vendeur de faire confirmer ces estimations techniques par des devis formels délivrés par des artisans compétents et assurés.', fontSize: 8, color: '#64748B', alignment: 'justify', lineHeight: 1.4 }
             ],
             styles: {
-                coverTableTitle: { fontSize: 10, bold: true, color: '#1a1a1a', alignment: 'right', margin: [0, 6, 0, 6], letterSpacing: 1 },
-                coverLabel: { fontSize: 9, bold: true, color: '#888', alignment: 'right', margin: [0, 2, 10, 2] },
-                coverValue: { fontSize: 9, color: '#1a1a1a', margin: [10, 2, 0, 2], bold: true },
-                sectionTitle: { fontSize: 13, bold: true, color: '#1a1a1a', margin: [0, 0, 0, 15], textTransform: 'uppercase' },
+                coverTableTitle: { fontSize: 10, bold: true, color: '#0F172A', alignment: 'right', margin: [0, 6, 0, 6], letterSpacing: 1 },
+                coverLabel: { fontSize: 9, bold: true, color: '#64748B', alignment: 'right', margin: [0, 2, 10, 2] },
+                coverValue: { fontSize: 9, color: '#0F172A', margin: [10, 2, 0, 2], bold: true },
+                sectionTitle: { fontSize: 13, bold: true, color: '#0F172A', margin: [0, 0, 0, 15], textTransform: 'uppercase' },
                 
-                kpiHeaderLeft: { fontSize: 10, color: '#555', margin: [0, 5, 0, 5] },
-                kpiValueLeft: { fontSize: 14, bold: true, color: '#1a1a1a', alignment: 'right', margin: [0, 5, 0, 5] },
+                kpiHeaderLeft: { fontSize: 10, color: '#475569', margin: [0, 5, 0, 5] },
+                kpiValueLeft: { fontSize: 14, bold: true, color: '#0F172A', alignment: 'right', margin: [0, 5, 0, 5] },
                 kpiValueNetLeft: { fontSize: 14, bold: true, alignment: 'right', margin: [0, 5, 0, 5] },
                 
-                kpiHeader: { alignment: 'center', fontSize: 8, color: '#888', bold: true, margin: [0, 5, 0, 5], textTransform: 'uppercase' },
-                kpiValue: { alignment: 'center', fontSize: 12, bold: true, color: '#1a1a1a', margin: [0, 10, 0, 10] },
+                kpiHeader: { alignment: 'center', fontSize: 8, color: '#64748B', bold: true, margin: [0, 5, 0, 5], textTransform: 'uppercase' },
+                kpiValue: { alignment: 'center', fontSize: 12, bold: true, color: '#0F172A', margin: [0, 10, 0, 10] },
                 kpiValueNet: { alignment: 'center', fontSize: 12, bold: true, margin: [0, 10, 0, 10] },
                 tableHeader: { bold: true, fontSize: 8, color: '#ffffff', fillColor: agenceCouleur, margin: [0, 8, 0, 8] }
             }
@@ -1194,7 +1194,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
         console.error("Erreur PDF:", err);
         showToast("Erreur lors de la génération du PDF.", "error");
         if (targetWindow) {
-            targetWindow.document.body.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100vh; color:white; font-family:sans-serif; background-color:#cc0000;"><h3>Erreur. Veuillez fermer cet onglet et réessayer.</h3></div>`;
+            targetWindow.document.body.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100vh; color:white; font-family:sans-serif; background-color:#EF4444;"><h3>Erreur. Veuillez fermer cet onglet et réessayer.</h3></div>`;
         }
         if(btn && action !== 'view') btn.innerText = "Télécharger le rapport détaillé (PDF)";
     }
@@ -1232,7 +1232,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if(donneesAudit) afficherEcran(); 
     });
 
-    // C'EST ICI QU'ON INTERCEPTE LES CLICS SUR LES MENUS PAYANTS
     const liensMenu = document.querySelectorAll('nav a[href^="#"]');
     const blocsOnglets = document.querySelectorAll('.tab-content');
 
@@ -1257,7 +1256,6 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
             const targetId = this.getAttribute('href');
 
-            // VERIFICATION SECURITE (PAYWALL)
             if (userPlan === 'gratuit' && (targetId === '#comparateur' || targetId === '#parametres-particulier')) {
                 changerOnglet('#abonnements');
                 return showToast("🔒 Cette fonctionnalité est verrouillée. Veuillez choisir une offre.", "error");
@@ -1286,7 +1284,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (this.files && this.files.length > 0) {
                 dropZoneText.innerHTML = `Document prêt : <b>${this.files[0].name}</b>`;
                 dropZone.style.borderColor = agenceCouleur;
-                dropZone.style.background = "#f4fbf7";
+                dropZone.style.background = "#EFF6FF";
                 document.querySelector('.drop-icon').style.color = agenceCouleur;
             }
         });
