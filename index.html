@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <link rel="stylesheet" href="style.css?v=33.0">
+    <link rel="stylesheet" href="style.css?v=34.0">
 </head>
 <body>
 
@@ -64,7 +64,7 @@
                 <a href="#cas-usage">Cas d'Usage</a>
                 <a href="#faq">FAQ</a>
             </nav>
-            <button class="btn-solid btn-dynamic-color" onclick="document.querySelector('nav a[href=\'#audit\']').click();">Nouvelle Analyse</button>
+            <button class="btn-solid btn-dynamic-color theme-bg" onclick="document.querySelector('nav a[href=\'#audit\']').click();">Nouvelle Analyse</button>
         </header>
 
         <main>
@@ -75,7 +75,7 @@
                     <div class="hero-content">
                         <div id="hero-badge" class="theme-text" style="display: inline-block; background: #fff; border: 1px solid #E2E8F0; font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">L'intelligence au service de l'immo</div>
                         <h1 id="hero-title">Sécurisez votre achat en chiffrant les travaux cachés.</h1>
-                        <p id="hero-desc">Notre algorithme extrait, vulgarise et estime l'ensemble des diagnostics obligatoires de la maison que vous visitez. Obtenez le coût estimatif des remises aux normes instantanément.</p>
+                        <p id="hero-desc">Notre outil analyse l'ensemble des diagnostics obligatoires de la maison que vous visitez. Obtenez le coût estimatif des remises aux normes instantanément.</p>
                         
                         <ul style="margin-bottom: 40px;">
                             <li class="li-dynamic"><strong>Le Dossier Technique vulgarisé :</strong> Fini le jargon incompréhensible.</li>
@@ -137,6 +137,8 @@
                         </div>
                         
                         <button class="btn-submit theme-bg" id="btnSubmit" onclick="envoyer()">Lancer l'audit technique</button>
+                        
+                        <button type="button" class="btn-demo" style="margin-top: 15px;" onclick="lancerDemo()">Lancer une analyse de test (Démo)</button>
                     </div>
                 </section>
 
