@@ -59,11 +59,13 @@ function getCleanPdfSvg(lettre, type) {
 function entrerSurLeSite(profil) {
     const portal = document.getElementById('welcome-portal');
     const mainApp = document.getElementById('main-app');
-    portal.style.opacity = '0';
+    if(portal) portal.style.opacity = '0';
     setTimeout(() => {
-        portal.style.display = 'none';
-        mainApp.style.display = 'block';
-        mainApp.style.opacity = '1';
+        if(portal) portal.style.display = 'none';
+        if(mainApp) {
+            mainApp.style.display = 'block';
+            mainApp.style.opacity = '1';
+        }
         changerProfilInterne(profil);
     }, 600);
 }
@@ -105,32 +107,42 @@ function changerProfilInterne(profil) {
     profilActuel = profil;
     localStorage.setItem('auditpro_profil', profilActuel);
     
-    document.getElementById('btn-particulier').classList.remove('active');
-    document.getElementById('btn-pro').classList.remove('active');
+    let btnPart = document.getElementById('btn-particulier');
+    let btnPro = document.getElementById('btn-pro');
+    if(btnPart) btnPart.classList.remove('active');
+    if(btnPro) btnPro.classList.remove('active');
     
     let targetId = profil === 'professionnel' ? 'btn-pro' : 'btn-particulier';
     let btnActif = document.getElementById(targetId);
     if(btnActif) btnActif.classList.add('active');
 
-    document.getElementById('bloc-renov').style.display = profil === 'particulier' ? 'block' : 'none';
-    document.getElementById('nav-comparateur').style.display = profil === 'particulier' ? 'inline-block' : 'none';
-    document.getElementById('nav-param-particulier').style.display = profil === 'particulier' ? 'inline-block' : 'none';
-    document.getElementById('nav-pro').style.display = profil === 'professionnel' ? 'inline-block' : 'none';
+    let blocRenov = document.getElementById('bloc-renov');
+    if(blocRenov) blocRenov.style.display = profil === 'particulier' ? 'block' : 'none';
+    
+    let navComp = document.getElementById('nav-comparateur');
+    let navParam = document.getElementById('nav-param-particulier');
+    let navPro = document.getElementById('nav-pro');
+    
+    if(navComp) navComp.style.display = profil === 'particulier' ? 'inline-block' : 'none';
+    if(navParam) navParam.style.display = profil === 'particulier' ? 'inline-block' : 'none';
+    if(navPro) navPro.style.display = profil === 'professionnel' ? 'inline-block' : 'none';
 
     updateNavLocks();
+
+    let hws = document.getElementById('how-it-works-section');
 
     if(profil === "professionnel") {
         document.getElementById('hero-badge').innerText = "Espace Professionnels (B2B)";
         document.getElementById('hero-title').innerText = "Justifiez vos estimations et sécurisez vos transactions.";
         document.getElementById('hero-desc').innerText = "Notre technologie d'analyse traduit instantanément les PDF de diagnostics en rapports chiffrés pour convaincre vos clients.";
         document.getElementById('form-title').innerText = "Simulateur pour les agences";
-        document.getElementById('how-it-works-section').style.display = 'none'; // Masquer le tutoriel grand public
+        if(hws) hws.style.display = 'none'; // Masquer le tutoriel grand public
     } else {
         document.getElementById('hero-badge').innerText = "L'intelligence au service de l'immo";
         document.getElementById('hero-title').innerText = "Sécurisez votre achat en chiffrant les travaux cachés.";
         document.getElementById('hero-desc').innerText = "Notre outil analyse l'ensemble des diagnostics obligatoires de la maison que vous visitez. Obtenez le coût estimatif des remises aux normes instantanément.";
         document.getElementById('form-title').innerText = "Configuration de l'analyse";
-        document.getElementById('how-it-works-section').style.display = 'block';
+        if(hws) hws.style.display = 'block';
         renderComparateur(); 
     }
     
@@ -138,29 +150,37 @@ function changerProfilInterne(profil) {
     if(donneesAudit) afficherEcran(); 
 }
 
-document.getElementById('logoUploadInput').addEventListener('change', function(event) {
+document.getElementById('logoUploadInput')?.addEventListener('change', function(event) {
     const file = event.target.files[0];
     const nomFichierSpan = document.getElementById('logo-file-name');
     if (file) {
-        nomFichierSpan.innerText = file.name;
-        nomFichierSpan.style.color = "#0F172A";
-        nomFichierSpan.style.fontWeight = "bold";
+        if(nomFichierSpan) {
+            nomFichierSpan.innerText = file.name;
+            nomFichierSpan.style.color = "#0F172A";
+            nomFichierSpan.style.fontWeight = "bold";
+        }
         const reader = new FileReader();
         reader.onload = function(e) {
             agenceLogoBase64 = e.target.result;
-            document.getElementById('logo-preview').src = agenceLogoBase64;
-            document.getElementById('logo-preview').style.display = 'block';
+            let preview = document.getElementById('logo-preview');
+            if(preview) {
+                preview.src = agenceLogoBase64;
+                preview.style.display = 'block';
+            }
         }
         reader.readAsDataURL(file);
     } else {
-        nomFichierSpan.innerText = "Aucun fichier";
-        nomFichierSpan.style.color = "#64748B";
-        nomFichierSpan.style.fontWeight = "normal";
+        if(nomFichierSpan) {
+            nomFichierSpan.innerText = "Aucun fichier";
+            nomFichierSpan.style.color = "#64748B";
+            nomFichierSpan.style.fontWeight = "normal";
+        }
     }
 });
 
 function appliquerCouleurMarqueBlanche() {
-    document.getElementById('header-logo-text').innerText = agenceNom === 'AuditPro' ? 'Audit' : agenceNom;
+    let headerText = document.getElementById('header-logo-text');
+    if(headerText) headerText.innerText = agenceNom === 'AuditPro' ? 'Audit' : agenceNom;
     
     document.documentElement.style.setProperty('--theme-color', agenceCouleur);
     
@@ -270,11 +290,19 @@ function reinitialiserMarqueBlanche() {
     document.getElementById('fraisNotaireInput').value = '8';
     document.getElementById('margeSecuriteInput').value = '10';
     document.getElementById('webhookCrmInput').value = '';
-    document.getElementById('logo-preview').style.display = 'none';
-    document.getElementById('logo-preview').src = '';
-    document.getElementById('logo-file-name').innerText = "Aucun fichier";
-    document.getElementById('logo-file-name').style.color = "#64748B";
-    document.getElementById('logo-file-name').style.fontWeight = "normal";
+    
+    let preview = document.getElementById('logo-preview');
+    if(preview) {
+        preview.style.display = 'none';
+        preview.src = '';
+    }
+    
+    let logoName = document.getElementById('logo-file-name');
+    if(logoName) {
+        logoName.innerText = "Aucun fichier";
+        logoName.style.color = "#64748B";
+        logoName.style.fontWeight = "normal";
+    }
     
     appliquerCouleurMarqueBlanche(); 
     chargerHistorique(); 
@@ -286,7 +314,8 @@ function reinitialiserMarqueBlanche() {
 
 function accepterCookies() {
     localStorage.setItem('auditpro_cookies', 'true');
-    document.getElementById('cookie-banner').style.display = 'none';
+    let banner = document.getElementById('cookie-banner');
+    if(banner) banner.style.display = 'none';
     showToast("Mode de sauvegarde locale activé.");
 }
 
@@ -345,6 +374,8 @@ function chargerDossierHistorique(index) {
     const histKey = getHistoriqueKey();
     const historique = JSON.parse(localStorage.getItem(histKey)) || [];
     const dossier = historique[index];
+    if(!dossier) return;
+    
     donneesAudit = dossier.data;
     idRapport = dossier.id;
     loyerMensuelSaisi = dossier.loyer || 0;
@@ -353,7 +384,8 @@ function chargerDossierHistorique(index) {
     if(loyerMensuelSaisi > 0) document.getElementById('loyerMensuel').value = formatNumber(loyerMensuelSaisi);
     
     document.getElementById('result-wrapper').style.display = "block";
-    if (document.getElementById('audit-tab').classList.contains('active')) {
+    let auditTab = document.getElementById('audit-tab');
+    if (auditTab && auditTab.classList.contains('active')) {
         document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
     }
     afficherEcran();
@@ -414,6 +446,7 @@ function formatInputNumber(e) {
 }
 
 function animateValue(obj, start, end, duration, prefix = "") {
+    if(!obj) return;
     let startTimestamp = null;
     const step = (timestamp) => {
         if (!startTimestamp) startTimestamp = timestamp;
@@ -428,6 +461,7 @@ function animateValue(obj, start, end, duration, prefix = "") {
 }
 
 function animateValuePercent(obj, start, end, duration) {
+    if(!obj) return;
     let startTimestamp = null;
     const step = (timestamp) => {
         if (!startTimestamp) startTimestamp = timestamp;
@@ -443,6 +477,7 @@ function animateValuePercent(obj, start, end, duration) {
 
 function showToast(message, type = "success") {
     const container = document.getElementById('toast-container');
+    if(!container) return;
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     if(type === "error") { toast.classList.add('error'); }
@@ -455,8 +490,10 @@ function showToast(message, type = "success") {
 }
 
 function copierScript(idElement) {
-    const texte = document.getElementById(idElement).innerText;
-    navigator.clipboard.writeText(texte).then(() => { showToast("Texte copié dans le presse-papier."); });
+    const el = document.getElementById(idElement);
+    if(el) {
+        navigator.clipboard.writeText(el.innerText).then(() => { showToast("Texte copié dans le presse-papier."); });
+    }
 }
 
 // LOGIQUE DES ONGLETS CORRIGEE (Ouverture du tab avec Paywall interne)
@@ -497,7 +534,8 @@ function switchReportTab(tabId) {
     let activeBtn = document.querySelector(`[onclick="switchReportTab('${tabId}')"]`);
     if(activeBtn) activeBtn.classList.add('active');
     
-    document.getElementById(tabId).classList.add('active');
+    let tab = document.getElementById(tabId);
+    if(tab) tab.classList.add('active');
 }
 
 function switchProTab(tabId) {
@@ -538,9 +576,11 @@ function ajouterComparateur() {
     
     const inputLoyerTxt = document.getElementById('loyerMensuel').value.replace(/\s+/g, '');
     const loyer = Number(inputLoyerTxt) || loyerMensuelSaisi || 0;
-    const prix = Number(document.getElementById('prixInitial').value.replace(/\s+/g, '')) || donneesAudit.prix_initial;
+    let pInp = document.getElementById('prixInitial');
+    const prix = pInp ? Number(pInp.value.replace(/\s+/g, '')) : donneesAudit.prix_initial;
     
-    let taux = parseFloat(document.getElementById('tauxRenov')?.value || 0);
+    let tRen = document.getElementById('tauxRenov');
+    let taux = parseFloat(tRen ? tRen.value : 0);
     let resteACharge = donneesAudit.total_decote * (1 - taux);
     let travauxSecurises = resteACharge * (1 + (margeSecuriteTravaux / 100)); 
 
@@ -612,7 +652,8 @@ function renderComparateur() {
 function genererAnnonceLeBonCoin() {
     if (!donneesAudit) return;
     
-    let prixBase = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
+    let pInp = document.getElementById('prixInitial');
+    let prixBase = pInp ? Number(pInp.value.replace(/\s+/g, '')) : 0;
     let ville = donneesAudit.localisation_exacte.split(' ')[0];
     let dpe = donneesAudit.dpe_lettre || "Non spécifié";
     
@@ -628,8 +669,51 @@ Une fois les travaux réalisés à votre goût, ce bien révèlera toute sa vale
 
 📞 Contactez l'agence ${agenceNom} dès aujourd'hui pour organiser une visite et consulter notre dossier d'accompagnement !`;
 
-    document.getElementById('texteAnnonceAgenerer').innerText = texteAnnonce;
-    document.getElementById('modalAnnonce').style.display = 'flex';
+    let tAA = document.getElementById('texteAnnonceAgenerer');
+    if(tAA) tAA.innerText = texteAnnonce;
+    let mA = document.getElementById('modalAnnonce');
+    if(mA) mA.style.display = 'flex';
+}
+
+function lancerDemo() {
+    let pInp = document.getElementById('prixInitial');
+    if(pInp) pInp.value = "450 000";
+    let lInp = document.getElementById('loyerMensuel');
+    if(lInp) lInp.value = "1 200";
+    let cInp = document.getElementById('codePostal');
+    if(cInp) cInp.value = "35000";
+    
+    loyerMensuelSaisi = 1200;
+    idRapport = "DEMO-" + Math.floor(Math.random() * 90000 + 10000);
+    
+    donneesAudit = {
+        cp: "35000",
+        localisation_exacte: "Rennes (Secteur Ille-et-Vilaine)",
+        impact_marche: "Métropole régionale en forte croissance économique. La forte demande sur le locatif et le durcissement de la Loi Climat créent une tension sur les artisans certifiés RGE, justifiant un ajustement automatique des devis locaux à la hausse (+18%).",
+        date_audit: new Date().toLocaleDateString('fr-FR'),
+        prix_initial: 450000,
+        total_decote: 28700,
+        prix_net: 421300,
+        dpe_lettre: "F",
+        ges_lettre: "G",
+        analyse_secteur: "Indice de marché local : 1.18",
+        securite: "Vos données sont privées : Le PDF a été supprimé de nos serveurs.",
+        diagnostics: [
+            {titre: "Électricité (Sécurité)", cout: 4500, loi: "Norme NF C 15-100", detail: "Défaut de mise à la terre ou matériel ancien identifié.", action: "Mise en sécurité du tableau électrique par un professionnel.", statut: "Anomalie"},
+            {titre: "DPE (Énergie)", cout: 20000, loi: "Loi Climat & Résilience", detail: "Logement classé F (Passoire thermique). Pertes de chaleur majeures identifiées.", action: "Isolation des combles et installation d'une Pompe à Chaleur.", statut: "Anomalie"},
+            {titre: "Amiante (Matériaux)", cout: 4200, loi: "Art. L1334-13", detail: "Présence de conduits en amiante-ciment dans la cave.", action: "Retrait et traitement des déchets par une société spécialisée.", statut: "Anomalie"},
+            {titre: "Plomb (Peintures)", cout: 0, loi: "Art. L1334-1", detail: "Aucune trace de plomb au-dessus des seuils réglementaires détectée.", action: "Aucune intervention nécessaire sur les murs.", statut: "Conforme"},
+            {titre: "Gaz (Risque fuite)", cout: 0, loi: "Norme NF P 45-500", detail: "Installation étanche et valves de sécurité fonctionnelles.", action: "Entretien annuel classique de la chaudière suffisant.", statut: "Conforme"}
+        ]
+    };
+    
+    showToast("Simulation de Démonstration générée avec succès.");
+    let rW = document.getElementById('result-wrapper');
+    if(rW) {
+        rW.style.display = "block";
+        rW.scrollIntoView({ behavior: 'smooth' });
+    }
+    afficherEcran();
 }
 
 async function envoyer() {
@@ -646,7 +730,7 @@ async function envoyer() {
     const cpInput = document.getElementById('codePostal').value || "";
     
     if (prixInput <= 0) return showToast("Veuillez indiquer le prix de vente.", "error");
-    if (!input.files.length) return showToast("Veuillez charger le fichier PDF.", "error");
+    if (!input || !input.files.length) return showToast("Veuillez charger le fichier PDF.", "error");
 
     const maxSizeMB = 15;
     if (input.files[0].size > maxSizeMB * 1024 * 1024) {
@@ -654,7 +738,8 @@ async function envoyer() {
     }
     
     loyerMensuelSaisi = loyerInput;
-    document.getElementById('loading-overlay').style.display = "flex";
+    let lo = document.getElementById('loading-overlay');
+    if(lo) lo.style.display = "flex";
 
     const messagesIA = [
         "Lecture sécurisée et extraction du document...",
@@ -665,7 +750,7 @@ async function envoyer() {
     let msgIndex = 0;
     const textElement = document.getElementById('loading-text');
     const loadInterval = setInterval(() => {
-        textElement.innerText = messagesIA[msgIndex];
+        if(textElement) textElement.innerText = messagesIA[msgIndex];
         msgIndex = (msgIndex + 1) % messagesIA.length;
     }, 1200);
 
@@ -682,7 +767,7 @@ async function envoyer() {
         idRapport = "AUDIT-" + Math.floor(Math.random() * 90000 + 10000);
         
         clearInterval(loadInterval);
-        document.getElementById('loading-overlay').style.display = "none";
+        if(lo) lo.style.display = "none";
         
         ajouterAuHistorique(donneesAudit.localisation_exacte, prixInput, donneesAudit);
 
@@ -690,23 +775,29 @@ async function envoyer() {
         localStorage.setItem('_ap_cnt_', analysesCount);
 
         showToast("Analyse effectuée avec succès.");
-        document.getElementById('result-wrapper').style.display = "block";
-        document.getElementById('result-wrapper').scrollIntoView({ behavior: 'smooth' });
+        let rw = document.getElementById('result-wrapper');
+        if(rw) {
+            rw.style.display = "block";
+            rw.scrollIntoView({ behavior: 'smooth' });
+        }
         afficherEcran();
 
     } catch (e) {
         clearInterval(loadInterval);
-        document.getElementById('loading-overlay').style.display = "none";
+        if(lo) lo.style.display = "none";
         showToast("Le document est illisible ou la connexion a échoué.", "error");
     }
 }
 
 function afficherEcran() {
+    if(!donneesAudit) return;
     let anomalies = donneesAudit.diagnostics.filter(d => d.cout > 0);
-    let prixInitialClean = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
+    let pInp = document.getElementById('prixInitial');
+    let prixInitialClean = pInp ? Number(pInp.value.replace(/\s+/g, '')) : 0;
     if(prixInitialClean === 0 && donneesAudit.prix_initial > 0) prixInitialClean = donneesAudit.prix_initial;
     
-    let taux = parseFloat(document.getElementById('tauxRenov')?.value || 0);
+    let tRen = document.getElementById('tauxRenov');
+    let taux = parseFloat(tRen ? tRen.value : 0);
     let resteACharge = donneesAudit.total_decote * (1 - taux);
     let travauxSecurises = profilActuel === 'particulier' ? resteACharge * (1 + (margeSecuriteTravaux / 100)) : resteACharge;
 
@@ -869,7 +960,8 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
         <b>CADRE D'APPLICATION :</b> Cette étude est une simulation algorithmique d'aide à la décision. Elle est purement indicative et n'a aucune valeur juridique devant notaire.
     </div>`;
 
-    document.getElementById('contenu-ecran').innerHTML = html;
+    let contentEcran = document.getElementById('contenu-ecran');
+    if(contentEcran) contentEcran.innerHTML = html;
     
     appliquerCouleurMarqueBlanche();
 
@@ -889,44 +981,48 @@ Ces données constituent une base indicative. Face au vendeur, elles appuient ma
     }
 
     if (anomalies.length > 0) {
-        const ctx = document.getElementById('coutChart').getContext('2d');
-        if (chartInstance) chartInstance.destroy();
-        chartInstance = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: anomalies.map(a => a.titre),
-                datasets: [{ 
-                    data: anomalies.map(a => a.cout), 
-                    backgroundColor: ['#0F172A', '#EF4444', '#334155', '#64748B', '#94A3B8', '#E2E8F0'] 
-                }]
-            },
-            options: { 
-                animation: false, 
-                responsive: false, 
-                plugins: { legend: { position: 'bottom' } },
-                cutout: '70%'
-            }
-        });
+        let canvas = document.getElementById('coutChart');
+        if(canvas) {
+            const ctx = canvas.getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: anomalies.map(a => a.titre),
+                    datasets: [{ 
+                        data: anomalies.map(a => a.cout), 
+                        backgroundColor: ['#0F172A', '#EF4444', '#334155', '#64748B', '#94A3B8', '#E2E8F0'] 
+                    }]
+                },
+                options: { 
+                    animation: false, 
+                    responsive: false, 
+                    plugins: { legend: { position: 'bottom' } },
+                    cutout: '70%'
+                }
+            });
+        }
     }
 
     const actionContainer = document.getElementById('action-buttons-container');
-    if (profilActuel === 'professionnel') {
-        if (userPlan === 'pro') {
-            actionContainer.innerHTML = `
-                <button class="btn-demo" onclick="exporterFicheVitrine()" style="flex: 1; border-color:#0F172A!important; color:#0F172A;">📄 Exporter Fiche Vitrine</button>
-                <button class="btn-demo" onclick="genererAnnonceLeBonCoin()" style="flex: 1; border-color:#0F172A!important; color:#0F172A;">📝 Générer texte d'annonce</button>
-            `;
+    if(actionContainer) {
+        if (profilActuel === 'professionnel') {
+            if (userPlan === 'pro') {
+                actionContainer.innerHTML = `
+                    <button class="btn-demo" onclick="genererAnnonceLeBonCoin()" style="flex: 1; border-color:#0F172A!important; color:#0F172A;">📝 Générer texte d'annonce</button>
+                `;
+            } else {
+                actionContainer.innerHTML = `
+                    <div style="width: 100%; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 20px; border-radius: 12px; font-size: 14px; color: #475569;">
+                        <strong style="color: #0F172A;">🔒 Outils Premium Verrouillés :</strong> Souscrivez à l'abonnement Premium Pro pour débloquer ces options.
+                    </div>
+                `;
+            }
         } else {
             actionContainer.innerHTML = `
-                <div style="width: 100%; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 20px; border-radius: 12px; font-size: 14px; color: #475569;">
-                    <strong style="color: #0F172A;">🔒 Outils Premium Verrouillés :</strong> Souscrivez à l'abonnement Premium Pro pour débloquer ces options.
-                </div>
+                <button class="btn-demo" onclick="ajouterComparateur()" style="flex: 1; border-color: #0F172A!important; color:#0F172A; font-weight: 700;">⭐ Sauvegarder dans le comparateur</button>
             `;
         }
-    } else {
-        actionContainer.innerHTML = `
-            <button class="btn-demo" onclick="ajouterComparateur()" style="flex: 1; border-color: #0F172A!important; color:#0F172A; font-weight: 700;">⭐ Sauvegarder dans le comparateur</button>
-        `;
     }
 }
 
@@ -938,8 +1034,11 @@ function exporterPDF(action = 'download', targetWindow = null) {
     let dpeBadgeBlock = { stack: [ {text: 'ÉNERGIE (DPE)', fontSize: 7, bold:true, color:'#64748B', margin:[0,0,0,2]}, {svg: getCleanPdfSvg(donneesAudit.dpe_lettre, "DPE"), width: 60} ], margin: [0, 5, 5, 15] };
     let gesBadgeBlock = { stack: [ {text: 'CLIMAT (GES)', fontSize: 7, bold:true, color:'#64748B', margin:[0,0,0,2]}, {svg: getCleanPdfSvg(donneesAudit.ges_lettre, "GES"), width: 60} ], margin: [0, 5, 0, 15] };
 
-    let prixInitFormate = formatNumber(document.getElementById('prixInitial').value.replace(/\s+/g, '')) + ' €';
-    let taux = parseFloat(document.getElementById('tauxRenov')?.value || 0);
+    let pInp = document.getElementById('prixInitial');
+    let prixInitFormate = formatNumber(pInp ? pInp.value.replace(/\s+/g, '') : donneesAudit.prix_initial) + ' €';
+    
+    let tRen = document.getElementById('tauxRenov');
+    let taux = parseFloat(tRen ? tRen.value : 0);
     let resteACharge = donneesAudit.total_decote * (1 - taux);
     let travauxSecurises = profilActuel === 'particulier' ? resteACharge * (1 + (margeSecuriteTravaux / 100)) : resteACharge;
     
@@ -1008,7 +1107,8 @@ function exporterPDF(action = 'download', targetWindow = null) {
 
     let rentaBlock = [];
     if (loyerMensuelSaisi > 0) {
-        let prixInitial = Number(document.getElementById('prixInitial').value.replace(/\s+/g, ''));
+        let prInp = document.getElementById('prixInitial');
+        let prixInitial = prInp ? Number(prInp.value.replace(/\s+/g, '')) : donneesAudit.prix_initial;
         let rentaInitiale = ((loyerMensuelSaisi * 12) / prixInitial) * 100;
         let fraisNotaireActuels = prixInitial * (fraisNotaireEstimes / 100);
         
@@ -1160,7 +1260,8 @@ function exporterPDF(action = 'download', targetWindow = null) {
 
 document.addEventListener("DOMContentLoaded", () => {
     if (!localStorage.getItem('auditpro_cookies')) {
-        document.getElementById('cookie-banner').style.display = 'block';
+        let cb = document.getElementById('cookie-banner');
+        if(cb) cb.style.display = 'block';
     }
 
     if (localStorage.getItem('auditpro_profil')) {
@@ -1169,16 +1270,27 @@ document.addEventListener("DOMContentLoaded", () => {
         changerProfilInterne("particulier");
     }
 
-    document.getElementById('nomAgenceInput').value = agenceNom !== 'AuditPro' ? agenceNom : '';
-    document.getElementById('couleurAgenceInput').value = agenceCouleur;
-    document.getElementById('couleurParticulierInput').value = agenceCouleur;
-    document.getElementById('fraisNotaireInput').value = fraisNotaireEstimes;
-    document.getElementById('margeSecuriteInput').value = margeSecuriteTravaux;
-    document.getElementById('webhookCrmInput').value = localStorage.getItem('auditpro_crm_webhook') || '';
+    let nAI = document.getElementById('nomAgenceInput');
+    if(nAI) nAI.value = agenceNom !== 'AuditPro' ? agenceNom : '';
+    let cAI = document.getElementById('couleurAgenceInput');
+    if(cAI) cAI.value = agenceCouleur;
+    let cPI = document.getElementById('couleurParticulierInput');
+    if(cPI) cPI.value = agenceCouleur;
+    let fNI = document.getElementById('fraisNotaireInput');
+    if(fNI) fNI.value = fraisNotaireEstimes;
+    let mSI = document.getElementById('margeSecuriteInput');
+    if(mSI) mSI.value = margeSecuriteTravaux;
+    let wCI = document.getElementById('webhookCrmInput');
+    if(wCI) wCI.value = localStorage.getItem('auditpro_crm_webhook') || '';
+    
     if(agenceLogoBase64) {
-        document.getElementById('logo-preview').src = agenceLogoBase64;
-        document.getElementById('logo-preview').style.display = 'block';
-        document.getElementById('logo-file-name').innerText = "Logo enregistré";
+        let lP = document.getElementById('logo-preview');
+        if(lP) {
+            lP.src = agenceLogoBase64;
+            lP.style.display = 'block';
+        }
+        let lFN = document.getElementById('logo-file-name');
+        if(lFN) lFN.innerText = "Logo enregistré";
     }
     appliquerCouleurMarqueBlanche();
 
@@ -1208,10 +1320,11 @@ document.addEventListener("DOMContentLoaded", () => {
         ['dragleave', 'drop'].forEach(eventName => { dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false); });
         fileInput.addEventListener('change', function() {
             if (this.files && this.files.length > 0) {
-                dropZoneText.innerHTML = `Document prêt : <b style="color: #0F172A;">${this.files[0].name}</b>`;
+                if(dropZoneText) dropZoneText.innerHTML = `Document prêt : <b style="color: #0F172A;">${this.files[0].name}</b>`;
                 dropZone.style.borderColor = agenceCouleur;
                 dropZone.style.background = "#fff";
-                document.querySelector('.drop-icon').style.color = agenceCouleur;
+                let di = document.querySelector('.drop-icon');
+                if(di) di.style.color = agenceCouleur;
             }
         });
     }
