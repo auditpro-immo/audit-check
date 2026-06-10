@@ -91,7 +91,9 @@ function changerProfilInterne(profil) {
     document.getElementById('btn-particulier').classList.remove('active');
     document.getElementById('btn-pro').classList.remove('active');
     
-    let btnActif = document.getElementById('btn-' + profil);
+    // CORRECTION DU BUG : On sélectionne le bon ID pour le bouton Professionnel
+    let targetId = profil === 'professionnel' ? 'btn-pro' : 'btn-particulier';
+    let btnActif = document.getElementById(targetId);
     if(btnActif) btnActif.classList.add('active');
 
     document.getElementById('bloc-renov').style.display = profil === 'particulier' ? 'block' : 'none';
