@@ -68,6 +68,7 @@ function entrerSurLeSite(profil) {
     }, 600);
 }
 
+// MISE A JOUR DES CADENAS SUR LE MENU ET DES BLOCS FLOU (PAYWALL)
 function updateNavLocks() {
     const lockComparateur = document.querySelector('#nav-comparateur .lock-icon');
     const lockParam = document.querySelector('#nav-param-particulier .lock-icon');
@@ -76,6 +77,28 @@ function updateNavLocks() {
     if(lockComparateur) lockComparateur.style.display = userPlan === 'gratuit' ? 'inline' : 'none';
     if(lockParam) lockParam.style.display = userPlan === 'gratuit' ? 'inline' : 'none';
     if(lockPro) lockPro.style.display = userPlan !== 'pro' ? 'inline' : 'none';
+
+    // Gestion du flou (Paywalls) dans les onglets
+    const tabsToCheck = [
+        { id: 'comparateur', requires: ['particulier', 'pro'] },
+        { id: 'param', requires: ['particulier', 'pro'] },
+        { id: 'pro', requires: ['pro'] }
+    ];
+
+    tabsToCheck.forEach(tab => {
+        const content = document.getElementById(`content-${tab.id}`);
+        const paywall = document.getElementById(`paywall-${tab.id}`);
+        
+        if(content && paywall) {
+            if (!tab.requires.includes(userPlan)) {
+                content.classList.add('locked-blur');
+                paywall.style.display = 'flex';
+            } else {
+                content.classList.remove('locked-blur');
+                paywall.style.display = 'none';
+            }
+        }
+    });
 }
 
 function changerProfilInterne(profil) {
@@ -101,11 +124,13 @@ function changerProfilInterne(profil) {
         document.getElementById('hero-title').innerText = "Justifiez vos estimations et sécurisez vos transactions.";
         document.getElementById('hero-desc').innerText = "Notre technologie d'analyse traduit instantanément les PDF de diagnostics en rapports chiffrés pour convaincre vos clients.";
         document.getElementById('form-title').innerText = "Simulateur pour les agences";
+        document.getElementById('how-it-works-section').style.display = 'none'; // Masquer le tutoriel grand public
     } else {
         document.getElementById('hero-badge').innerText = "L'intelligence au service de l'immo";
         document.getElementById('hero-title').innerText = "Sécurisez votre achat en chiffrant les travaux cachés.";
-        document.getElementById('hero-desc').innerText = "Notre outil analyse l'ensemble des diagnostics obligatoires de la maison que vous visitez. Obtenez le coût estimatif des remises aux normes.";
+        document.getElementById('hero-desc').innerText = "Notre outil analyse l'ensemble des diagnostics obligatoires de la maison que vous visitez. Obtenez le coût estimatif des remises aux normes instantanément.";
         document.getElementById('form-title').innerText = "Configuration de l'analyse";
+        document.getElementById('how-it-works-section').style.display = 'block';
         renderComparateur(); 
     }
     
@@ -137,7 +162,6 @@ document.getElementById('logoUploadInput').addEventListener('change', function(e
 function appliquerCouleurMarqueBlanche() {
     document.getElementById('header-logo-text').innerText = agenceNom === 'AuditPro' ? 'Audit' : agenceNom;
     
-    // Injection propre des variables CSS
     document.documentElement.style.setProperty('--theme-color', agenceCouleur);
     
     let hex = agenceCouleur.replace('#', '');
@@ -203,10 +227,6 @@ function reinitialiserParametresParticulier() {
 }
 
 function sauvegarderParametresPro() {
-    if (userPlan !== 'pro') {
-        document.querySelector('nav a[href="#abonnements"]').click();
-        return showToast("Verrouillé. L'espace Agence nécessite l'abonnement Premium Pro.", "error");
-    }
     if (!localStorage.getItem('auditpro_cookies')) {
         return showToast("Veuillez accepter la sauvegarde locale (bandeau en bas) pour activer cette fonction.", "error");
     }
@@ -368,7 +388,7 @@ function voirPDFDirect(event, index) {
 function telechargerDirect(event, index) {
     event.stopPropagation();
     if (userPlan === 'gratuit' && index > 0) {
-        document.querySelector('nav a[href="#abonnements"]').click();
+        changerOnglet('#abonnements');
         return showToast("L'exportation illimitée de l'historique nécessite un abonnement.", "error");
     }
     chargerDossierHistorique(index); 
@@ -439,7 +459,7 @@ function copierScript(idElement) {
     navigator.clipboard.writeText(texte).then(() => { showToast("Texte copié dans le presse-papier."); });
 }
 
-// LOGIQUE DES ONGLETS CORRIGEE
+// LOGIQUE DES ONGLETS CORRIGEE (Ouverture du tab avec Paywall interne)
 function changerOnglet(targetId) {
     const blocsOnglets = document.querySelectorAll('.tab-content');
     blocsOnglets.forEach(onglet => {
@@ -452,13 +472,12 @@ function changerOnglet(targetId) {
     
     if (ongletCible) {
         ongletCible.style.display = 'block';
-        void ongletCible.offsetWidth; // Force le reflow pour l'animation
+        void ongletCible.offsetWidth; // Force le reflow
         ongletCible.classList.add('active');
     }
     
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Mise à jour de l'apparence des liens de menu
     document.querySelectorAll('nav a').forEach(l => {
         l.classList.remove('active');
     });
@@ -1173,19 +1192,7 @@ document.addEventListener("DOMContentLoaded", () => {
     liensMenu.forEach(lien => {
         lien.addEventListener('click', function(e) {
             e.preventDefault();
-            const targetId = this.getAttribute('href');
-
-            // VERIFICATION SECURITE (PAYWALL)
-            if (userPlan === 'gratuit' && (targetId === '#comparateur' || targetId === '#parametres-particulier')) {
-                changerOnglet('#abonnements');
-                return showToast("🔒 Cette fonctionnalité est verrouillée. Veuillez choisir une offre.", "error");
-            }
-            if (userPlan !== 'pro' && targetId === '#pro') {
-                changerOnglet('#abonnements');
-                return showToast("🔒 L'Espace Agence nécessite l'abonnement Premium Pro.", "error");
-            }
-
-            changerOnglet(targetId);
+            changerOnglet(this.getAttribute('href'));
         });
     });
 
