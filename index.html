@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <link rel="stylesheet" href="style.css?v=32.0">
+    <link rel="stylesheet" href="style.css?v=33.0">
 </head>
 <body>
 
@@ -52,7 +52,7 @@
     <div id="main-app" style="display: none; opacity: 0; transition: opacity 0.5s ease;">
         <header>
             <div class="logo" style="cursor: pointer;" title="Zone d'activation Admin">
-                Audit<span class="theme-text">Pro</span>
+                Audit<span id="header-logo-color" style="color: #3B82F6;">Pro</span>
             </div>
            <nav>
                 <a href="#audit" class="active">L'Analyse</a>
@@ -61,48 +61,33 @@
                 <a href="#pro" id="nav-pro" style="display: none;">Espace Agence <span class="lock-icon" style="display: none;">🔒</span></a>
                 <a href="#abonnements">Abonnements</a>
                 <a href="#informations">Ressources</a>
-                <a href="#avis">Avis Clients</a>
+                <a href="#cas-usage">Cas d'Usage</a>
                 <a href="#faq">FAQ</a>
             </nav>
-            <button class="btn-solid theme-bg" onclick="document.querySelector('nav a[href=\'#audit\']').click();">Nouvelle Analyse</button>
+            <button class="btn-solid btn-dynamic-color" onclick="document.querySelector('nav a[href=\'#audit\']').click();">Nouvelle Analyse</button>
         </header>
 
         <main>
             <div id="audit-tab" class="tab-content active" style="display: block;">
                 <section class="hero" id="audit">
+                    <div class="hero-glow"></div>
+                    
                     <div class="hero-content">
-                        <div id="hero-badge" class="theme-text" style="display: inline-block; background: #fff; border: 1px solid #E2E8F0; font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">L'intelligence au service de l'immo</div>
-                        <h1 id="hero-title">Traduisez les diagnostics techniques en opportunités.</h1>
-                        <p id="hero-desc">Notre algorithme extrait, vulgarise et estime l'ensemble des travaux de mise aux normes d'un bien immobilier en moins de 2 minutes.</p>
+                        <div id="hero-badge" class="theme-text" style="display: inline-block; background: #fff; border: 1px solid #E2E8F0; font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">L'intelligence au service de l'immo</div>
+                        <h1 id="hero-title">Sécurisez votre achat en chiffrant les travaux cachés.</h1>
+                        <p id="hero-desc">Notre algorithme extrait, vulgarise et estime l'ensemble des diagnostics obligatoires de la maison que vous visitez. Obtenez le coût estimatif des remises aux normes instantanément.</p>
                         
-                        <div class="hero-features-grid">
-                            <div class="feature-item">
-                                <div class="feature-icon theme-bg-light theme-text">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                                </div>
-                                <div>
-                                    <strong>Lecture PDF intelligente</strong>
-                                    <span>Vulgarise le jargon technique (DPE, Amiante, Électricité)</span>
-                                </div>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon theme-bg-light theme-text">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                </div>
-                                <div>
-                                    <strong>Chiffrage Localisé</strong>
-                                    <span>Base de données indexée sur les coûts de votre département</span>
-                                </div>
-                            </div>
-                            <div class="feature-item">
-                                <div class="feature-icon theme-bg-light theme-text">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                                </div>
-                                <div>
-                                    <strong>100% Anonyme & RGPD</strong>
-                                    <span>Les documents sont détruits immédiatement après analyse</span>
-                                </div>
-                            </div>
+                        <ul style="margin-bottom: 40px;">
+                            <li class="li-dynamic"><strong>Le Dossier Technique vulgarisé :</strong> Fini le jargon incompréhensible.</li>
+                            <li class="li-dynamic"><strong>Calculateur de prix local :</strong> Indexé sur les artisans de votre région.</li>
+                            <li class="li-dynamic"><strong>Aide à la négociation :</strong> Des arguments mathématiques solides.</li>
+                        </ul>
+
+                        <div class="dpe-decorative">
+                            <div class="dpe-bar" style="background:#52B153; width:40%;"><span>B</span></div>
+                            <div class="dpe-bar" style="background:#A5D700; width:55%;"><span>C</span></div>
+                            <div class="dpe-bar active-bar" style="background:#FDF200; width:70%;"><span>D</span> <i>Score cible</i></div>
+                            <div class="dpe-bar" style="background:#F39611; width:85%;"><span>E</span></div>
                         </div>
                     </div>
                     
@@ -155,6 +140,27 @@
                     </div>
                 </section>
 
+                <section class="how-it-works" id="how-it-works-section">
+                    <h2 class="section-title" style="margin-bottom: 40px; font-size: 28px;">Comment ça fonctionne ?</h2>
+                    <div class="steps-grid">
+                        <div class="step-card">
+                            <div class="step-icon theme-bg-light theme-text">1</div>
+                            <h4>Téléchargez le DDT</h4>
+                            <p>Demandez le Dossier de Diagnostic Technique à l'agent immobilier et déposez-le dans notre outil.</p>
+                        </div>
+                        <div class="step-card">
+                            <div class="step-icon theme-bg-light theme-text">2</div>
+                            <h4>L'algorithme analyse</h4>
+                            <p>Notre IA lit les rapports (Amiante, Électricité, DPE) et repère toutes les anomalies cachées.</p>
+                        </div>
+                        <div class="step-card">
+                            <div class="step-icon theme-bg-light theme-text">3</div>
+                            <h4>Obtenez le chiffrage</h4>
+                            <p>Recevez une estimation des travaux indexée sur les tarifs des artisans de votre code postal.</p>
+                        </div>
+                    </div>
+                </section>
+
                 <div id="result-wrapper">
                     <div id="contenu-ecran"></div>
                     <div style="text-align: center; margin-top: 50px; display: flex; flex-direction: column; align-items: center; gap: 20px;">
@@ -165,7 +171,15 @@
             </div>
 
             <div id="comparateur-tab" class="tab-content">
-                <section class="content-section">
+                <div class="paywall-container" id="paywall-comparateur" style="display:none;">
+                    <div class="paywall-box theme-border-top">
+                        <h3 style="margin-top:0; color:#0F172A; font-size:20px;">🔒 Fonctionnalité Réservée</h3>
+                        <p style="color:#64748B; font-size:14px; margin-bottom:25px;">Passez à l'offre Particulier pour débloquer le comparateur de biens illimité.</p>
+                        <button class="btn-solid theme-bg" onclick="changerOnglet('#abonnements')">Voir les offres</button>
+                    </div>
+                </div>
+                
+                <section class="content-section" id="content-comparateur">
                     <h2 class="section-title">Mon Comparateur</h2>
                     <p style="text-align: center; color: #64748B; margin-bottom: 50px; font-size: 16px;">Mettez en concurrence jusqu'à 6 biens pour prendre la meilleure décision d'investissement.</p>
                     <div id="comparateur-grid" style="display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; align-items: stretch;"></div>
@@ -173,7 +187,15 @@
             </div>
 
             <div id="parametres-particulier-tab" class="tab-content">
-                <section class="content-section">
+                <div class="paywall-container" id="paywall-param" style="display:none;">
+                    <div class="paywall-box theme-border-top">
+                        <h3 style="margin-top:0; color:#0F172A; font-size:20px;">🔒 Personnalisation Premium</h3>
+                        <p style="color:#64748B; font-size:14px; margin-bottom:25px;">Modifiez les couleurs de l'interface et vos algorithmes avec un abonnement actif.</p>
+                        <button class="btn-solid theme-bg" onclick="changerOnglet('#abonnements')">Voir les offres</button>
+                    </div>
+                </div>
+
+                <section class="content-section" id="content-param">
                     <h2 class="section-title">Mes Paramètres</h2>
                     <div class="theme-border-top" style="background: #fff; padding: 50px; border-radius: 24px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05); max-width: 550px; margin: 0 auto; border-left: 1px solid #F1F5F9; border-right: 1px solid #F1F5F9; border-bottom: 1px solid #F1F5F9;">
                         
@@ -203,7 +225,15 @@
             </div>
 
             <div id="pro-tab" class="tab-content">
-                <section id="pro" class="content-section">
+                <div class="paywall-container" id="paywall-pro" style="display:none;">
+                    <div class="paywall-box theme-border-top">
+                        <h3 style="margin-top:0; color:#0F172A; font-size:20px;">🔒 Espace Professionnel B2B</h3>
+                        <p style="color:#64748B; font-size:14px; margin-bottom:25px;">Générez des rapports PDF en marque blanche, à l'image de votre agence immobilière.</p>
+                        <button class="btn-solid theme-bg" onclick="changerOnglet('#abonnements')">Découvrir Premium Pro</button>
+                    </div>
+                </div>
+
+                <section class="content-section" id="content-pro">
                     <h2 class="section-title">Espace Agence</h2>
                     <div style="max-width: 1100px; margin: 0 auto 40px auto; border-bottom: 1px solid #E2E8F0; display: flex; gap: 30px;">
                         <button class="report-tab-btn btn-pro-tab active" onclick="switchProTab('pro-parametres')">Marque Blanche</button>
@@ -342,16 +372,26 @@
                 </section>
             </div>
 
-            <div id="avis-tab" class="tab-content">
-               <section id="avis" class="content-section">
-                <h2 class="section-title">Avis & Retours utilisateurs</h2>
+            <div id="cas-usage-tab" class="tab-content">
+               <section id="cas-usage" class="content-section">
+                <h2 class="section-title">Cas d'usage pratiques</h2>
                 
-                <div class="form-avis" style="background: #fff; padding: 40px; border-radius: 24px; border: 1px solid #E2E8F0; max-width: 600px; margin: 0 auto; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
-                    <h3 style="margin-top: 0; color: #0F172A; font-weight: 700;">Vous avez utilisé AuditPro ?</h3>
-                    <p style="color: #64748B; font-size: 14px; margin-bottom: 25px;">Aidez-nous à améliorer l'algorithme en partageant votre expérience sur le terrain.</p>
-                    <input type="text" id="nomAvis" placeholder="Votre Prénom & Fonction" class="form-control" style="margin-bottom: 15px;">
-                    <textarea id="texteAvis" placeholder="Ex: Ce rapport m'a permis d'aborder la question des travaux sereinement avec le vendeur..." class="form-control" style="margin-bottom: 20px; height: 100px;"></textarea>
-                    <button type="button" class="btn-solid theme-bg" onclick="ajouterAvis()" style="width: 100%;">Publier mon évaluation</button>
+                <div class="info-grid" style="margin-bottom: 60px;">
+                    <div class="info-card">
+                        <div class="theme-text" style="font-weight: 800; margin-bottom: 10px; font-size: 12px; text-transform: uppercase;">Acheteur Particulier</div>
+                        <h3 style="margin-top: 0; font-size: 18px;">Éviter le piège de la passoire thermique</h3>
+                        <p>Lors d'une visite coup de cœur, le DPE affiche la lettre F. En scannant le dossier dans AuditPro, vous obtenez l'enveloppe chiffrée précise de la rénovation globale (Isolation + PAC) pour l'intégrer à votre demande de prêt immobilier.</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="theme-text" style="font-weight: 800; margin-bottom: 10px; font-size: 12px; text-transform: uppercase;">Agent Immobilier</div>
+                        <h3 style="margin-top: 0; font-size: 18px;">Appuyer une baisse de prix</h3>
+                        <p>Un vendeur exige un prix hors-marché malgré une installation électrique vétuste. Utilisez le rapport Marque Blanche AuditPro pour lui démontrer objectivement, chiffres à l'appui, le coût de la remise aux normes.</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="theme-text" style="font-weight: 800; margin-bottom: 10px; font-size: 12px; text-transform: uppercase;">Investisseur / Marchand</div>
+                        <h3 style="margin-top: 0; font-size: 18px;">Calculer la rentabilité nette</h3>
+                        <p>Le Comparateur intégré vous permet de mettre en concurrence jusqu'à 6 biens visités dans la journée. L'algorithme calcule le rendement final en intégrant automatiquement les frais de notaires et le matelas de sécurité chantier.</p>
+                    </div>
                 </div>
             </section>
             </div>
@@ -365,18 +405,6 @@
                         <details><summary>3. Puis-je utiliser ce chiffrage pour discuter du prix de vente ?</summary><p>Absolument, c'est l'objectif principal. En présentant un rapport clair chiffrant les anomalies techniques, vous disposez d'une base de discussion argumentée pour trouver un accord avec le vendeur.</p></details>
                         <details><summary>4. L'outil remplace-t-il le devis d'un artisan professionnel ?</summary><p>En aucun cas. L'application calcule une enveloppe budgétaire moyenne basée sur des statistiques régionales. Avant d'acheter, vous devez impérativement faire confirmer ces montants précis par le devis d'un artisan local certifié RGE.</p></details>
                         <details><summary>5. Quels sont les diagnostics immobiliers obligatoires pour vendre ?</summary><p>Le vendeur doit fournir : le DPE (énergie), le constat plomb (si construction avant 1949), l'amiante (avant 1997), l'électricité et le gaz (installations de plus de 15 ans), l'ERP (risques naturels), et l'état parasitaire selon l'arrêté de la ville.</p></details>
-                    </div>
-                </section>
-            </div>
-
-            <div id="contact-tab" class="tab-content">
-                <section id="contact" class="content-section" style="text-align: center;">
-                    <h2 class="section-title">Besoin de notre support ?</h2>
-                    <div style="background: #fff; padding: 60px; border-radius: 24px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05); max-width: 600px; margin: 0 auto; border: 1px solid #E2E8F0;">
-                        <p style="font-size: 16px; color: #64748B; margin-bottom: 30px;">Notre équipe technique et métier vous répond sous 24h ouvrées :</p>
-                        <div style="font-size: 22px; font-weight: 800; color: #0F172A; background: #F8FAFC; padding: 20px; border-radius: 12px; border: 1px solid #CBD5E1; user-select: all; letter-spacing: -0.01em;">
-                            contact.auditpro.immo@gmail.com
-                        </div>
                     </div>
                 </section>
             </div>
