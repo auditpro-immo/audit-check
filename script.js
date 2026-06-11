@@ -1212,4 +1212,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
         pdf.download(`AuditPro_Synthese_${donneesAudit.localisation_exacte.split(' ')[0]}.pdf`);
         if(btn) setTimeout(() => { btn.innerText = "Éditer le Bilan Officiel (PDF)"; }, 1500);
     }
+
 }
+
+
