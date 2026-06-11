@@ -1214,5 +1214,3 @@ function exporterPDF(action = 'download', targetWindow = null) {
     }
 
 }
-
-
