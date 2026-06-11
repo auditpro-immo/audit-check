@@ -179,4 +179,7 @@ input[type="color"].color-picker-custom::-webkit-color-swatch { border-radius: 5
     .hero-content { max-width: 100%; }
     .content-section { padding: 40px 20px; }
     .kpi-grid { flex-direction: column; }
+
 }
+
+
