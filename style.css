@@ -8,12 +8,21 @@
 
 body { 
     font-family: 'Inter', -apple-system, sans-serif; 
-    margin: 0; background-color: #F8FAFC; 
+    margin: 0; 
+    background-color: #F8FAFC; 
     background-image: radial-gradient(#CBD5E1 1px, transparent 1px);
-    background-size: 24px 24px; color: #334155; 
-    display: flex; flex-direction: column; min-height: 100vh; line-height: 1.6; -webkit-font-smoothing: antialiased; 
+    background-size: 24px 24px; 
+    color: #334155; 
+    display: flex; 
+    flex-direction: column; 
+    min-height: 100vh; 
+    line-height: 1.6; 
+    -webkit-font-smoothing: antialiased; 
 }
-* { box-sizing: border-box; }
+
+* { 
+    box-sizing: border-box; 
+}
 
 .theme-text { color: var(--theme-color) !important; }
 .theme-bg { background-color: var(--theme-color) !important; color: #fff !important; }
@@ -26,7 +35,21 @@ body {
 .portal-content { max-width: 900px; width: 100%; color: #fff; animation: slideUp 0.6s ease; }
 .portal-logo { font-size: 44px; font-weight: 900; margin-bottom: 10px; font-family: 'Merriweather', serif; letter-spacing: -0.02em; }
 .portal-cards { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-top: 45px; }
-.portal-card { background: #fff; color: #0F172A; padding: 45px; border-radius: 24px; cursor: pointer; flex: 1; min-width: 280px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: left; border: 1px solid rgba(255,255,255,0.1); transition: all 0.4s ease; }
+
+.portal-card { 
+    background: #fff; 
+    color: #0F172A; 
+    padding: 45px; 
+    border-radius: 24px; 
+    cursor: pointer; 
+    flex: 1; 
+    min-width: 280px; 
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2); 
+    text-align: left; 
+    border: 1px solid rgba(255,255,255,0.1); 
+    transition: all 0.4s ease; 
+}
+
 .portal-card:hover { transform: translateY(-8px); border-color: #3B82F6; }
 .portal-card h3 { margin-top: 20px; font-size: 22px; font-weight: 700; }
 .portal-card p { color: #64748B; font-size: 15px; margin-bottom: 30px; line-height: 1.7; }
@@ -86,6 +109,7 @@ nav a i { margin-right: 6px; }
 
 #result-wrapper { max-width: 1100px; margin: 60px auto; padding: 0 20px; display: none; }
 #contenu-ecran { background: #fff; padding: 50px; border-radius: 20px; border: 1px solid #E2E8F0; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+
 .kpi-grid { display: flex; gap: 20px; flex-wrap: wrap; margin: 30px 0; }
 .kpi-box { flex: 1; min-width: 200px; padding: 25px; border-radius: 12px; text-align: center; border: 1px solid #E2E8F0; background: #fff; }
 .kpi-box.main { background: var(--theme-color); color: #fff; border: none; transform: scale(1.02); box-shadow: 0 10px 25px var(--theme-color-light); }
@@ -127,6 +151,7 @@ input[type="color"].color-picker-custom { -webkit-appearance: none; appearance: 
 input[type="color"].color-picker-custom::-webkit-color-swatch { border-radius: 50%; border: 4px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 
 #cookie-banner { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(10px); color: #fff; padding: 24px; text-align: center; z-index: 10000; border-top: 1px solid rgba(255,255,255,0.1); }
+
 #toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; gap: 15px; }
 .toast { background: #fff; color: #0F172A; padding: 16px 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); font-size: 14px; font-weight: 600; border-left: 4px solid #16A34A; animation: slideIn 0.4s forwards; max-width: 350px; }
 .toast.error { border-left-color: #DC2626; }
@@ -150,9 +175,11 @@ input[type="color"].color-picker-custom::-webkit-color-swatch { border-radius: 5
     .kpi-grid { flex-direction: column; }
 }
 
+/* WIDGET COPILOTE FLOTTANT */
 .copilot-widget { position: fixed; bottom: 30px; right: 30px; width: 320px; background: #fff; border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); border: 1px solid #E2E8F0; z-index: 9998; overflow: hidden; transition: all 0.3s ease; }
 .copilot-widget.minimized { transform: translateY(calc(100% - 45px)); }
 .copilot-header { background: #0F172A; color: #fff; padding: 12px 20px; font-weight: 700; font-size: 13px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
 .copilot-body { padding: 20px; font-size: 13px; color: #475569; line-height: 1.6; }
 .copilot-progress { height: 6px; background: #E2E8F0; width: 100%; }
 .copilot-bar { height: 100%; background: #16A34A; transition: width 0.4s ease; }
+
