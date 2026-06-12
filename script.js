@@ -62,8 +62,10 @@ document.addEventListener("DOMContentLoaded", () => {
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropZone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
         });
+        
         dropZone.addEventListener('dragover', () => dropZone.style.borderColor = "var(--theme-accent)");
         dropZone.addEventListener('dragleave', () => dropZone.style.borderColor = "#CBD5E1");
+        
         dropZone.addEventListener('drop', (e) => { 
             fileInput.files = e.dataTransfer.files; 
             fileInput.dispatchEvent(new Event('change')); 
@@ -76,6 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 dropZone.style.background = "#F0FDF4";
                 document.querySelector('.drop-icon').classList.replace('fa-cloud-arrow-up', 'fa-file-circle-check');
                 document.querySelector('.drop-icon').style.color = "#16A34A";
+                
                 updateCopilot(2);
             }
         });
@@ -124,10 +127,13 @@ function formatInputNumber(e) {
 function showToast(message, type = "success") {
     const container = document.getElementById('toast-container');
     if(!container) return;
+    
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation'}" style="color:${type === 'success' ? '#16A34A' : '#DC2626'}"></i> ${message}`;
+    
     container.appendChild(toast);
+    
     setTimeout(() => {
         toast.style.transform = 'translateX(120%)';
         setTimeout(() => toast.remove(), 400);
@@ -137,7 +143,9 @@ function showToast(message, type = "success") {
 function copierScript(idElement) {
     const el = document.getElementById(idElement);
     if(el) {
-        navigator.clipboard.writeText(el.innerText).then(() => { showToast("Texte copié dans le presse-papier."); });
+        navigator.clipboard.writeText(el.innerText).then(() => { 
+            showToast("Texte copié dans le presse-papier."); 
+        });
     }
 }
 
@@ -148,6 +156,7 @@ function getSvgArrow(lettre, type) {
     lettre = lettre ? lettre.toUpperCase() : "N/A";
     const color = type === "DPE" ? (colorConfigDPE[lettre] || "#888888") : (colorConfigGES[lettre] || "#888888");
     let txtCol = (lettre === "C" || lettre === "D" || lettre === "N/A" || (type === "GES" && ["A","B","C"].includes(lettre))) ? "#000000" : "#ffffff";
+    
     return `
     <svg width="80" height="30" viewBox="0 0 100 35" xmlns="http://www.w3.org/2000/svg">
         <polygon points="0,0 80,0 100,17.5 80,35 0,35" fill="${color}" />
@@ -156,7 +165,7 @@ function getSvgArrow(lettre, type) {
 }
 
 // ==========================================================================
-// 4. NAVIGATION, CADENAS ET PROFILS
+// 4. NAVIGATION ET PROFILS
 // ==========================================================================
 function changerOnglet(targetId) {
     document.querySelectorAll('.tab-content').forEach(tab => {
@@ -253,7 +262,9 @@ function changerProfilInterne(profil) {
 function entrerSurLeSite(profil) {
     const portal = document.getElementById('welcome-portal');
     const mainApp = document.getElementById('main-app');
+    
     if(portal) portal.style.opacity = '0';
+    
     setTimeout(() => {
         if(portal) portal.style.display = 'none';
         if(mainApp) {
@@ -272,6 +283,7 @@ function verifierCookies() {
         document.getElementById('cookie-banner').style.display = 'block';
     }
 }
+
 function accepterCookies() {
     localStorage.setItem('auditpro_cookies', 'true');
     document.getElementById('cookie-banner').style.display = 'none';
@@ -310,19 +322,19 @@ function changerCouleurParticulierTemporaire(couleur) {
 function sauvegarderParametresParticulier() {
     appSettings.fraisNotaire = parseFloat(document.getElementById('fraisNotaireInput').value) || 8;
     appSettings.margeSecurite = parseFloat(document.getElementById('margeSecuriteInput').value) || 10;
-    appSettings.couleur = document.getElementById('couleurParticulierInput') ? document.getElementById('couleurParticulierInput').value : appSettings.couleur;
-
+    
     localStorage.setItem('ap_notaire', appSettings.fraisNotaire);
     localStorage.setItem('ap_marge', appSettings.margeSecurite);
-    localStorage.setItem('ap_couleur', appSettings.couleur);
     
     appliquerSettings();
+    
     if(donneesAudit) {
         calculerTotalDevis();
         afficherEcran();
         genererFiscalite();
     }
-    showToast("Paramètres sauvegardés.");
+    
+    showToast("Paramètres sauvegardés avec succès.");
 }
 
 function sauvegarderParametresPro() {
@@ -334,16 +346,18 @@ function sauvegarderParametresPro() {
     localStorage.setItem('ap_couleur', appSettings.couleur);
     
     appliquerSettings();
-    showToast("Marque Blanche activée.");
+    showToast("Design Marque Blanche appliqué.");
 }
 
 function reinitialiserMarqueBlanche() {
     localStorage.removeItem('ap_nom');
     localStorage.removeItem('ap_couleur');
     localStorage.removeItem('ap_logo');
+    
     appSettings.nomAgence = 'AuditPro';
     appSettings.couleur = '#1E3A8A';
     appSettings.logoBase64 = null;
+    
     document.getElementById('logo-preview').style.display = 'none';
     appliquerSettings();
     showToast("Marque blanche désactivée.");
@@ -496,6 +510,7 @@ async function envoyer() {
         "Calcul des devis moyens pour le département...",
         "Génération de la matrice financière..."
     ];
+    
     let msgIndex = 0;
     const textElement = document.getElementById('loading-text');
     const loadInterval = setInterval(() => {
@@ -537,7 +552,7 @@ async function envoyer() {
 }
 
 // ==========================================================================
-// 8. AFFICHAGE DES RÉSULTATS 
+// 8. AFFICHAGE DES RÉSULTATS
 // ==========================================================================
 function afficherEcran() {
     if(!donneesAudit) return;
@@ -567,10 +582,10 @@ function afficherEcran() {
 
     let anomaliesHtml = dataDiagnostics.map(a => `
         <tr>
-            <td style="font-weight:700; color:#0F172A; padding:12px;">${a.titre}</td>
-            <td style="color:${a.cout > 0 ? '#DC2626' : '#16A34A'}; font-weight:800; text-align:center; padding:12px;">${a.cout > 0 ? 'ANOMALIE' : 'CONFORME'}</td>
-            <td style="font-size:14px; color:#475569; padding:12px;"><strong>Constat :</strong> ${a.detail || 'Saisi manuellement'}<br>${a.cout > 0 && a.action ? `<i><strong>Recommandation :</strong> ${a.action}</i>` : ''}</td>
-            <td style="font-weight:800; font-size:16px; color:${a.cout > 0 ? '#DC2626' : '#0F172A'}; text-align:right; padding:12px;">${a.cout > 0 ? `-${formatNumber(a.cout)} €` : '0 €'}</td>
+            <td style="font-weight:700; color:#0F172A; padding:12px; border-bottom:1px solid #E2E8F0;">${a.titre}</td>
+            <td style="color:${a.cout > 0 ? '#DC2626' : '#16A34A'}; font-weight:800; text-align:center; padding:12px; border-bottom:1px solid #E2E8F0;">${a.cout > 0 ? 'ANOMALIE' : 'CONFORME'}</td>
+            <td style="font-size:14px; color:#475569; padding:12px; border-bottom:1px solid #E2E8F0;"><strong>Constat :</strong> ${a.detail || 'Saisi manuellement'}<br>${a.cout > 0 && a.action ? `<i><strong>Recommandation :</strong> ${a.action}</i>` : ''}</td>
+            <td style="font-weight:800; font-size:16px; color:${a.cout > 0 ? '#DC2626' : '#0F172A'}; text-align:right; padding:12px; border-bottom:1px solid #E2E8F0;">${a.cout > 0 ? `-${formatNumber(a.cout)} €` : '0 €'}</td>
         </tr>
     `).join('');
 
@@ -750,7 +765,7 @@ function sauvegarderDevisManuel() {
 }
 
 // ==========================================================================
-// 10. MODÉLISATION FISCALE & STRESS-TEST
+// 10. MODÉLISATION FISCALE & STRESS-TEST HCSF
 // ==========================================================================
 function updateSimulationFinance() {
     const slider = document.getElementById('nego-slider');
@@ -857,10 +872,22 @@ function calculerFinancePro() {
     resultDisplay.innerHTML = `
         <div style="background:#fff; padding:35px; border-radius:16px; border:1px solid #E2E8F0; box-shadow:0 10px 30px rgba(0,0,0,0.03); margin-top:40px;">
             <h3 style="color:#0F172A; margin-top:0; border-bottom:2px solid #F1F5F9; padding-bottom:15px;"><i class="fa-solid fa-chart-pie theme-text"></i> Bilan Bancaire Global</h3>
-            <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:15px;"><span style="color:#64748B;">Acquisition (Négociée)</span> <strong style="color:#0F172A;">${formatNumber(prixFai)} €</strong></div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:15px;"><span style="color:#64748B;">Frais Notaire (~${appSettings.fraisNotaire}%)</span> <strong style="color:#0F172A;">+ ${formatNumber(fraisNotaire)} €</strong></div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:15px;"><span style="color:#64748B;">Travaux (Sécurisés)</span> <strong style="color:#DC2626;">+ ${formatNumber(travaux)} €</strong></div>
-            <div style="display:flex; justify-content:space-between; margin-top:20px; padding-top:20px; border-top:1px solid #F1F5F9;"><span style="font-weight:900; color:var(--theme-color); font-size:16px;">COÛT TOTAL DU PROJET</span> <strong style="font-size:24px; color:var(--theme-color);">${formatNumber(budgetGlobal)} €</strong></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:15px;">
+                <span style="color:#64748B;">Acquisition (Négociée)</span> 
+                <strong style="color:#0F172A;">${formatNumber(prixFai)} €</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:15px;">
+                <span style="color:#64748B;">Frais Notaire (~${appSettings.fraisNotaire}%)</span> 
+                <strong style="color:#0F172A;">+ ${formatNumber(fraisNotaire)} €</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:15px;">
+                <span style="color:#64748B;">Travaux (Sécurisés)</span> 
+                <strong style="color:#DC2626;">+ ${formatNumber(travaux)} €</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-top:20px; padding-top:20px; border-top:1px solid #F1F5F9;">
+                <span style="font-weight:900; color:var(--theme-color); font-size:16px;">COÛT TOTAL DU PROJET</span> 
+                <strong style="font-size:24px; color:var(--theme-color);">${formatNumber(budgetGlobal)} €</strong>
+            </div>
             
             <div class="kpi-grid" style="margin-top: 30px;">
                 <div class="kpi-box">
@@ -879,7 +906,9 @@ function calculerFinancePro() {
         </div>
 
         <div style="background:var(--theme-color); color:#fff; padding:40px; border-radius:16px; margin-top:30px; box-shadow:0 20px 40px rgba(30, 58, 138, 0.25);">
-            <h3 style="color:#fff; margin-top:0; border-bottom:1px solid rgba(255,255,255,0.15); padding-bottom:15px;"><i class="fa-solid fa-scale-balanced"></i> Fiscalité : Micro-Foncier vs LMNP (Au Réel)</h3>
+            <h3 style="color:#fff; margin-top:0; border-bottom:1px solid rgba(255,255,255,0.15); padding-bottom:15px;">
+                <i class="fa-solid fa-scale-balanced"></i> Fiscalité : Micro-Foncier vs LMNP (Au Réel)
+            </h3>
             
             <div style="display:flex; margin-top:30px; gap:30px; flex-wrap:wrap;">
                 <div style="flex:1; border-right:1px dashed rgba(255,255,255,0.2); padding-right:20px; min-width:250px;">
@@ -888,7 +917,9 @@ function calculerFinancePro() {
                     <div style="margin-top:25px; font-size:15px; background:rgba(0,0,0,0.2); padding:15px; border-radius:8px;">
                         Impôt mensuel est. : <strong style="color:#FCA5A5;">${formatNumber(impotNuEstime / 12)} €</strong>
                     </div>
-                    <div style="margin-top:15px; font-size:16px;">CASH-FLOW NET / MOIS : <strong style="display:block; font-size:24px; color:${cashFlowNu >= 0 ? '#86EFAC' : '#FCA5A5'}">${formatNumber(cashFlowNu)} €</strong></div>
+                    <div style="margin-top:15px; font-size:16px;">
+                        CASH-FLOW NET / MOIS : <strong style="display:block; font-size:24px; color:${cashFlowNu >= 0 ? '#86EFAC' : '#FCA5A5'}">${formatNumber(cashFlowNu)} €</strong>
+                    </div>
                 </div>
                 
                 <div style="flex:1; min-width:250px;">
@@ -897,11 +928,15 @@ function calculerFinancePro() {
                     <div style="margin-top:25px; font-size:15px; background:rgba(22, 163, 74, 0.2); border:1px solid rgba(34, 197, 94, 0.3); padding:15px; border-radius:8px;">
                         Impôt mensuel est. : <strong style="color:#86EFAC;">0 € <span style="font-size:12px; font-weight:500;">(Gommé)</span></strong>
                     </div>
-                    <div style="margin-top:15px; font-size:16px;">CASH-FLOW NET / MOIS : <strong style="color:${cashFlowLmnp >= 0 ? '#86EFAC' : '#FCA5A5'}; display:block; font-size:28px;">${formatNumber(cashFlowLmnp)} €</strong></div>
+                    <div style="margin-top:15px; font-size:16px;">
+                        CASH-FLOW NET / MOIS : <strong style="color:${cashFlowLmnp >= 0 ? '#86EFAC' : '#FCA5A5'}; display:block; font-size:28px;">${formatNumber(cashFlowLmnp)} €</strong>
+                    </div>
                 </div>
             </div>
             <div style="text-align:center; margin-top: 30px;">
-                <button class="btn-solid" style="background:#fff; color:var(--theme-color);" onclick="ajouterAuPipeline()">⭐ Sauvegarder dans mon Pipeline Kanban</button>
+                <button class="btn-solid" style="background:#fff; color:var(--theme-color);" onclick="ajouterAuPipeline()">
+                    ⭐ Sauvegarder dans mon Pipeline Kanban
+                </button>
             </div>
         </div>
     `;
@@ -960,11 +995,21 @@ function renderComparateur() {
         return `
         <div style="background: #fff; border: 1px solid #E2E8F0; border-top: 4px solid var(--theme-color); border-radius: 16px; padding: 25px; width: 300px; box-shadow: 0 10px 20px rgba(0,0,0,0.03);">
             <h3 style="margin-top: 0; color: #0F172A; border-bottom: 1px solid #F1F5F9; padding-bottom: 15px; font-size: 16px;">${bien.ville}</h3>
-            <div style="margin-bottom: 15px;"><span style="background:#F1F5F9; font-size:12px; padding:4px 8px; border-radius:6px; font-weight:bold;">DPE ${bien.dpe}</span></div>
-            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;"><span>Prix</span> <strong>${formatNumber(bien.prix)} €</strong></div>
-            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;"><span>Travaux</span> <strong style="color:#DC2626;">+ ${formatNumber(bien.travaux)} €</strong></div>
-            <div style="display:flex; justify-content:space-between; font-size:14px; margin-top:15px; padding-top:15px; border-top:1px solid #F1F5F9;"><span>Rendement Net</span> <strong style="color:var(--theme-color);">${rentaNette}</strong></div>
-            <button class="btn-delete" style="width:100%; margin-top:20px;" onclick="supprimerComparateur(${index})"><i class="fa-solid fa-trash"></i> Retirer</button>
+            <div style="margin-bottom: 15px;">
+                <span style="background:#F1F5F9; font-size:12px; padding:4px 8px; border-radius:6px; font-weight:bold;">DPE ${bien.dpe}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;">
+                <span>Prix</span> <strong>${formatNumber(bien.prix)} €</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;">
+                <span>Travaux</span> <strong style="color:#DC2626;">+ ${formatNumber(bien.travaux)} €</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:14px; margin-top:15px; padding-top:15px; border-top:1px solid #F1F5F9;">
+                <span>Rendement Net</span> <strong style="color:var(--theme-color);">${rentaNette}</strong>
+            </div>
+            <button class="btn-delete" style="width:100%; margin-top:20px;" onclick="supprimerComparateur(${index})">
+                <i class="fa-solid fa-trash"></i> Retirer
+            </button>
         </div>`;
     }).join('');
 }
@@ -990,7 +1035,9 @@ function chargerKanban() {
             card.innerHTML = `
                 <div class="k-card-title" style="display:flex; justify-content:space-between;">
                     <span>${dossier.ville}</span>
-                    <button class="btn-icon" style="width:24px; height:24px; border:none; background:transparent; padding:0; cursor:pointer;" onclick="supprimerDuPipeline('${dossier.id}')"><i class="fa-solid fa-xmark text-danger" style="color:#DC2626;"></i></button>
+                    <button class="btn-icon" style="width:24px; height:24px; border:none; background:transparent; padding:0; cursor:pointer;" onclick="supprimerDuPipeline('${dossier.id}')">
+                        <i class="fa-solid fa-xmark text-danger" style="color:#DC2626;"></i>
+                    </button>
                 </div>
                 <div style="font-size:16px; font-weight:800; color:var(--text-dark); margin-bottom:10px;">${formatNumber(dossier.prix)} €</div>
                 <div class="k-card-data">
@@ -1003,13 +1050,19 @@ function chargerKanban() {
                 e.dataTransfer.setData('text/plain', dossier.id);
                 setTimeout(() => card.style.opacity = '0.5', 0);
             });
+            
             card.addEventListener('dragend', () => card.style.opacity = '1');
 
             container.appendChild(card);
         });
 
-        container.addEventListener('dragover', (e) => { e.preventDefault(); container.style.background = "#EFF6FF"; });
+        container.addEventListener('dragover', (e) => { 
+            e.preventDefault(); 
+            container.style.background = "#EFF6FF"; 
+        });
+        
         container.addEventListener('dragleave', () => container.style.background = "transparent");
+        
         container.addEventListener('drop', (e) => {
             e.preventDefault();
             container.style.background = "transparent";
@@ -1080,6 +1133,7 @@ function viderPipeline() {
 // ==========================================================================
 function genererClause() {
     if(!donneesAudit) return showToast("Veuillez d'abord analyser un bien.", "error");
+    
     const box = document.getElementById('box-outil-genere');
     const texte = document.getElementById('texte-outil-genere');
     
@@ -1096,6 +1150,7 @@ L'acquéreur se réserve le droit de se rétracter sans pénalité si les devis 
 
 function genererEmailBaisse() {
     if(!donneesAudit) return showToast("Veuillez d'abord analyser un bien.", "error");
+    
     const box = document.getElementById('box-outil-genere');
     const texte = document.getElementById('texte-outil-genere');
     
@@ -1176,20 +1231,35 @@ function exporterPDF() {
 
             let nomAgenceStr = (appSettings.nomAgence || "AuditPro").toUpperCase();
             
+            // On bypass l'image uploadée pour l'en-tête du PDF pour être sûr que ça ne plante jamais.
             let logoBlock = { text: nomAgenceStr, fontSize: 24, bold: true, color: appSettings.couleur || '#1E3A8A', alignment: 'left', letterSpacing: 1 };
 
             let docDefinition = {
                 pageSize: 'A4',
                 pageMargins: [ 40, 40, 40, 40 ], 
                 defaultStyle: { font: 'Helvetica' },
-                background: function() { return { canvas: [ { type: 'rect', x: 0, y: 0, w: 15, h: 842, color: appSettings.couleur || '#1E3A8A' } ] }; },
+                background: function() { 
+                    return { canvas: [ { type: 'rect', x: 0, y: 0, w: 15, h: 842, color: appSettings.couleur || '#1E3A8A' } ] }; 
+                },
                 header: function(currentPage) {
                     if (currentPage > 1) {
-                        return { columns: [ { text: nomAgenceStr, bold: true, color: '#64748B', fontSize: 9 }, { text: 'Réf. ' + (currentDossierId || 'MANUEL'), alignment: 'right', color: '#64748B', fontSize: 9 } ], margin: [40, 20, 40, 0] };
+                        return { 
+                            columns: [ 
+                                { text: nomAgenceStr, bold: true, color: '#64748B', fontSize: 9 }, 
+                                { text: 'Réf. ' + (currentDossierId || 'MANUEL'), alignment: 'right', color: '#64748B', fontSize: 9 } 
+                            ], 
+                            margin: [40, 20, 40, 0] 
+                        };
                     }
                 },
                 footer: function(currentPage, pageCount) {
-                    return { columns: [ { text: 'Étude d\'aide à la décision. Ne remplace pas un devis d\'artisan.', fontSize: 8, color: '#94A3B8', italics: true }, { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#94A3B8', bold: true } ], margin: [40, 20, 40, 0] };
+                    return { 
+                        columns: [ 
+                            { text: 'Étude d\'aide à la décision. Ne remplace pas un devis d\'artisan.', fontSize: 8, color: '#94A3B8', italics: true }, 
+                            { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#94A3B8', bold: true } 
+                        ], 
+                        margin: [40, 20, 40, 0] 
+                    };
                 },
                 content: [
                     {
