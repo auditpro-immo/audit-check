@@ -22,7 +22,6 @@ body {
 .theme-border-left { border-left: 4px solid var(--theme-color) !important; }
 .theme-border-hover:hover { border-color: var(--theme-color) !important; background-color: var(--theme-color-light) !important; }
 
-/* 1. PORTAIL D'ACCUEIL */
 #welcome-portal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.98); z-index: 100000; display: flex; justify-content: center; align-items: center; text-align: center; padding: 20px; backdrop-filter: blur(10px); transition: opacity 0.6s ease; }
 .portal-content { max-width: 900px; width: 100%; color: #fff; animation: slideUp 0.6s ease; }
 .portal-logo { font-size: 44px; font-weight: 900; margin-bottom: 10px; font-family: 'Merriweather', serif; letter-spacing: -0.02em; }
@@ -33,7 +32,6 @@ body {
 .portal-card p { color: #64748B; font-size: 15px; margin-bottom: 30px; line-height: 1.7; }
 .card-action { font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 8px; color: #3B82F6; }
 
-/* 2. HEADER ET NAV */
 header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); padding: 16px 50px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #E2E8F0; }
 .logo { font-size: 26px; font-weight: 900; color: #0F172A; font-family: 'Merriweather', serif; letter-spacing: -0.02em; }
 nav a { color: #64748B; text-decoration: none; margin: 0 12px; font-size: 14px; font-weight: 600; padding: 8px 12px; border-radius: 8px; transition: all 0.2s; }
@@ -42,7 +40,6 @@ nav a.active { color: var(--theme-color); background: var(--theme-color-light); 
 nav a i { margin-right: 6px; }
 .lock-icon { font-size: 11px; margin-left: 4px; opacity: 0.6; }
 
-/* 3. BOUTONS ET INPUTS */
 .btn-solid { padding: 14px 28px; border-radius: 10px; font-weight: 700; font-size: 15px; border: none !important; color: #fff !important; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); background-color: var(--theme-color); }
 .btn-solid:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(0,0,0,0.15); background-color: var(--theme-accent); }
 .btn-outline { background: #fff; border: 1px solid #CBD5E1; color: #0F172A; padding: 12px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; }
@@ -54,14 +51,12 @@ nav a i { margin-right: 6px; }
 .btn-submit { width: 100%; padding: 18px; font-size: 16px; border: none; border-radius: 12px; font-weight: 700; color: #fff; cursor: pointer; transition: all 0.3s ease; }
 .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(0,0,0,0.15); }
 
-/* 4. ONGLETS ET SECTIONS */
 .tab-content { display: none; width: 100%; animation: fadeIn 0.4s ease; }
 .tab-content.active { display: block; }
 .content-section { padding: 80px 50px; max-width: 1200px; margin: 0 auto; transition: filter 0.3s ease; }
 .section-title { text-align: center; font-family: 'Merriweather', serif; font-size: 32px; color: #0F172A; margin-bottom: 50px; font-weight: 900; }
 .empty-state { text-align:center; padding: 60px; color: #64748B; background: #fff; border-radius: 16px; border: 1px dashed #CBD5E1; font-size: 15px; }
 
-/* 5. VUE AUDIT (HERO ET FORM) */
 .hero { position: relative; background: #fff; padding: 80px 50px; display: flex; justify-content: space-between; align-items: flex-start; gap: 60px; overflow: hidden; border-bottom: 1px solid #E2E8F0; }
 .hero-glow { position: absolute; top: -100px; left: -100px; width: 600px; height: 600px; background: radial-gradient(circle, var(--theme-color-light) 0%, rgba(255,255,255,0) 70%); filter: blur(40px); z-index: 0; pointer-events: none; }
 .hero-content { max-width: 55%; position: relative; z-index: 1; animation: slideInLeft 0.6s ease; }
@@ -80,9 +75,6 @@ nav a i { margin-right: 6px; }
 .form-control { width: 100%; padding: 12px 16px; border: 1px solid #CBD5E1; border-radius: 8px; background: #F8FAFC; font-family: 'Inter', sans-serif; font-size: 15px; transition: all 0.2s ease; }
 .form-control:focus { outline: none; border-color: var(--theme-accent); background: #fff; box-shadow: 0 0 0 3px var(--theme-color-light); }
 
-.profile-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-.profile-pill { padding: 10px 14px; border-radius: 8px; background: #F1F5F9; color: #64748B; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid #E2E8F0; transition: all 0.2s; }
-.profile-pill.active { background: var(--theme-color-light); color: var(--theme-accent); border-color: var(--theme-accent); }
 .profile-selector { display: flex; background: #F1F5F9; padding: 4px; border-radius: 10px; border: 1px solid #E2E8F0; }
 .profile-btn { flex: 1; padding: 10px; border: 2px solid transparent; background: transparent; border-radius: 8px; font-weight: 600; font-size: 13px; color: #64748B; cursor: pointer; transition: all 0.2s; }
 .profile-btn.active { background: #fff; border: 2px solid var(--theme-color); color: var(--theme-color); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
@@ -92,7 +84,6 @@ nav a i { margin-right: 6px; }
 .drop-zone-text { font-size: 14px; color: #64748B; pointer-events: none; font-weight: 500; }
 .drop-zone-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 
-/* 6. RESULTATS ET KPIS */
 #result-wrapper { max-width: 1100px; margin: 60px auto; padding: 0 20px; display: none; }
 #contenu-ecran { background: #fff; padding: 50px; border-radius: 20px; border: 1px solid #E2E8F0; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
 .kpi-grid { display: flex; gap: 20px; flex-wrap: wrap; margin: 30px 0; }
@@ -101,20 +92,11 @@ nav a i { margin-right: 6px; }
 .kpi-label { font-size: 12px; text-transform: uppercase; font-weight: 700; color: #64748B; margin-bottom: 8px; }
 .kpi-value { font-size: 28px; font-weight: 800; color: #0F172A; }
 
-.report-tabs { display: flex; border-bottom: 1px solid #E2E8F0; margin-bottom: 30px; gap: 30px; overflow-x: auto; }
-.report-tab-btn { background: none; border: none; padding: 0 0 10px 0; font-size: 15px; font-weight: 600; color: #64748B; cursor: pointer; position: relative; }
-.report-tab-btn::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background: transparent; transition: background 0.2s; }
-.report-tab-btn.active { color: var(--theme-color); }
-.report-tab-btn.active::after { background: var(--theme-color); }
-.report-pane { display: none; animation: fadeIn 0.4s ease; }
-.report-pane.active { display: block; }
-
 table { width: 100%; border-collapse: collapse; margin-top: 15px; }
 th, td { border-bottom: 1px solid #E2E8F0; padding: 16px; text-align: left; font-size: 14px; vertical-align: middle; }
 th { background-color: #F8FAFC; font-weight: 700; color: #64748B; font-size: 12px; text-transform: uppercase; }
 .table-responsive { overflow-x: auto; border: 1px solid #E2E8F0; border-radius: 12px; }
 
-/* 7. WIDGETS (Slider, Kanban, Comparateur) */
 .range-slider { -webkit-appearance: none; width: 100%; height: 8px; border-radius: 4px; background: #E2E8F0; outline: none; margin-top: 15px; }
 .range-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 24px; height: 24px; border-radius: 50%; background: var(--theme-color); cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
 
@@ -126,35 +108,21 @@ th { background-color: #F8FAFC; font-weight: 700; color: #64748B; font-size: 12p
 .k-card-title { font-weight: 700; color: #0F172A; font-size: 14px; margin-bottom: 8px; }
 .badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; }
 
-#comparateur-grid { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
-.compare-card { background: #fff; border: 1px solid #E2E8F0; border-top: 4px solid var(--theme-color); border-radius: 16px; padding: 30px; width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); transition: transform 0.3s; }
-.compare-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.06); }
-.compare-data-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed #E2E8F0; font-size: 14px; }
-.compare-data-row span:first-child { color: #64748B; font-weight: 500; }
-.compare-data-row span:last-child { color: #0F172A; font-weight: 700; }
-
 .info-grid { display: flex; gap: 24px; flex-wrap: wrap; }
 .info-card { flex: 1; min-width: 300px; background: #fff; padding: 35px; border-radius: 16px; border: 1px solid #E2E8F0; box-shadow: 0 10px 20px rgba(0,0,0,0.02); }
 .script-box { background: #F8FAFC; padding: 25px; border-radius: 8px; border-left: 4px solid var(--theme-color); font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.6; white-space: pre-wrap; color: #0F172A; position: relative; }
 
-/* 8. ABONNEMENTS ET PAYWALLS */
 .pricing-card { background: #fff; padding: 40px 30px; border-radius: 20px; border: 1px solid #E2E8F0; width: 320px; text-align: center; display: flex; flex-direction: column; }
 .pricing-card.popular { border: 2px solid var(--theme-accent); position: relative; transform: scale(1.02); box-shadow: 0 20px 40px rgba(37, 99, 235, 0.1); }
-.popular-badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--theme-accent); color: #fff; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; }
-.pricing-card h3 { margin: 0 0 15px 0; font-size: 20px; color: #0F172A; font-weight: 700; }
-.pricing-card .price { font-size: 42px; font-weight: 800; color: #0F172A; margin: 20px 0; }
-.pricing-card .price span { font-size: 14px; font-weight: 500; color: #64748B; }
-.pricing-card ul { text-align: left; list-style: none; padding: 0; line-height: 2.2; font-size: 15px; margin-bottom: 30px; color: #475569; }
 
 .locked-blur { filter: blur(8px); pointer-events: none; user-select: none; opacity: 0.4; }
 .paywall-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; display: flex; justify-content: center; padding-top: 150px; }
 .paywall-box { background: #fff; padding: 50px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); text-align: center; max-width: 450px; height: fit-content; border: 1px solid #E2E8F0; }
 
-.faq-container details { background: #fff; padding: 20px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #E2E8F0; }
-.faq-container summary { font-weight: 600; font-size: 16px; color: #0F172A; cursor: pointer; outline: none; }
+.faq-container details { background: #fff; padding: 20px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #E2E8F0; cursor: pointer; }
+.faq-container summary { font-weight: 600; font-size: 16px; color: #0F172A; outline: none; }
 .faq-container p { margin-top: 15px; margin-bottom: 0; color: #475569; font-size: 15px; border-top: 1px solid #F1F5F9; padding-top: 15px; }
 
-/* 9. OVERLAYS, TOASTS & UTILITAIRES */
 input[type="color"].color-picker-custom { -webkit-appearance: none; appearance: none; background: transparent; width: 44px; height: 44px; border: none; cursor: pointer; padding: 0; }
 input[type="color"].color-picker-custom::-webkit-color-swatch { border-radius: 50%; border: 4px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 
@@ -162,6 +130,7 @@ input[type="color"].color-picker-custom::-webkit-color-swatch { border-radius: 5
 #toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; gap: 15px; }
 .toast { background: #fff; color: #0F172A; padding: 16px 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); font-size: 14px; font-weight: 600; border-left: 4px solid #16A34A; animation: slideIn 0.4s forwards; max-width: 350px; }
 .toast.error { border-left-color: #DC2626; }
+
 #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.95); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; }
 .spinner { width: 50px; height: 50px; border: 4px solid #E2E8F0; border-top-color: var(--theme-accent); border-radius: 50%; animation: spin 1s linear infinite; }
 
@@ -179,17 +148,12 @@ input[type="color"].color-picker-custom::-webkit-color-swatch { border-radius: 5
     .hero-content { max-width: 100%; }
     .content-section { padding: 40px 20px; }
     .kpi-grid { flex-direction: column; }
+}
 
-    /* ==========================================================================
-   10. COPILOTE (ASSISTANT FLOTTANT)
-   ========================================================================== */
+/* LE WIDGET COPILOTE FLOTTANT */
 .copilot-widget { position: fixed; bottom: 30px; right: 30px; width: 320px; background: #fff; border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); border: 1px solid #E2E8F0; z-index: 9998; overflow: hidden; transition: all 0.3s ease; }
 .copilot-widget.minimized { transform: translateY(calc(100% - 45px)); }
 .copilot-header { background: #0F172A; color: #fff; padding: 12px 20px; font-weight: 700; font-size: 13px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-.btn-toggle-copilot { background: transparent; border: none; color: #fff; cursor: pointer; font-size: 16px; }
 .copilot-body { padding: 20px; font-size: 13px; color: #475569; line-height: 1.6; }
 .copilot-progress { height: 6px; background: #E2E8F0; width: 100%; }
 .copilot-bar { height: 100%; background: #16A34A; transition: width 0.4s ease; }
-
-}
-
