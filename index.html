@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1002">
+    <link rel="stylesheet" href="style.css?v=1003">
 </head>
 <body>
 
@@ -127,7 +127,13 @@
                     </div>
                     
                     <div class="form-container">
-                        <h2 id="form-title">Configuration de l'analyse</h2>
+                        <h2 id="form-title">
+                            Configuration de l'analyse
+                            <span class="tooltip-container">
+                                <i class="fa-solid fa-circle-info tooltip-icon"></i>
+                                <span class="tooltip-text">C'est ici que tu rentres les informations du bien et que tu déposes le PDF du diagnostic pour que l'outil calcule tout automatiquement.</span>
+                            </span>
+                        </h2>
                         <div class="form-group" style="margin-bottom: 25px;">
                             <div class="profile-selector">
                                 <button type="button" id="btn-particulier" class="profile-btn active" onclick="changerProfilInterne('particulier')">Acheteur / Investisseur</button>
@@ -181,8 +187,12 @@
                     <div id="contenu-ecran"></div>
                     
                     <div id="editeur-devis-area" style="display:none; background: #fff; padding: 40px; border-radius: 24px; border: 1px solid #E2E8F0; margin-top: 40px;">
-                        <h3 style="margin-top:0; font-size:20px; color:#0F172A; border-bottom:1px solid #F1F5F9; padding-bottom:15px; margin-bottom:20px;">
-                            <i class="fa-solid fa-pen-to-square theme-text"></i> Ajustement du Chiffrage
+                        <h3 style="margin-top:0; font-size:20px; color:#0F172A; border-bottom:1px solid #F1F5F9; padding-bottom:15px; margin-bottom:20px; display: flex; align-items: center; justify-content: space-between;">
+                            <span><i class="fa-solid fa-pen-to-square theme-text"></i> Ajustement du Chiffrage</span>
+                            <span class="tooltip-container" style="font-size:16px;">
+                                <i class="fa-solid fa-circle-info tooltip-icon"></i>
+                                <span class="tooltip-text">Si tu as reçu de vrais devis d'artisans, tu peux modifier ou ajouter manuellement les montants ici pour ajuster le calcul global.</span>
+                            </span>
                         </h3>
                         <p style="color:#64748B; font-size:14px; margin-bottom: 20px;">Vous avez des devis réels d'artisans ? Ajustez les montants de l'algorithme ci-dessous pour affiner la modélisation.</p>
                         
@@ -233,7 +243,13 @@
                 </div>
 
                 <section class="content-section" id="content-finance">
-                    <h2 class="section-title">Ingénierie Financière & Bancaire</h2>
+                    <h2 class="section-title">
+                        Ingénierie Financière & Bancaire
+                        <span class="tooltip-container">
+                            <i class="fa-solid fa-circle-info tooltip-icon"></i>
+                            <span class="tooltip-text">Cette section calcule la rentabilité de ton projet et simule l'accord de la banque pour le prêt immobilier.</span>
+                        </span>
+                    </h2>
                     
                     <div id="finance-empty-state" class="empty-state">
                         Veuillez analyser un bien (Onglet 1) en renseignant un "Loyer mensuel" pour modéliser sa rentabilité.
@@ -243,7 +259,11 @@
                         
                         <div style="background:#fff; padding:30px; border-radius:16px; border:1px solid #E2E8F0; margin-bottom:40px;">
                             <h3 style="margin-top:0; color:#0F172A; display:flex; align-items:center; gap:10px;">
-                                <i class="fa-solid fa-sliders theme-text"></i> Scénario de Négociation (What-If)
+                                <span><i class="fa-solid fa-sliders theme-text"></i> Scénario de Négociation (What-If)</span>
+                                <span class="tooltip-container">
+                                    <i class="fa-solid fa-circle-info tooltip-icon"></i>
+                                    <span class="tooltip-text">Baisse le curseur pour voir comment une négociation du prix d'achat booste ta rentabilité en temps réel.</span>
+                                </span>
                             </h3>
                             <p style="color:#64748B; font-size:14px;">Simulez factuellement une baisse du prix d'achat pour observer l'impact direct sur votre rentabilité et votre endettement.</p>
                             
@@ -258,7 +278,11 @@
 
                         <div style="background:#F8FAFC; padding:30px; border-radius:16px; border:1px solid #E2E8F0; margin-bottom:40px; border-left:4px solid #F59E0B;">
                             <h3 style="margin-top:0; color:#0F172A; display:flex; align-items:center; gap:10px;">
-                                <i class="fa-solid fa-building-columns" style="color:#F59E0B;"></i> Stress-Test Bancaire (Norme HCSF)
+                                <span><i class="fa-solid fa-building-columns" style="color:#F59E0B;"></i> Stress-Test Bancaire (Norme HCSF)</span>
+                                <span class="tooltip-container">
+                                    <i class="fa-solid fa-circle-info tooltip-icon"></i>
+                                    <span class="tooltip-text">Les banques refusent de prêter si tes crédits dépassent 35% de tes revenus. Rentre ton salaire ici pour vérifier que le projet passe.</span>
+                                </span>
                             </h3>
                             <p style="color:#64748B; font-size:14px; margin-bottom:20px;">La Banque de France impose un taux d'endettement maximum de 35%. Renseignez vos revenus pour tester la faisabilité de ce crédit.</p>
                             
@@ -286,8 +310,12 @@
 
                         <div style="display: flex; gap: 30px; flex-wrap: wrap; margin-bottom: 40px;">
                             <div style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 16px; border: 1px solid #E2E8F0;">
-                                <h4 style="margin-top:0; border-bottom: 1px solid #F1F5F9; padding-bottom: 15px; color:#0F172A;">
-                                    <i class="fa-solid fa-piggy-bank theme-text"></i> Financement
+                                <h4 style="margin-top:0; border-bottom: 1px solid #F1F5F9; padding-bottom: 15px; color:#0F172A; display:flex; justify-content:space-between;">
+                                    <span><i class="fa-solid fa-piggy-bank theme-text"></i> Financement</span>
+                                    <span class="tooltip-container" style="font-size:16px;">
+                                        <i class="fa-solid fa-circle-info tooltip-icon"></i>
+                                        <span class="tooltip-text">Rentre les infos de ton crédit bancaire (ton apport, la durée et le taux).</span>
+                                    </span>
                                 </h4>
                                 <div style="display:flex; justify-content:space-between; margin-bottom: 15px;">
                                     <label style="font-size:13px; font-weight:600;">Apport Personnel (€)</label>
@@ -307,8 +335,12 @@
                             </div>
                             
                             <div style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 16px; border: 1px solid #E2E8F0;">
-                                <h4 style="margin-top:0; border-bottom: 1px solid #F1F5F9; padding-bottom: 15px; color:#0F172A;">
-                                    <i class="fa-solid fa-file-invoice-dollar theme-text"></i> Charges d'Exploitation
+                                <h4 style="margin-top:0; border-bottom: 1px solid #F1F5F9; padding-bottom: 15px; color:#0F172A; display:flex; justify-content:space-between;">
+                                    <span><i class="fa-solid fa-file-invoice-dollar theme-text"></i> Charges d'Exploitation</span>
+                                    <span class="tooltip-container" style="font-size:16px;">
+                                        <i class="fa-solid fa-circle-info tooltip-icon"></i>
+                                        <span class="tooltip-text">Les dépenses annuelles liées à ton bien (Taxes, charges de l'immeuble, assurances). Indispensable pour calculer la rentabilité "Nette".</span>
+                                    </span>
                                 </h4>
                                 <div style="display:flex; justify-content:space-between; margin-bottom: 15px;">
                                     <label style="font-size:13px; font-weight:600;">Taxe Foncière (€/an)</label>
@@ -343,7 +375,13 @@
                 </div>
 
                 <section class="content-section" id="content-pipeline" style="max-width: 1400px;">
-                    <h2 class="section-title">La Boîte à Outils du Négociateur</h2>
+                    <h2 class="section-title">
+                        La Boîte à Outils du Négociateur
+                        <span class="tooltip-container">
+                            <i class="fa-solid fa-circle-info tooltip-icon"></i>
+                            <span class="tooltip-text">Des modèles de textes et des outils d'aide prêts à l'emploi pour gagner du temps lors de tes achats immobiliers.</span>
+                        </span>
+                    </h2>
                     
                     <div class="info-grid" style="margin-bottom: 60px;">
                         <div class="info-card">
@@ -373,7 +411,13 @@
 
                     <div style="margin-bottom: 60px;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
-                            <h2 class="section-title" style="margin-bottom: 0;">Comparateur de Biens</h2>
+                            <h2 class="section-title" style="margin-bottom: 0;">
+                                Comparateur de Biens
+                                <span class="tooltip-container">
+                                    <i class="fa-solid fa-circle-info tooltip-icon"></i>
+                                    <span class="tooltip-text">Clique sur "Comparer l'audit actuel" pour sauvegarder le bien sur cette grille et le comparer facilement avec tes autres trouvailles.</span>
+                                </span>
+                            </h2>
                             <button class="btn-demo" style="width:auto;" onclick="ajouterComparateur()">
                                 <i class="fa-solid fa-plus"></i> Comparer l'audit actuel
                             </button>
@@ -385,7 +429,13 @@
 
                     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
                         <div>
-                            <h2 class="section-title" style="margin-bottom: 0;">Pipeline de Transaction</h2>
+                            <h2 class="section-title" style="margin-bottom: 0; justify-content: flex-start;">
+                                Pipeline de Transaction
+                                <span class="tooltip-container">
+                                    <i class="fa-solid fa-circle-info tooltip-icon"></i>
+                                    <span class="tooltip-text">C'est ton tableau de bord. Prends une carte avec ta souris et fais-la glisser dans la bonne colonne selon l'avancée de ton achat.</span>
+                                </span>
+                            </h2>
                             <p style="color: #64748B; font-size: 16px; margin-top: 5px;">Gérez vos dossiers en glissant les cartes selon l'avancement.</p>
                         </div>
                         <button class="btn-demo" style="width:auto;" onclick="viderPipeline()">
@@ -416,7 +466,13 @@
 
             <div id="loi-tab" class="tab-content">
                 <section class="content-section">
-                    <h2 class="section-title">Veille Juridique & Conformité</h2>
+                    <h2 class="section-title">
+                        Veille Juridique & Conformité
+                        <span class="tooltip-container">
+                            <i class="fa-solid fa-circle-info tooltip-icon"></i>
+                            <span class="tooltip-text">Les lois changent très vite dans l'immobilier. Retrouve ici un condensé des règles essentielles pour ne pas te faire piéger lors d'un achat.</span>
+                        </span>
+                    </h2>
                     
                     <div style="background:#fff; padding:40px; border-radius:16px; border:1px solid #E2E8F0; margin-bottom:40px;">
                         <h3 style="color:#0F172A; margin-top:0; display:flex; align-items:center; gap:10px;">
@@ -496,8 +552,12 @@
                     <div style="display:flex; gap:40px; flex-wrap:wrap;">
                         <div style="flex:1; min-width:350px;">
                             <div class="card" style="padding: 30px; background:#fff; border-radius:16px; border:1px solid #E2E8F0;">
-                                <h3 style="margin-top:0; color:#0F172A; border-bottom:1px solid #E2E8F0; padding-bottom:15px;">
-                                    <i class="fa-solid fa-sliders theme-text"></i> Variables de Modélisation
+                                <h3 style="margin-top:0; color:#0F172A; border-bottom:1px solid #E2E8F0; padding-bottom:15px; display:flex; align-items:center; justify-content:space-between;">
+                                    <span><i class="fa-solid fa-sliders theme-text"></i> Variables de Modélisation</span>
+                                    <span class="tooltip-container" style="font-size:16px;">
+                                        <i class="fa-solid fa-circle-info tooltip-icon"></i>
+                                        <span class="tooltip-text">Règle ici tes frais de notaire et ta marge de sécurité. Ils seront appliqués automatiquement à tous tes futurs calculs.</span>
+                                    </span>
                                 </h3>
                                 <div class="form-group">
                                     <label>Frais de notaire par défaut (%)</label>
@@ -518,8 +578,12 @@
                                     </div>
                                 </div>
                                 
-                                <h3 style="margin-top:0; color:#0F172A; border-bottom:1px solid #E2E8F0; padding-bottom:15px;">
-                                    <i class="fa-solid fa-copyright theme-text"></i> Marque Blanche (PDF)
+                                <h3 style="margin-top:0; color:#0F172A; border-bottom:1px solid #E2E8F0; padding-bottom:15px; display:flex; align-items:center; justify-content:space-between;">
+                                    <span><i class="fa-solid fa-copyright theme-text"></i> Marque Blanche (PDF)</span>
+                                    <span class="tooltip-container" style="font-size:16px;">
+                                        <i class="fa-solid fa-circle-info tooltip-icon"></i>
+                                        <span class="tooltip-text">Personnalise le rapport PDF avec ton propre logo et tes couleurs pour faire plus professionnel auprès de tes clients.</span>
+                                    </span>
                                 </h3>
                                 <div class="form-group">
                                     <label>Nom de l'Agence / Entité</label>
@@ -542,7 +606,13 @@
                         </div>
 
                         <div style="flex:1.5; min-width:350px;">
-                            <h3 style="text-align:center; font-family:'Merriweather'; color:#0F172A; font-size:24px; margin-bottom:30px;">Nos Offres</h3>
+                            <h3 style="text-align:center; font-family:'Merriweather'; color:#0F172A; font-size:24px; margin-bottom:30px;">
+                                Nos Offres
+                                <span class="tooltip-container" style="font-size:16px;">
+                                    <i class="fa-solid fa-circle-info tooltip-icon"></i>
+                                    <span class="tooltip-text">Gère ton abonnement pour débloquer les outils professionnels (Calcul de rentabilité, Pipeline Kanban et Marque blanche).</span>
+                                </span>
+                            </h3>
                             <div style="display:flex; gap:15px; flex-wrap:wrap; justify-content:center;">
                                 
                                 <div class="pricing-card" style="background:#fff; border-radius:16px; border:1px solid #E2E8F0; padding:30px 20px; text-align:center; flex:1; min-width:200px;">
@@ -566,7 +636,7 @@
                                         <li>✓ Modélisation LMNP</li>
                                         <li>✓ Pipeline Kanban</li>
                                     </ul>
-                                    <a href="https://buy.stripe.com/7sYaEYcY79Gq1WU3oIaR200" target="_blank" class="btn-solid theme-bg" style="display:block; width:100%; margin-top:15px; padding:10px; font-size:13px; text-decoration:none;">S'abonner</a>
+                                    <button class="btn-solid theme-bg" style="width:100%; margin-top:15px; padding:10px; font-size:13px;" onclick="window.open('https://buy.stripe.com/7sYaEYcY79Gq1WU3cc', '_blank')">S'abonner</button>
                                 </div>
 
                                 <div class="pricing-card" style="background:#0F172A; border-radius:16px; border:1px solid #1E293B; padding:30px 20px; text-align:center; flex:1; min-width:200px; color:#fff;">
@@ -577,14 +647,20 @@
                                         <li>✓ <b>Marque Blanche</b></li>
                                         <li>✓ Logo de l'Agence</li>
                                     </ul>
-                                    <a href="https://buy.stripe.com/bJeaEY8HRaKu596f7qaR201" target="_blank" class="btn-solid" style="display:block; width:100%; margin-top:15px; padding:10px; font-size:13px; font-weight:bold; background-color:#fff !important; color:#0F172A !important; text-decoration:none;">S'abonner</a>
+                                    <button class="btn-solid" style="background:#fff; color:#0F172A; width:100%; margin-top:15px; padding:10px; font-size:13px;" onclick="window.open('https://buy.stripe.com/bJeaEY8HRaKu596fqr201', '_blank')">S'abonner</button>
                                 </div>
 
                             </div>
                             
                             <div class="card" style="margin-top:30px; padding:20px; background:#fff; border-radius:16px; border:1px solid #E2E8F0;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 15px; margin-bottom: 15px;">
-                                    <h3 style="margin: 0; color: #0F172A; font-size: 16px;">Historique Local</h3>
+                                    <h3 style="margin: 0; color: #0F172A; font-size: 16px; display:flex; align-items:center; gap:8px;">
+                                        Historique Local
+                                        <span class="tooltip-container" style="font-size:16px;">
+                                            <i class="fa-solid fa-circle-info tooltip-icon"></i>
+                                            <span class="tooltip-text">Retrouve tes anciennes analyses ici. Elles sont sauvegardées localement dans ton navigateur.</span>
+                                        </span>
+                                    </h3>
                                     <button onclick="viderHistorique()" class="btn-delete" style="padding:6px 12px; font-size:11px;">Purger</button>
                                 </div>
                                 <div class="table-responsive">
@@ -646,7 +722,6 @@
         </div>
     </div> 
     
-    <script src="script.js?v=1002"></script>
+    <script src="script.js?v=1003"></script>
 </body>
-
 </html>
