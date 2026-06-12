@@ -1133,6 +1133,11 @@ Bien cordialement,`;
 // ==========================================================================
 function exporterPDF(action = 'download', targetWindow = null) {
     if (!donneesAudit) return showToast("Veuillez générer une analyse d'abord.", "error");
+    
+    // LA LIGNE QUI MANQUAIT POUR RÉPARER LE BOUTON :
+    let btn = document.getElementById('btnExport');
+    if(btn) btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Génération en cours...";
+    
     showToast("Génération du document professionnel en cours...");
 
     const prixInit = parseInputNumber(document.getElementById('prixInitial').value);
@@ -1169,7 +1174,6 @@ function exporterPDF(action = 'download', targetWindow = null) {
         ? { image: appSettings.logoBase64, fit: [150, 55], alignment: 'left' }
         : { text: appSettings.nomAgence.toUpperCase(), fontSize: 24, bold: true, color: appSettings.couleur, alignment: 'left', letterSpacing: 1 };
 
-    // Capture du graphique sous forme d'image pour l'intégrer au PDF
     let chartBlock = [];
     let canvasElement = document.getElementById('coutChart');
     if (canvasElement && lignesDdt.length > 0) {
@@ -1243,10 +1247,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
                 table: { widths: ['*'], body: [ [ { stack: [ { text: 'CONTEXTE MACRO-ÉCONOMIQUE', fontSize: 10, bold: true, color: '#fff', margin: [0, 0, 0, 6] }, { text: donneesAudit.impact_marche, fontSize: 9, color: '#F8FAFC', lineHeight: 1.4 } ], padding: 15, fillColor: appSettings.couleur, borderRadius: 8 } ] ] },
                 layout: 'noBorders', margin: [0, 0, 0, 40]
             },
-            
-            // INTÉGRATION DU GRAPHIQUE DANS LE PDF
             ...chartBlock,
-
             { text: '2. MATRICE RÉGLEMENTAIRE (DDT)', style: 'sectionTitle', color: appSettings.couleur, margin: [0, 10, 0, 10] },
             {
                 table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody },
@@ -1279,10 +1280,10 @@ function exporterPDF(action = 'download', targetWindow = null) {
             const blobUrl = URL.createObjectURL(blob);
             targetWindow.document.body.innerHTML = `<iframe src="${blobUrl}#view=FitH" style="width:100vw; height:100vh; border:none; margin:0; padding:0; display:block;"></iframe>`;
         });
-        if(btn) btn.innerText = "Éditer le Bilan Officiel (PDF)";
+        if(btn) btn.innerHTML = "<i class=\"fa-solid fa-file-pdf\"></i> Éditer le Bilan Officiel (PDF)";
     } else {
         pdf.download(`AuditPro_Synthese_${donneesAudit.localisation_exacte.split(' ')[0]}.pdf`);
-        if(btn) setTimeout(() => { btn.innerText = "Éditer le Bilan Officiel (PDF)"; }, 1500);
+        if(btn) setTimeout(() => { btn.innerHTML = "<i class=\"fa-solid fa-file-pdf\"></i> Éditer le Bilan Officiel (PDF)"; }, 1500);
     }
 }
 
