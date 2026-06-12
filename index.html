@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AuditPro | Expertise technique et financière immobilière</title>
     <meta name="description" content="Solution logicielle d'analyse de Dossier de Diagnostic Technique (DDT) et de modélisation financière immobilière.">
+    
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230F172A'/><path d='M50 22 L82 72 L68 72 L50 44 L32 72 L18 72 Z' fill='%233B82F6'/><path d='M50 35 L70 66 L59 66 L50 51 L41 66 L30 66 Z' fill='%23ffffff' opacity='0.85'/></svg>">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
@@ -20,6 +22,7 @@
             <div class="portal-logo">Audit<span style="color: #3B82F6;">Pro</span></div>
             <h1>Sélectionnez votre environnement</h1>
             <p>Pour adapter le moteur d'analyse et les algorithmes de chiffrage à vos objectifs.</p>
+            
             <div class="portal-cards">
                 <div class="portal-card" onclick="entrerSurLeSite('particulier')">
                     <div class="card-icon-svg" style="margin-bottom: 15px;"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
@@ -27,6 +30,7 @@
                     <p>Analysez les diagnostics, anticipez les travaux, testez votre financement bancaire (HCSF) et modélisez votre rentabilité nette (LMNP).</p>
                     <div class="card-action">Accéder au simulateur →</div>
                 </div>
+                
                 <div class="portal-card" onclick="entrerSurLeSite('professionnel')">
                     <div class="card-icon-svg" style="margin-bottom: 15px;"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg></div>
                     <h3>Professionnel & Agence</h3>
@@ -129,7 +133,7 @@
                         </div>
                     </div>
                     <div style="text-align: center; margin-top: 50px; padding-bottom: 60px;">
-                        <button class="btn-solid theme-bg" id="btnExport" style="padding: 18px 40px; font-size: 16px; width: 100%; max-width: 400px;" onclick="exporterPDF('download')"><i class="fa-solid fa-file-pdf"></i> Éditer le Bilan Officiel (PDF)</button>
+                        <button class="btn-solid theme-bg" id="btnExport" style="padding: 18px 40px; font-size: 16px; width: 100%; max-width: 400px;" onclick="exporterPDF()"><i class="fa-solid fa-file-pdf"></i> Éditer le Bilan Officiel (PDF)</button>
                     </div>
                 </div>
             </div>
@@ -327,9 +331,28 @@
                         <div style="flex:1.5; min-width:350px;">
                             <h3 style="text-align:center; font-family:'Merriweather'; color:#0F172A; font-size:24px; margin-bottom:30px;">Nos Offres</h3>
                             <div style="display:flex; gap:15px; flex-wrap:wrap; justify-content:center;">
-                                <div class="pricing-card" style="background:#fff; border-radius:16px; border:1px solid #E2E8F0; padding:30px 20px; text-align:center; flex:1; min-width:200px;"><h3 style="margin:0; font-size:18px;">Découverte</h3><div style="font-size:32px; font-weight:800; color:#0F172A; margin:15px 0;">0 €</div><ul style="list-style:none; padding:0; text-align:left; font-size:13px; color:#475569; line-height:2;"><li>✓ 3 analyses par mois</li><li>✓ Synthèse PDF basique</li><li>✓ Base juridique</li></ul></div>
-                                <div class="pricing-card popular" style="background:#fff; border-radius:16px; border:2px solid #2563EB; padding:30px 20px; text-align:center; flex:1; min-width:200px; position:relative; box-shadow:0 10px 30px rgba(37, 99, 235, 0.1);"><div style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#2563EB; color:#fff; padding:4px 12px; border-radius:12px; font-size:10px; font-weight:bold;">INVESTISSEUR</div><h3 style="margin:0; font-size:18px;">Particulier</h3><div style="font-size:32px; font-weight:800; color:#0F172A; margin:15px 0;">14,99 €</div><ul style="list-style:none; padding:0; text-align:left; font-size:13px; color:#475569; line-height:2;"><li>✓ Analyses illimitées</li><li>✓ Modélisation LMNP</li><li>✓ Pipeline Kanban</li></ul><button class="btn-solid theme-bg" style="width:100%; margin-top:15px; padding:10px; font-size:13px;">S'abonner</button></div>
-                                <div class="pricing-card" style="background:#0F172A; border-radius:16px; border:1px solid #1E293B; padding:30px 20px; text-align:center; flex:1; min-width:200px; color:#fff;"><h3 style="margin:0; font-size:18px; color:#fff;">Premium Pro</h3><div style="font-size:32px; font-weight:800; color:#fff; margin:15px 0;">39,99 €</div><ul style="list-style:none; padding:0; text-align:left; font-size:13px; color:#CBD5E1; line-height:2;"><li>✓ Tout le plan Particulier</li><li>✓ <b>Marque Blanche</b></li><li>✓ Logo de l'Agence</li></ul><button class="btn-solid" style="background:#fff; color:#0F172A; width:100%; margin-top:15px; padding:10px; font-size:13px;">Devenir Partenaire</button></div>
+                                
+                                <div class="pricing-card" style="background:#fff; border-radius:16px; border:1px solid #E2E8F0; padding:30px 20px; text-align:center; flex:1; min-width:200px;">
+                                    <h3 style="margin:0; font-size:18px;">Découverte</h3>
+                                    <div style="font-size:32px; font-weight:800; color:#0F172A; margin:15px 0;">0 €</div>
+                                    <ul style="list-style:none; padding:0; text-align:left; font-size:13px; color:#475569; line-height:2;"><li>✓ 3 analyses par mois</li><li>✓ Synthèse PDF basique</li><li>✓ Base juridique</li></ul>
+                                </div>
+
+                                <div class="pricing-card popular" style="background:#fff; border-radius:16px; border:2px solid #2563EB; padding:30px 20px; text-align:center; flex:1; min-width:200px; position:relative; box-shadow:0 10px 30px rgba(37, 99, 235, 0.1);">
+                                    <div style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#2563EB; color:#fff; padding:4px 12px; border-radius:12px; font-size:10px; font-weight:bold;">INVESTISSEUR</div>
+                                    <h3 style="margin:0; font-size:18px;">Particulier</h3>
+                                    <div style="font-size:32px; font-weight:800; color:#0F172A; margin:15px 0;">14,99 €</div>
+                                    <ul style="list-style:none; padding:0; text-align:left; font-size:13px; color:#475569; line-height:2;"><li>✓ Analyses illimitées</li><li>✓ Modélisation LMNP</li><li>✓ Pipeline Kanban</li></ul>
+                                    <button class="btn-solid theme-bg" style="width:100%; margin-top:15px; padding:10px; font-size:13px;" onclick="window.open('METS_TON_LIEN_STRIPE_ICI', '_blank')">S'abonner</button>
+                                </div>
+
+                                <div class="pricing-card" style="background:#0F172A; border-radius:16px; border:1px solid #1E293B; padding:30px 20px; text-align:center; flex:1; min-width:200px; color:#fff;">
+                                    <h3 style="margin:0; font-size:18px; color:#fff;">Premium Pro</h3>
+                                    <div style="font-size:32px; font-weight:800; color:#fff; margin:15px 0;">39,99 €</div>
+                                    <ul style="list-style:none; padding:0; text-align:left; font-size:13px; color:#CBD5E1; line-height:2;"><li>✓ Tout le plan Particulier</li><li>✓ <b>Marque Blanche</b></li><li>✓ Logo de l'Agence</li></ul>
+                                    <button class="btn-solid" style="background:#fff; color:#0F172A; width:100%; margin-top:15px; padding:10px; font-size:13px;" onclick="window.open('METS_TON_DEUXIEME_LIEN_STRIPE_ICI', '_blank')">Devenir Partenaire</button>
+                                </div>
+
                             </div>
                             <div class="card" style="margin-top:30px; padding:20px; background:#fff; border-radius:16px; border:1px solid #E2E8F0;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 15px; margin-bottom: 15px;"><h3 style="margin: 0; color: #0F172A; font-size: 16px;">Historique Local</h3><button onclick="viderHistorique()" class="btn-delete" style="padding:6px 12px; font-size:11px;">Purger</button></div>
@@ -383,5 +406,4 @@
     
     <script src="script.js?v=999"></script>
 </body>
-
 </html>
