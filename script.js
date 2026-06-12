@@ -6,7 +6,6 @@ let currentProfile = 'acheteur';
 let logoClicks = 0;
 let chartInstance = null;
 let loyerMensuelSaisi = 0;
-
 let prixNegoActuel = 0;
 
 let comparateur = JSON.parse(localStorage.getItem('auditpro_comparateur')) || [];
@@ -55,14 +54,6 @@ document.addEventListener("DOMContentLoaded", () => {
         changerProfilInterne("particulier");
     }
 
-    // EVENT LISTENER POUR LES ONGLETS (LE PLUS IMPORTANT POUR QUE LE MENU MARCHE)
-    document.querySelectorAll('nav a[href^="#"]').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            changerOnglet(this.getAttribute('href'));
-        });
-    });
-
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('fichierPdf');
     const dropText = document.querySelector('.drop-zone-text');
@@ -85,6 +76,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 dropZone.style.background = "#F0FDF4";
                 document.querySelector('.drop-icon').classList.replace('fa-cloud-arrow-up', 'fa-file-circle-check');
                 document.querySelector('.drop-icon').style.color = "#16A34A";
+                // COPILOTE ETAPE 2
+                updateCopilot(2);
             }
         });
     }
@@ -185,6 +178,11 @@ function changerOnglet(targetId) {
     document.querySelectorAll('nav a').forEach(l => l.classList.remove('active'));
     const lienActif = document.querySelector(`nav a[href="${targetId}"]`);
     if (lienActif) lienActif.classList.add('active');
+    
+    // COPILOTE ETAPE 4 (Quand l'utilisateur va dans Finance)
+    if(targetId === '#finance') {
+        updateCopilot(4);
+    }
 }
 
 function updateNavLocks() {
@@ -314,7 +312,7 @@ function changerCouleurParticulierTemporaire(couleur) {
 function sauvegarderParametresParticulier() {
     appSettings.fraisNotaire = parseFloat(document.getElementById('fraisNotaireInput').value) || 8;
     appSettings.margeSecurite = parseFloat(document.getElementById('margeSecuriteInput').value) || 10;
-    appSettings.couleur = document.getElementById('couleurParticulierInput').value;
+    appSettings.couleur = document.getElementById('couleurParticulierInput') ? document.getElementById('couleurParticulierInput').value : appSettings.couleur;
 
     localStorage.setItem('ap_notaire', appSettings.fraisNotaire);
     localStorage.setItem('ap_marge', appSettings.margeSecurite);
@@ -326,7 +324,7 @@ function sauvegarderParametresParticulier() {
         afficherEcran();
         genererFiscalite();
     }
-    showToast("Paramètres de calcul sauvegardés avec succès.");
+    showToast("Paramètres sauvegardés.");
 }
 
 function sauvegarderParametresPro() {
@@ -338,7 +336,7 @@ function sauvegarderParametresPro() {
     localStorage.setItem('ap_couleur', appSettings.couleur);
     
     appliquerSettings();
-    showToast("Marque Blanche activée. Vos PDF seront à vos couleurs.");
+    showToast("Marque Blanche activée.");
 }
 
 function reinitialiserMarqueBlanche() {
@@ -378,7 +376,7 @@ function chargerHistorique() {
     historiqueTable.innerHTML = '';
     
     if(historique.length === 0) {
-        historiqueTable.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #94A3B8; padding: 20px;">Aucun historique de simulation enregistré dans cet espace.</td></tr>';
+        historiqueTable.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #94A3B8; padding: 20px;">Aucun historique de simulation.</td></tr>';
         return;
     }
     
@@ -430,7 +428,7 @@ function chargerDossierHistorique(index) {
 }
 
 function viderHistorique() {
-    if(confirm("Êtes-vous sûr de vouloir supprimer définitivement tout l'historique de cet espace ?")) {
+    if(confirm("Êtes-vous sûr de vouloir supprimer définitivement tout l'historique ?")) {
         localStorage.removeItem('auditpro_historique_particulier');
         chargerHistorique();
         showToast("Historique local effacé avec succès.");
@@ -663,6 +661,9 @@ function afficherEcran() {
             }
         }, 100);
     }
+    
+    // COPILOTE ETAPE 3
+    updateCopilot(3);
 }
 
 // ==========================================================================
@@ -1117,7 +1118,7 @@ Bien cordialement,`;
 }
 
 // ==========================================================================
-// 13. EXPORT PDF PROFESSIONNEL (pdfMake) - COMPLET ET INTACT
+// 13. EXPORT PDF PROFESSIONNEL (pdfMake)
 // ==========================================================================
 function exporterPDF(action = 'download', targetWindow = null) {
     if (!donneesAudit) return showToast("Veuillez générer une analyse d'abord.", "error");
@@ -1202,10 +1203,8 @@ function exporterPDF(action = 'download', targetWindow = null) {
                 ],
                 margin: [0, 0, 0, 40]
             },
-
             { text: 'RAPPORT D\'ANALYSE FINANCIÈRE', fontSize: 20, color: '#0F172A', bold: true, margin: [0, 0, 0, 5] },
             { text: 'Synthèse du Document de Diagnostic Technique (DDT)', fontSize: 11, color: '#64748B', margin: [0, 0, 0, 30], italics: true },
-
             { text: '1. SYNTHÈSE DES VALORISATIONS', style: 'sectionTitle', color: appSettings.couleur },
             {
                 table: {
@@ -1219,12 +1218,10 @@ function exporterPDF(action = 'download', targetWindow = null) {
                 layout: { hLineWidth: function() { return 1; }, vLineWidth: function() { return 0; }, hLineColor: function() { return '#E2E8F0'; }, paddingBottom: function() { return 8; }, paddingTop: function() { return 8; } },
                 margin: [0, 0, 0, 30]
             },
-            
             {
                 table: { widths: ['*'], body: [ [ { stack: [ { text: 'CONTEXTE MACRO-ÉCONOMIQUE', fontSize: 10, bold: true, color: '#fff', margin: [0, 0, 0, 6] }, { text: donneesAudit.impact_marche, fontSize: 9, color: '#F8FAFC', lineHeight: 1.4 } ], padding: 15, fillColor: appSettings.couleur, borderRadius: 8 } ] ] },
                 layout: 'noBorders', margin: [0, 0, 0, 40]
             },
-            
             { text: '2. MATRICE RÉGLEMENTAIRE (DDT)', style: 'sectionTitle', color: appSettings.couleur, margin: [0, 10, 0, 10] },
             {
                 table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody },
@@ -1237,7 +1234,6 @@ function exporterPDF(action = 'download', targetWindow = null) {
                 },
                 margin: [0, 0, 0, 40]
             },
-
             { text: 'AVERTISSEMENT LÉGAL', fontSize: 11, bold: true, color: '#0F172A', margin: [0, 10, 0, 5] },
             { text: 'Les tarifs indiqués sont des moyennes statistiques régionales pondérées et n\'engagent en rien la responsabilité de l\'éditeur. Ce document n\'a pas de force probante et ne constitue pas une expertise de bâtiment. Il incombe à l\'acquéreur ou au vendeur de faire confirmer ces estimations techniques par des devis formels délivrés par des artisans compétents et assurés.', fontSize: 9, color: '#64748B', alignment: 'justify', lineHeight: 1.4 }
         ],
@@ -1253,7 +1249,6 @@ function exporterPDF(action = 'download', targetWindow = null) {
     };
 
     let pdf = pdfMake.createPdf(docDefinition);
-    
     if (action === 'view' && targetWindow) {
         pdf.getBlob((blob) => {
             const blobUrl = URL.createObjectURL(blob);
@@ -1263,5 +1258,41 @@ function exporterPDF(action = 'download', targetWindow = null) {
     } else {
         pdf.download(`AuditPro_Synthese_${donneesAudit.localisation_exacte.split(' ')[0]}.pdf`);
         if(btn) setTimeout(() => { btn.innerText = "Éditer le Bilan Officiel (PDF)"; }, 1500);
+    }
+}
+
+// ==========================================================================
+// 14. COPILOTE (ASSISTANT ONBOARDING)
+// ==========================================================================
+function toggleCopilot() {
+    const widget = document.getElementById('copilot-widget');
+    const icon = document.getElementById('copilot-toggle-icon');
+    if(widget.classList.contains('minimized')) {
+        widget.classList.remove('minimized');
+        icon.innerText = "▼";
+    } else {
+        widget.classList.add('minimized');
+        icon.innerText = "▲";
+    }
+}
+
+function updateCopilot(step) {
+    const text = document.getElementById('copilot-text');
+    const bar = document.getElementById('copilot-progress-bar');
+    if(!text || !bar) return;
+
+    if(step === 2) {
+        text.innerHTML = "<b>Étape 2/4 : Fichier détecté !</b><br>Saisissez le prix affiché, puis cliquez sur le bouton bleu 'Lancer l'audit' pour extraire les anomalies.";
+        bar.style.width = "50%";
+    } else if(step === 3) {
+        text.innerHTML = "<b>Étape 3/4 : Analyse réussie !</b><br>Lisez les résultats ci-dessous. Ensuite, rendez-vous dans l'onglet <b>Finance & Stratégie</b> en haut pour calculer la rentabilité nette.";
+        bar.style.width = "75%";
+    } else if(step === 4) {
+        text.innerHTML = "<b>Étape 4/4 : Ingénierie Financière</b><br>Ajustez le curseur de négociation ou simulez le LMNP. Enfin, sauvegardez le bien dans l'onglet <b>Outils & Pipeline</b>.";
+        bar.style.width = "100%";
+        setTimeout(() => {
+            const widget = document.getElementById('copilot-widget');
+            if(widget && !widget.classList.contains('minimized')) toggleCopilot();
+        }, 8000); 
     }
 }
