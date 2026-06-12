@@ -1131,64 +1131,76 @@ Bien cordialement,`;
 // ==========================================================================
 // 13. EXPORT PDF PROFESSIONNEL AVEC LE GRAPHIQUE INCLUS !
 // ==========================================================================
-function exporterPDF(action = 'download', targetWindow = null) {
+function exporterPDF() {
     if (!donneesAudit) return showToast("Veuillez générer une analyse d'abord.", "error");
 
     let btn = document.getElementById('btnExport');
     
-    // 1. On change immédiatement le texte du bouton
-    if(btn) btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Génération en cours...";
-    showToast("Création du document professionnel...");
+    // 1. On change le texte du bouton pour rassurer l'utilisateur
+    if(btn) btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Création du PDF en cours...";
+    
+    // SÉCURITÉ MAJEURE : Reconnexion des polices d'écriture pour éviter le crash silencieux
+    if (typeof pdfMake !== 'undefined' && typeof pdfFonts !== 'undefined') {
+        pdfMake.vfs = pdfFonts.pdfMake.vfs;
+    }
 
-    // 2. On laisse 100 millisecondes au navigateur pour mettre à jour l'écran AVANT de figer le site pour créer le PDF
+    // 2. On attend 150ms pour que l'écran s'actualise avant de lancer le gros calcul
     setTimeout(() => {
         try {
-            const prixInit = parseInputNumber(document.getElementById('prixInitial').value);
-            const travaux = calculerTotalDevis(); 
+            if (typeof pdfMake === 'undefined') {
+                throw new Error("Le moteur PDF n'a pas réussi à se charger sur votre navigateur.");
+            }
+
+            const valPrix = document.getElementById('prixInitial') ? document.getElementById('prixInitial').value : "0";
+            const prixInit = parseInputNumber(valPrix) || 0;
+            const travaux = calculerTotalDevis() || 0; 
             const valeurNette = prixInit - travaux;
 
             let tableBody = [
                 [
-                    { text: 'DOMAINE CONTRÔLÉ', style: 'tableHeader' },
-                    { text: 'ÉTAT', style: 'tableHeader', alignment: 'center' },
-                    { text: 'CONSTAT RÉGLEMENTAIRE & ACTION', style: 'tableHeader' },
-                    { text: 'BUDGET EST.', style: 'tableHeader', alignment: 'right' }
+                    { text: 'DOMAINE CONTRÔLÉ', bold: true, fontSize: 8, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10] },
+                    { text: 'ÉTAT', bold: true, fontSize: 8, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10], alignment: 'center' },
+                    { text: 'CONSTAT RÉGLEMENTAIRE & ACTION', bold: true, fontSize: 8, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10] },
+                    { text: 'BUDGET EST.', bold: true, fontSize: 8, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10], alignment: 'right' }
                 ]
             ];
 
-            let lignesDdt = donneesAudit.lignesDevis || donneesAudit.diagnostics.filter(d => d.cout > 0);
+            let lignesDdt = donneesAudit.lignesDevis || [];
+            if (!lignesDdt.length && donneesAudit.diagnostics) {
+                lignesDdt = donneesAudit.diagnostics.filter(d => d.cout > 0);
+            }
 
             if (lignesDdt.length === 0) {
-                tableBody.push([{ text: "Aucune anomalie technique majeure repérée dans le rapport.", colSpan: 4, alignment: 'center', margin: [0, 10, 0, 10], color: '#64748B' }, {}, {}, {}]);
+                tableBody.push([{ text: "Aucune anomalie technique majeure repérée.", colSpan: 4, alignment: 'center', margin: [0, 10, 0, 10], color: '#64748B' }, {}, {}, {}]);
             } else {
                 lignesDdt.forEach((ligne, index) => {
                     let isAnomalie = ligne.cout > 0;
                     let rowColor = (index % 2 === 0) ? '#F8FAFC' : '#ffffff'; 
                     tableBody.push([
-                        { text: ligne.titre, bold: true, fontSize: 10, color: '#0F172A', fillColor: rowColor, margin: [0, 10, 0, 10] },
+                        { text: ligne.titre || 'Manuel', bold: true, fontSize: 10, color: '#0F172A', fillColor: rowColor, margin: [0, 10, 0, 10] },
                         { text: isAnomalie ? 'ANOMALIE' : 'CONFORME', bold: true, fontSize: 9, color: isAnomalie ? '#DC2626' : '#16A34A', alignment: 'center', fillColor: rowColor, margin: [0, 10, 0, 10] },
-                        { text: ligne.detail || "Travaux / Ajustement manuel", fontSize: 9, color: '#334155', fillColor: rowColor, margin: [0, 10, 0, 10] },
+                        { text: ligne.detail || "Ajustement manuel", fontSize: 9, color: '#334155', fillColor: rowColor, margin: [0, 10, 0, 10] },
                         { text: isAnomalie ? '-' + formatNumber(ligne.cout) + ' €' : '0 €', bold: true, fontSize: 10, color: isAnomalie ? '#DC2626' : '#0F172A', alignment: 'right', fillColor: rowColor, margin: [0, 10, 0, 10] }
                     ]);
                 });
             }
 
+            let nomAgenceStr = (appSettings.nomAgence || "AuditPro").toUpperCase();
             let logoBlock = appSettings.logoBase64 
                 ? { image: appSettings.logoBase64, fit: [150, 55], alignment: 'left' }
-                : { text: appSettings.nomAgence.toUpperCase(), fontSize: 24, bold: true, color: appSettings.couleur, alignment: 'left', letterSpacing: 1 };
+                : { text: nomAgenceStr, fontSize: 24, bold: true, color: appSettings.couleur || '#1E3A8A', alignment: 'left', letterSpacing: 1 };
 
-            // 3. Sécurisation extrême de l'image du graphique
             let chartBlock = [];
             try {
                 let canvasElement = document.getElementById('coutChart');
                 if (canvasElement && lignesDdt.length > 0) {
                     chartBlock = [
-                        { text: 'RÉPARTITION DES COÛTS DE REMISE AUX NORMES', style: 'sectionTitle', color: appSettings.couleur, margin: [0, 20, 0, 10] },
+                        { text: 'RÉPARTITION DES COÛTS DE REMISE AUX NORMES', fontSize: 13, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 20, 0, 10], textTransform: 'uppercase' },
                         { image: canvasElement.toDataURL("image/png"), width: 300, alignment: 'center', margin: [0, 0, 0, 30] }
                     ];
                 }
             } catch (canvasError) {
-                console.warn("Impossible de générer l'image du graphique pour le PDF", canvasError);
+                console.warn("Graphique ignoré car impossible à capturer.");
             }
 
             let docDefinition = {
@@ -1196,13 +1208,13 @@ function exporterPDF(action = 'download', targetWindow = null) {
                 pageMargins: [ 40, 40, 40, 40 ], 
                 defaultStyle: { font: 'Helvetica' },
                 background: function() {
-                    return { canvas: [ { type: 'rect', x: 0, y: 0, w: 15, h: 842, color: appSettings.couleur } ] };
+                    return { canvas: [ { type: 'rect', x: 0, y: 0, w: 15, h: 842, color: appSettings.couleur || '#1E3A8A' } ] };
                 },
                 header: function(currentPage) {
                     if (currentPage > 1) {
                         return {
                             columns: [
-                                { text: appSettings.nomAgence.toUpperCase(), bold: true, color: '#64748B', fontSize: 9 },
+                                { text: nomAgenceStr, bold: true, color: '#64748B', fontSize: 9 },
                                 { text: 'Réf. ' + (currentDossierId || 'MANUEL'), alignment: 'right', color: '#64748B', fontSize: 9 }
                             ], margin: [40, 20, 40, 0]
                         };
@@ -1211,7 +1223,7 @@ function exporterPDF(action = 'download', targetWindow = null) {
                 footer: function(currentPage, pageCount) {
                     return {
                         columns: [
-                            { text: 'Étude d\'aide à la décision algorithmique. Ne remplace pas le devis d\'un artisan RGE.', fontSize: 8, color: '#94A3B8', italics: true },
+                            { text: 'Étude d\'aide à la décision algorithmique. Ne remplace pas un devis d\'artisan.', fontSize: 8, color: '#94A3B8', italics: true },
                             { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#94A3B8', bold: true }
                         ], margin: [40, 20, 40, 0]
                     };
@@ -1225,10 +1237,10 @@ function exporterPDF(action = 'download', targetWindow = null) {
                                 table: {
                                     widths: ['*', '*'],
                                     body: [
-                                        [ { text: 'DÉTAILS DU DOSSIER', colSpan: 2, style: 'coverTableTitle' }, {} ],
-                                        [ { text: 'Date de l\'évaluation :', style: 'coverLabel' }, { text: donneesAudit.date_audit || 'N/A', style: 'coverValue' } ],
-                                        [ { text: 'Localisation :', style: 'coverLabel' }, { text: donneesAudit.localisation_exacte || 'Non définie', style: 'coverValue' } ],
-                                        [ { text: 'Classe Énergétique :', style: 'coverLabel' }, { text: donneesAudit.dpe_lettre || 'N/A', style: 'coverValue', color: appSettings.couleur } ]
+                                        [ { text: 'DÉTAILS DU DOSSIER', colSpan: 2, fontSize: 10, bold: true, color: '#0F172A', alignment: 'right', margin: [0, 6, 0, 6], letterSpacing: 1 }, {} ],
+                                        [ { text: 'Date :', fontSize: 9, bold: true, color: '#64748B', alignment: 'right', margin: [0, 2, 10, 2] }, { text: donneesAudit.date_audit || 'N/A', fontSize: 9, color: '#0F172A', margin: [10, 2, 0, 2], bold: true } ],
+                                        [ { text: 'Lieu :', fontSize: 9, bold: true, color: '#64748B', alignment: 'right', margin: [0, 2, 10, 2] }, { text: donneesAudit.localisation_exacte || 'Non défini', fontSize: 9, color: '#0F172A', margin: [10, 2, 0, 2], bold: true } ],
+                                        [ { text: 'DPE :', fontSize: 9, bold: true, color: '#64748B', alignment: 'right', margin: [0, 2, 10, 2] }, { text: donneesAudit.dpe_lettre || 'N/A', fontSize: 9, color: appSettings.couleur || '#1E3A8A', margin: [10, 2, 0, 2], bold: true } ]
                                     ]
                                 },
                                 layout: 'lightHorizontalLines'
@@ -1238,75 +1250,61 @@ function exporterPDF(action = 'download', targetWindow = null) {
                     },
                     { text: 'RAPPORT D\'ANALYSE FINANCIÈRE', fontSize: 20, color: '#0F172A', bold: true, margin: [0, 0, 0, 5] },
                     { text: 'Synthèse du Document de Diagnostic Technique (DDT)', fontSize: 11, color: '#64748B', margin: [0, 0, 0, 30], italics: true },
-                    { text: '1. SYNTHÈSE DES VALORISATIONS', style: 'sectionTitle', color: appSettings.couleur },
+                    { text: '1. SYNTHÈSE DES VALORISATIONS', fontSize: 13, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 0, 0, 10], textTransform: 'uppercase' },
                     {
                         table: {
                             widths: ['*', '*'],
                             body: [
-                                [ { text: 'Prix de présentation FAI', style: 'kpiLabel' }, { text: formatNumber(prixInit) + ' €', style: 'kpiValue' } ],
-                                [ { text: 'Enveloppe Travaux (Sécurisée)', style: 'kpiLabel', color: '#DC2626' }, { text: '-' + formatNumber(travaux) + ' €', style: 'kpiValue', color: '#DC2626' } ],
-                                [ { text: 'Valeur Nette Stratégique', style: 'kpiLabel', bold: true }, { text: formatNumber(valeurNette) + ' €', style: 'kpiValue', color: appSettings.couleur, fontSize: 16 } ]
+                                [ { text: 'Prix de présentation FAI', fontSize: 11, color: '#475569', margin: [0, 5, 0, 5] }, { text: formatNumber(prixInit) + ' €', fontSize: 14, bold: true, color: '#0F172A', alignment: 'right', margin: [0, 5, 0, 5] } ],
+                                [ { text: 'Enveloppe Travaux (Sécurisée)', fontSize: 11, color: '#DC2626', margin: [0, 5, 0, 5] }, { text: '-' + formatNumber(travaux) + ' €', fontSize: 14, bold: true, color: '#DC2626', alignment: 'right', margin: [0, 5, 0, 5] } ],
+                                [ { text: 'Valeur Nette Stratégique', fontSize: 11, color: '#475569', margin: [0, 5, 0, 5], bold: true }, { text: formatNumber(valeurNette) + ' €', fontSize: 16, bold: true, color: appSettings.couleur || '#1E3A8A', alignment: 'right', margin: [0, 5, 0, 5] } ]
                             ]
                         },
                         layout: { hLineWidth: function() { return 1; }, vLineWidth: function() { return 0; }, hLineColor: function() { return '#E2E8F0'; }, paddingBottom: function() { return 8; }, paddingTop: function() { return 8; } },
                         margin: [0, 0, 0, 30]
                     },
                     {
-                        table: { widths: ['*'], body: [ [ { stack: [ { text: 'CONTEXTE MACRO-ÉCONOMIQUE', fontSize: 10, bold: true, color: '#fff', margin: [0, 0, 0, 6] }, { text: donneesAudit.impact_marche || 'Analyse locale non disponible.', fontSize: 9, color: '#F8FAFC', lineHeight: 1.4 } ], padding: 15, fillColor: appSettings.couleur, borderRadius: 8 } ] ] },
+                        table: { widths: ['*'], body: [ [ { stack: [ { text: 'CONTEXTE MACRO-ÉCONOMIQUE', fontSize: 10, bold: true, color: '#fff', margin: [0, 0, 0, 6] }, { text: donneesAudit.impact_marche || 'Non défini', fontSize: 9, color: '#F8FAFC', lineHeight: 1.4 } ], padding: 15, fillColor: appSettings.couleur || '#1E3A8A', borderRadius: 8 } ] ] },
                         layout: 'noBorders', margin: [0, 0, 0, 40]
                     },
                     
-                    // On insère le graphique ici
                     ...chartBlock,
 
-                    { text: '2. MATRICE RÉGLEMENTAIRE (DDT)', style: 'sectionTitle', color: appSettings.couleur, margin: [0, 10, 0, 10] },
+                    { text: '2. MATRICE RÉGLEMENTAIRE (DDT)', fontSize: 13, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10], textTransform: 'uppercase' },
                     {
                         table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody },
                         layout: { 
                             hLineWidth: function (i, node) { return (i === 0 || i === 1 || i === node.table.body.length) ? 2 : 1; }, 
                             vLineWidth: function () { return 0; }, 
-                            hLineColor: function (i, node) { return (i === 0 || i === node.table.body.length) ? appSettings.couleur : '#E2E8F0'; },
+                            hLineColor: function (i, node) { return (i === 0 || i === node.table.body.length) ? (appSettings.couleur || '#1E3A8A') : '#E2E8F0'; },
                             paddingTop: function() { return 8; }, 
                             paddingBottom: function() { return 8; } 
                         },
                         margin: [0, 0, 0, 40]
                     },
                     { text: 'AVERTISSEMENT LÉGAL', fontSize: 11, bold: true, color: '#0F172A', margin: [0, 10, 0, 5] },
-                    { text: 'Les tarifs indiqués sont des moyennes statistiques régionales pondérées et n\'engagent en rien la responsabilité de l\'éditeur. Ce document n\'a pas de force probante et ne constitue pas une expertise de bâtiment. Il incombe à l\'acquéreur ou au vendeur de faire confirmer ces estimations techniques par des devis formels délivrés par des artisans compétents et assurés.', fontSize: 9, color: '#64748B', alignment: 'justify', lineHeight: 1.4 }
-                ],
-                styles: {
-                    coverTableTitle: { fontSize: 10, bold: true, color: '#0F172A', alignment: 'right', margin: [0, 6, 0, 6], letterSpacing: 1 },
-                    coverLabel: { fontSize: 9, bold: true, color: '#64748B', alignment: 'right', margin: [0, 2, 10, 2] },
-                    coverValue: { fontSize: 9, color: '#0F172A', margin: [10, 2, 0, 2], bold: true },
-                    sectionTitle: { fontSize: 13, bold: true, margin: [0, 0, 0, 10], textTransform: 'uppercase' },
-                    kpiLabel: { fontSize: 11, color: '#475569', margin: [0, 5, 0, 5] },
-                    kpiValue: { fontSize: 14, bold: true, color: '#0F172A', alignment: 'right', margin: [0, 5, 0, 5] },
-                    tableHeader: { bold: true, fontSize: 8, color: '#ffffff', fillColor: appSettings.couleur, margin: [0, 10, 0, 10] }
-                }
+                    { text: 'Les tarifs indiqués sont des moyennes statistiques régionales pondérées.', fontSize: 9, color: '#64748B', alignment: 'justify', lineHeight: 1.4 }
+                ]
             };
 
             let pdf = pdfMake.createPdf(docDefinition);
-            
-            if (action === 'view' && targetWindow) {
-                pdf.getBlob((blob) => {
-                    const blobUrl = URL.createObjectURL(blob);
-                    targetWindow.document.body.innerHTML = `<iframe src="${blobUrl}#view=FitH" style="width:100vw; height:100vh; border:none; margin:0; padding:0; display:block;"></iframe>`;
-                });
-                if(btn) btn.innerHTML = "<i class=\"fa-solid fa-file-pdf\"></i> Éditer le Bilan Officiel (PDF)";
-            } else {
-                let nomFichier = donneesAudit.localisation_exacte ? donneesAudit.localisation_exacte.split(' ')[0] : "Manuel";
-                pdf.download(`AuditPro_Synthese_${nomFichier}.pdf`);
-                
-                // On remet le bouton à son état normal une fois le téléchargement lancé
-                if(btn) setTimeout(() => { btn.innerHTML = "<i class=\"fa-solid fa-file-pdf\"></i> Éditer le Bilan Officiel (PDF)"; }, 2000);
+            let nomFichier = "AuditPro_Synthese";
+            if(donneesAudit && donneesAudit.localisation_exacte) {
+                nomFichier += "_" + donneesAudit.localisation_exacte.split(' ')[0];
             }
+            
+            pdf.download(nomFichier + ".pdf");
+            
+            // Remise à zéro du bouton
+            if(btn) setTimeout(() => { btn.innerHTML = "<i class=\"fa-solid fa-file-pdf\"></i> Éditer le Bilan Officiel (PDF)"; }, 2000);
 
         } catch (error) {
-            console.error("Erreur fatale lors de la création du PDF :", error);
-            showToast("Erreur lors de la création du PDF. Consultez la console.", "error");
-            if(btn) btn.innerHTML = "<i class=\"fa-solid fa-file-pdf\"></i> Éditer le Bilan Officiel (PDF)";
+            // C'EST ICI QU'ON PIÈGE LE BUG :
+            console.error(">>> ERREUR FATALE PDFMAKE :", error);
+            showToast("Crash du PDF. Regardez la console (F12)", "error");
+            if(btn) btn.innerHTML = "<i class=\"fa-solid fa-triangle-exclamation\"></i> Échec (F12 pour voir l'erreur)";
         }
-    }, 100); // 100 millisecondes de délai pour laisser le bouton tourner
+    }, 150);
 }
 
 // ==========================================================================
