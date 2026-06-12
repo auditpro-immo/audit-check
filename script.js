@@ -1,5 +1,5 @@
 // ==========================================================================
-// 1. VARIABLES GLOBALES & SÉCURITÉ (GOD MODE)
+// 1. VARIABLES GLOBALES & SÉCURITÉ
 // ==========================================================================
 let donneesAudit = null;
 let currentProfile = 'acheteur';
@@ -670,7 +670,7 @@ function afficherEcran() {
                         }]
                     },
                     options: { 
-                        animation: { animateScale: true }, 
+                        animation: false, // LA SOLUTION POUR NE PLUS FAIRE PLANTER LE PDF !
                         responsive: true, 
                         maintainAspectRatio: false, 
                         plugins: { 
@@ -1181,7 +1181,7 @@ Bien cordialement,`;
 }
 
 // ==========================================================================
-// 13. EXPORT PDF PROFESSIONNEL (MODE SANS ÉCHEC)
+// 13. EXPORT PDF PROFESSIONNEL (MODE SANS ÉCHEC ULTIME)
 // ==========================================================================
 function exporterPDF() {
     if (!donneesAudit) return showToast("Veuillez générer une analyse d'abord.", "error");
@@ -1231,8 +1231,21 @@ function exporterPDF() {
 
             let nomAgenceStr = (appSettings.nomAgence || "AuditPro").toUpperCase();
             
-            // On bypass l'image uploadée pour l'en-tête du PDF pour être sûr que ça ne plante jamais.
+            // On ignore totalement le logo custom pour l'instant pour assurer 100% de stabilité
             let logoBlock = { text: nomAgenceStr, fontSize: 24, bold: true, color: appSettings.couleur || '#1E3A8A', alignment: 'left', letterSpacing: 1 };
+
+            let chartBlock = [];
+            try {
+                let canvasElement = document.getElementById('coutChart');
+                if (canvasElement && lignesDdt.length > 0) {
+                    chartBlock = [
+                        { text: 'RÉPARTITION DES COÛTS DE REMISE AUX NORMES', fontSize: 13, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 20, 0, 10] },
+                        { image: canvasElement.toDataURL("image/png"), width: 300, alignment: 'center', margin: [0, 0, 0, 30] }
+                    ];
+                }
+            } catch (canvasError) {
+                console.warn("Impossible de capturer le graphique.");
+            }
 
             let docDefinition = {
                 pageSize: 'A4',
@@ -1291,13 +1304,13 @@ function exporterPDF() {
                             ]
                         }, layout: 'lightHorizontalLines', margin: [0, 0, 0, 30]
                     },
+                    ...chartBlock,
                     { text: '2. MATRICE RÉGLEMENTAIRE (DDT)', fontSize: 13, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10] },
                     { table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody }, margin: [0, 0, 0, 40] }
                 ]
             };
 
             pdfMake.createPdf(docDefinition).download("AuditPro_Synthese.pdf");
-            
             showToast("PDF téléchargé avec succès !", "success");
             if(btn) btn.innerHTML = "<i class=\"fa-solid fa-file-pdf\"></i> Éditer le Bilan Officiel (PDF)";
 
