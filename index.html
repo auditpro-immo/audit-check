@@ -13,15 +13,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1003">
+    <link rel="stylesheet" href="style.css?v=1004">
 </head>
 <body>
 
     <div id="welcome-portal">
         <div class="portal-content">
             <div class="portal-logo">Audit<span style="color: #3B82F6;">Pro</span></div>
-            <h1>Sélectionnez votre environnement</h1>
-            <p>Pour adapter le moteur d'analyse et les algorithmes de chiffrage à vos objectifs.</p>
+            <h1>Sélectionnez votre profil d'analyse</h1>
+            <p>L'algorithme s'adapte à votre stratégie immobilière.</p>
             
             <div class="portal-cards">
                 <div class="portal-card" onclick="entrerSurLeSite('particulier')">
@@ -32,7 +32,7 @@
                         </svg>
                     </div>
                     <h3>Acheteur & Investisseur</h3>
-                    <p>Analysez les diagnostics, anticipez les travaux, testez votre financement bancaire (HCSF) et modélisez votre rentabilité nette (LMNP).</p>
+                    <p>Analysez les diagnostics, anticipez les travaux, testez votre financement (HCSF) et modélisez votre rentabilité nette.</p>
                     <div class="card-action">Accéder au simulateur →</div>
                 </div>
                 
@@ -52,7 +52,7 @@
                         </svg>
                     </div>
                     <h3>Professionnel & Agence</h3>
-                    <p>Appuyez vos estimations sur des données factuelles, rassurez vos clients, gérez votre pipeline et éditez des bilans PDF en marque blanche.</p>
+                    <p>Appuyez vos estimations sur des données factuelles, rassurez vos clients et éditez des bilans PDF en marque blanche.</p>
                     <div class="card-action">Accéder au tableau de bord →</div>
                 </div>
             </div>
@@ -78,7 +78,7 @@
                     <i class="fa-solid fa-chart-line"></i> 2. Finance & Stratégie <span class="lock-icon" style="display: none;">🔒</span>
                 </a>
                 <a href="#outils" class="nav-link" id="nav-outils" onclick="changerOnglet('#outils'); return false;">
-                    <i class="fa-solid fa-toolbox"></i> 3. Outils & Pipeline <span class="lock-icon" style="display: none;">🔒</span>
+                    <i class="fa-solid fa-toolbox"></i> 3. Comparateur & Suivi <span class="lock-icon" style="display: none;">🔒</span>
                 </a>
                 <a href="#loi" class="nav-link" onclick="changerOnglet('#loi'); return false;">
                     <i class="fa-solid fa-scale-balanced"></i> 4. Réglementation
@@ -99,28 +99,28 @@
                             L'intelligence au service de l'immo
                         </div>
                         <h1 id="hero-title">Sécurisez votre achat en chiffrant les travaux cachés.</h1>
-                        <p id="hero-desc">Notre outil analyse l'ensemble des diagnostics obligatoires de la maison que vous visitez. Obtenez le coût estimatif des remises aux normes instantanément.</p>
+                        <p id="hero-desc">L'outil lit votre PDF de diagnostic (DPE/DDT), identifie les défauts, analyse le marché local via votre Code Postal et vous donne une estimation fiable des travaux de remise aux normes.</p>
                         
                         <div class="hero-features-grid">
                             <div class="feature-item">
                                 <div class="feature-icon" style="background:#EFF6FF; color:#2563EB;">📊</div>
                                 <div>
                                     <strong>Lecture Automatisée</strong>
-                                    <span>Extraction OCR des données clés du DPE, Amiante, Électricité.</span>
+                                    <span>Extraction OCR intelligente des données techniques du bien.</span>
                                 </div>
                             </div>
                             <div class="feature-item">
-                                <div class="feature-icon" style="background:#F0FDF4; color:#16A34A;">💶</div>
+                                <div class="feature-icon" style="background:#F0FDF4; color:#16A34A;">📍</div>
                                 <div>
-                                    <strong>Chiffrage Localisé</strong>
-                                    <span>Indexation sur les tarifs des artisans (Base FFB).</span>
+                                    <strong>Intelligence Géographique</strong>
+                                    <span>Les prix s'adaptent automatiquement à la tension de votre Code Postal.</span>
                                 </div>
                             </div>
                             <div class="feature-item">
                                 <div class="feature-icon" style="background:#FEF2F2; color:#DC2626;">⚖️</div>
                                 <div>
                                     <strong>Sécurisation Juridique</strong>
-                                    <span>Aide à la constitution de dossiers de prêts ou de négociation.</span>
+                                    <span>Générez des rapports PDF carrés pour négocier ou rassurer la banque.</span>
                                 </div>
                             </div>
                         </div>
@@ -131,7 +131,7 @@
                             Configuration de l'analyse
                             <span class="tooltip-container">
                                 <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                                <span class="tooltip-text">C'est ici que tu rentres les informations du bien et que tu déposes le PDF du diagnostic pour que l'outil calcule tout automatiquement.</span>
+                                <span class="tooltip-text">Fournis les données du bien ici. Le Code Postal est crucial : l'algorithme majore ou réduit les prix en fonction des artisans de ta région.</span>
                             </span>
                         </h2>
                         <div class="form-group" style="margin-bottom: 25px;">
@@ -165,8 +165,8 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Code Postal (Indexation Secteur) *</label>
-                            <input type="text" inputmode="numeric" id="codePostal" class="form-control" placeholder="Ex : 35000" maxlength="5">
+                            <label>Code Postal (Impact sur le prix des travaux) *</label>
+                            <input type="text" inputmode="numeric" id="codePostal" class="form-control" placeholder="Ex : 56120" maxlength="5">
                         </div>
 
                         <div class="form-group" style="margin-bottom: 30px;">
@@ -179,7 +179,7 @@
                         </div>
                         
                         <button class="btn-submit theme-bg" id="btnSubmit" onclick="envoyer()">Lancer l'audit technique</button>
-                        <button type="button" class="btn-demo" style="margin-top: 15px;" onclick="lancerDemo()">Lancer une analyse de test (Démo)</button>
+                        <button type="button" class="btn-demo" style="margin-top: 15px;" onclick="lancerDemo()">Tester avec un faux dossier (Démo)</button>
                     </div>
                 </section>
 
@@ -188,13 +188,12 @@
                     
                     <div id="editeur-devis-area" style="display:none; background: #fff; padding: 40px; border-radius: 24px; border: 1px solid #E2E8F0; margin-top: 40px;">
                         <h3 style="margin-top:0; font-size:20px; color:#0F172A; border-bottom:1px solid #F1F5F9; padding-bottom:15px; margin-bottom:20px; display: flex; align-items: center; justify-content: space-between;">
-                            <span><i class="fa-solid fa-pen-to-square theme-text"></i> Ajustement du Chiffrage</span>
+                            <span><i class="fa-solid fa-pen-to-square theme-text"></i> Ajustement Manuel du Chiffrage</span>
                             <span class="tooltip-container" style="font-size:16px;">
                                 <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                                <span class="tooltip-text">Si tu as reçu de vrais devis d'artisans, tu peux modifier ou ajouter manuellement les montants ici pour ajuster le calcul global.</span>
+                                <span class="tooltip-text">Si tu as reçu de vrais devis d'artisans, tu peux modifier les montants de l'algorithme ici. Tout le reste du rapport se recalculera tout seul.</span>
                             </span>
                         </h3>
-                        <p style="color:#64748B; font-size:14px; margin-bottom: 20px;">Vous avez des devis réels d'artisans ? Ajustez les montants de l'algorithme ci-dessous pour affiner la modélisation.</p>
                         
                         <table style="width: 100%; border-collapse: collapse;">
                             <thead>
@@ -227,7 +226,7 @@
 
                     <div style="text-align: center; margin-top: 50px; padding-bottom: 60px;">
                         <button class="btn-solid theme-bg" id="btnExport" style="padding: 18px 40px; font-size: 16px; width: 100%; max-width: 400px;" onclick="exporterPDF()">
-                            <i class="fa-solid fa-file-pdf"></i> Éditer le Bilan Officiel (PDF)
+                            <i class="fa-solid fa-file-pdf"></i> Télécharger le Bilan Pro (PDF)
                         </button>
                     </div>
                 </div>
@@ -265,12 +264,11 @@
                                     <span class="tooltip-text">Baisse le curseur pour voir comment une négociation du prix d'achat booste ta rentabilité en temps réel.</span>
                                 </span>
                             </h3>
-                            <p style="color:#64748B; font-size:14px;">Simulez factuellement une baisse du prix d'achat pour observer l'impact direct sur votre rentabilité et votre endettement.</p>
                             
                             <div style="margin-top: 20px;">
                                 <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:700;">
                                     <span>Prix Négocié : <span id="prix-nego-display" class="theme-text" style="font-size:18px;">0 €</span></span>
-                                    <span style="color:#DC2626;">Rabais : <span id="rabais-display">0 €</span></span>
+                                    <span style="color:#DC2626;">Rabais simulé : <span id="rabais-display">0 €</span></span>
                                 </div>
                                 <input type="range" id="nego-slider" class="range-slider" min="0" max="100" value="100" oninput="updateSimulationFinance()">
                             </div>
@@ -284,7 +282,6 @@
                                     <span class="tooltip-text">Les banques refusent de prêter si tes crédits dépassent 35% de tes revenus. Rentre ton salaire ici pour vérifier que le projet passe.</span>
                                 </span>
                             </h3>
-                            <p style="color:#64748B; font-size:14px; margin-bottom:20px;">La Banque de France impose un taux d'endettement maximum de 35%. Renseignez vos revenus pour tester la faisabilité de ce crédit.</p>
                             
                             <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:20px;">
                                 <div style="flex:1; min-width:200px;">
@@ -311,11 +308,7 @@
                         <div style="display: flex; gap: 30px; flex-wrap: wrap; margin-bottom: 40px;">
                             <div style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 16px; border: 1px solid #E2E8F0;">
                                 <h4 style="margin-top:0; border-bottom: 1px solid #F1F5F9; padding-bottom: 15px; color:#0F172A; display:flex; justify-content:space-between;">
-                                    <span><i class="fa-solid fa-piggy-bank theme-text"></i> Financement</span>
-                                    <span class="tooltip-container" style="font-size:16px;">
-                                        <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                                        <span class="tooltip-text">Rentre les infos de ton crédit bancaire (ton apport, la durée et le taux).</span>
-                                    </span>
+                                    <span><i class="fa-solid fa-piggy-bank theme-text"></i> Financement Bancaire</span>
                                 </h4>
                                 <div style="display:flex; justify-content:space-between; margin-bottom: 15px;">
                                     <label style="font-size:13px; font-weight:600;">Apport Personnel (€)</label>
@@ -336,11 +329,7 @@
                             
                             <div style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 16px; border: 1px solid #E2E8F0;">
                                 <h4 style="margin-top:0; border-bottom: 1px solid #F1F5F9; padding-bottom: 15px; color:#0F172A; display:flex; justify-content:space-between;">
-                                    <span><i class="fa-solid fa-file-invoice-dollar theme-text"></i> Charges d'Exploitation</span>
-                                    <span class="tooltip-container" style="font-size:16px;">
-                                        <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                                        <span class="tooltip-text">Les dépenses annuelles liées à ton bien (Taxes, charges de l'immeuble, assurances). Indispensable pour calculer la rentabilité "Nette".</span>
-                                    </span>
+                                    <span><i class="fa-solid fa-file-invoice-dollar theme-text"></i> Charges Annuelles</span>
                                 </h4>
                                 <div style="display:flex; justify-content:space-between; margin-bottom: 15px;">
                                     <label style="font-size:13px; font-weight:600;">Taxe Foncière (€/an)</label>
@@ -368,61 +357,29 @@
             <div id="outils-tab" class="tab-content">
                 <div class="paywall-container" id="paywall-pipeline" style="display:none;">
                     <div class="paywall-box theme-border-top">
-                        <h3 style="margin-top:0; color:#0F172A; font-size:20px;">🔒 Outils Terrain & Gestion</h3>
-                        <p style="color:#64748B; font-size:14px; margin-bottom:25px;">Pipeline Kanban, modèles juridiques et comparateurs sont réservés aux abonnés.</p>
+                        <h3 style="margin-top:0; color:#0F172A; font-size:20px;">🔒 Suivi & Stratégie</h3>
+                        <p style="color:#64748B; font-size:14px; margin-bottom:25px;">La sauvegarde illimitée des audits et le Pipeline Kanban sont réservés aux abonnés.</p>
                         <button class="btn-solid theme-bg" onclick="changerOnglet('#espace')">Voir les offres</button>
                     </div>
                 </div>
 
                 <section class="content-section" id="content-pipeline" style="max-width: 1400px;">
-                    <h2 class="section-title">
-                        La Boîte à Outils du Négociateur
+                    
+                    <h2 class="section-title" style="margin-bottom: 40px;">
+                        Tableau de Comparaison Rapide
                         <span class="tooltip-container">
                             <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                            <span class="tooltip-text">Des modèles de textes et des outils d'aide prêts à l'emploi pour gagner du temps lors de tes achats immobiliers.</span>
+                            <span class="tooltip-text">Clique sur "Comparer l'audit actuel" pour sauvegarder le bien sur cette grille. C'est l'idéal pour comparer 2 ou 3 maisons entre elles.</span>
                         </span>
                     </h2>
                     
-                    <div class="info-grid" style="margin-bottom: 60px;">
-                        <div class="info-card">
-                            <h3 style="margin-top:0;"><i class="fa-solid fa-clipboard-check theme-text"></i> Grille de Visite</h3>
-                            <p style="color:#64748B; font-size:14px; margin-bottom: 25px;">La checklist ultime pour votre smartphone afin de relever les défauts structurels in situ.</p>
-                            <a href="grille.html" target="_blank" class="btn-outline" style="text-decoration:none; display:inline-block; text-align:center; width: 100%;">Ouvrir l'App mobile</a>
-                        </div>
-                        <div class="info-card">
-                            <h3 style="margin-top:0;"><i class="fa-solid fa-shield-halved theme-text"></i> Clauses Suspensives</h3>
-                            <p style="color:#64748B; font-size:14px; margin-bottom: 25px;">Protégez votre offre d'achat avec une formulation juridique bétonnée si l'audit est mauvais.</p>
-                            <button class="btn-outline" style="width: 100%;" onclick="genererClause()">Générer la clause</button>
-                        </div>
-                        <div class="info-card">
-                            <h3 style="margin-top:0;"><i class="fa-regular fa-envelope theme-text"></i> Modèle Relance</h3>
-                            <p style="color:#64748B; font-size:14px; margin-bottom: 25px;">Modèle argumenté pour appuyer une baisse de prix face à un vendeur difficile.</p>
-                            <button class="btn-outline" style="width: 100%;" onclick="genererEmailBaisse()">Brouillon de Mail</button>
-                        </div>
-                    </div>
-                    
-                    <div id="box-outil-genere" style="display:none; margin-bottom:60px;">
-                        <h4 style="color:#0F172A;" id="titre-outil-genere">Document généré :</h4>
-                        <div class="script-box" id="texte-outil-genere"></div>
-                        <button class="btn-solid theme-bg" style="margin-top: 15px;" onclick="copierScript('texte-outil-genere')">Copier le texte</button>
-                    </div>
-
-                    <hr style="border:none; border-top:1px solid #E2E8F0; margin: 60px 0;">
-
                     <div style="margin-bottom: 60px;">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
-                            <h2 class="section-title" style="margin-bottom: 0;">
-                                Comparateur de Biens
-                                <span class="tooltip-container">
-                                    <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                                    <span class="tooltip-text">Clique sur "Comparer l'audit actuel" pour sauvegarder le bien sur cette grille et le comparer facilement avec tes autres trouvailles.</span>
-                                </span>
-                            </h2>
-                            <button class="btn-demo" style="width:auto;" onclick="ajouterComparateur()">
-                                <i class="fa-solid fa-plus"></i> Comparer l'audit actuel
+                        <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                            <button class="btn-solid theme-bg" style="width:auto; border-radius: 8px;" onclick="ajouterComparateur()">
+                                <i class="fa-solid fa-thumbtack"></i> Épingler l'audit actuel au tableau
                             </button>
                         </div>
-                        <div id="comparateur-grid" style="display: flex; gap: 24px; flex-wrap: wrap; justify-content: center;"></div>
+                        <div id="comparateur-grid" style="display: flex; gap: 24px; flex-wrap: wrap; justify-content: flex-start;"></div>
                     </div>
 
                     <hr style="border:none; border-top:1px solid #E2E8F0; margin: 60px 0;">
@@ -430,34 +387,34 @@
                     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
                         <div>
                             <h2 class="section-title" style="margin-bottom: 0; justify-content: flex-start;">
-                                Pipeline de Transaction
+                                Mes Audits Sauvegardés (Pipeline)
                                 <span class="tooltip-container">
                                     <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                                    <span class="tooltip-text">C'est ton tableau de bord. Prends une carte avec ta souris et fais-la glisser dans la bonne colonne selon l'avancée de ton achat.</span>
+                                    <span class="tooltip-text">La vraie force d'AuditPro : prends la carte d'un de tes audits et glisse-la dans la bonne colonne pour savoir exactement où tu en es dans tes recherches.</span>
                                 </span>
                             </h2>
-                            <p style="color: #64748B; font-size: 16px; margin-top: 5px;">Gérez vos dossiers en glissant les cartes selon l'avancement.</p>
+                            <p style="color: #64748B; font-size: 16px; margin-top: 5px;">Toutes vos analyses peuvent être glissées dans ce Kanban de suivi.</p>
                         </div>
-                        <button class="btn-demo" style="width:auto;" onclick="viderPipeline()">
-                            <i class="fa-solid fa-trash"></i> Purger
+                        <button class="btn-delete" style="width:auto; background:transparent; border:1px solid #E2E8F0; color:#64748B;" onclick="viderPipeline()">
+                            <i class="fa-solid fa-trash"></i> Vider le tableau
                         </button>
                     </div>
 
                     <div style="display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px;" id="kanban-board">
                         <div class="kanban-col">
-                            <div class="kanban-header" style="border-top-color: #64748B;">À Étudier <span class="badge" id="count-etude">0</span></div>
+                            <div class="kanban-header" style="border-top-color: #64748B;">1. Audits Réalisés <span class="badge" id="count-etude">0</span></div>
                             <div class="kanban-zone" id="zone-etude"></div>
                         </div>
                         <div class="kanban-col">
-                            <div class="kanban-header" style="border-top-color: #3B82F6;">Visité / Négo <span class="badge" id="count-visite">0</span></div>
+                            <div class="kanban-header" style="border-top-color: #3B82F6;">2. Contre-Visite <span class="badge" id="count-visite">0</span></div>
                             <div class="kanban-zone" id="zone-visite"></div>
                         </div>
                         <div class="kanban-col">
-                            <div class="kanban-header" style="border-top-color: #EAB308;">Offre Transmise <span class="badge" id="count-offre">0</span></div>
+                            <div class="kanban-header" style="border-top-color: #EAB308;">3. Négo en cours <span class="badge" id="count-offre">0</span></div>
                             <div class="kanban-zone" id="zone-offre"></div>
                         </div>
                         <div class="kanban-col">
-                            <div class="kanban-header" style="border-top-color: #22C55E;">Sous Compromis <span class="badge" id="count-compromis">0</span></div>
+                            <div class="kanban-header" style="border-top-color: #22C55E;">4. Offre Acceptée <span class="badge" id="count-compromis">0</span></div>
                             <div class="kanban-zone" id="zone-compromis"></div>
                         </div>
                     </div>
@@ -553,7 +510,7 @@
                         <div style="flex:1; min-width:350px;">
                             <div class="card" style="padding: 30px; background:#fff; border-radius:16px; border:1px solid #E2E8F0;">
                                 <h3 style="margin-top:0; color:#0F172A; border-bottom:1px solid #E2E8F0; padding-bottom:15px; display:flex; align-items:center; justify-content:space-between;">
-                                    <span><i class="fa-solid fa-sliders theme-text"></i> Variables de Modélisation</span>
+                                    <span><i class="fa-solid fa-sliders theme-text"></i> Variables Globales</span>
                                     <span class="tooltip-container" style="font-size:16px;">
                                         <i class="fa-solid fa-circle-info tooltip-icon"></i>
                                         <span class="tooltip-text">Règle ici tes frais de notaire et ta marge de sécurité. Ils seront appliqués automatiquement à tous tes futurs calculs.</span>
@@ -579,10 +536,10 @@
                                 </div>
                                 
                                 <h3 style="margin-top:0; color:#0F172A; border-bottom:1px solid #E2E8F0; padding-bottom:15px; display:flex; align-items:center; justify-content:space-between;">
-                                    <span><i class="fa-solid fa-copyright theme-text"></i> Marque Blanche (PDF)</span>
+                                    <span><i class="fa-solid fa-copyright theme-text"></i> Marque Blanche</span>
                                     <span class="tooltip-container" style="font-size:16px;">
                                         <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                                        <span class="tooltip-text">Personnalise le rapport PDF avec ton propre logo et tes couleurs pour faire plus professionnel auprès de tes clients.</span>
+                                        <span class="tooltip-text">Personnalise le rapport PDF avec ton propre logo et tes couleurs d'agence pour faire plus professionnel auprès de tes clients.</span>
                                     </span>
                                 </h3>
                                 <div class="form-group">
@@ -590,7 +547,7 @@
                                     <input type="text" id="nomAgenceInput" class="form-control" placeholder="Ex: Agence des Lilas">
                                 </div>
                                 <div class="form-group">
-                                    <label>Couleur du thème</label>
+                                    <label>Couleur du thème (PDF et Site)</label>
                                     <input type="color" id="couleurAgenceInput" value="#1E3A8A" class="color-picker-custom" onchange="changerCouleurParticulierTemporaire(this.value)">
                                 </div>
                                 <div class="form-group">
@@ -600,17 +557,17 @@
                                 </div>
                                 <div style="display:flex; gap:10px; margin-top:20px;">
                                     <button class="btn-outline" style="flex:1;" onclick="reinitialiserMarqueBlanche()">Reset</button>
-                                    <button class="btn-solid theme-bg" style="flex:2;" onclick="sauvegarderParametresPro()">Appliquer</button>
+                                    <button class="btn-solid theme-bg" style="flex:2;" onclick="sauvegarderParametresPro()">Appliquer Design</button>
                                 </div>
                             </div>
                         </div>
 
                         <div style="flex:1.5; min-width:350px;">
-                            <h3 style="text-align:center; font-family:'Merriweather'; color:#0F172A; font-size:24px; margin-bottom:30px;">
+                            <h3 style="text-align:center; font-family:'Merriweather'; color:#0F172A; font-size:24px; margin-bottom:30px; display:flex; align-items:center; justify-content:center; gap:8px;">
                                 Nos Offres
                                 <span class="tooltip-container" style="font-size:16px;">
                                     <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                                    <span class="tooltip-text">Gère ton abonnement pour débloquer les outils professionnels (Calcul de rentabilité, Pipeline Kanban et Marque blanche).</span>
+                                    <span class="tooltip-text">Gère ton abonnement pour débloquer les outils professionnels (Calcul de rentabilité avancé, suivi des dossiers et design personnalisé).</span>
                                 </span>
                             </h3>
                             <div style="display:flex; gap:15px; flex-wrap:wrap; justify-content:center;">
@@ -634,9 +591,9 @@
                                     <ul style="list-style:none; padding:0; text-align:left; font-size:13px; color:#475569; line-height:2;">
                                         <li>✓ Analyses illimitées</li>
                                         <li>✓ Modélisation LMNP</li>
-                                        <li>✓ Pipeline Kanban</li>
+                                        <li>✓ Pipeline de suivi Kanban</li>
                                     </ul>
-                                    <button class="btn-solid theme-bg" style="width:100%; margin-top:15px; padding:10px; font-size:13px;" onclick="window.open('https://buy.stripe.com/7sYaEYcY79Gq1WU3cc', '_blank')">S'abonner</button>
+                                    <a href="https://buy.stripe.com/7sYaEYcY79Gq1WU3oIaR200" target="_blank" class="btn-solid theme-bg" style="display:block; width:100%; margin-top:15px; padding:10px; font-size:13px; text-decoration:none;">S'abonner</a>
                                 </div>
 
                                 <div class="pricing-card" style="background:#0F172A; border-radius:16px; border:1px solid #1E293B; padding:30px 20px; text-align:center; flex:1; min-width:200px; color:#fff;">
@@ -645,9 +602,9 @@
                                     <ul style="list-style:none; padding:0; text-align:left; font-size:13px; color:#CBD5E1; line-height:2;">
                                         <li>✓ Tout le plan Particulier</li>
                                         <li>✓ <b>Marque Blanche</b></li>
-                                        <li>✓ Logo de l'Agence</li>
+                                        <li>✓ Export PDF Agence</li>
                                     </ul>
-                                    <button class="btn-solid" style="background:#fff; color:#0F172A; width:100%; margin-top:15px; padding:10px; font-size:13px;" onclick="window.open('https://buy.stripe.com/bJeaEY8HRaKu596fqr201', '_blank')">S'abonner</button>
+                                    <a href="https://buy.stripe.com/bJeaEY8HRaKu596f7qaR201" target="_blank" class="btn-solid" style="display:block; width:100%; margin-top:15px; padding:10px; font-size:13px; font-weight:bold; background-color:#fff !important; color:#0F172A !important; text-decoration:none;">S'abonner</a>
                                 </div>
 
                             </div>
@@ -658,10 +615,10 @@
                                         Historique Local
                                         <span class="tooltip-container" style="font-size:16px;">
                                             <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                                            <span class="tooltip-text">Retrouve tes anciennes analyses ici. Elles sont sauvegardées localement dans ton navigateur.</span>
+                                            <span class="tooltip-text">Retrouve tes anciennes analyses ici. Elles sont sauvegardées localement dans la mémoire de ton navigateur.</span>
                                         </span>
                                     </h3>
-                                    <button onclick="viderHistorique()" class="btn-delete" style="padding:6px 12px; font-size:11px;">Purger</button>
+                                    <button onclick="viderHistorique()" class="btn-delete" style="padding:6px 12px; font-size:11px; border:1px solid #FCA5A5;">Purger</button>
                                 </div>
                                 <div class="table-responsive">
                                     <table style="width: 100%; font-size:12px;">
@@ -683,7 +640,7 @@
 
             <footer style="background-color: #0F172A; color: #94A3B8; text-align: center; padding: 40px 20px; font-size: 13px; margin-top: 60px; line-height: 1.8;">
                 © 2026 AuditPro. Tous droits réservés.<br>
-                L'ensemble des chiffrages sont indicatifs (Index FFB) et ne se substituent en aucun cas à un devis d'artisan RGE.<br>
+                L'ensemble des chiffrages sont indicatifs et basés sur des moyennes (Index FFB). L'algorithme applique une surcote régionale (Secteur tendu) ou décote selon le code postal fourni.<br>
                 <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" class="theme-text" style="text-decoration: underline; margin-top: 15px; display: inline-block; font-weight: 600;">Mentions Légales & Traitement des Données RGPD</a>
             </footer>
 
@@ -695,7 +652,7 @@
                 <span id="copilot-toggle-icon">▼</span>
             </div>
             <div class="copilot-body" id="copilot-text">
-                👋 Bienvenue ! Commencez par glisser un diagnostic dans la zone prévue à cet effet pour lancer votre première analyse.
+                👋 Bienvenue ! Commencez par taper le <strong>Code Postal</strong> du bien (crucial pour le calcul des prix locaux) et déposez un diagnostic PDF.
             </div>
             <div class="copilot-progress">
                 <div class="copilot-bar" id="copilot-progress-bar" style="width: 25%;"></div>
@@ -718,12 +675,11 @@
         <div id="toast-container"></div>
         <div id="loading-overlay">
             <div class="spinner"></div>
-            <h3 style="color: white; margin-top: 25px; font-weight: 700; font-size: 20px;" id="loading-text">Analyse réglementaire en cours...</h3>
+            <h3 style="color: white; margin-top: 25px; font-weight: 700; font-size: 20px;" id="loading-text">Analyse géographique en cours...</h3>
         </div>
     </div> 
     
-    <script src="script.js?v=1003"></script>
+    <script src="script.js?v=1004"></script>
 </body>
 
 </html>
-
