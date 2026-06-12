@@ -7,10 +7,8 @@ let logoClicks = 0;
 let chartInstance = null;
 let loyerMensuelSaisi = 0;
 
-// Variables pour le "What-If" (Curseur de Négociation)
 let prixNegoActuel = 0;
 
-// Base de données locale (LocalStorage)
 let comparateur = JSON.parse(localStorage.getItem('auditpro_comparateur')) || [];
 let pipelineDossiers = JSON.parse(localStorage.getItem('auditpro_pipeline')) || [];
 let currentDossierId = null;
@@ -57,7 +55,14 @@ document.addEventListener("DOMContentLoaded", () => {
         changerProfilInterne("particulier");
     }
 
-    // Gestion du Drag & Drop pour le PDF
+    // EVENT LISTENER POUR LES ONGLETS (LE PLUS IMPORTANT POUR QUE LE MENU MARCHE)
+    document.querySelectorAll('nav a[href^="#"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            changerOnglet(this.getAttribute('href'));
+        });
+    });
+
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('fichierPdf');
     const dropText = document.querySelector('.drop-zone-text');
@@ -88,7 +93,6 @@ document.addEventListener("DOMContentLoaded", () => {
         input.addEventListener('input', formatInputNumber);
     });
 
-    // GOD MODE (ADMIN) - 5 Clics sur le logo en maintenant Shift
     const headerLogo = document.querySelector('.logo');
     if (headerLogo) {
         headerLogo.addEventListener('click', function(e) {
@@ -145,22 +149,6 @@ function copierScript(idElement) {
     }
 }
 
-function animateValue(obj, start, end, duration, prefix = "") {
-    if(!obj) return;
-    let startTimestamp = null;
-    const step = (timestamp) => {
-        if (!startTimestamp) startTimestamp = timestamp;
-        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-        const easeProgress = 1 - Math.pow(1 - progress, 3);
-        const currentVal = Math.floor(easeProgress * (end - start) + start);
-        obj.innerHTML = prefix + formatNumber(currentVal) + " €";
-        if (progress < 1) { window.requestAnimationFrame(step); } 
-        else { obj.innerHTML = prefix + formatNumber(end) + " €"; }
-    };
-    window.requestAnimationFrame(step);
-}
-
-// Dessin des étiquettes DPE pour l'interface web
 const colorConfigDPE = { "A": "#00923E", "B": "#52B153", "C": "#A5D700", "D": "#FDF200", "E": "#F39611", "F": "#EB3223", "G": "#D30F1F", "N/A": "#888888" };
 const colorConfigGES = { "A": "#F2E8FA", "B": "#E1C9F2", "C": "#D0AAEA", "D": "#BF8BE2", "E": "#AE6CD9", "F": "#9D4DD1", "G": "#7A35A3", "N/A": "#888888" };
 
@@ -178,6 +166,27 @@ function getSvgArrow(lettre, type) {
 // ==========================================================================
 // 4. NAVIGATION, CADENAS ET PROFILS
 // ==========================================================================
+function changerOnglet(targetId) {
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.style.display = 'none';
+        tab.classList.remove('active');
+    });
+
+    const cleanId = targetId.replace('#', '') + '-tab';
+    const targetTab = document.getElementById(cleanId);
+    
+    if (targetTab) {
+        targetTab.style.display = 'block';
+        targetTab.classList.add('active');
+    }
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    document.querySelectorAll('nav a').forEach(l => l.classList.remove('active'));
+    const lienActif = document.querySelector(`nav a[href="${targetId}"]`);
+    if (lienActif) lienActif.classList.add('active');
+}
+
 function updateNavLocks() {
     const lockFinance = document.querySelector('#nav-finance .lock-icon');
     const lockPipeline = document.querySelector('#nav-pipeline .lock-icon');
@@ -242,19 +251,6 @@ function changerProfilInterne(profil) {
     if(donneesAudit) {
         afficherEcran(); 
         genererFiscalite();
-    }
-}
-
-function setProfile(profile, element) {
-    currentProfile = profile;
-    document.querySelectorAll('.profile-pill').forEach(p => p.classList.remove('active'));
-    if(element) element.classList.add('active');
-
-    const blocLoyer = document.getElementById('bloc-loyer');
-    if(profile === 'investisseur' || profile === 'promoteur' || profile === 'agent') {
-        blocLoyer.style.display = 'block';
-    } else {
-        blocLoyer.style.display = 'none';
     }
 }
 
@@ -345,17 +341,6 @@ function sauvegarderParametresPro() {
     showToast("Marque Blanche activée. Vos PDF seront à vos couleurs.");
 }
 
-function reinitialiserParametresParticulier() {
-    localStorage.removeItem('ap_notaire');
-    localStorage.removeItem('ap_marge');
-    localStorage.removeItem('ap_couleur');
-    appSettings.fraisNotaire = 8;
-    appSettings.margeSecurite = 10;
-    appSettings.couleur = '#1E3A8A';
-    appliquerSettings();
-    showToast("Paramètres réinitialisés par défaut.");
-}
-
 function reinitialiserMarqueBlanche() {
     localStorage.removeItem('ap_nom');
     localStorage.removeItem('ap_couleur');
@@ -401,9 +386,9 @@ function chargerHistorique() {
         let realIndex = historique.length - 1 - index;
         historiqueTable.innerHTML += `
             <tr class="history-row">
-                <td style="font-size: 13px; font-weight: 500;">${dossier.date}</td>
-                <td style="font-size: 13px; font-weight: 600; color: #0F172A;">${dossier.ville} <br><span style="font-size:11px; color:#64748B;">${formatNumber(dossier.prixInitial)} €</span></td>
-                <td style="text-align: right;">
+                <td style="font-size: 13px; font-weight: 500; padding:12px;">${dossier.date}</td>
+                <td style="font-size: 13px; font-weight: 600; color: #0F172A; padding:12px;">${dossier.ville} <br><span style="font-size:11px; color:#64748B;">${formatNumber(dossier.prixInitial)} €</span></td>
+                <td style="text-align: right; padding:12px;">
                     <button class="btn-outline" style="padding:6px 12px; font-size:12px;" onclick="chargerDossierHistorique(${realIndex})">Ouvrir</button>
                 </td>
             </tr>
@@ -489,7 +474,7 @@ function lancerDemo() {
 
 async function envoyer() {
     if (userPlan === 'gratuit' && analysesCount >= 3) {
-        changerOnglet('#abonnements');
+        changerOnglet('#espace');
         return showToast("Vous avez atteint votre limite de 3 analyses gratuites. Veuillez souscrire à une offre.", "error");
     }
 
@@ -570,19 +555,26 @@ function afficherEcran() {
     
     let prixInitialClean = parseInputNumber(document.getElementById('prixInitial').value) || donneesAudit.prix_initial;
     
-    let totalBrutTvx = dataDiagnostics.reduce((sum, d) => sum + d.cout, 0);
-    let travauxSecurises = totalBrutTvx * (1 + (appSettings.margeSecurite / 100));
+    let tRen = document.getElementById('tauxRenov');
+    let taux = parseFloat(tRen ? tRen.value : 0);
     
-    prixNegoActuel = prixInitialClean; // Initialise le What-If Slider
-    document.getElementById('nego-slider').max = prixInitialClean;
-    document.getElementById('nego-slider').value = prixInitialClean;
+    let totalBrutTvx = dataDiagnostics.reduce((sum, d) => sum + d.cout, 0);
+    let resteACharge = totalBrutTvx * (1 - taux);
+    let travauxSecurises = resteACharge * (1 + (appSettings.margeSecurite / 100));
+    
+    prixNegoActuel = prixInitialClean;
+    const slider = document.getElementById('nego-slider');
+    if(slider) {
+        slider.max = prixInitialClean;
+        slider.value = prixInitialClean;
+    }
 
     let anomaliesHtml = dataDiagnostics.map(a => `
         <tr>
-            <td style="font-weight:700; color:#0F172A;">${a.titre}</td>
-            <td style="color:${a.cout > 0 ? '#DC2626' : '#16A34A'}; font-weight:800; text-align:center;">${a.cout > 0 ? 'ANOMALIE' : 'CONFORME'}</td>
-            <td style="font-size:14px; color:#475569;"><strong>Constat :</strong> ${a.detail || 'Saisi manuellement'}<br>${a.cout > 0 && a.action ? `<i><strong>Recommandation :</strong> ${a.action}</i>` : ''}</td>
-            <td style="font-weight:800; font-size:16px; color:${a.cout > 0 ? '#DC2626' : '#0F172A'}; text-align:right;">${a.cout > 0 ? `-${formatNumber(a.cout)} €` : '0 €'}</td>
+            <td style="font-weight:700; color:#0F172A; padding:12px;">${a.titre}</td>
+            <td style="color:${a.cout > 0 ? '#DC2626' : '#16A34A'}; font-weight:800; text-align:center; padding:12px;">${a.cout > 0 ? 'ANOMALIE' : 'CONFORME'}</td>
+            <td style="font-size:14px; color:#475569; padding:12px;"><strong>Constat :</strong> ${a.detail || 'Saisi manuellement'}<br>${a.cout > 0 && a.action ? `<i><strong>Recommandation :</strong> ${a.action}</i>` : ''}</td>
+            <td style="font-weight:800; font-size:16px; color:${a.cout > 0 ? '#DC2626' : '#0F172A'}; text-align:right; padding:12px;">${a.cout > 0 ? `-${formatNumber(a.cout)} €` : '0 €'}</td>
         </tr>
     `).join('');
 
@@ -607,15 +599,15 @@ function afficherEcran() {
         <div class="kpi-grid">
             <div class="kpi-box">
                 <div class="kpi-label">Prix de présentation FAI</div>
-                <div class="kpi-value" id="anim-prix-initial">${formatNumber(prixInitialClean)} €</div>
+                <div class="kpi-value">${formatNumber(prixInitialClean)} €</div>
             </div>
             <div class="kpi-box" style="border-color:#FCA5A5; background:#FEF2F2;">
                 <div class="kpi-label" style="color:#DC2626;">Enveloppe Travaux (Sécurisée)</div>
-                <div class="kpi-value" style="color:#DC2626;" id="anim-cout-travaux">-${formatNumber(travauxSecurises)} €</div>
+                <div class="kpi-value" style="color:#DC2626;">-${formatNumber(travauxSecurises)} €</div>
             </div>
             <div class="kpi-box main">
                 <div class="kpi-label" style="color:#fff;">Valeur Nette Stratégique</div>
-                <div class="kpi-value" style="color:#fff;" id="anim-prix-net">${formatNumber(prixInitialClean - travauxSecurises)} €</div>
+                <div class="kpi-value" style="color:#fff;">${formatNumber(prixInitialClean - travauxSecurises)} €</div>
             </div>
         </div>
         
@@ -631,9 +623,14 @@ function afficherEcran() {
         ${anomalies.length > 0 ? `<div style="display:flex; justify-content:center; margin-bottom: 30px;"><canvas id="coutChart" width="250" height="250" style="max-width:250px;"></canvas></div>` : ''}
 
         <div class="table-responsive">
-            <table>
+            <table style="width:100%; border-collapse:collapse;">
                 <thead>
-                    <tr><th style="width:20%;">Domaine</th><th style="width:15%; text-align:center;">Statut</th><th style="width:50%;">Constat & Préconisations</th><th style="text-align:right; width:15%;">Provision Est.</th></tr>
+                    <tr style="background:#F8FAFC;">
+                        <th style="width:20%; padding:12px; border-bottom:1px solid #E2E8F0; text-align:left;">Domaine</th>
+                        <th style="width:15%; text-align:center; padding:12px; border-bottom:1px solid #E2E8F0;">Statut</th>
+                        <th style="width:50%; padding:12px; border-bottom:1px solid #E2E8F0; text-align:left;">Constat & Préconisations</th>
+                        <th style="text-align:right; width:15%; padding:12px; border-bottom:1px solid #E2E8F0;">Provision Est.</th>
+                    </tr>
                 </thead>
                 <tbody>${anomaliesHtml}</tbody>
             </table>
@@ -641,7 +638,6 @@ function afficherEcran() {
         <p style="font-size:12px; color:#94A3B8; margin-top:15px; font-style:italic;">Avertissement légal : Ces chiffrages statistiques FFB ne se substituent en aucun cas au devis d'un artisan certifié RGE.</p>
     `;
     
-    // Animation de Chart.js si anomalies
     if (anomalies.length > 0) {
         setTimeout(() => {
             let canvas = document.getElementById('coutChart');
@@ -724,7 +720,12 @@ function updateLigneDevis(index, champ, valeur) {
 
 function calculerTotalDevis() {
     let totalBrut = donneesAudit.lignesDevis.reduce((sum, ligne) => sum + ligne.cout, 0);
-    let totalSecurise = totalBrut * (1 + (appSettings.margeSecurite / 100));
+    
+    let tRen = document.getElementById('tauxRenov');
+    let taux = parseFloat(tRen ? tRen.value : 0);
+    let resteACharge = totalBrut * (1 - taux);
+    
+    let totalSecurise = resteACharge * (1 + (appSettings.margeSecurite / 100));
     
     document.getElementById('marge-display').innerText = appSettings.margeSecurite;
     document.getElementById('devis-total').innerText = formatNumber(totalSecurise) + " €";
@@ -743,7 +744,6 @@ function sauvegarderDevisManuel() {
 // 10. MODÉLISATION FISCALE & STRESS-TEST HCSF
 // ==========================================================================
 function updateSimulationFinance() {
-    // Règle le Slider What-If
     const slider = document.getElementById('nego-slider');
     const prixInitClean = parseInputNumber(document.getElementById('prixInitial').value);
     
@@ -778,13 +778,11 @@ function genererFiscalite() {
 function calculerFinancePro() {
     if(!donneesAudit) return;
     
-    // 1. Données du Projet
     const prixFai = prixNegoActuel > 0 ? prixNegoActuel : parseInputNumber(document.getElementById('prixInitial').value);
     const travaux = calculerTotalDevis(); 
     const fraisNotaire = prixFai * (appSettings.fraisNotaire / 100);
     const budgetGlobal = prixFai + travaux + fraisNotaire;
     
-    // 2. Crédit
     const apport = parseInputNumber(document.getElementById('fin-apport').value);
     const montantEmprunte = Math.max(0, budgetGlobal - apport);
     const dureeAnnees = parseFloat(document.getElementById('fin-duree').value) || 20;
@@ -803,12 +801,10 @@ function calculerFinancePro() {
         mensualiteCredit += (montantEmprunte * (tauxAssurance / 100)) / 12;
     }
 
-    // 3. Stress-Test HCSF (Taux d'endettement)
-    const revenusMois = parseInputNumber(document.getElementById('hcsf-revenus').value) || 1; // Eviter div/0
+    const revenusMois = parseInputNumber(document.getElementById('hcsf-revenus').value) || 1; 
     const autresCredits = parseInputNumber(document.getElementById('hcsf-credits').value) || 0;
     const loyerMensuel = parseInputNumber(document.getElementById('loyerMensuel').value); 
     
-    // Calcul HCSF strict (Mensualités Prêts / (Revenus Pros + 70% Loyers))
     const revenusPonderes = revenusMois + (loyerMensuel * 0.70);
     const chargesTotalesCredits = autresCredits + mensualiteCredit;
     const tauxEndettement = (chargesTotalesCredits / revenusPonderes) * 100;
@@ -828,7 +824,6 @@ function calculerFinancePro() {
         statutHcsf.innerText = "Risque de Refus (> 35%)"; statutHcsf.style.color = "#DC2626";
     }
 
-    // 4. Exploitation & Fiscalité (LMNP vs Nu)
     const vacancePct = parseFloat(document.getElementById('fin-vacance').value) || 0;
     const revenusReelsAnnuels = (loyerMensuel * 12) * (1 - (vacancePct / 100));
 
@@ -844,7 +839,7 @@ function calculerFinancePro() {
     const impotNuEstime = baseImposableNu * 0.30; 
     const cashFlowNu = (revenusReelsAnnuels - chargesAnnuelles - (mensualiteCredit * 12) - impotNuEstime) / 12;
     
-    const impotLmnpEstime = 0; // Amortissement comptable gomme l'impôt
+    const impotLmnpEstime = 0; 
     const cashFlowLmnp = (revenusReelsAnnuels - chargesAnnuelles - (mensualiteCredit * 12) - impotLmnpEstime) / 12;
 
     const resultDisplay = document.getElementById('finance-results-display');
@@ -904,8 +899,67 @@ function calculerFinancePro() {
 }
 
 // ==========================================================================
-// 11. PIPELINE KANBAN (DRAG & DROP)
+// 11. OUTILS ET PIPELINE (KANBAN)
 // ==========================================================================
+function ajouterComparateur() {
+    if (userPlan === 'gratuit') {
+        changerOnglet('#espace');
+        return showToast("Le comparateur est réservé aux abonnements Premium.", "error");
+    }
+
+    if (!donneesAudit) return;
+    if (comparateur.length >= 6) return showToast("Le comparateur est plein (6 biens max).", "error");
+    
+    const loyerMensuel = parseInputNumber(document.getElementById('loyerMensuel').value);
+    const prixFai = parseInputNumber(document.getElementById('prixInitial').value);
+
+    let bien = {
+        id: currentDossierId,
+        ville: donneesAudit.localisation_exacte.split(' ')[0],
+        prix: prixFai,
+        travaux: calculerTotalDevis(),
+        loyer: loyerMensuel,
+        dpe: donneesAudit.dpe_lettre || "N/A"
+    };
+    
+    comparateur.push(bien);
+    localStorage.setItem('auditpro_comparateur', JSON.stringify(comparateur));
+    
+    renderComparateur();
+    showToast(`Bien sauvegardé dans le comparateur !`);
+}
+
+function supprimerComparateur(index) {
+    comparateur.splice(index, 1);
+    localStorage.setItem('auditpro_comparateur', JSON.stringify(comparateur));
+    renderComparateur();
+}
+
+function renderComparateur() {
+    const grid = document.getElementById('comparateur-grid');
+    if (!grid) return;
+    
+    if (comparateur.length === 0) {
+        grid.innerHTML = `<div style="text-align:center; padding: 40px; color: #64748B; background: #fff; border-radius: 12px; border: 1px dashed #CBD5E1; width:100%;">Aucun bien dans le comparateur.</div>`;
+        return;
+    }
+    
+    grid.innerHTML = comparateur.map((bien, index) => {
+        let budgetReelTotal = bien.prix + bien.travaux + (bien.prix * 0.08);
+        let rentaNette = bien.loyer > 0 ? (((bien.loyer * 12) / budgetReelTotal) * 100).toFixed(2) + " %" : "N/A";
+
+        return `
+        <div style="background: #fff; border: 1px solid #E2E8F0; border-top: 4px solid var(--theme-color); border-radius: 16px; padding: 25px; width: 300px; box-shadow: 0 10px 20px rgba(0,0,0,0.03);">
+            <h3 style="margin-top: 0; color: #0F172A; border-bottom: 1px solid #F1F5F9; padding-bottom: 15px; font-size: 16px;">${bien.ville}</h3>
+            <div style="margin-bottom: 15px;"><span style="background:#F1F5F9; font-size:12px; padding:4px 8px; border-radius:6px; font-weight:bold;">DPE ${bien.dpe}</span></div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;"><span>Prix</span> <strong>${formatNumber(bien.prix)} €</strong></div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;"><span>Travaux</span> <strong style="color:#DC2626;">+ ${formatNumber(bien.travaux)} €</strong></div>
+            <div style="display:flex; justify-content:space-between; font-size:14px; margin-top:15px; padding-top:15px; border-top:1px solid #F1F5F9;"><span>Rendement Net</span> <strong style="color:var(--theme-color);">${rentaNette}</strong></div>
+            <button class="btn-delete" style="width:100%; margin-top:20px;" onclick="supprimerComparateur(${index})"><i class="fa-solid fa-trash"></i> Retirer</button>
+        </div>`;
+    }).join('');
+}
+
 function chargerKanban() {
     const zones = ['zone-etude', 'zone-visite', 'zone-offre', 'zone-compromis'];
     
@@ -945,7 +999,6 @@ function chargerKanban() {
             container.appendChild(card);
         });
 
-        // Setup Drag&Drop listeners
         container.addEventListener('dragover', (e) => { e.preventDefault(); container.style.background = "#EFF6FF"; });
         container.addEventListener('dragleave', () => container.style.background = "transparent");
         container.addEventListener('drop', (e) => {
@@ -980,7 +1033,7 @@ function ajouterAuPipeline() {
         id: currentDossierId,
         ville: donneesAudit.localisation_exacte.split(' ')[0],
         prix: donneesAudit.prix_initial,
-        travaux: donneesAudit.total_decote,
+        travaux: calculerTotalDevis(),
         loyer: loyerMensuel,
         dpe: donneesAudit.dpe_lettre,
         status: "zone-etude", 
@@ -1027,10 +1080,9 @@ function genererClause() {
 
 La présente offre d'achat est formulée sous la condition suspensive de la réalisation d'une contre-visite par des artisans qualifiés RGE, visant à valider techniquement et financièrement les montants de remise aux normes identifiés dans le Dossier de Diagnostic Technique. 
 
-L'acquéreur se réserve le droit de se rétracter sans pénalité si les devis finaux obtenus pour les travaux d'économie d'énergie et de sécurisation électrique/gaz excèdent l'enveloppe prévisionnelle totale de ${formatNumber(donneesAudit.total_decote)} Euros TTC.`;
+L'acquéreur se réserve le droit de se rétracter sans pénalité si les devis finaux obtenus pour les travaux d'économie d'énergie et de sécurisation électrique/gaz excèdent l'enveloppe prévisionnelle totale de ${formatNumber(calculerTotalDevis())} Euros TTC.`;
 
     box.style.display = 'block';
-    box.scrollIntoView({ behavior: 'smooth' });
 }
 
 function genererEmailBaisse() {
@@ -1042,6 +1094,7 @@ function genererEmailBaisse() {
     
     let lDdt = donneesAudit.lignesDevis || donneesAudit.diagnostics.filter(a => a.cout > 0);
     let anomaliesTxt = lDdt.map(a => `- ${a.titre} : ${a.detail || 'Reprise technique requise'}`).join('\n');
+    let prixNetEstime = parseInputNumber(document.getElementById('prixInitial').value) - calculerTotalDevis();
     
     texte.innerText = `Objet : Suite à l'analyse technique du bien situé à ${donneesAudit.localisation_exacte}
 
@@ -1049,19 +1102,18 @@ Bonjour,
 
 Je fais suite à notre rendez-vous et à la lecture approfondie du Dossier de Diagnostic Technique (DDT) de votre bien. 
 
-Afin de garantir une transaction transparente et finançable par les futurs acquéreurs (au regard des exigences bancaires strictes sur le taux d'endettement HCSF), nous avons fait chiffrer les éléments réglementaires à reprendre. Le budget de mise aux normes sécurisé s'élève à : ${formatNumber(donneesAudit.total_decote)} €.
+Afin de garantir une transaction transparente et finançable par les futurs acquéreurs (au regard des exigences bancaires strictes sur le taux d'endettement HCSF), nous avons fait chiffrer les éléments réglementaires à reprendre. Le budget de mise aux normes sécurisé s'élève à : ${formatNumber(calculerTotalDevis())} €.
 
 Les points majeurs à corriger identifiés par l'audit concernent :
 ${anomaliesTxt}
 
-Dans le contexte du marché actuel, les acheteurs déduisent systématiquement ces montants de leur plan de financement. Pour éviter de subir un refus de prêt, je vous recommande d'ajuster le prix de présentation net vendeur autour de ${formatNumber(donneesAudit.prix_net)} €.
+Dans le contexte du marché actuel, les acheteurs déduisent systématiquement ces montants de leur plan de financement. Pour éviter de subir un refus de prêt, je vous recommande d'ajuster le prix de présentation net vendeur autour de ${formatNumber(prixNetEstime)} €.
 
 Je suis à votre disposition pour en discuter de vive voix et affiner ensemble notre stratégie.
 
 Bien cordialement,`;
 
     box.style.display = 'block';
-    box.scrollIntoView({ behavior: 'smooth' });
 }
 
 // ==========================================================================
@@ -1212,5 +1264,4 @@ function exporterPDF(action = 'download', targetWindow = null) {
         pdf.download(`AuditPro_Synthese_${donneesAudit.localisation_exacte.split(' ')[0]}.pdf`);
         if(btn) setTimeout(() => { btn.innerText = "Éditer le Bilan Officiel (PDF)"; }, 1500);
     }
-
 }
