@@ -38,28 +38,52 @@ let appSettings = {
 };
 
 // ==========================================================================
-// 2. INTELLIGENCE GÉOGRAPHIQUE (ANALYSE DU CODE POSTAL)
+// 2. INTELLIGENCE GÉOGRAPHIQUE & FINANCIÈRE (L'ALGORITHME PRO)
 // ==========================================================================
-function analyserSecteurLocal(cp) {
-    let dep = String(cp).substring(0, 2);
-    let data = { nom: "France (Moyenne Nationale)", majo: 1.0, texte: "Marché standard. L'algorithme applique la médiane tarifaire nationale de la FFB sans surcoût particulier." };
-    
-    const zonesTendues = ["75", "92", "93", "94", "74", "06"];
-    const zonesLittoralesBZH = ["35", "56", "29", "22", "44"];
-    const zonesSud = ["13", "83", "84", "34"];
-
-    if (zonesTendues.includes(dep)) {
-        data = { nom: "Zone Ultra-Tendue", majo: 1.25, texte: "Forte pénurie d'artisans RGE dans ce département ("+dep+"). L'algorithme a majoré les prix standards de +25% pour coller à la réalité du terrain." };
-    } else if (zonesLittoralesBZH.includes(dep)) {
-        data = { nom: "Secteur Ouest / Bretagne", majo: 1.12, texte: "Département "+dep+" très dynamique. La tension sur les artisans qualifiés impose une majoration de +12% sur les devis d'isolation et d'électricité." };
-    } else if (zonesSud.includes(dep)) {
-        data = { nom: "Bassin Méditerranéen", majo: 1.15, texte: "Forte tension artisanale dans le "+dep+", spécifiquement sur l'installation de PAC/Climatisation. Majoration globale de +15% appliquée." };
-    } else if (dep === "33" || dep === "69" || dep === "31") {
-        data = { nom: "Métropole Attractive", majo: 1.10, texte: "Agglomération en forte croissance ("+dep+"). Les prix du BTP locaux sont environ 10% plus chers que la province classique." };
-    } else if (dep) {
-        data = { nom: "Province Continentale", majo: 1.0, texte: "Marché équilibré (Département "+dep+"). L'outil applique les tarifs médians nationaux sans surcoût." };
+function analyserSecteurLocal(codePostal) {
+    // Si l'utilisateur ne rentre pas de code ou un code invalide
+    if (!codePostal || codePostal.length < 2) {
+        return { 
+            dep: "France", 
+            majo: 1.0, 
+            texte: "Analyse basée sur la moyenne nationale (Indice FFB). Code postal non reconnu ou manquant." 
+        };
     }
-    return data;
+
+    let dep = String(codePostal).substring(0, 2);
+    
+    // Base de données des tensions du marché de la construction (BTP) par département
+    const baseGeographique = {
+        "75": { nom: "Paris", tension: 1.30, msg: "Secteur Paris intra-muros. Tension maximale sur la main-d'œuvre et difficultés logistiques. Majoration algorithmique de +30% sur les devis standards." },
+        "92": { nom: "Hauts-de-Seine", tension: 1.25, msg: "Zone très dense (Petite Couronne). Les artisans qualifiés appliquent une surcote moyenne de +25%." },
+        "93": { nom: "Seine-Saint-Denis", tension: 1.15, msg: "Petite couronne. Tension forte sur la disponibilité des artisans RGE (+15%)." },
+        "94": { nom: "Val-de-Marne", tension: 1.18, msg: "Zone urbaine dense. Les coûts de déplacement et de main-d'œuvre imposent une majoration de +18%." },
+        "35": { nom: "Ille-et-Vilaine", tension: 1.15, msg: "Bassin rennais très dynamique. La forte demande en rénovation énergétique sature les carnets de commande des artisans locaux (+15%)." },
+        "56": { nom: "Morbihan", tension: 1.12, msg: "Département attractif (Littoral et terres). Une surcote de +12% est appliquée pour refléter les prix de la presqu'île et du bassin vannetais." },
+        "29": { nom: "Finistère", tension: 1.08, msg: "Secteur breton actif. Les prix des matériaux et artisans subissent une légère inflation locale (+8%)." },
+        "22": { nom: "Côtes-d'Armor", tension: 1.05, msg: "Marché relativement stable, avec une légère tension sur les artisans RGE spécialisés (+5%)." },
+        "33": { nom: "Gironde", tension: 1.20, msg: "Bassin bordelais et littoral sous très forte tension immobilière. L'algorithme réévalue les devis FFB de +20%." },
+        "69": { nom: "Rhône", tension: 1.18, msg: "Métropole lyonnaise. Le coût de la vie et la forte demande justifient un ajustement technique de +18%." },
+        "13": { nom: "Bouches-du-Rhône", tension: 1.15, msg: "Forte demande régionale, spécifiquement sur le confort d'été (PAC/Clim). Prix majorés de +15%." },
+        "06": { nom: "Alpes-Maritimes", tension: 1.25, msg: "Côte d'Azur : le marché du BTP figure parmi les plus chers de France. Majoration de sécurité de +25% appliquée." },
+        "31": { nom: "Haute-Garonne", tension: 1.12, msg: "Bassin toulousain très actif. Les rénovations globales sont facturées en moyenne 12% plus cher qu'en zone rurale." },
+        "44": { nom: "Loire-Atlantique", tension: 1.15, msg: "Métropole nantaise et littoral saturés. Les délais et coûts d'intervention augmentent la facture finale d'environ +15%." },
+        "59": { nom: "Nord", tension: 1.05, msg: "Bassin lillois. Marché équilibré avec une légère hausse due à la forte concentration de passoires thermiques à rénover (+5%)." }
+    };
+
+    if (baseGeographique[dep]) {
+        return {
+            dep: baseGeographique[dep].nom,
+            majo: baseGeographique[dep].tension,
+            texte: baseGeographique[dep].msg
+        };
+    } else {
+        return {
+            dep: `Département ${dep}`,
+            majo: 1.0,
+            texte: `Marché continental équilibré. L'algorithme a appliqué le barème médian national officiel de la FFB sans surcoût régional.`
+        };
+    }
 }
 
 // ==========================================================================
@@ -131,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ==========================================================================
-// 4. UTILITAIRES DE CALCUL ET D'AFFICHAGE
+// 4. UTILITAIRES DE CALCUL
 // ==========================================================================
 function formatNumber(num) {
     return Number(num).toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).replace(/[\u202F\u00A0]/g, ' ');
@@ -371,6 +395,20 @@ function reinitialiserMarqueBlanche() {
     showToast("Marque blanche désactivée.");
 }
 
+document.getElementById('logoUploadInput')?.addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            appSettings.logoBase64 = e.target.result;
+            localStorage.setItem('ap_logo', appSettings.logoBase64);
+            let preview = document.getElementById('logo-preview');
+            if(preview) { preview.src = appSettings.logoBase64; preview.style.display = 'block'; }
+        }
+        reader.readAsDataURL(file);
+    }
+});
+
 // ==========================================================================
 // 7. HISTORIQUE LOCAL
 // ==========================================================================
@@ -442,29 +480,30 @@ function viderHistorique() {
 }
 
 // ==========================================================================
-// 8. MOTEUR D'EXTRACTION ET D'ANALYSE
+// 8. MOTEUR D'EXTRACTION & CONNEXION AU SERVEUR
 // ==========================================================================
 function lancerDemo() {
+    let cpInput = document.getElementById('codePostal').value || "56120";
     document.getElementById('prixInitial').value = "320 000";
-    document.getElementById('codePostal').value = "56120"; 
     document.getElementById('loyerMensuel').value = "1 300";
     loyerMensuelSaisi = 1300;
     
-    let secteur = analyserSecteurLocal("56120");
+    // Le cerveau s'active : on analyse la tension du marché basée sur le code postal de la démo
+    let secteur = analyserSecteurLocal(cpInput);
 
     donneesAudit = {
-        cp: "56120",
-        localisation_exacte: "Josselin ("+secteur.nom+")",
+        cp: cpInput,
+        localisation_exacte: `Exemple Bien (${secteur.dep})`,
         impact_marche: secteur.texte,
         date_audit: new Date().toLocaleDateString('fr-FR'),
         prix_initial: 320000,
         dpe_lettre: "F",
         ges_lettre: "F",
         diagnostics: [
-            {titre: "Électricité (Sécurité)", cout: Math.round(4500 * secteur.majo), detail: "Défaut de mise à la terre identifié.", action: "Mise en sécurité par un professionnel.", statut: "Anomalie"},
-            {titre: "DPE (Loi Climat)", cout: Math.round(24200 * secteur.majo), detail: "Passoire thermique F.", action: "Isolation des combles et PAC.", statut: "Anomalie"},
-            {titre: "Amiante", cout: 0, detail: "Aucune trace d'amiante.", action: "Aucune intervention.", statut: "Conforme"},
-            {titre: "Plomb", cout: 0, detail: "Pas de plomb détecté.", action: "Aucune intervention.", statut: "Conforme"}
+            {titre: "Électricité (Sécurité)", cout: Math.round(4500 * secteur.majo), detail: "Défaut de mise à la terre identifié sur le tableau principal.", action: "Mise en sécurité par un électricien qualifié.", statut: "Anomalie"},
+            {titre: "DPE (Loi Climat)", cout: Math.round(24200 * secteur.majo), detail: "Passoire thermique F. Pertes de chaleur massives détectées par la caméra thermique.", action: "Isolation globale et installation d'une Pompe à Chaleur recommandée.", statut: "Anomalie"},
+            {titre: "Amiante", cout: 0, detail: "Aucune trace de matériaux toxiques.", action: "Aucune intervention.", statut: "Conforme"},
+            {titre: "Plomb", cout: 0, detail: "Pas de présence de plomb dans les peintures.", action: "Aucune intervention.", statut: "Conforme"}
         ]
     };
     
@@ -473,7 +512,7 @@ function lancerDemo() {
     afficherEcran();
     renderEditeurDevis();
     genererFiscalite();
-    showToast("Dossier de démonstration complet généré.");
+    showToast("Audit généré avec succès en tenant compte de la région.");
 }
 
 async function envoyer() {
@@ -485,7 +524,7 @@ async function envoyer() {
     const input = document.getElementById('fichierPdf');
     const prixInput = parseInputNumber(document.getElementById('prixInitial').value);
     const loyerInput = parseInputNumber(document.getElementById('loyerMensuel').value);
-    const cpInput = document.getElementById('codePostal').value || "75000";
+    const cpInput = document.getElementById('codePostal').value;
     
     if (prixInput <= 0) return showToast("Veuillez indiquer le prix de vente.", "error");
     if (!cpInput) return showToast("Veuillez indiquer le Code Postal pour l'algorithme.", "error");
@@ -511,13 +550,16 @@ async function envoyer() {
         donneesAudit = await reponse.json();
         donneesAudit.cp = cpInput;
         
+        // C'est ici que ton appli devient ultra-pro : Elle connecte les données du backend à l'intelligence de ton algorithme JS.
         let secteur = analyserSecteurLocal(cpInput);
         donneesAudit.impact_marche = secteur.texte;
         
-        // Application de la majoration géographique sur les résultats renvoyés par l'API
+        // On modifie les prix trouvés dans le PDF en appliquant ton index de tension local (+15%, +20% etc)
         if(donneesAudit.diagnostics) {
             donneesAudit.diagnostics.forEach(diag => {
-                if(diag.cout > 0) diag.cout = Math.round(diag.cout * secteur.majo);
+                if(diag.cout > 0) {
+                    diag.cout = Math.round(diag.cout * secteur.majo);
+                }
             });
         }
         
@@ -541,7 +583,7 @@ async function envoyer() {
 }
 
 // ==========================================================================
-// 9. AFFICHAGE DES RÉSULTATS (L'ÉCRAN D'AUDIT)
+// 9. AFFICHAGE DES RÉSULTATS 
 // ==========================================================================
 function afficherEcran() {
     if(!donneesAudit) return;
@@ -617,7 +659,7 @@ function afficherEcran() {
         </div>
         
         <div style="background:#F8FAFC; padding:25px; border-radius:12px; border-left:4px solid var(--theme-color); font-size:14px; color:#475569; margin-bottom:40px; line-height:1.6;">
-            <strong style="color:#0F172A; font-size:15px; display:block; margin-bottom:5px;">Intelligence du Secteur :</strong> 
+            <strong style="color:#0F172A; font-size:15px; display:block; margin-bottom:5px;">Intelligence du Secteur Géographique :</strong> 
             ${donneesAudit.impact_marche}
         </div>
 
@@ -640,7 +682,7 @@ function afficherEcran() {
                 <tbody>${anomaliesHtml}</tbody>
             </table>
         </div>
-        <p style="font-size:12px; color:#94A3B8; margin-top:15px; font-style:italic;">Avertissement : L'algorithme a ajusté les tarifs médians (FFB) en fonction de la tension immobilière du code postal fourni.</p>
+        <p style="font-size:12px; color:#94A3B8; margin-top:15px; font-style:italic;">Avertissement : L'algorithme a automatiquement ajusté les tarifs médians de la Fédération Française du Bâtiment en fonction de la tension immobilière du code postal fourni.</p>
     `;
     
     if (anomalies.length > 0) {
@@ -679,7 +721,82 @@ function afficherEcran() {
 }
 
 // ==========================================================================
-// 10. MODÉLISATION FISCALE & STRESS-TEST HCSF
+// 10. ÉDITEUR DE DEVIS MANUEL
+// ==========================================================================
+function renderEditeurDevis() {
+    const area = document.getElementById('editeur-devis-area');
+    if(!area) return;
+    area.style.display = 'block';
+    
+    if (!donneesAudit.lignesDevis) {
+        donneesAudit.lignesDevis = donneesAudit.diagnostics.filter(d => d.cout > 0).map(d => ({
+            id: Date.now() + Math.random(),
+            titre: d.titre,
+            cout: d.cout,
+            detail: d.detail,
+            action: d.action
+        }));
+    }
+    
+    const tbody = document.getElementById('devis-tbody');
+    tbody.innerHTML = '';
+
+    donneesAudit.lignesDevis.forEach((ligne, index) => {
+        tbody.innerHTML += `
+            <tr>
+                <td style="padding:10px;"><input type="text" class="form-control" value="${ligne.titre}" onchange="updateLigneDevis(${index}, 'titre', this.value)" style="background:#fff;"></td>
+                <td style="padding:10px;"><input type="text" class="form-control price-input" style="text-align:right; font-weight:700; background:#fff;" value="${formatNumber(ligne.cout)}" onchange="updateLigneDevis(${index}, 'cout', this.value)"></td>
+                <td style="padding:10px; text-align:center;"><button class="btn-delete" style="padding:8px 12px;" onclick="supprimerLigneDevis(${index})"><i class="fa-solid fa-trash"></i></button></td>
+            </tr>
+        `;
+    });
+    
+    calculerTotalDevis();
+}
+
+function ajouterLigneDevis() {
+    donneesAudit.lignesDevis.push({ id: Date.now(), titre: "Nouveau poste manuel", cout: 0, detail: "", action: "" });
+    renderEditeurDevis();
+}
+
+function supprimerLigneDevis(index) {
+    donneesAudit.lignesDevis.splice(index, 1);
+    renderEditeurDevis();
+}
+
+function updateLigneDevis(index, champ, valeur) {
+    if (champ === 'cout') {
+        donneesAudit.lignesDevis[index].cout = parseInputNumber(valeur);
+    } else {
+        donneesAudit.lignesDevis[index][champ] = valeur;
+    }
+    calculerTotalDevis();
+}
+
+function calculerTotalDevis() {
+    let totalBrut = donneesAudit.lignesDevis.reduce((sum, ligne) => sum + ligne.cout, 0);
+    
+    let tRen = document.getElementById('tauxRenov');
+    let taux = parseFloat(tRen ? tRen.value : 0);
+    let resteACharge = totalBrut * (1 - taux);
+    
+    let totalSecurise = resteACharge * (1 + (appSettings.margeSecurite / 100));
+    
+    document.getElementById('marge-display').innerText = appSettings.margeSecurite;
+    document.getElementById('devis-total').innerText = formatNumber(totalSecurise) + " €";
+    return totalSecurise;
+}
+
+function sauvegarderDevisManuel() {
+    donneesAudit.total_decote = calculerTotalDevis();
+    donneesAudit.prix_net = parseInputNumber(document.getElementById('prixInitial').value) - donneesAudit.total_decote;
+    afficherEcran();
+    genererFiscalite();
+    showToast("Le montant des travaux a été réajusté avec succès.");
+}
+
+// ==========================================================================
+// 11. MODÉLISATION FISCALE & STRESS-TEST HCSF
 // ==========================================================================
 function updateSimulationFinance() {
     const slider = document.getElementById('nego-slider');
@@ -795,7 +912,7 @@ function calculerFinancePro() {
                 <strong style="color:#0F172A;">+ ${formatNumber(fraisNotaire)} €</strong>
             </div>
             <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:15px;">
-                <span style="color:#64748B;">Travaux (Sécurisés par code postal)</span> 
+                <span style="color:#64748B;">Travaux (Ajustés Géographiquement)</span> 
                 <strong style="color:#DC2626;">+ ${formatNumber(travaux)} €</strong>
             </div>
             <div style="display:flex; justify-content:space-between; margin-top:20px; padding-top:20px; border-top:1px solid #F1F5F9;">
@@ -847,12 +964,17 @@ function calculerFinancePro() {
                     </div>
                 </div>
             </div>
+            <div style="text-align:center; margin-top: 30px;">
+                <button class="btn-solid" style="background:#fff; color:var(--theme-color);" onclick="ajouterAuPipeline()">
+                    ⭐ Épingler l'audit au suivi de dossier
+                </button>
+            </div>
         </div>
     `;
 }
 
 // ==========================================================================
-// 11. OUTILS ET PIPELINE (COMPARATEUR ET KANBAN)
+// 12. OUTILS, COMPARATEUR ET KANBAN
 // ==========================================================================
 function ajouterComparateur() {
     if (userPlan === 'gratuit') {
@@ -877,6 +999,7 @@ function ajouterComparateur() {
     
     comparateur.push(bien);
     localStorage.setItem('auditpro_comparateur', JSON.stringify(comparateur));
+    
     renderComparateur();
     showToast(`Bien sauvegardé dans le comparateur !`);
 }
@@ -890,6 +1013,7 @@ function supprimerComparateur(index) {
 function renderComparateur() {
     const grid = document.getElementById('comparateur-grid');
     if (!grid) return;
+    
     if (comparateur.length === 0) {
         grid.innerHTML = `<div style="text-align:center; padding: 40px; color: #64748B; background: #fff; border-radius: 12px; border: 1px dashed #CBD5E1; width:100%;">Épingle une analyse ici pour la comparer avec d'autres biens.</div>`;
         return;
@@ -947,13 +1071,19 @@ function chargerKanban() {
                 e.dataTransfer.setData('text/plain', dossier.id);
                 setTimeout(() => card.style.opacity = '0.5', 0);
             });
+            
             card.addEventListener('dragend', () => card.style.opacity = '1');
 
             container.appendChild(card);
         });
 
-        container.addEventListener('dragover', (e) => { e.preventDefault(); container.style.background = "#EFF6FF"; });
+        container.addEventListener('dragover', (e) => { 
+            e.preventDefault(); 
+            container.style.background = "#EFF6FF"; 
+        });
+        
         container.addEventListener('dragleave', () => container.style.background = "transparent");
+        
         container.addEventListener('drop', (e) => {
             e.preventDefault();
             container.style.background = "transparent";
@@ -974,6 +1104,7 @@ function ajouterAuPipeline() {
         changerOnglet('#espace');
         return showToast("Le Suivi de dossier est réservé aux abonnés.", "error");
     }
+
     if (!donneesAudit) return;
     
     const existe = pipelineDossiers.find(d => d.id === currentDossierId);
@@ -1017,7 +1148,59 @@ function viderPipeline() {
 }
 
 // ==========================================================================
-// 12. EXPORT PDF PROFESSIONNEL (MODE SANS ÉCHEC)
+// 13. GÉNÉRATEURS DE TEXTES (CLAUSES & EMAILS)
+// ==========================================================================
+function genererClause() {
+    if(!donneesAudit) return showToast("Veuillez d'abord analyser un bien.", "error");
+    
+    const box = document.getElementById('box-outil-genere');
+    const texte = document.getElementById('texte-outil-genere');
+    
+    document.getElementById('titre-outil-genere').innerText = "Clause Suspensive pour l'Offre d'Achat :";
+    
+    texte.innerText = `[À copier dans la section "Conditions Suspensives" de votre Offre d'Achat]
+
+La présente offre d'achat est formulée sous la condition suspensive de la réalisation d'une contre-visite par des artisans qualifiés RGE, visant à valider techniquement et financièrement les montants de remise aux normes identifiés dans le Dossier de Diagnostic Technique. 
+
+L'acquéreur se réserve le droit de se rétracter sans pénalité si les devis finaux obtenus pour les travaux d'économie d'énergie et de sécurisation électrique/gaz excèdent l'enveloppe prévisionnelle totale de ${formatNumber(calculerTotalDevis())} Euros TTC.`;
+
+    box.style.display = 'block';
+}
+
+function genererEmailBaisse() {
+    if(!donneesAudit) return showToast("Veuillez d'abord analyser un bien.", "error");
+    
+    const box = document.getElementById('box-outil-genere');
+    const texte = document.getElementById('texte-outil-genere');
+    
+    document.getElementById('titre-outil-genere').innerText = "Brouillon Email - Négociation Vendeur :";
+    
+    let lDdt = donneesAudit.lignesDevis || donneesAudit.diagnostics.filter(a => a.cout > 0);
+    let anomaliesTxt = lDdt.map(a => `- ${a.titre} : ${a.detail || 'Reprise technique requise'}`).join('\n');
+    let prixNetEstime = parseInputNumber(document.getElementById('prixInitial').value) - calculerTotalDevis();
+    
+    texte.innerText = `Objet : Suite à l'analyse technique du bien situé à ${donneesAudit.localisation_exacte}
+
+Bonjour,
+
+Je fais suite à notre rendez-vous et à la lecture approfondie du Dossier de Diagnostic Technique (DDT) de votre bien. 
+
+Afin de garantir une transaction transparente et finançable par les futurs acquéreurs (au regard des exigences bancaires strictes sur le taux d'endettement HCSF), nous avons fait chiffrer les éléments réglementaires à reprendre. Le budget de mise aux normes sécurisé s'élève à : ${formatNumber(calculerTotalDevis())} €.
+
+Les points majeurs à corriger identifiés par l'audit concernent :
+${anomaliesTxt}
+
+Dans le contexte du marché actuel, les acheteurs déduisent systématiquement ces montants de leur plan de financement. Pour éviter de subir un refus de prêt, je vous recommande d'ajuster le prix de présentation net vendeur autour de ${formatNumber(prixNetEstime)} €.
+
+Je suis à votre disposition pour en discuter de vive voix et affiner ensemble notre stratégie.
+
+Bien cordialement,`;
+
+    box.style.display = 'block';
+}
+
+// ==========================================================================
+// 14. EXPORT PDF PROFESSIONNEL
 // ==========================================================================
 function exporterPDF() {
     if (!donneesAudit) return showToast("Veuillez générer une analyse d'abord.", "error");
@@ -1138,14 +1321,14 @@ function exporterPDF() {
 
         } catch (error) {
             console.error(">>> ERREUR FATALE PDFMAKE :", error);
-            showToast("Erreur PDF: L'image bloque la génération.", "error");
+            showToast("Erreur PDF: Vérifiez votre console.", "error");
             if(btn) btn.innerHTML = "<i class=\"fa-solid fa-triangle-exclamation\"></i> Échec (Erreur Image)";
         }
     }, 150);
 }
 
 // ==========================================================================
-// 13. COPILOTE (ASSISTANT ONBOARDING)
+// 15. COPILOTE (ASSISTANT ONBOARDING)
 // ==========================================================================
 function toggleCopilot() {
     const widget = document.getElementById('copilot-widget');
@@ -1168,7 +1351,7 @@ function updateCopilot(step) {
         text.innerHTML = "<b>Étape 2/4 : Fichier détecté !</b><br>N'oubliez pas d'indiquer votre Code Postal pour que l'algorithme ajuste les prix des travaux, puis lancez l'audit.";
         bar.style.width = "50%";
     } else if(step === 3) {
-        text.innerHTML = "<b>Étape 3/4 : Analyse réussie !</b><br>Les prix ont été majorés/minotés selon la tension du marché de votre région. Allez dans l'onglet <b>Finance & Stratégie</b>.";
+        text.innerHTML = "<b>Étape 3/4 : Analyse réussie !</b><br>Les prix ont été ajustés selon la tension du marché de votre région. Allez dans l'onglet <b>Finance & Stratégie</b>.";
         bar.style.width = "75%";
     } else if(step === 4) {
         text.innerHTML = "<b>Étape 4/4 : Ingénierie Financière</b><br>Ajustez le curseur de négociation ou simulez le LMNP. N'oubliez pas d'épingler le bien dans l'onglet <b>Comparateur & Suivi</b>.";
