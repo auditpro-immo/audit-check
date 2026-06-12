@@ -38,7 +38,32 @@ let appSettings = {
 };
 
 // ==========================================================================
-// 2. INITIALISATION & ÉCOUTEURS D'ÉVÉNEMENTS
+// 2. INTELLIGENCE GÉOGRAPHIQUE (ANALYSE DU CODE POSTAL)
+// ==========================================================================
+function analyserSecteurLocal(cp) {
+    let dep = String(cp).substring(0, 2);
+    let data = { nom: "France (Moyenne Nationale)", majo: 1.0, texte: "Marché standard. L'algorithme applique la médiane tarifaire nationale de la FFB sans surcoût particulier." };
+    
+    const zonesTendues = ["75", "92", "93", "94", "74", "06"];
+    const zonesLittoralesBZH = ["35", "56", "29", "22", "44"];
+    const zonesSud = ["13", "83", "84", "34"];
+
+    if (zonesTendues.includes(dep)) {
+        data = { nom: "Zone Ultra-Tendue", majo: 1.25, texte: "Forte pénurie d'artisans RGE dans ce département ("+dep+"). L'algorithme a majoré les prix standards de +25% pour coller à la réalité du terrain." };
+    } else if (zonesLittoralesBZH.includes(dep)) {
+        data = { nom: "Secteur Ouest / Bretagne", majo: 1.12, texte: "Département "+dep+" très dynamique. La tension sur les artisans qualifiés impose une majoration de +12% sur les devis d'isolation et d'électricité." };
+    } else if (zonesSud.includes(dep)) {
+        data = { nom: "Bassin Méditerranéen", majo: 1.15, texte: "Forte tension artisanale dans le "+dep+", spécifiquement sur l'installation de PAC/Climatisation. Majoration globale de +15% appliquée." };
+    } else if (dep === "33" || dep === "69" || dep === "31") {
+        data = { nom: "Métropole Attractive", majo: 1.10, texte: "Agglomération en forte croissance ("+dep+"). Les prix du BTP locaux sont environ 10% plus chers que la province classique." };
+    } else if (dep) {
+        data = { nom: "Province Continentale", majo: 1.0, texte: "Marché équilibré (Département "+dep+"). L'outil applique les tarifs médians nationaux sans surcoût." };
+    }
+    return data;
+}
+
+// ==========================================================================
+// 3. INITIALISATION & ÉCOUTEURS
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
     verifierCookies();
@@ -106,7 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ==========================================================================
-// 3. UTILITAIRES DE CALCUL ET D'AFFICHAGE
+// 4. UTILITAIRES DE CALCUL ET D'AFFICHAGE
 // ==========================================================================
 function formatNumber(num) {
     return Number(num).toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).replace(/[\u202F\u00A0]/g, ' ');
@@ -165,7 +190,7 @@ function getSvgArrow(lettre, type) {
 }
 
 // ==========================================================================
-// 4. NAVIGATION ET PROFILS
+// 5. NAVIGATION ET PROFILS
 // ==========================================================================
 function changerOnglet(targetId) {
     document.querySelectorAll('.tab-content').forEach(tab => {
@@ -239,19 +264,6 @@ function changerProfilInterne(profil) {
     if(blocRenov) blocRenov.style.display = profil === 'particulier' ? 'block' : 'none';
     
     updateNavLocks();
-
-    if(profil === "professionnel") {
-        document.getElementById('hero-badge').innerText = "Espace Professionnels (B2B)";
-        document.getElementById('hero-title').innerText = "Justifiez vos estimations et sécurisez vos transactions.";
-        document.getElementById('hero-desc').innerText = "Notre technologie d'analyse traduit instantanément les PDF de diagnostics en rapports chiffrés pour convaincre vos clients.";
-        document.getElementById('form-title').innerText = "Simulateur pour les agences";
-    } else {
-        document.getElementById('hero-badge').innerText = "L'intelligence au service de l'immo";
-        document.getElementById('hero-title').innerText = "Sécurisez votre achat en chiffrant les travaux cachés.";
-        document.getElementById('hero-desc').innerText = "Notre outil analyse l'ensemble des diagnostics obligatoires de la maison que vous visitez. Obtenez le coût estimatif des remises aux normes instantanément.";
-        document.getElementById('form-title').innerText = "Configuration de l'analyse";
-    }
-    
     chargerHistorique(); 
     if(donneesAudit) {
         afficherEcran(); 
@@ -276,7 +288,7 @@ function entrerSurLeSite(profil) {
 }
 
 // ==========================================================================
-// 5. PARAMÈTRES ET MARQUE BLANCHE
+// 6. PARAMÈTRES ET MARQUE BLANCHE
 // ==========================================================================
 function verifierCookies() {
     if (!localStorage.getItem('auditpro_cookies')) {
@@ -291,7 +303,6 @@ function accepterCookies() {
 
 function appliquerSettings() {
     document.documentElement.style.setProperty('--theme-color', appSettings.couleur);
-    
     let headerLogo = document.getElementById('header-logo-color');
     if(headerLogo && appSettings.nomAgence !== 'AuditPro') {
         headerLogo.innerText = ' ' + appSettings.nomAgence.replace('Audit', '');
@@ -299,10 +310,8 @@ function appliquerSettings() {
     
     const inpNotairePart = document.getElementById('fraisNotaireInput');
     const inpMargePart = document.getElementById('margeSecuriteInput');
-    const inpColorPart = document.getElementById('couleurParticulierInput');
     if(inpNotairePart) inpNotairePart.value = appSettings.fraisNotaire;
     if(inpMargePart) inpMargePart.value = appSettings.margeSecurite;
-    if(inpColorPart) inpColorPart.value = appSettings.couleur;
     
     const inpNomPro = document.getElementById('nomAgenceInput');
     const inpColorPro = document.getElementById('couleurAgenceInput');
@@ -333,7 +342,6 @@ function sauvegarderParametresParticulier() {
         afficherEcran();
         genererFiscalite();
     }
-    
     showToast("Paramètres sauvegardés avec succès.");
 }
 
@@ -363,22 +371,8 @@ function reinitialiserMarqueBlanche() {
     showToast("Marque blanche désactivée.");
 }
 
-document.getElementById('logoUploadInput')?.addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            appSettings.logoBase64 = e.target.result;
-            localStorage.setItem('ap_logo', appSettings.logoBase64);
-            let preview = document.getElementById('logo-preview');
-            if(preview) { preview.src = appSettings.logoBase64; preview.style.display = 'block'; }
-        }
-        reader.readAsDataURL(file);
-    }
-});
-
 // ==========================================================================
-// 6. HISTORIQUE LOCAL
+// 7. HISTORIQUE LOCAL
 // ==========================================================================
 function chargerHistorique() {
     const historiqueTable = document.getElementById('historiqueTableBody');
@@ -448,29 +442,29 @@ function viderHistorique() {
 }
 
 // ==========================================================================
-// 7. MOTEUR D'EXTRACTION
+// 8. MOTEUR D'EXTRACTION ET D'ANALYSE
 // ==========================================================================
 function lancerDemo() {
     document.getElementById('prixInitial').value = "320 000";
-    document.getElementById('codePostal').value = "35000"; 
+    document.getElementById('codePostal').value = "56120"; 
     document.getElementById('loyerMensuel').value = "1 300";
     loyerMensuelSaisi = 1300;
     
+    let secteur = analyserSecteurLocal("56120");
+
     donneesAudit = {
-        cp: "35000",
-        localisation_exacte: "Rennes (Secteur Ille-et-Vilaine)",
-        impact_marche: "Métropole régionale en forte croissance économique. La forte demande sur le locatif et le durcissement de la Loi Climat créent une tension sur les artisans certifiés RGE, justifiant un ajustement automatique des devis locaux à la hausse (+18%).",
+        cp: "56120",
+        localisation_exacte: "Josselin ("+secteur.nom+")",
+        impact_marche: secteur.texte,
         date_audit: new Date().toLocaleDateString('fr-FR'),
         prix_initial: 320000,
-        total_decote: 28700,
-        prix_net: 291300,
         dpe_lettre: "F",
         ges_lettre: "F",
         diagnostics: [
-            {titre: "Électricité (Sécurité)", cout: 4500, detail: "Défaut de mise à la terre ou matériel ancien identifié.", action: "Mise en sécurité du tableau électrique par un professionnel.", statut: "Anomalie"},
-            {titre: "DPE (Loi Climat)", cout: 24200, detail: "Logement classé F (Passoire thermique). Pertes de chaleur majeures identifiées.", action: "Isolation des combles et installation d'une Pompe à Chaleur.", statut: "Anomalie"},
-            {titre: "Amiante (Matériaux)", cout: 0, detail: "Aucune trace d'amiante sur les éléments visibles.", action: "Aucune intervention nécessaire.", statut: "Conforme"},
-            {titre: "Plomb (Peintures)", cout: 0, detail: "Aucune trace de plomb au-dessus des seuils réglementaires détectée.", action: "Aucune intervention nécessaire sur les murs.", statut: "Conforme"}
+            {titre: "Électricité (Sécurité)", cout: Math.round(4500 * secteur.majo), detail: "Défaut de mise à la terre identifié.", action: "Mise en sécurité par un professionnel.", statut: "Anomalie"},
+            {titre: "DPE (Loi Climat)", cout: Math.round(24200 * secteur.majo), detail: "Passoire thermique F.", action: "Isolation des combles et PAC.", statut: "Anomalie"},
+            {titre: "Amiante", cout: 0, detail: "Aucune trace d'amiante.", action: "Aucune intervention.", statut: "Conforme"},
+            {titre: "Plomb", cout: 0, detail: "Pas de plomb détecté.", action: "Aucune intervention.", statut: "Conforme"}
         ]
     };
     
@@ -485,15 +479,16 @@ function lancerDemo() {
 async function envoyer() {
     if (userPlan === 'gratuit' && analysesCount >= 3) {
         changerOnglet('#espace');
-        return showToast("Vous avez atteint votre limite de 3 analyses gratuites. Veuillez souscrire à une offre.", "error");
+        return showToast("Vous avez atteint votre limite de 3 analyses gratuites.", "error");
     }
 
     const input = document.getElementById('fichierPdf');
     const prixInput = parseInputNumber(document.getElementById('prixInitial').value);
     const loyerInput = parseInputNumber(document.getElementById('loyerMensuel').value);
-    const cpInput = document.getElementById('codePostal').value || "";
+    const cpInput = document.getElementById('codePostal').value || "75000";
     
     if (prixInput <= 0) return showToast("Veuillez indiquer le prix de vente.", "error");
+    if (!cpInput) return showToast("Veuillez indiquer le Code Postal pour l'algorithme.", "error");
     if (!input || !input.files.length) return showToast("Veuillez charger le fichier PDF.", "error");
 
     const maxSizeMB = 15;
@@ -503,20 +498,6 @@ async function envoyer() {
     
     loyerMensuelSaisi = loyerInput;
     document.getElementById('loading-overlay').style.display = "flex";
-
-    const messagesIA = [
-        "Lecture sécurisée et extraction OCR...",
-        "Analyse réglementaire des diagnostics...",
-        "Calcul des devis moyens pour le département...",
-        "Génération de la matrice financière..."
-    ];
-    
-    let msgIndex = 0;
-    const textElement = document.getElementById('loading-text');
-    const loadInterval = setInterval(() => {
-        if(textElement) textElement.innerText = messagesIA[msgIndex];
-        msgIndex = (msgIndex + 1) % messagesIA.length;
-    }, 1200);
 
     const formData = new FormData();
     formData.append("fichier", input.files[0]);
@@ -529,12 +510,21 @@ async function envoyer() {
         
         donneesAudit = await reponse.json();
         donneesAudit.cp = cpInput;
-        currentDossierId = "AUDIT-" + Math.floor(Math.random() * 90000 + 10000);
         
-        clearInterval(loadInterval);
+        let secteur = analyserSecteurLocal(cpInput);
+        donneesAudit.impact_marche = secteur.texte;
+        
+        // Application de la majoration géographique sur les résultats renvoyés par l'API
+        if(donneesAudit.diagnostics) {
+            donneesAudit.diagnostics.forEach(diag => {
+                if(diag.cout > 0) diag.cout = Math.round(diag.cout * secteur.majo);
+            });
+        }
+        
+        currentDossierId = "AUDIT-" + Math.floor(Math.random() * 90000 + 10000);
         document.getElementById('loading-overlay').style.display = "none";
         
-        ajouterAuHistorique(donneesAudit.localisation_exacte, prixInput, donneesAudit);
+        ajouterAuHistorique("Audit " + cpInput, prixInput, donneesAudit);
 
         analysesCount++;
         localStorage.setItem('_ap_cnt_', analysesCount);
@@ -542,17 +532,16 @@ async function envoyer() {
         afficherEcran();
         renderEditeurDevis();
         genererFiscalite();
-        showToast("Analyse effectuée avec succès.");
+        showToast("Analyse géographique effectuée avec succès.");
 
     } catch (e) {
-        clearInterval(loadInterval);
         document.getElementById('loading-overlay').style.display = "none";
         showToast("Le document est illisible ou la connexion a échoué.", "error");
     }
 }
 
 // ==========================================================================
-// 8. AFFICHAGE DES RÉSULTATS
+// 9. AFFICHAGE DES RÉSULTATS (L'ÉCRAN D'AUDIT)
 // ==========================================================================
 function afficherEcran() {
     if(!donneesAudit) return;
@@ -597,7 +586,7 @@ function afficherEcran() {
     ecran.innerHTML = `
         <div style="border-bottom: 2px solid #E2E8F0; padding-bottom: 20px; margin-bottom: 30px; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:20px;">
             <div>
-                <h2 style="margin:0; font-family:'Merriweather', serif; font-size:28px; color:#0F172A; font-weight:900;">Rapport d'Analyse : ${donneesAudit.localisation_exacte}</h2>
+                <h2 style="margin:0; font-family:'Merriweather', serif; font-size:28px; color:#0F172A; font-weight:900;">Rapport d'Analyse : ${donneesAudit.localisation_exacte || 'Projet Immo'}</h2>
                 <div style="color:#64748B; font-size:14px; margin-top:5px; font-weight:600;">Date d'évaluation : ${donneesAudit.date_audit} | Réf : ${currentDossierId}</div>
             </div>
             <div style="display:flex; gap:15px;">
@@ -628,7 +617,7 @@ function afficherEcran() {
         </div>
         
         <div style="background:#F8FAFC; padding:25px; border-radius:12px; border-left:4px solid var(--theme-color); font-size:14px; color:#475569; margin-bottom:40px; line-height:1.6;">
-            <strong style="color:#0F172A; font-size:15px; display:block; margin-bottom:5px;">Impact de la conjoncture locale :</strong> 
+            <strong style="color:#0F172A; font-size:15px; display:block; margin-bottom:5px;">Intelligence du Secteur :</strong> 
             ${donneesAudit.impact_marche}
         </div>
 
@@ -651,7 +640,7 @@ function afficherEcran() {
                 <tbody>${anomaliesHtml}</tbody>
             </table>
         </div>
-        <p style="font-size:12px; color:#94A3B8; margin-top:15px; font-style:italic;">Avertissement légal : Ces chiffrages statistiques FFB ne se substituent en aucun cas au devis d'un artisan certifié RGE.</p>
+        <p style="font-size:12px; color:#94A3B8; margin-top:15px; font-style:italic;">Avertissement : L'algorithme a ajusté les tarifs médians (FFB) en fonction de la tension immobilière du code postal fourni.</p>
     `;
     
     if (anomalies.length > 0) {
@@ -670,7 +659,7 @@ function afficherEcran() {
                         }]
                     },
                     options: { 
-                        animation: false, // LA SOLUTION POUR NE PLUS FAIRE PLANTER LE PDF !
+                        animation: false, 
                         responsive: true, 
                         maintainAspectRatio: false, 
                         plugins: { 
@@ -687,81 +676,6 @@ function afficherEcran() {
     }
     
     updateCopilot(3);
-}
-
-// ==========================================================================
-// 9. ÉDITEUR DE DEVIS MANUEL
-// ==========================================================================
-function renderEditeurDevis() {
-    const area = document.getElementById('editeur-devis-area');
-    if(!area) return;
-    area.style.display = 'block';
-    
-    if (!donneesAudit.lignesDevis) {
-        donneesAudit.lignesDevis = donneesAudit.diagnostics.filter(d => d.cout > 0).map(d => ({
-            id: Date.now() + Math.random(),
-            titre: d.titre,
-            cout: d.cout,
-            detail: d.detail,
-            action: d.action
-        }));
-    }
-    
-    const tbody = document.getElementById('devis-tbody');
-    tbody.innerHTML = '';
-
-    donneesAudit.lignesDevis.forEach((ligne, index) => {
-        tbody.innerHTML += `
-            <tr>
-                <td style="padding:10px;"><input type="text" class="form-control" value="${ligne.titre}" onchange="updateLigneDevis(${index}, 'titre', this.value)" style="background:#fff;"></td>
-                <td style="padding:10px;"><input type="text" class="form-control price-input" style="text-align:right; font-weight:700; background:#fff;" value="${formatNumber(ligne.cout)}" onchange="updateLigneDevis(${index}, 'cout', this.value)"></td>
-                <td style="padding:10px; text-align:center;"><button class="btn-delete" style="padding:8px 12px;" onclick="supprimerLigneDevis(${index})"><i class="fa-solid fa-trash"></i></button></td>
-            </tr>
-        `;
-    });
-    
-    calculerTotalDevis();
-}
-
-function ajouterLigneDevis() {
-    donneesAudit.lignesDevis.push({ id: Date.now(), titre: "Nouveau poste manuel", cout: 0, detail: "", action: "" });
-    renderEditeurDevis();
-}
-
-function supprimerLigneDevis(index) {
-    donneesAudit.lignesDevis.splice(index, 1);
-    renderEditeurDevis();
-}
-
-function updateLigneDevis(index, champ, valeur) {
-    if (champ === 'cout') {
-        donneesAudit.lignesDevis[index].cout = parseInputNumber(valeur);
-    } else {
-        donneesAudit.lignesDevis[index][champ] = valeur;
-    }
-    calculerTotalDevis();
-}
-
-function calculerTotalDevis() {
-    let totalBrut = donneesAudit.lignesDevis.reduce((sum, ligne) => sum + ligne.cout, 0);
-    
-    let tRen = document.getElementById('tauxRenov');
-    let taux = parseFloat(tRen ? tRen.value : 0);
-    let resteACharge = totalBrut * (1 - taux);
-    
-    let totalSecurise = resteACharge * (1 + (appSettings.margeSecurite / 100));
-    
-    document.getElementById('marge-display').innerText = appSettings.margeSecurite;
-    document.getElementById('devis-total').innerText = formatNumber(totalSecurise) + " €";
-    return totalSecurise;
-}
-
-function sauvegarderDevisManuel() {
-    donneesAudit.total_decote = calculerTotalDevis();
-    donneesAudit.prix_net = parseInputNumber(document.getElementById('prixInitial').value) - donneesAudit.total_decote;
-    afficherEcran();
-    genererFiscalite();
-    showToast("Le montant des travaux a été réajusté avec succès.");
 }
 
 // ==========================================================================
@@ -881,7 +795,7 @@ function calculerFinancePro() {
                 <strong style="color:#0F172A;">+ ${formatNumber(fraisNotaire)} €</strong>
             </div>
             <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:15px;">
-                <span style="color:#64748B;">Travaux (Sécurisés)</span> 
+                <span style="color:#64748B;">Travaux (Sécurisés par code postal)</span> 
                 <strong style="color:#DC2626;">+ ${formatNumber(travaux)} €</strong>
             </div>
             <div style="display:flex; justify-content:space-between; margin-top:20px; padding-top:20px; border-top:1px solid #F1F5F9;">
@@ -933,22 +847,17 @@ function calculerFinancePro() {
                     </div>
                 </div>
             </div>
-            <div style="text-align:center; margin-top: 30px;">
-                <button class="btn-solid" style="background:#fff; color:var(--theme-color);" onclick="ajouterAuPipeline()">
-                    ⭐ Sauvegarder dans mon Pipeline Kanban
-                </button>
-            </div>
         </div>
     `;
 }
 
 // ==========================================================================
-// 11. OUTILS ET PIPELINE (KANBAN)
+// 11. OUTILS ET PIPELINE (COMPARATEUR ET KANBAN)
 // ==========================================================================
 function ajouterComparateur() {
     if (userPlan === 'gratuit') {
         changerOnglet('#espace');
-        return showToast("Le comparateur est réservé aux abonnements Premium.", "error");
+        return showToast("Le comparateur est réservé aux abonnés.", "error");
     }
 
     if (!donneesAudit) return;
@@ -968,7 +877,6 @@ function ajouterComparateur() {
     
     comparateur.push(bien);
     localStorage.setItem('auditpro_comparateur', JSON.stringify(comparateur));
-    
     renderComparateur();
     showToast(`Bien sauvegardé dans le comparateur !`);
 }
@@ -982,9 +890,8 @@ function supprimerComparateur(index) {
 function renderComparateur() {
     const grid = document.getElementById('comparateur-grid');
     if (!grid) return;
-    
     if (comparateur.length === 0) {
-        grid.innerHTML = `<div style="text-align:center; padding: 40px; color: #64748B; background: #fff; border-radius: 12px; border: 1px dashed #CBD5E1; width:100%;">Aucun bien dans le comparateur.</div>`;
+        grid.innerHTML = `<div style="text-align:center; padding: 40px; color: #64748B; background: #fff; border-radius: 12px; border: 1px dashed #CBD5E1; width:100%;">Épingle une analyse ici pour la comparer avec d'autres biens.</div>`;
         return;
     }
     
@@ -995,21 +902,11 @@ function renderComparateur() {
         return `
         <div style="background: #fff; border: 1px solid #E2E8F0; border-top: 4px solid var(--theme-color); border-radius: 16px; padding: 25px; width: 300px; box-shadow: 0 10px 20px rgba(0,0,0,0.03);">
             <h3 style="margin-top: 0; color: #0F172A; border-bottom: 1px solid #F1F5F9; padding-bottom: 15px; font-size: 16px;">${bien.ville}</h3>
-            <div style="margin-bottom: 15px;">
-                <span style="background:#F1F5F9; font-size:12px; padding:4px 8px; border-radius:6px; font-weight:bold;">DPE ${bien.dpe}</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;">
-                <span>Prix</span> <strong>${formatNumber(bien.prix)} €</strong>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;">
-                <span>Travaux</span> <strong style="color:#DC2626;">+ ${formatNumber(bien.travaux)} €</strong>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:14px; margin-top:15px; padding-top:15px; border-top:1px solid #F1F5F9;">
-                <span>Rendement Net</span> <strong style="color:var(--theme-color);">${rentaNette}</strong>
-            </div>
-            <button class="btn-delete" style="width:100%; margin-top:20px;" onclick="supprimerComparateur(${index})">
-                <i class="fa-solid fa-trash"></i> Retirer
-            </button>
+            <div style="margin-bottom: 15px;"><span style="background:#F1F5F9; font-size:12px; padding:4px 8px; border-radius:6px; font-weight:bold;">DPE ${bien.dpe}</span></div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;"><span>Prix FAI</span> <strong>${formatNumber(bien.prix)} €</strong></div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;"><span>Travaux</span> <strong style="color:#DC2626;">+ ${formatNumber(bien.travaux)} €</strong></div>
+            <div style="display:flex; justify-content:space-between; font-size:14px; margin-top:15px; padding-top:15px; border-top:1px solid #F1F5F9;"><span>Rendement Net</span> <strong style="color:var(--theme-color);">${rentaNette}</strong></div>
+            <button class="btn-delete" style="width:100%; margin-top:20px;" onclick="supprimerComparateur(${index})"><i class="fa-solid fa-trash"></i> Retirer</button>
         </div>`;
     }).join('');
 }
@@ -1050,19 +947,13 @@ function chargerKanban() {
                 e.dataTransfer.setData('text/plain', dossier.id);
                 setTimeout(() => card.style.opacity = '0.5', 0);
             });
-            
             card.addEventListener('dragend', () => card.style.opacity = '1');
 
             container.appendChild(card);
         });
 
-        container.addEventListener('dragover', (e) => { 
-            e.preventDefault(); 
-            container.style.background = "#EFF6FF"; 
-        });
-        
+        container.addEventListener('dragover', (e) => { e.preventDefault(); container.style.background = "#EFF6FF"; });
         container.addEventListener('dragleave', () => container.style.background = "transparent");
-        
         container.addEventListener('drop', (e) => {
             e.preventDefault();
             container.style.background = "transparent";
@@ -1081,13 +972,12 @@ function chargerKanban() {
 function ajouterAuPipeline() {
     if (userPlan === 'gratuit') {
         changerOnglet('#espace');
-        return showToast("Le Pipeline Kanban est réservé aux abonnements Premium.", "error");
+        return showToast("Le Suivi de dossier est réservé aux abonnés.", "error");
     }
-
     if (!donneesAudit) return;
     
     const existe = pipelineDossiers.find(d => d.id === currentDossierId);
-    if (existe) return showToast("Ce dossier est déjà dans votre Pipeline.", "error");
+    if (existe) return showToast("Cet audit est déjà dans ton Pipeline.", "error");
 
     const loyerMensuel = parseInputNumber(document.getElementById('loyerMensuel').value);
 
@@ -1106,82 +996,28 @@ function ajouterAuPipeline() {
     localStorage.setItem('auditpro_pipeline', JSON.stringify(pipelineDossiers));
     chargerKanban();
     
-    showToast("Projet ajouté au Pipeline !");
+    showToast("Audit sauvegardé dans ton Suivi (Kanban) !");
     changerOnglet('#outils');
 }
 
 function supprimerDuPipeline(id) {
-    if(confirm("Supprimer ce dossier du pipeline ?")) {
+    if(confirm("Supprimer ce dossier du suivi ?")) {
         pipelineDossiers = pipelineDossiers.filter(d => d.id !== id);
         localStorage.setItem('auditpro_pipeline', JSON.stringify(pipelineDossiers));
         chargerKanban();
-        showToast("Dossier supprimé.");
     }
 }
 
 function viderPipeline() {
-    if(confirm("Êtes-vous sûr de vouloir vider tout votre pipeline ? Cette action est irréversible.")) {
+    if(confirm("Êtes-vous sûr de vouloir vider tout votre tableau de suivi ?")) {
         pipelineDossiers = [];
         localStorage.setItem('auditpro_pipeline', JSON.stringify(pipelineDossiers));
         chargerKanban();
-        showToast("Pipeline purgé avec succès.");
     }
 }
 
 // ==========================================================================
-// 12. GÉNÉRATEURS DE TEXTES (CLAUSES & EMAILS)
-// ==========================================================================
-function genererClause() {
-    if(!donneesAudit) return showToast("Veuillez d'abord analyser un bien.", "error");
-    
-    const box = document.getElementById('box-outil-genere');
-    const texte = document.getElementById('texte-outil-genere');
-    
-    document.getElementById('titre-outil-genere').innerText = "Clause Suspensive pour l'Offre d'Achat :";
-    
-    texte.innerText = `[À copier dans la section "Conditions Suspensives" de votre Offre d'Achat]
-
-La présente offre d'achat est formulée sous la condition suspensive de la réalisation d'une contre-visite par des artisans qualifiés RGE, visant à valider techniquement et financièrement les montants de remise aux normes identifiés dans le Dossier de Diagnostic Technique. 
-
-L'acquéreur se réserve le droit de se rétracter sans pénalité si les devis finaux obtenus pour les travaux d'économie d'énergie et de sécurisation électrique/gaz excèdent l'enveloppe prévisionnelle totale de ${formatNumber(calculerTotalDevis())} Euros TTC.`;
-
-    box.style.display = 'block';
-}
-
-function genererEmailBaisse() {
-    if(!donneesAudit) return showToast("Veuillez d'abord analyser un bien.", "error");
-    
-    const box = document.getElementById('box-outil-genere');
-    const texte = document.getElementById('texte-outil-genere');
-    
-    document.getElementById('titre-outil-genere').innerText = "Brouillon Email - Négociation Vendeur :";
-    
-    let lDdt = donneesAudit.lignesDevis || donneesAudit.diagnostics.filter(a => a.cout > 0);
-    let anomaliesTxt = lDdt.map(a => `- ${a.titre} : ${a.detail || 'Reprise technique requise'}`).join('\n');
-    let prixNetEstime = parseInputNumber(document.getElementById('prixInitial').value) - calculerTotalDevis();
-    
-    texte.innerText = `Objet : Suite à l'analyse technique du bien situé à ${donneesAudit.localisation_exacte}
-
-Bonjour,
-
-Je fais suite à notre rendez-vous et à la lecture approfondie du Dossier de Diagnostic Technique (DDT) de votre bien. 
-
-Afin de garantir une transaction transparente et finançable par les futurs acquéreurs (au regard des exigences bancaires strictes sur le taux d'endettement HCSF), nous avons fait chiffrer les éléments réglementaires à reprendre. Le budget de mise aux normes sécurisé s'élève à : ${formatNumber(calculerTotalDevis())} €.
-
-Les points majeurs à corriger identifiés par l'audit concernent :
-${anomaliesTxt}
-
-Dans le contexte du marché actuel, les acheteurs déduisent systématiquement ces montants de leur plan de financement. Pour éviter de subir un refus de prêt, je vous recommande d'ajuster le prix de présentation net vendeur autour de ${formatNumber(prixNetEstime)} €.
-
-Je suis à votre disposition pour en discuter de vive voix et affiner ensemble notre stratégie.
-
-Bien cordialement,`;
-
-    box.style.display = 'block';
-}
-
-// ==========================================================================
-// 13. EXPORT PDF PROFESSIONNEL (MODE SANS ÉCHEC ULTIME)
+// 12. EXPORT PDF PROFESSIONNEL (MODE SANS ÉCHEC)
 // ==========================================================================
 function exporterPDF() {
     if (!donneesAudit) return showToast("Veuillez générer une analyse d'abord.", "error");
@@ -1230,8 +1066,6 @@ function exporterPDF() {
             }
 
             let nomAgenceStr = (appSettings.nomAgence || "AuditPro").toUpperCase();
-            
-            // On ignore totalement le logo custom pour l'instant pour assurer 100% de stabilité
             let logoBlock = { text: nomAgenceStr, fontSize: 24, bold: true, color: appSettings.couleur || '#1E3A8A', alignment: 'left', letterSpacing: 1 };
 
             let chartBlock = [];
@@ -1251,28 +1085,14 @@ function exporterPDF() {
                 pageSize: 'A4',
                 pageMargins: [ 40, 40, 40, 40 ], 
                 defaultStyle: { font: 'Helvetica' },
-                background: function() { 
-                    return { canvas: [ { type: 'rect', x: 0, y: 0, w: 15, h: 842, color: appSettings.couleur || '#1E3A8A' } ] }; 
-                },
+                background: function() { return { canvas: [ { type: 'rect', x: 0, y: 0, w: 15, h: 842, color: appSettings.couleur || '#1E3A8A' } ] }; },
                 header: function(currentPage) {
                     if (currentPage > 1) {
-                        return { 
-                            columns: [ 
-                                { text: nomAgenceStr, bold: true, color: '#64748B', fontSize: 9 }, 
-                                { text: 'Réf. ' + (currentDossierId || 'MANUEL'), alignment: 'right', color: '#64748B', fontSize: 9 } 
-                            ], 
-                            margin: [40, 20, 40, 0] 
-                        };
+                        return { columns: [ { text: nomAgenceStr, bold: true, color: '#64748B', fontSize: 9 }, { text: 'Réf. ' + (currentDossierId || 'MANUEL'), alignment: 'right', color: '#64748B', fontSize: 9 } ], margin: [40, 20, 40, 0] };
                     }
                 },
                 footer: function(currentPage, pageCount) {
-                    return { 
-                        columns: [ 
-                            { text: 'Étude d\'aide à la décision. Ne remplace pas un devis d\'artisan.', fontSize: 8, color: '#94A3B8', italics: true }, 
-                            { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#94A3B8', bold: true } 
-                        ], 
-                        margin: [40, 20, 40, 0] 
-                    };
+                    return { columns: [ { text: 'Étude d\'aide à la décision. Ne remplace pas un devis d\'artisan.', fontSize: 8, color: '#94A3B8', italics: true }, { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#94A3B8', bold: true } ], margin: [40, 20, 40, 0] };
                 },
                 content: [
                     {
@@ -1310,20 +1130,22 @@ function exporterPDF() {
                 ]
             };
 
-            pdfMake.createPdf(docDefinition).download("AuditPro_Synthese.pdf");
+            let nomDossier = donneesAudit.localisation_exacte ? donneesAudit.localisation_exacte.split(' ')[0] : 'Audit';
+            pdfMake.createPdf(docDefinition).download(`AuditPro_Synthese_${nomDossier}.pdf`);
+            
             showToast("PDF téléchargé avec succès !", "success");
-            if(btn) btn.innerHTML = "<i class=\"fa-solid fa-file-pdf\"></i> Éditer le Bilan Officiel (PDF)";
+            if(btn) btn.innerHTML = "<i class=\"fa-solid fa-file-pdf\"></i> Télécharger le Bilan Pro (PDF)";
 
         } catch (error) {
             console.error(">>> ERREUR FATALE PDFMAKE :", error);
-            showToast("Erreur PDF: " + error.message, "error");
-            if(btn) btn.innerHTML = "<i class=\"fa-solid fa-triangle-exclamation\"></i> Échec (Regarde la console F12)";
+            showToast("Erreur PDF: L'image bloque la génération.", "error");
+            if(btn) btn.innerHTML = "<i class=\"fa-solid fa-triangle-exclamation\"></i> Échec (Erreur Image)";
         }
     }, 150);
 }
 
 // ==========================================================================
-// 14. COPILOTE (ASSISTANT ONBOARDING)
+// 13. COPILOTE (ASSISTANT ONBOARDING)
 // ==========================================================================
 function toggleCopilot() {
     const widget = document.getElementById('copilot-widget');
@@ -1343,13 +1165,13 @@ function updateCopilot(step) {
     if(!text || !bar) return;
 
     if(step === 2) {
-        text.innerHTML = "<b>Étape 2/4 : Fichier détecté !</b><br>Saisissez le prix affiché, puis cliquez sur le bouton bleu 'Lancer l'audit' pour extraire les anomalies.";
+        text.innerHTML = "<b>Étape 2/4 : Fichier détecté !</b><br>N'oubliez pas d'indiquer votre Code Postal pour que l'algorithme ajuste les prix des travaux, puis lancez l'audit.";
         bar.style.width = "50%";
     } else if(step === 3) {
-        text.innerHTML = "<b>Étape 3/4 : Analyse réussie !</b><br>Lisez les résultats ci-dessous. Ensuite, rendez-vous dans l'onglet <b>Finance & Stratégie</b> en haut pour calculer la rentabilité nette.";
+        text.innerHTML = "<b>Étape 3/4 : Analyse réussie !</b><br>Les prix ont été majorés/minotés selon la tension du marché de votre région. Allez dans l'onglet <b>Finance & Stratégie</b>.";
         bar.style.width = "75%";
     } else if(step === 4) {
-        text.innerHTML = "<b>Étape 4/4 : Ingénierie Financière</b><br>Ajustez le curseur de négociation ou simulez le LMNP. Enfin, sauvegardez le bien dans l'onglet <b>Outils & Pipeline</b>.";
+        text.innerHTML = "<b>Étape 4/4 : Ingénierie Financière</b><br>Ajustez le curseur de négociation ou simulez le LMNP. N'oubliez pas d'épingler le bien dans l'onglet <b>Comparateur & Suivi</b>.";
         bar.style.width = "100%";
         setTimeout(() => {
             const widget = document.getElementById('copilot-widget');
