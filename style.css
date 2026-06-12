@@ -180,4 +180,16 @@ input[type="color"].color-picker-custom::-webkit-color-swatch { border-radius: 5
     .content-section { padding: 40px 20px; }
     .kpi-grid { flex-direction: column; }
 
+    /* ==========================================================================
+   10. COPILOTE (ASSISTANT FLOTTANT)
+   ========================================================================== */
+.copilot-widget { position: fixed; bottom: 30px; right: 30px; width: 320px; background: #fff; border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); border: 1px solid #E2E8F0; z-index: 9998; overflow: hidden; transition: all 0.3s ease; }
+.copilot-widget.minimized { transform: translateY(calc(100% - 45px)); }
+.copilot-header { background: #0F172A; color: #fff; padding: 12px 20px; font-weight: 700; font-size: 13px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+.btn-toggle-copilot { background: transparent; border: none; color: #fff; cursor: pointer; font-size: 16px; }
+.copilot-body { padding: 20px; font-size: 13px; color: #475569; line-height: 1.6; }
+.copilot-progress { height: 6px; background: #E2E8F0; width: 100%; }
+.copilot-bar { height: 100%; background: #16A34A; transition: width 0.4s ease; }
+
 }
+
