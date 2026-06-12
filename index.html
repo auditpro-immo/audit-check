@@ -10,11 +10,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=50.0">
+    <link rel="stylesheet" href="style.css?v=51.0">
 </head>
 <body>
 
-    <!-- PORTAIL D'ACCUEIL (INTACT) -->
     <div id="welcome-portal">
         <div class="portal-content">
             <div class="portal-logo">Audit<span style="color: #3B82F6;">Pro</span></div>
@@ -47,10 +46,8 @@
         </div>
     </div>
 
-    <!-- MAIN APP : LE WORKSPACE -->
     <div id="main-app" style="display: none; opacity: 0; transition: opacity 0.5s ease;">
         
-        <!-- HEADER CLAIR ET RANGÉ (5 PILIERS) -->
         <header>
             <div class="logo" style="cursor: pointer;" title="Zone d'activation Admin">
                 Audit<span id="header-logo-color" style="color: #3B82F6;">Pro</span>
@@ -66,9 +63,6 @@
         </header>
 
         <main>
-            <!-- ==========================================
-                 PILIER 1 : L'AUDIT (Le coeur du moteur) 
-                 ========================================== -->
             <div id="audit-tab" class="tab-content active" style="display: block;">
                 <section class="hero" id="audit">
                     <div class="hero-glow"></div>
@@ -94,7 +88,7 @@
                     </div>
                     
                     <div class="form-container">
-                        <h2 id="form-title">Configurer l'analyse</h2>
+                        <h2 id="form-title">Configuration de l'analyse</h2>
                         
                         <div class="form-group" style="margin-bottom: 25px;">
                             <div class="profile-selector">
@@ -108,7 +102,20 @@
                             <input type="text" inputmode="numeric" id="prixInitial" class="form-control price-input" placeholder="Ex : 250 000">
                         </div>
                         
-                        <div class="form-group" id="bloc-loyer" style="display:none;">
+                        <div class="form-group" id="bloc-renov">
+                            <label style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>Profil MaPrimeRénov'</span>
+                                <a href="https://mesaides.france-renov.gouv.fr/" target="_blank" class="theme-text" style="font-size: 11px; text-decoration: none; font-weight: 700;">(Calculer)</a>
+                            </label>
+                            <select id="tauxRenov" class="form-control" onchange="if(donneesAudit) afficherEcran();">
+                                <option value="0">Standard (Pas d'aides / Investisseur)</option>
+                                <option value="0.4">Profil Rose (Revenus aisés - 40%)</option>
+                                <option value="0.6">Profil Violet (Intermédiaires - 60%)</option>
+                                <option value="0.9">Profil Bleu (Très modestes - 90%)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="bloc-loyer">
                             <label>Loyer mensuel brut projeté (€)</label>
                             <input type="text" inputmode="numeric" id="loyerMensuel" class="form-control price-input" placeholder="Ex : 850">
                         </div>
@@ -133,10 +140,8 @@
                 </section>
 
                 <div id="result-wrapper">
-                    <!-- Résultat de l'analyse généré ici -->
                     <div id="contenu-ecran"></div>
                     
-                    <!-- Editeur de devis manuel intégré -->
                     <div id="editeur-devis-area" style="display:none; background: #fff; padding: 40px; border-radius: 24px; border: 1px solid #E2E8F0; margin-top: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
                         <h3 style="margin-top:0; font-size:20px; color:#0F172A; border-bottom:1px solid #F1F5F9; padding-bottom:15px; margin-bottom:20px;">
                             <i class="fa-solid fa-pen-to-square theme-text"></i> Ajustement du Chiffrage
@@ -167,14 +172,10 @@
 
                     <div style="text-align: center; margin-top: 50px; display: flex; flex-direction: column; align-items: center; gap: 20px; padding-bottom: 60px;">
                         <button class="btn-solid theme-bg" id="btnExport" style="padding: 18px 40px; font-size: 16px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);" onclick="exporterPDF('download')"><i class="fa-solid fa-file-pdf"></i> Éditer le Bilan Officiel (PDF)</button>
-                        <div id="action-buttons-container" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; width: 100%; max-width: 600px;"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- ==========================================
-                 PILIER 2 : FINANCE & STRATÉGIE (NOUVEAU)
-                 ========================================== -->
             <div id="finance-tab" class="tab-content">
                 <div class="paywall-container" id="paywall-finance" style="display:none;">
                     <div class="paywall-box theme-border-top">
@@ -193,7 +194,6 @@
 
                     <div id="finance-calculator-area" style="display:none;">
                         
-                        <!-- NOUVEAU : CURSEUR DE NÉGOCIATION (WHAT-IF) -->
                         <div style="background:#fff; padding:30px; border-radius:16px; border:1px solid #E2E8F0; box-shadow:0 10px 30px rgba(0,0,0,0.02); margin-bottom:40px;">
                             <h3 style="margin-top:0; color:#0F172A; display:flex; align-items:center; gap:10px;"><i class="fa-solid fa-sliders theme-text"></i> Scénario de Négociation (What-If)</h3>
                             <p style="color:#64748B; font-size:14px;">Simulez factuellement une baisse du prix d'achat pour observer l'impact direct sur votre rentabilité et votre endettement. <i>(Ne modifie pas le prix du rapport officiel)</i></p>
@@ -207,7 +207,6 @@
                             </div>
                         </div>
 
-                        <!-- NOUVEAU : STRESS-TEST BANCAIRE HCSF -->
                         <div style="background:#F8FAFC; padding:30px; border-radius:16px; border:1px solid #E2E8F0; margin-bottom:40px; border-left:4px solid #F59E0B;">
                             <h3 style="margin-top:0; color:#0F172A; display:flex; align-items:center; gap:10px;"><i class="fa-solid fa-building-columns" style="color:#F59E0B;"></i> Stress-Test Bancaire (Norme HCSF)</h3>
                             <p style="color:#64748B; font-size:14px; margin-bottom:20px;">La Banque de France impose un taux d'endettement maximum de 35%. Renseignez vos revenus pour tester la faisabilité de ce crédit.</p>
@@ -234,7 +233,6 @@
                             </div>
                         </div>
 
-                        <!-- Paramètres Bancaires (Apport, Taux, Charges...) -->
                         <div style="display: flex; gap: 30px; flex-wrap: wrap; margin-bottom: 40px;">
                             <div style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 16px; border: 1px solid #E2E8F0;">
                                 <h4 style="margin-top:0; border-bottom: 1px solid #F1F5F9; padding-bottom: 15px; color:#0F172A;"><i class="fa-solid fa-piggy-bank theme-text"></i> Financement</h4>
@@ -275,15 +273,11 @@
                             </div>
                         </div>
 
-                        <!-- Tableau Croisé LMNP vs Nu (Généré en JS) -->
                         <div id="finance-results-display"></div>
                     </div>
                 </section>
             </div>
 
-            <!-- ==========================================
-                 PILIER 3 : OUTILS & PIPELINE
-                 ========================================== -->
             <div id="outils-tab" class="tab-content">
                 <div class="paywall-container" id="paywall-pipeline" style="display:none;">
                     <div class="paywall-box theme-border-top">
@@ -294,23 +288,18 @@
                 </div>
 
                 <section class="content-section" id="content-pipeline" style="max-width: 1400px;">
-                    
-                    <!-- Les Outils Indépendants -->
                     <h2 class="section-title">La Boîte à Outils du Négociateur</h2>
                     <div class="info-grid" style="margin-bottom: 60px;">
                         <div class="info-card">
                             <h3 style="margin-top:0;"><i class="fa-solid fa-clipboard-check theme-text"></i> Grille de Visite</h3>
                             <p style="color:#64748B; font-size:14px; margin-bottom: 25px;">La checklist ultime pour votre smartphone afin de relever les défauts structurels in situ.</p>
-                            <a href="grille.html" target="_blank" class="btn-outline" style="text-decoration:none;">Ouvrir l'App mobile</a>
+                            <a href="grille.html" target="_blank" class="btn-outline" style="text-decoration:none; display:inline-block; text-align:center;">Ouvrir l'App mobile</a>
                         </div>
-                        
-                        <!-- NOUVEAU : Clauses Suspensives -->
                         <div class="info-card">
                             <h3 style="margin-top:0;"><i class="fa-solid fa-shield-halved theme-text"></i> Clauses Suspensives</h3>
                             <p style="color:#64748B; font-size:14px; margin-bottom: 25px;">Protégez votre offre d'achat avec une formulation juridique bétonnée si l'audit est mauvais.</p>
                             <button class="btn-outline" onclick="genererClause()">Générer la clause</button>
                         </div>
-                        
                         <div class="info-card">
                             <h3 style="margin-top:0;"><i class="fa-regular fa-envelope theme-text"></i> Modèle Relance</h3>
                             <p style="color:#64748B; font-size:14px; margin-bottom: 25px;">Modèle argumenté pour appuyer une baisse de prix face à un vendeur difficile.</p>
@@ -326,15 +315,18 @@
 
                     <hr style="border:none; border-top:1px solid #E2E8F0; margin: 60px 0;">
 
-                    <!-- COMPARATEUR D'ORIGINE -->
                     <div style="margin-bottom: 60px;">
-                        <h2 class="section-title" style="margin-bottom: 30px;">Comparateur de Biens</h2>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
+                            <div>
+                                <h2 class="section-title" style="margin-bottom: 0; text-align: left;">Comparateur de Biens</h2>
+                            </div>
+                            <button class="btn-demo" style="width:auto;" onclick="ajouterComparateur()"><i class="fa-solid fa-plus"></i> Sauvegarder l'audit actuel</button>
+                        </div>
                         <div id="comparateur-grid" style="display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; align-items: stretch;"></div>
                     </div>
 
                     <hr style="border:none; border-top:1px solid #E2E8F0; margin: 60px 0;">
 
-                    <!-- PIPELINE KANBAN -->
                     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
                         <div>
                             <h2 class="section-title" style="margin-bottom: 0; text-align: left;">Pipeline de Transaction</h2>
@@ -364,14 +356,10 @@
                 </section>
             </div>
 
-            <!-- ==========================================
-                 PILIER 4 : RÉGLEMENTATION (Veille Légale)
-                 ========================================== -->
             <div id="loi-tab" class="tab-content">
                 <section class="content-section">
                     <h2 class="section-title">Veille Juridique & Conformité</h2>
                     
-                    <!-- NOUVEAU : CALENDRIER LOI CLIMAT -->
                     <div style="background:#fff; padding:40px; border-radius:16px; border:1px solid #E2E8F0; margin-bottom:50px; box-shadow:0 10px 30px rgba(0,0,0,0.02);">
                         <h3 style="color:#0F172A; margin-top:0; display:flex; align-items:center; gap:10px;"><i class="fa-solid fa-leaf" style="color:#16A34A;"></i> Calendrier "Loi Climat et Résilience"</h3>
                         <p style="color:#64748B; font-size:14px;">La loi du 22 août 2021 impacte directement la rentabilité et la légalité de la mise en location des biens mal isolés (Passoires thermiques). L'audit AuditPro vous aide à devancer ces dates.</p>
@@ -397,7 +385,6 @@
                         </div>
                     </div>
 
-                    <!-- FAQ ORIGINALE -->
                     <h3 style="color:#0F172A; text-align:center; margin-bottom:30px;">Questions Fréquentes (FAQ)</h3>
                     <div class="faq-container">
                         <details><summary>AuditPro remplace-t-il le notaire ou le diagnostiqueur certifié ?</summary><p><strong>Absolument pas.</strong> Seul le DDT réalisé par un technicien certifié a une valeur légale opposable. AuditPro est un outil d'<strong>aide à la décision</strong> qui traduit le DDT en chiffres.</p></details>
@@ -408,17 +395,13 @@
                 </section>
             </div>
 
-            <!-- ==========================================
-                 PILIER 5 : MON ESPACE (Paramètres & Abos)
-                 ========================================== -->
             <div id="espace-tab" class="tab-content">
                 <section class="content-section">
                     <h2 class="section-title">Configuration & Abonnements</h2>
                     
                     <div style="display:flex; gap:40px; flex-wrap:wrap;">
-                        <!-- PARAMETRES GENERAUX -->
                         <div style="flex:1; min-width:350px;">
-                            <div class="card" style="padding: 30px;">
+                            <div class="card" style="padding: 30px; background:#fff; border-radius:16px; border:1px solid #E2E8F0;">
                                 <h3 style="margin-top:0; color:#0F172A; border-bottom:1px solid #E2E8F0; padding-bottom:15px;"><i class="fa-solid fa-sliders theme-text"></i> Variables de Modélisation</h3>
                                 <div class="form-group">
                                     <label>Frais de notaire par défaut (%)</label>
@@ -431,8 +414,7 @@
                                 <button class="btn-solid theme-bg" style="width:100%; margin-top:10px;" onclick="sauvegarderParametresParticulier()">Sauvegarder les variables</button>
                             </div>
 
-                            <!-- ESPACE PRO / MARQUE BLANCHE (Cadenas si non abo) -->
-                            <div class="card" style="padding: 30px; position:relative; margin-top:30px;">
+                            <div class="card" style="padding: 30px; background:#fff; border-radius:16px; border:1px solid #E2E8F0; position:relative; margin-top:30px;">
                                 <div class="paywall-container" id="paywall-pro" style="display:none; padding-top:50px; background:rgba(255,255,255,0.8);">
                                     <div style="background:#fff; padding:20px; border-radius:12px; text-align:center; border:1px solid #E2E8F0; box-shadow:0 10px 20px rgba(0,0,0,0.1);">
                                         <i class="fa-solid fa-lock" style="font-size:24px; color:#64748B; margin-bottom:10px;"></i>
@@ -459,45 +441,44 @@
                                 </div>
                                 <div style="display:flex; gap:10px; margin-top:20px;">
                                     <button class="btn-outline" style="flex:1;" onclick="reinitialiserMarqueBlanche()">Reset</button>
-                                    <button class="btn-solid theme-bg" style="flex:2;" onclick="sauvegarderParametresPro()">Appliquer le Design</button>
+                                    <button class="btn-solid theme-bg" style="flex:2;" onclick="sauvegarderParametresPro()">Appliquer Design</button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- ABONNEMENTS -->
                         <div style="flex:1.5; min-width:350px;">
                             <h3 style="text-align:center; font-family:'Merriweather'; color:#0F172A; font-size:24px; margin-bottom:30px;">Nos Offres</h3>
                             <div style="display:flex; gap:20px; flex-wrap:wrap;">
-                                <div class="pricing-card">
-                                    <h3>Standard</h3>
-                                    <div class="price">0 €</div>
-                                    <ul>
+                                <div class="pricing-card" style="background:#fff; border-radius:16px; border:1px solid #E2E8F0; padding:30px; text-align:center; flex:1;">
+                                    <h3 style="margin:0;">Standard</h3>
+                                    <div style="font-size:36px; font-weight:800; color:#0F172A; margin:15px 0;">0 €</div>
+                                    <ul style="list-style:none; padding:0; text-align:left; font-size:14px; color:#475569; line-height:2;">
                                         <li>✓ 3 analyses DDT par mois</li>
                                         <li>✓ Synthèse PDF basique</li>
                                         <li>✓ Accès base juridique</li>
                                     </ul>
                                 </div>
 
-                                <div class="pricing-card popular">
-                                    <div class="popular-badge">INVESTISSEUR</div>
-                                    <h3>Premium Pro</h3>
-                                    <div class="price">14,99 €<span>/mois</span></div>
-                                    <ul>
+                                <div class="pricing-card popular" style="background:#fff; border-radius:16px; border:2px solid #2563EB; padding:30px; text-align:center; flex:1; position:relative; box-shadow:0 10px 30px rgba(37, 99, 235, 0.1);">
+                                    <div style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#2563EB; color:#fff; padding:4px 12px; border-radius:12px; font-size:11px; font-weight:bold;">PREMIUM PRO</div>
+                                    <h3 style="margin:0;">Mensuel</h3>
+                                    <div style="font-size:36px; font-weight:800; color:#0F172A; margin:15px 0;">14,99 €</div>
+                                    <ul style="list-style:none; padding:0; text-align:left; font-size:14px; color:#475569; line-height:2;">
                                         <li>✓ Analyses illimitées</li>
                                         <li>✓ <b>Modélisation HCSF & LMNP</b></li>
                                         <li>✓ Outils de relance & Pipeline</li>
                                         <li>✓ Option Marque Blanche (Agence)</li>
                                     </ul>
-                                    <button class="btn-solid" style="width:100%;">S'abonner</button>
+                                    <button class="btn-solid theme-bg" style="width:100%; margin-top:15px;">S'abonner</button>
                                 </div>
                             </div>
                             
-                            <div class="card" style="margin-top:30px; padding:20px;">
+                            <div class="card" style="margin-top:30px; padding:20px; background:#fff; border-radius:16px; border:1px solid #E2E8F0;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 15px; margin-bottom: 15px;">
                                     <h3 style="margin: 0; color: #0F172A; font-size: 16px;">Historique Local des Analyses</h3>
                                     <button onclick="viderHistorique()" class="btn-delete" style="padding:6px 12px; font-size:11px;">Purger l'historique</button>
                                 </div>
-                                <div class="table-responsive"><table style="width: 100%; font-size:12px;"><thead><tr><th>Date</th><th>Réf/Ville</th><th style="text-align: right;">Action</th></tr></thead><tbody id="historiqueTableBody"></tbody></table></div>
+                                <div class="table-responsive"><table style="width: 100%; font-size:12px;"><thead><tr><th style="text-align:left; border-bottom:1px solid #E2E8F0; padding-bottom:8px;">Date</th><th style="text-align:left; border-bottom:1px solid #E2E8F0; padding-bottom:8px;">Réf/Ville</th><th style="text-align: right; border-bottom:1px solid #E2E8F0; padding-bottom:8px;">Action</th></tr></thead><tbody id="historiqueTableBody"></tbody></table></div>
                             </div>
                         </div>
                     </div>
@@ -505,23 +486,6 @@
             </div>
 
         </main>
-
-        <!-- MODALES ET TOASTS (ORIGINALES ET INTACTES) -->
-        <div id="modalAnnonce" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.9); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
-            <div style="background: #fff; max-width: 600px; width: 100%; padding: 40px; border-radius: 24px; position: relative;">
-                <button onclick="document.getElementById('modalAnnonce').style.display='none'" style="position: absolute; top: 20px; right: 20px; background: #F1F5F9; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: 700;">✕</button>
-                <h2 style="color: #0F172A; margin-top: 0; font-size: 22px; font-weight: 800;">Copilote IA : Annonce / Relance</h2>
-                <div class="script-box" style="margin-top: 20px;" id="texteAnnonceAgenerer"></div>
-            </div>
-        </div>
-
-        <div id="modalLegale" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.95); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
-            <div style="background: #fff; max-width: 800px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 50px; border-radius: 24px; position: relative;">
-                <button onclick="document.getElementById('modalLegale').style.display='none'" style="position: absolute; top: 25px; right: 25px; background: #F1F5F9; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 700;">Fermer ✕</button>
-                <h2 style="color: #0F172A; border-bottom: 2px solid #F1F5F9; padding-bottom: 15px;">Mentions Légales & RGPD</h2>
-                <p style="font-size: 14px; color: #64748B;">Interface publique sécurisée. Votre fichier PDF est transmis de manière cryptée pour une lecture éphémère en mémoire vive. Il est <strong>immédiatement et définitivement détruit</strong> après l'extraction. Aucun document n'est sauvegardé sur nos disques.</p>
-            </div>
-        </div>
 
         <div id="cookie-banner" class="theme-border-top" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 23, 42, 0.98); color: #fff; padding: 25px; z-index: 10000; text-align: center;">
             <p style="margin: 0 0 15px 0; font-size: 14px;"><strong>Fonctionnement "Hybride Sécurisé" :</strong> Ce site utilise le stockage local de votre navigateur pour sauvegarder vos paramètres (Kanban, Marque Blanche). Acceptez-vous ce fonctionnement ?</p>
@@ -536,7 +500,6 @@
 
     </div>
     
-    <script src="script.js"></script>
+    <script src="script.js?v=52"></script>
 </body>
-
 </html>
