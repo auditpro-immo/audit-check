@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=999">
+    <link rel="stylesheet" href="style.css?v=1000">
 </head>
 <body>
 
@@ -25,34 +25,67 @@
             
             <div class="portal-cards">
                 <div class="portal-card" onclick="entrerSurLeSite('particulier')">
-                    <div class="card-icon-svg" style="margin-bottom: 15px;"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+                    <div class="card-icon-svg" style="margin-bottom: 15px;">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
                     <h3>Acheteur & Investisseur</h3>
                     <p>Analysez les diagnostics, anticipez les travaux, testez votre financement bancaire (HCSF) et modélisez votre rentabilité nette (LMNP).</p>
                     <div class="card-action">Accéder au simulateur →</div>
                 </div>
                 
                 <div class="portal-card" onclick="entrerSurLeSite('professionnel')">
-                    <div class="card-icon-svg" style="margin-bottom: 15px;"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg></div>
+                    <div class="card-icon-svg" style="margin-bottom: 15px;">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                            <rect x="9" y="9" width="6" height="6"></rect>
+                            <line x1="9" y1="1" x2="9" y2="4"></line>
+                            <line x1="15" y1="1" x2="15" y2="4"></line>
+                            <line x1="9" y1="20" x2="9" y2="23"></line>
+                            <line x1="15" y1="20" x2="15" y2="23"></line>
+                            <line x1="20" y1="9" x2="23" y2="9"></line>
+                            <line x1="20" y1="14" x2="23" y2="14"></line>
+                            <line x1="1" y1="9" x2="4" y2="9"></line>
+                            <line x1="1" y1="14" x2="4" y2="14"></line>
+                        </svg>
+                    </div>
                     <h3>Professionnel & Agence</h3>
                     <p>Appuyez vos estimations sur des données factuelles, rassurez vos clients, gérez votre pipeline et éditez des bilans PDF en marque blanche.</p>
                     <div class="card-action">Accéder au tableau de bord →</div>
                 </div>
             </div>
             <div class="portal-footer" style="margin-top: 40px; font-size: 13px; color: #94A3B8;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 5px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Connexion 256-bit sécurisée
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 5px;">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg> Connexion 256-bit sécurisée
             </div>
         </div>
     </div>
 
     <div id="main-app" style="display: none; opacity: 0; transition: opacity 0.5s ease;">
         <header>
-            <div class="logo" style="cursor: pointer;" title="Zone d'activation Admin">Audit<span id="header-logo-color" style="color: #3B82F6;">Pro</span></div>
+            <div class="logo" style="cursor: pointer;" title="Zone d'activation Admin">
+                Audit<span id="header-logo-color" style="color: #3B82F6;">Pro</span>
+            </div>
             <nav>
-                <a href="#audit" class="nav-link active" onclick="changerOnglet('#audit'); return false;"><i class="fa-solid fa-magnifying-glass-chart"></i> 1. L'Audit</a>
-                <a href="#finance" class="nav-link" id="nav-finance" onclick="changerOnglet('#finance'); return false;"><i class="fa-solid fa-chart-line"></i> 2. Finance & Stratégie <span class="lock-icon" style="display: none;">🔒</span></a>
-                <a href="#outils" class="nav-link" id="nav-outils" onclick="changerOnglet('#outils'); return false;"><i class="fa-solid fa-toolbox"></i> 3. Outils & Pipeline <span class="lock-icon" style="display: none;">🔒</span></a>
-                <a href="#loi" class="nav-link" onclick="changerOnglet('#loi'); return false;"><i class="fa-solid fa-scale-balanced"></i> 4. Réglementation</a>
-                <a href="#espace" class="nav-link" onclick="changerOnglet('#espace'); return false;"><i class="fa-solid fa-user-gear"></i> 5. Mon Espace</a>
+                <a href="#audit" class="nav-link active" onclick="changerOnglet('#audit'); return false;">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i> 1. L'Audit
+                </a>
+                <a href="#finance" class="nav-link" id="nav-finance" onclick="changerOnglet('#finance'); return false;">
+                    <i class="fa-solid fa-chart-line"></i> 2. Finance & Stratégie <span class="lock-icon" style="display: none;">🔒</span>
+                </a>
+                <a href="#outils" class="nav-link" id="nav-outils" onclick="changerOnglet('#outils'); return false;">
+                    <i class="fa-solid fa-toolbox"></i> 3. Outils & Pipeline <span class="lock-icon" style="display: none;">🔒</span>
+                </a>
+                <a href="#loi" class="nav-link" onclick="changerOnglet('#loi'); return false;">
+                    <i class="fa-solid fa-scale-balanced"></i> 4. Réglementation
+                </a>
+                <a href="#espace" class="nav-link" onclick="changerOnglet('#espace'); return false;">
+                    <i class="fa-solid fa-user-gear"></i> 5. Mon Espace
+                </a>
             </nav>
             <button class="btn-solid theme-bg" onclick="changerOnglet('#audit'); window.scrollTo(0,0);">Nouvelle Analyse</button>
         </header>
@@ -62,13 +95,34 @@
                 <section class="hero" id="audit">
                     <div class="hero-glow"></div>
                     <div class="hero-content">
-                        <div id="hero-badge" class="theme-text" style="display: inline-block; background: #fff; border: 1px solid #E2E8F0; font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 20px; margin-bottom: 25px;">L'intelligence au service de l'immo</div>
+                        <div id="hero-badge" class="theme-text" style="display: inline-block; background: #fff; border: 1px solid #E2E8F0; font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 20px; margin-bottom: 25px;">
+                            L'intelligence au service de l'immo
+                        </div>
                         <h1 id="hero-title">Sécurisez votre achat en chiffrant les travaux cachés.</h1>
                         <p id="hero-desc">Notre outil analyse l'ensemble des diagnostics obligatoires de la maison que vous visitez. Obtenez le coût estimatif des remises aux normes instantanément.</p>
+                        
                         <div class="hero-features-grid">
-                            <div class="feature-item"><div class="feature-icon" style="background:#EFF6FF; color:#2563EB;">📊</div><div><strong>Lecture Automatisée</strong><span>Extraction OCR des données clés du DPE, Amiante, Électricité.</span></div></div>
-                            <div class="feature-item"><div class="feature-icon" style="background:#F0FDF4; color:#16A34A;">💶</div><div><strong>Chiffrage Localisé</strong><span>Indexation sur les tarifs des artisans (Base FFB).</span></div></div>
-                            <div class="feature-item"><div class="feature-icon" style="background:#FEF2F2; color:#DC2626;">⚖️</div><div><strong>Sécurisation Juridique</strong><span>Aide à la constitution de dossiers de prêts ou de négociation.</span></div></div>
+                            <div class="feature-item">
+                                <div class="feature-icon" style="background:#EFF6FF; color:#2563EB;">📊</div>
+                                <div>
+                                    <strong>Lecture Automatisée</strong>
+                                    <span>Extraction OCR des données clés du DPE, Amiante, Électricité.</span>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon" style="background:#F0FDF4; color:#16A34A;">💶</div>
+                                <div>
+                                    <strong>Chiffrage Localisé</strong>
+                                    <span>Indexation sur les tarifs des artisans (Base FFB).</span>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon" style="background:#FEF2F2; color:#DC2626;">⚖️</div>
+                                <div>
+                                    <strong>Sécurisation Juridique</strong>
+                                    <span>Aide à la constitution de dossiers de prêts ou de négociation.</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -80,10 +134,12 @@
                                 <button type="button" id="btn-pro" class="profile-btn" onclick="changerProfilInterne('professionnel')">Pro / Agence</button>
                             </div>
                         </div>
+
                         <div class="form-group">
                             <label>Prix de présentation (FAI) € *</label>
                             <input type="text" inputmode="numeric" id="prixInitial" class="form-control price-input" placeholder="Ex : 250 000">
                         </div>
+                        
                         <div class="form-group" id="bloc-renov">
                             <label style="display: flex; justify-content: space-between; align-items: center;">
                                 <span>Profil MaPrimeRénov'</span>
@@ -96,14 +152,17 @@
                                 <option value="0.9">Profil Bleu (Très modestes - 90%)</option>
                             </select>
                         </div>
+
                         <div class="form-group" id="bloc-loyer">
                             <label>Loyer mensuel brut projeté (€)</label>
                             <input type="text" inputmode="numeric" id="loyerMensuel" class="form-control price-input" placeholder="Ex : 850">
                         </div>
+
                         <div class="form-group">
                             <label>Code Postal (Indexation Secteur) *</label>
                             <input type="text" inputmode="numeric" id="codePostal" class="form-control" placeholder="Ex : 35000" maxlength="5">
                         </div>
+
                         <div class="form-group" style="margin-bottom: 30px;">
                             <label>Document (DDT ou DPE en PDF) *</label>
                             <div id="drop-zone" class="drop-zone theme-border-hover">
@@ -112,6 +171,7 @@
                                 <input type="file" id="fichierPdf" class="drop-zone-input" accept="application/pdf">
                             </div>
                         </div>
+                        
                         <button class="btn-submit theme-bg" id="btnSubmit" onclick="envoyer()">Lancer l'audit technique</button>
                         <button type="button" class="btn-demo" style="margin-top: 15px;" onclick="lancerDemo()">Lancer une analyse de test (Démo)</button>
                     </div>
@@ -119,21 +179,46 @@
 
                 <div id="result-wrapper">
                     <div id="contenu-ecran"></div>
+                    
                     <div id="editeur-devis-area" style="display:none; background: #fff; padding: 40px; border-radius: 24px; border: 1px solid #E2E8F0; margin-top: 40px;">
-                        <h3 style="margin-top:0; font-size:20px; color:#0F172A; border-bottom:1px solid #F1F5F9; padding-bottom:15px; margin-bottom:20px;"><i class="fa-solid fa-pen-to-square theme-text"></i> Ajustement du Chiffrage</h3>
+                        <h3 style="margin-top:0; font-size:20px; color:#0F172A; border-bottom:1px solid #F1F5F9; padding-bottom:15px; margin-bottom:20px;">
+                            <i class="fa-solid fa-pen-to-square theme-text"></i> Ajustement du Chiffrage
+                        </h3>
                         <p style="color:#64748B; font-size:14px; margin-bottom: 20px;">Vous avez des devis réels d'artisans ? Ajustez les montants de l'algorithme ci-dessous pour affiner la modélisation.</p>
+                        
                         <table style="width: 100%; border-collapse: collapse;">
-                            <thead><tr style="background:#F8FAFC;"><th style="padding:12px; text-align:left;">Poste de travaux</th><th style="padding:12px; text-align:right;">Montant (€)</th><th></th></tr></thead>
+                            <thead>
+                                <tr style="background:#F8FAFC;">
+                                    <th style="padding:12px; text-align:left;">Poste de travaux</th>
+                                    <th style="padding:12px; text-align:right;">Montant (€)</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
                             <tbody id="devis-tbody"></tbody>
-                            <tfoot><tr><td style="padding:15px; text-align:right; font-weight:bold;">TOTAL SÉCURISÉ (Marge <span id="marge-display">10</span>%)</td><td colspan="2" style="padding:15px; text-align:right;"><strong style="color:#DC2626; font-size:18px;" id="devis-total">0 €</strong></td></tr></tfoot>
+                            <tfoot>
+                                <tr>
+                                    <td style="padding:15px; text-align:right; font-weight:bold;">TOTAL SÉCURISÉ (Marge <span id="marge-display">10</span>%)</td>
+                                    <td colspan="2" style="padding:15px; text-align:right;">
+                                        <strong style="color:#DC2626; font-size:18px;" id="devis-total">0 €</strong>
+                                    </td>
+                                </tr>
+                            </tfoot>
                         </table>
+                        
                         <div style="margin-top: 20px; display: flex; gap: 15px;">
-                            <button class="btn-demo" style="width:auto;" onclick="ajouterLigneDevis()"><i class="fa-solid fa-plus"></i> Ajouter une ligne</button>
-                            <button class="btn-solid theme-bg" style="width:auto;" onclick="sauvegarderDevisManuel()"><i class="fa-solid fa-check"></i> Valider l'enveloppe</button>
+                            <button class="btn-demo" style="width:auto;" onclick="ajouterLigneDevis()">
+                                <i class="fa-solid fa-plus"></i> Ajouter une ligne
+                            </button>
+                            <button class="btn-solid theme-bg" style="width:auto;" onclick="sauvegarderDevisManuel()">
+                                <i class="fa-solid fa-check"></i> Valider l'enveloppe
+                            </button>
                         </div>
                     </div>
+
                     <div style="text-align: center; margin-top: 50px; padding-bottom: 60px;">
-                        <button class="btn-solid theme-bg" id="btnExport" style="padding: 18px 40px; font-size: 16px; width: 100%; max-width: 400px;" onclick="exporterPDF()"><i class="fa-solid fa-file-pdf"></i> Éditer le Bilan Officiel (PDF)</button>
+                        <button class="btn-solid theme-bg" id="btnExport" style="padding: 18px 40px; font-size: 16px; width: 100%; max-width: 400px;" onclick="exporterPDF()">
+                            <i class="fa-solid fa-file-pdf"></i> Éditer le Bilan Officiel (PDF)
+                        </button>
                     </div>
                 </div>
             </div>
@@ -149,12 +234,19 @@
 
                 <section class="content-section" id="content-finance">
                     <h2 class="section-title">Ingénierie Financière & Bancaire</h2>
-                    <div id="finance-empty-state" class="empty-state">Veuillez analyser un bien (Onglet 1) en renseignant un "Loyer mensuel" pour modéliser sa rentabilité.</div>
+                    
+                    <div id="finance-empty-state" class="empty-state">
+                        Veuillez analyser un bien (Onglet 1) en renseignant un "Loyer mensuel" pour modéliser sa rentabilité.
+                    </div>
                     
                     <div id="finance-calculator-area" style="display:none;">
+                        
                         <div style="background:#fff; padding:30px; border-radius:16px; border:1px solid #E2E8F0; margin-bottom:40px;">
-                            <h3 style="margin-top:0; color:#0F172A; display:flex; align-items:center; gap:10px;"><i class="fa-solid fa-sliders theme-text"></i> Scénario de Négociation (What-If)</h3>
+                            <h3 style="margin-top:0; color:#0F172A; display:flex; align-items:center; gap:10px;">
+                                <i class="fa-solid fa-sliders theme-text"></i> Scénario de Négociation (What-If)
+                            </h3>
                             <p style="color:#64748B; font-size:14px;">Simulez factuellement une baisse du prix d'achat pour observer l'impact direct sur votre rentabilité et votre endettement.</p>
+                            
                             <div style="margin-top: 20px;">
                                 <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:700;">
                                     <span>Prix Négocié : <span id="prix-nego-display" class="theme-text" style="font-size:18px;">0 €</span></span>
@@ -165,32 +257,77 @@
                         </div>
 
                         <div style="background:#F8FAFC; padding:30px; border-radius:16px; border:1px solid #E2E8F0; margin-bottom:40px; border-left:4px solid #F59E0B;">
-                            <h3 style="margin-top:0; color:#0F172A; display:flex; align-items:center; gap:10px;"><i class="fa-solid fa-building-columns" style="color:#F59E0B;"></i> Stress-Test Bancaire (Norme HCSF)</h3>
+                            <h3 style="margin-top:0; color:#0F172A; display:flex; align-items:center; gap:10px;">
+                                <i class="fa-solid fa-building-columns" style="color:#F59E0B;"></i> Stress-Test Bancaire (Norme HCSF)
+                            </h3>
                             <p style="color:#64748B; font-size:14px; margin-bottom:20px;">La Banque de France impose un taux d'endettement maximum de 35%. Renseignez vos revenus pour tester la faisabilité de ce crédit.</p>
+                            
                             <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:20px;">
-                                <div style="flex:1; min-width:200px;"><label style="font-size:13px; font-weight:600; display:block; margin-bottom:5px;">Revenus nets/mois (€)</label><input type="text" id="hcsf-revenus" class="form-control price-input" value="4500" onchange="updateSimulationFinance()"></div>
-                                <div style="flex:1; min-width:200px;"><label style="font-size:13px; font-weight:600; display:block; margin-bottom:5px;">Autres crédits/mois (€)</label><input type="text" id="hcsf-credits" class="form-control price-input" value="0" onchange="updateSimulationFinance()"></div>
+                                <div style="flex:1; min-width:200px;">
+                                    <label style="font-size:13px; font-weight:600; display:block; margin-bottom:5px;">Revenus nets/mois (€)</label>
+                                    <input type="text" id="hcsf-revenus" class="form-control price-input" value="4500" onchange="updateSimulationFinance()">
+                                </div>
+                                <div style="flex:1; min-width:200px;">
+                                    <label style="font-size:13px; font-weight:600; display:block; margin-bottom:5px;">Autres crédits/mois (€)</label>
+                                    <input type="text" id="hcsf-credits" class="form-control price-input" value="0" onchange="updateSimulationFinance()">
+                                </div>
                             </div>
+                            
                             <div style="background:#fff; padding:15px; border-radius:8px; border:1px solid #E2E8F0;">
-                                <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:13px; font-weight:700;"><span>Taux d'endettement projeté : <span id="hcsf-valeur">0%</span></span><span id="hcsf-statut">Analyse...</span></div>
-                                <div style="width:100%; height:12px; background:#E2E8F0; border-radius:6px; overflow:hidden;"><div id="hcsf-jauge" style="height:100%; width:0%; background:#16A34A; transition:all 0.3s;"></div></div>
+                                <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:13px; font-weight:700;">
+                                    <span>Taux d'endettement projeté : <span id="hcsf-valeur">0%</span></span>
+                                    <span id="hcsf-statut">Analyse...</span>
+                                </div>
+                                <div style="width:100%; height:12px; background:#E2E8F0; border-radius:6px; overflow:hidden;">
+                                    <div id="hcsf-jauge" style="height:100%; width:0%; background:#16A34A; transition:all 0.3s;"></div>
+                                </div>
                             </div>
                         </div>
 
                         <div style="display: flex; gap: 30px; flex-wrap: wrap; margin-bottom: 40px;">
                             <div style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 16px; border: 1px solid #E2E8F0;">
-                                <h4 style="margin-top:0; border-bottom: 1px solid #F1F5F9; padding-bottom: 15px; color:#0F172A;"><i class="fa-solid fa-piggy-bank theme-text"></i> Financement</h4>
-                                <div style="display:flex; justify-content:space-between; margin-bottom: 15px;"><label style="font-size:13px; font-weight:600;">Apport Personnel (€)</label><input type="text" id="fin-apport" class="form-control price-input" style="width: 120px; text-align:right;" value="0" onchange="updateSimulationFinance()"></div>
-                                <div style="display:flex; justify-content:space-between; margin-bottom: 15px;"><label style="font-size:13px; font-weight:600;">Durée (Années)</label><input type="number" id="fin-duree" class="form-control" style="width: 120px; text-align:right;" value="20" onchange="updateSimulationFinance()"></div>
-                                <div style="display:flex; justify-content:space-between; margin-bottom: 15px;"><label style="font-size:13px; font-weight:600;">Taux & Assurance (%)</label><div style="display:flex; gap:5px; width:120px;"><input type="number" id="fin-taux" class="form-control" value="3.5" step="0.1" onchange="updateSimulationFinance()"><input type="number" id="fin-assurance" class="form-control" value="0.3" step="0.1" title="Assurance" onchange="updateSimulationFinance()"></div></div>
+                                <h4 style="margin-top:0; border-bottom: 1px solid #F1F5F9; padding-bottom: 15px; color:#0F172A;">
+                                    <i class="fa-solid fa-piggy-bank theme-text"></i> Financement
+                                </h4>
+                                <div style="display:flex; justify-content:space-between; margin-bottom: 15px;">
+                                    <label style="font-size:13px; font-weight:600;">Apport Personnel (€)</label>
+                                    <input type="text" id="fin-apport" class="form-control price-input" style="width: 120px; text-align:right;" value="0" onchange="updateSimulationFinance()">
+                                </div>
+                                <div style="display:flex; justify-content:space-between; margin-bottom: 15px;">
+                                    <label style="font-size:13px; font-weight:600;">Durée (Années)</label>
+                                    <input type="number" id="fin-duree" class="form-control" style="width: 120px; text-align:right;" value="20" onchange="updateSimulationFinance()">
+                                </div>
+                                <div style="display:flex; justify-content:space-between; margin-bottom: 15px;">
+                                    <label style="font-size:13px; font-weight:600;">Taux & Assurance (%)</label>
+                                    <div style="display:flex; gap:5px; width:120px;">
+                                        <input type="number" id="fin-taux" class="form-control" value="3.5" step="0.1" onchange="updateSimulationFinance()">
+                                        <input type="number" id="fin-assurance" class="form-control" value="0.3" step="0.1" title="Assurance" onchange="updateSimulationFinance()">
+                                    </div>
+                                </div>
                             </div>
+                            
                             <div style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 16px; border: 1px solid #E2E8F0;">
-                                <h4 style="margin-top:0; border-bottom: 1px solid #F1F5F9; padding-bottom: 15px; color:#0F172A;"><i class="fa-solid fa-file-invoice-dollar theme-text"></i> Charges d'Exploitation</h4>
-                                <div style="display:flex; justify-content:space-between; margin-bottom: 15px;"><label style="font-size:13px; font-weight:600;">Taxe Foncière (€/an)</label><input type="text" id="fin-tf" class="form-control price-input" style="width: 120px; text-align:right;" value="800" onchange="updateSimulationFinance()"></div>
-                                <div style="display:flex; justify-content:space-between; margin-bottom: 15px;"><label style="font-size:13px; font-weight:600;">Copro. (Non récup) €/an</label><input type="text" id="fin-copro" class="form-control price-input" style="width: 120px; text-align:right;" value="400" onchange="updateSimulationFinance()"></div>
-                                <div style="display:flex; justify-content:space-between; margin-bottom: 15px;"><label style="font-size:13px; font-weight:600;">PNO & Vacance (%)</label><div style="display:flex; gap:5px; width:120px;"><input type="text" id="fin-pno" class="form-control price-input" value="150" onchange="updateSimulationFinance()"><input type="number" id="fin-vacance" class="form-control" value="5" onchange="updateSimulationFinance()"></div></div>
+                                <h4 style="margin-top:0; border-bottom: 1px solid #F1F5F9; padding-bottom: 15px; color:#0F172A;">
+                                    <i class="fa-solid fa-file-invoice-dollar theme-text"></i> Charges d'Exploitation
+                                </h4>
+                                <div style="display:flex; justify-content:space-between; margin-bottom: 15px;">
+                                    <label style="font-size:13px; font-weight:600;">Taxe Foncière (€/an)</label>
+                                    <input type="text" id="fin-tf" class="form-control price-input" style="width: 120px; text-align:right;" value="800" onchange="updateSimulationFinance()">
+                                </div>
+                                <div style="display:flex; justify-content:space-between; margin-bottom: 15px;">
+                                    <label style="font-size:13px; font-weight:600;">Copro. (Non récup) €/an</label>
+                                    <input type="text" id="fin-copro" class="form-control price-input" style="width: 120px; text-align:right;" value="400" onchange="updateSimulationFinance()">
+                                </div>
+                                <div style="display:flex; justify-content:space-between; margin-bottom: 15px;">
+                                    <label style="font-size:13px; font-weight:600;">PNO & Vacance (%)</label>
+                                    <div style="display:flex; gap:5px; width:120px;">
+                                        <input type="text" id="fin-pno" class="form-control price-input" value="150" onchange="updateSimulationFinance()">
+                                        <input type="number" id="fin-vacance" class="form-control" value="5" onchange="updateSimulationFinance()">
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
                         <div id="finance-results-display"></div>
                     </div>
                 </section>
@@ -207,6 +344,7 @@
 
                 <section class="content-section" id="content-pipeline" style="max-width: 1400px;">
                     <h2 class="section-title">La Boîte à Outils du Négociateur</h2>
+                    
                     <div class="info-grid" style="margin-bottom: 60px;">
                         <div class="info-card">
                             <h3 style="margin-top:0;"><i class="fa-solid fa-clipboard-check theme-text"></i> Grille de Visite</h3>
@@ -236,7 +374,9 @@
                     <div style="margin-bottom: 60px;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
                             <h2 class="section-title" style="margin-bottom: 0;">Comparateur de Biens</h2>
-                            <button class="btn-demo" style="width:auto;" onclick="ajouterComparateur()"><i class="fa-solid fa-plus"></i> Comparer l'audit actuel</button>
+                            <button class="btn-demo" style="width:auto;" onclick="ajouterComparateur()">
+                                <i class="fa-solid fa-plus"></i> Comparer l'audit actuel
+                            </button>
                         </div>
                         <div id="comparateur-grid" style="display: flex; gap: 24px; flex-wrap: wrap; justify-content: center;"></div>
                     </div>
@@ -248,14 +388,28 @@
                             <h2 class="section-title" style="margin-bottom: 0;">Pipeline de Transaction</h2>
                             <p style="color: #64748B; font-size: 16px; margin-top: 5px;">Gérez vos dossiers en glissant les cartes selon l'avancement.</p>
                         </div>
-                        <button class="btn-demo" style="width:auto;" onclick="viderPipeline()"><i class="fa-solid fa-trash"></i> Purger</button>
+                        <button class="btn-demo" style="width:auto;" onclick="viderPipeline()">
+                            <i class="fa-solid fa-trash"></i> Purger
+                        </button>
                     </div>
 
                     <div style="display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px;" id="kanban-board">
-                        <div class="kanban-col"><div class="kanban-header" style="border-top-color: #64748B;">À Étudier <span class="badge" id="count-etude">0</span></div><div class="kanban-zone" id="zone-etude"></div></div>
-                        <div class="kanban-col"><div class="kanban-header" style="border-top-color: #3B82F6;">Visité / Négo <span class="badge" id="count-visite">0</span></div><div class="kanban-zone" id="zone-visite"></div></div>
-                        <div class="kanban-col"><div class="kanban-header" style="border-top-color: #EAB308;">Offre Transmise <span class="badge" id="count-offre">0</span></div><div class="kanban-zone" id="zone-offre"></div></div>
-                        <div class="kanban-col"><div class="kanban-header" style="border-top-color: #22C55E;">Sous Compromis <span class="badge" id="count-compromis">0</span></div><div class="kanban-zone" id="zone-compromis"></div></div>
+                        <div class="kanban-col">
+                            <div class="kanban-header" style="border-top-color: #64748B;">À Étudier <span class="badge" id="count-etude">0</span></div>
+                            <div class="kanban-zone" id="zone-etude"></div>
+                        </div>
+                        <div class="kanban-col">
+                            <div class="kanban-header" style="border-top-color: #3B82F6;">Visité / Négo <span class="badge" id="count-visite">0</span></div>
+                            <div class="kanban-zone" id="zone-visite"></div>
+                        </div>
+                        <div class="kanban-col">
+                            <div class="kanban-header" style="border-top-color: #EAB308;">Offre Transmise <span class="badge" id="count-offre">0</span></div>
+                            <div class="kanban-zone" id="zone-offre"></div>
+                        </div>
+                        <div class="kanban-col">
+                            <div class="kanban-header" style="border-top-color: #22C55E;">Sous Compromis <span class="badge" id="count-compromis">0</span></div>
+                            <div class="kanban-zone" id="zone-compromis"></div>
+                        </div>
                     </div>
                 </section>
             </div>
@@ -263,22 +417,50 @@
             <div id="loi-tab" class="tab-content">
                 <section class="content-section">
                     <h2 class="section-title">Veille Juridique & Conformité</h2>
+                    
                     <div style="background:#fff; padding:40px; border-radius:16px; border:1px solid #E2E8F0; margin-bottom:40px;">
-                        <h3 style="color:#0F172A; margin-top:0; display:flex; align-items:center; gap:10px;"><i class="fa-solid fa-leaf" style="color:#16A34A;"></i> Calendrier "Loi Climat et Résilience"</h3>
+                        <h3 style="color:#0F172A; margin-top:0; display:flex; align-items:center; gap:10px;">
+                            <i class="fa-solid fa-leaf" style="color:#16A34A;"></i> Calendrier "Loi Climat et Résilience"
+                        </h3>
                         <p style="color:#64748B; font-size:14px;">La loi du 22 août 2021 impacte directement la rentabilité et la légalité de la mise en location des biens mal isolés.</p>
+                        
                         <div style="display:flex; justify-content:space-between; margin-top:30px; position:relative;">
                             <div style="position:absolute; top:20px; left:10%; right:10%; height:4px; background:#E2E8F0; z-index:1;"></div>
-                            <div style="text-align:center; position:relative; z-index:2; width:25%;"><div style="width:40px; height:40px; background:#FCA5A5; color:#DC2626; border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; font-weight:800; border:4px solid #fff;">G</div><div style="font-weight:800; margin-top:10px;">1er Janv. 2025</div><div style="font-size:12px; color:#64748B;">Interdiction stricte G.</div></div>
-                            <div style="text-align:center; position:relative; z-index:2; width:25%;"><div style="width:40px; height:40px; background:#FCA5A5; color:#DC2626; border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; font-weight:800; border:4px solid #fff;">F</div><div style="font-weight:800; margin-top:10px;">1er Janv. 2028</div><div style="font-size:12px; color:#64748B;">Interdiction pour les F.</div></div>
-                            <div style="text-align:center; position:relative; z-index:2; width:25%;"><div style="width:40px; height:40px; background:#FDE68A; color:#D97706; border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; font-weight:800; border:4px solid #fff;">E</div><div style="font-weight:800; margin-top:10px;">1er Janv. 2034</div><div style="font-size:12px; color:#64748B;">Interdiction pour les E.</div></div>
+                            <div style="text-align:center; position:relative; z-index:2; width:25%;">
+                                <div style="width:40px; height:40px; background:#FCA5A5; color:#DC2626; border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; font-weight:800; border:4px solid #fff;">G</div>
+                                <div style="font-weight:800; margin-top:10px;">1er Janv. 2025</div>
+                                <div style="font-size:12px; color:#64748B;">Interdiction stricte G.</div>
+                            </div>
+                            <div style="text-align:center; position:relative; z-index:2; width:25%;">
+                                <div style="width:40px; height:40px; background:#FCA5A5; color:#DC2626; border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; font-weight:800; border:4px solid #fff;">F</div>
+                                <div style="font-weight:800; margin-top:10px;">1er Janv. 2028</div>
+                                <div style="font-size:12px; color:#64748B;">Interdiction pour les F.</div>
+                            </div>
+                            <div style="text-align:center; position:relative; z-index:2; width:25%;">
+                                <div style="width:40px; height:40px; background:#FDE68A; color:#D97706; border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; font-weight:800; border:4px solid #fff;">E</div>
+                                <div style="font-weight:800; margin-top:10px;">1er Janv. 2034</div>
+                                <div style="font-size:12px; color:#64748B;">Interdiction pour les E.</div>
+                            </div>
                         </div>
                     </div>
                     
                     <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:60px;">
-                        <div style="flex:1; min-width:300px; background:#fff; padding:30px; border-radius:12px; border:1px solid #E2E8F0; border-left:4px solid #F59E0B;"><h4 style="margin-top:0;"><i class="fa-solid fa-file-signature" style="color:#F59E0B;"></i> L'Audit Énergétique Obligatoire</h4><p style="font-size:13px; color:#475569; margin-bottom:0;">Depuis avril 2023, la vente d'un bien classé F ou G nécessite un Audit Énergétique complet en plus du DPE.</p></div>
-                        <div style="flex:1; min-width:300px; background:#fff; padding:30px; border-radius:12px; border:1px solid #E2E8F0; border-left:4px solid #8B5CF6;"><h4 style="margin-top:0;"><i class="fa-solid fa-house-lock" style="color:#8B5CF6;"></i> Le Permis de Louer</h4><p style="font-size:13px; color:#475569; margin-bottom:0;">Certaines communes imposent une déclaration préalable avant mise en location. À vérifier en mairie.</p></div>
-                        <div style="flex:1; min-width:300px; background:#fff; padding:30px; border-radius:12px; border:1px solid #E2E8F0; border-left:4px solid #EC4899;"><h4 style="margin-top:0;"><i class="fa-solid fa-chart-area" style="color:#EC4899;"></i> L'Encadrement des Loyers</h4><p style="font-size:13px; color:#475569; margin-bottom:0;">Appliqué dans plusieurs agglomérations (Paris, Lille...), il plafonne le loyer maximum exigible hors charges.</p></div>
-                        <div style="flex:1; min-width:300px; background:#fff; padding:30px; border-radius:12px; border:1px solid #E2E8F0; border-left:4px solid #3B82F6;"><h4 style="margin-top:0;"><i class="fa-regular fa-clock" style="color:#3B82F6;"></i> Délai de Rétractation</h4><p style="font-size:13px; color:#475569; margin-bottom:0;">L'acquéreur non professionnel dispose d'un délai de 10 jours après notification du compromis pour se rétracter sans frais.</p></div>
+                        <div style="flex:1; min-width:300px; background:#fff; padding:30px; border-radius:12px; border:1px solid #E2E8F0; border-left:4px solid #F59E0B;">
+                            <h4 style="margin-top:0;"><i class="fa-solid fa-file-signature" style="color:#F59E0B;"></i> L'Audit Énergétique Obligatoire</h4>
+                            <p style="font-size:13px; color:#475569; margin-bottom:0;">Depuis avril 2023, la vente d'un bien classé F ou G nécessite un Audit Énergétique complet en plus du DPE.</p>
+                        </div>
+                        <div style="flex:1; min-width:300px; background:#fff; padding:30px; border-radius:12px; border:1px solid #E2E8F0; border-left:4px solid #8B5CF6;">
+                            <h4 style="margin-top:0;"><i class="fa-solid fa-house-lock" style="color:#8B5CF6;"></i> Le Permis de Louer</h4>
+                            <p style="font-size:13px; color:#475569; margin-bottom:0;">Certaines communes imposent une déclaration préalable avant mise en location. À vérifier en mairie.</p>
+                        </div>
+                        <div style="flex:1; min-width:300px; background:#fff; padding:30px; border-radius:12px; border:1px solid #E2E8F0; border-left:4px solid #EC4899;">
+                            <h4 style="margin-top:0;"><i class="fa-solid fa-chart-area" style="color:#EC4899;"></i> L'Encadrement des Loyers</h4>
+                            <p style="font-size:13px; color:#475569; margin-bottom:0;">Appliqué dans plusieurs agglomérations (Paris, Lille...), il plafonne le loyer maximum exigible hors charges.</p>
+                        </div>
+                        <div style="flex:1; min-width:300px; background:#fff; padding:30px; border-radius:12px; border:1px solid #E2E8F0; border-left:4px solid #3B82F6;">
+                            <h4 style="margin-top:0;"><i class="fa-regular fa-clock" style="color:#3B82F6;"></i> Délai de Rétractation</h4>
+                            <p style="font-size:13px; color:#475569; margin-bottom:0;">L'acquéreur non professionnel dispose d'un délai de 10 jours après notification du compromis pour se rétracter sans frais.</p>
+                        </div>
                     </div>
 
                     <h3 style="color:#0F172A; text-align:center; margin-bottom:30px; font-size:24px;">La Foire Aux Questions (20 Q/R Essentielles)</h3>
@@ -310,21 +492,52 @@
             <div id="espace-tab" class="tab-content">
                 <section class="content-section">
                     <h2 class="section-title">Configuration & Abonnements</h2>
+                    
                     <div style="display:flex; gap:40px; flex-wrap:wrap;">
                         <div style="flex:1; min-width:350px;">
                             <div class="card" style="padding: 30px; background:#fff; border-radius:16px; border:1px solid #E2E8F0;">
-                                <h3 style="margin-top:0; color:#0F172A; border-bottom:1px solid #E2E8F0; padding-bottom:15px;"><i class="fa-solid fa-sliders theme-text"></i> Variables de Modélisation</h3>
-                                <div class="form-group"><label>Frais de notaire par défaut (%)</label><input type="number" id="fraisNotaireInput" class="form-control" value="8"></div>
-                                <div class="form-group"><label>Marge de sécurité travaux (%)</label><input type="number" id="margeSecuriteInput" class="form-control" value="10"></div>
+                                <h3 style="margin-top:0; color:#0F172A; border-bottom:1px solid #E2E8F0; padding-bottom:15px;">
+                                    <i class="fa-solid fa-sliders theme-text"></i> Variables de Modélisation
+                                </h3>
+                                <div class="form-group">
+                                    <label>Frais de notaire par défaut (%)</label>
+                                    <input type="number" id="fraisNotaireInput" class="form-control" value="8">
+                                </div>
+                                <div class="form-group">
+                                    <label>Marge de sécurité travaux (%)</label>
+                                    <input type="number" id="margeSecuriteInput" class="form-control" value="10">
+                                </div>
                                 <button class="btn-solid theme-bg" style="width:100%; margin-top:10px;" onclick="sauvegarderParametresParticulier()">Sauvegarder les variables</button>
                             </div>
+                            
                             <div class="card" style="padding: 30px; background:#fff; border-radius:16px; border:1px solid #E2E8F0; margin-top:30px; position:relative;">
-                                <div class="paywall-container" id="paywall-pro" style="display:none; padding-top:50px; background:rgba(255,255,255,0.8);"><div style="background:#fff; padding:20px; border-radius:12px; text-align:center; border:1px solid #E2E8F0;"><i class="fa-solid fa-lock" style="font-size:24px; color:#64748B; margin-bottom:10px;"></i><h4 style="margin:0;">Option Premium Pro</h4></div></div>
-                                <h3 style="margin-top:0; color:#0F172A; border-bottom:1px solid #E2E8F0; padding-bottom:15px;"><i class="fa-solid fa-copyright theme-text"></i> Marque Blanche (PDF)</h3>
-                                <div class="form-group"><label>Nom de l'Agence / Entité</label><input type="text" id="nomAgenceInput" class="form-control" placeholder="Ex: Agence des Lilas"></div>
-                                <div class="form-group"><label>Couleur du thème</label><input type="color" id="couleurAgenceInput" value="#1E3A8A" class="color-picker-custom" onchange="changerCouleurParticulierTemporaire(this.value)"></div>
-                                <div class="form-group"><label>Logo d'en-tête (PDF)</label><input type="file" id="logoUploadInput" accept="image/*" style="font-size:12px;"><img id="logo-preview" style="display: none; max-height: 40px; margin-top: 10px;"></div>
-                                <div style="display:flex; gap:10px; margin-top:20px;"><button class="btn-outline" style="flex:1;" onclick="reinitialiserMarqueBlanche()">Reset</button><button class="btn-solid theme-bg" style="flex:2;" onclick="sauvegarderParametresPro()">Appliquer</button></div>
+                                <div class="paywall-container" id="paywall-pro" style="display:none; padding-top:50px; background:rgba(255,255,255,0.8);">
+                                    <div style="background:#fff; padding:20px; border-radius:12px; text-align:center; border:1px solid #E2E8F0;">
+                                        <i class="fa-solid fa-lock" style="font-size:24px; color:#64748B; margin-bottom:10px;"></i>
+                                        <h4 style="margin:0;">Option Premium Pro</h4>
+                                    </div>
+                                </div>
+                                
+                                <h3 style="margin-top:0; color:#0F172A; border-bottom:1px solid #E2E8F0; padding-bottom:15px;">
+                                    <i class="fa-solid fa-copyright theme-text"></i> Marque Blanche (PDF)
+                                </h3>
+                                <div class="form-group">
+                                    <label>Nom de l'Agence / Entité</label>
+                                    <input type="text" id="nomAgenceInput" class="form-control" placeholder="Ex: Agence des Lilas">
+                                </div>
+                                <div class="form-group">
+                                    <label>Couleur du thème</label>
+                                    <input type="color" id="couleurAgenceInput" value="#1E3A8A" class="color-picker-custom" onchange="changerCouleurParticulierTemporaire(this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label>Logo d'en-tête (PDF)</label>
+                                    <input type="file" id="logoUploadInput" accept="image/*" style="font-size:12px;">
+                                    <img id="logo-preview" style="display: none; max-height: 40px; margin-top: 10px;">
+                                </div>
+                                <div style="display:flex; gap:10px; margin-top:20px;">
+                                    <button class="btn-outline" style="flex:1;" onclick="reinitialiserMarqueBlanche()">Reset</button>
+                                    <button class="btn-solid theme-bg" style="flex:2;" onclick="sauvegarderParametresPro()">Appliquer</button>
+                                </div>
                             </div>
                         </div>
 
@@ -335,28 +548,57 @@
                                 <div class="pricing-card" style="background:#fff; border-radius:16px; border:1px solid #E2E8F0; padding:30px 20px; text-align:center; flex:1; min-width:200px;">
                                     <h3 style="margin:0; font-size:18px;">Découverte</h3>
                                     <div style="font-size:32px; font-weight:800; color:#0F172A; margin:15px 0;">0 €</div>
-                                    <ul style="list-style:none; padding:0; text-align:left; font-size:13px; color:#475569; line-height:2;"><li>✓ 3 analyses par mois</li><li>✓ Synthèse PDF basique</li><li>✓ Base juridique</li></ul>
+                                    <ul style="list-style:none; padding:0; text-align:left; font-size:13px; color:#475569; line-height:2;">
+                                        <li>✓ 3 analyses par mois</li>
+                                        <li>✓ Synthèse PDF basique</li>
+                                        <li>✓ Base juridique</li>
+                                    </ul>
                                 </div>
 
                                 <div class="pricing-card popular" style="background:#fff; border-radius:16px; border:2px solid #2563EB; padding:30px 20px; text-align:center; flex:1; min-width:200px; position:relative; box-shadow:0 10px 30px rgba(37, 99, 235, 0.1);">
-                                    <div style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#2563EB; color:#fff; padding:4px 12px; border-radius:12px; font-size:10px; font-weight:bold;">INVESTISSEUR</div>
+                                    <div style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#2563EB; color:#fff; padding:4px 12px; border-radius:12px; font-size:10px; font-weight:bold;">
+                                        INVESTISSEUR
+                                    </div>
                                     <h3 style="margin:0; font-size:18px;">Particulier</h3>
-                                    <div style="font-size:32px; font-weight:800; color:#0F172A; margin:15px 0;">14,99 €</div>
-                                    <ul style="list-style:none; padding:0; text-align:left; font-size:13px; color:#475569; line-height:2;"><li>✓ Analyses illimitées</li><li>✓ Modélisation LMNP</li><li>✓ Pipeline Kanban</li></ul>
-                                    <button class="btn-solid theme-bg" style="width:100%; margin-top:15px; padding:10px; font-size:13px;" onclick="window.open('METS_TON_LIEN_STRIPE_ICI', '_blank')">S'abonner</button>
+                                    <div style="font-size:32px; font-weight:800; color:#0F172A; margin:15px 0;">9,99 €</div>
+                                    <ul style="list-style:none; padding:0; text-align:left; font-size:13px; color:#475569; line-height:2;">
+                                        <li>✓ Analyses illimitées</li>
+                                        <li>✓ Modélisation LMNP</li>
+                                        <li>✓ Pipeline Kanban</li>
+                                    </ul>
+                                    <button class="btn-solid theme-bg" style="width:100%; margin-top:15px; padding:10px; font-size:13px;" onclick="window.open('https://buy.stripe.com/7sYaEYcY79Gq1WU3cc', '_blank')">S'abonner</button>
                                 </div>
 
                                 <div class="pricing-card" style="background:#0F172A; border-radius:16px; border:1px solid #1E293B; padding:30px 20px; text-align:center; flex:1; min-width:200px; color:#fff;">
                                     <h3 style="margin:0; font-size:18px; color:#fff;">Premium Pro</h3>
-                                    <div style="font-size:32px; font-weight:800; color:#fff; margin:15px 0;">39,99 €</div>
-                                    <ul style="list-style:none; padding:0; text-align:left; font-size:13px; color:#CBD5E1; line-height:2;"><li>✓ Tout le plan Particulier</li><li>✓ <b>Marque Blanche</b></li><li>✓ Logo de l'Agence</li></ul>
-                                    <button class="btn-solid" style="background:#fff; color:#0F172A; width:100%; margin-top:15px; padding:10px; font-size:13px;" onclick="window.open('METS_TON_DEUXIEME_LIEN_STRIPE_ICI', '_blank')">Devenir Partenaire</button>
+                                    <div style="font-size:32px; font-weight:800; color:#fff; margin:15px 0;">29,99 €</div>
+                                    <ul style="list-style:none; padding:0; text-align:left; font-size:13px; color:#CBD5E1; line-height:2;">
+                                        <li>✓ Tout le plan Particulier</li>
+                                        <li>✓ <b>Marque Blanche</b></li>
+                                        <li>✓ Logo de l'Agence</li>
+                                    </ul>
+                                    <button class="btn-outline" style="width:100%; margin-top:15px; padding:10px; font-size:13px; font-weight:bold; background:#fff; border:none;" onclick="window.open('https://buy.stripe.com/bJeaEY8HRaKu596fZ0', '_blank')">Devenir Partenaire</button>
                                 </div>
 
                             </div>
+                            
                             <div class="card" style="margin-top:30px; padding:20px; background:#fff; border-radius:16px; border:1px solid #E2E8F0;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 15px; margin-bottom: 15px;"><h3 style="margin: 0; color: #0F172A; font-size: 16px;">Historique Local</h3><button onclick="viderHistorique()" class="btn-delete" style="padding:6px 12px; font-size:11px;">Purger</button></div>
-                                <div class="table-responsive"><table style="width: 100%; font-size:12px;"><thead><tr><th style="text-align:left;">Date</th><th style="text-align:left;">Réf/Ville</th><th style="text-align: right;">Action</th></tr></thead><tbody id="historiqueTableBody"></tbody></table></div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 15px; margin-bottom: 15px;">
+                                    <h3 style="margin: 0; color: #0F172A; font-size: 16px;">Historique Local</h3>
+                                    <button onclick="viderHistorique()" class="btn-delete" style="padding:6px 12px; font-size:11px;">Purger</button>
+                                </div>
+                                <div class="table-responsive">
+                                    <table style="width: 100%; font-size:12px;">
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align:left;">Date</th>
+                                                <th style="text-align:left;">Réf/Ville</th>
+                                                <th style="text-align: right;">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="historiqueTableBody"></tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -404,6 +646,7 @@
         </div>
     </div> 
     
-    <script src="script.js?v=999"></script>
+    <script src="script.js?v=1000"></script>
 </body>
+
 </html>
