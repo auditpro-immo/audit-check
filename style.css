@@ -157,5 +157,4 @@ input[type="color"].color-picker-custom::-webkit-color-swatch { border-radius: 5
 .copilot-body { padding: 20px; font-size: 13px; color: #475569; line-height: 1.6; }
 .copilot-progress { height: 6px; background: #E2E8F0; width: 100%; }
 .copilot-bar { height: 100%; background: #16A34A; transition: width 0.4s ease; }
-}
 
