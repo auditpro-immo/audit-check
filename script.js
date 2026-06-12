@@ -76,7 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 dropZone.style.background = "#F0FDF4";
                 document.querySelector('.drop-icon').classList.replace('fa-cloud-arrow-up', 'fa-file-circle-check');
                 document.querySelector('.drop-icon').style.color = "#16A34A";
-                // COPILOTE ETAPE 2
                 updateCopilot(2);
             }
         });
@@ -179,7 +178,6 @@ function changerOnglet(targetId) {
     const lienActif = document.querySelector(`nav a[href="${targetId}"]`);
     if (lienActif) lienActif.classList.add('active');
     
-    // COPILOTE ETAPE 4 (Quand l'utilisateur va dans Finance)
     if(targetId === '#finance') {
         updateCopilot(4);
     }
@@ -576,6 +574,14 @@ function afficherEcran() {
         </tr>
     `).join('');
 
+    // LE CORRECTIF POUR LE GRAPHIQUE EST ICI :
+    // - On utilise height: 350px pour donner de l'espace à la légende.
+    // - max-width: 500px pour éviter qu'il soit trop gros.
+    let graphiqueHtml = anomalies.length > 0 ? `
+        <div style="position: relative; height: 350px; width: 100%; max-width: 500px; margin: 0 auto 40px auto; display: flex; justify-content: center;">
+            <canvas id="coutChart"></canvas>
+        </div>` : '';
+
     ecran.innerHTML = `
         <div style="border-bottom: 2px solid #E2E8F0; padding-bottom: 20px; margin-bottom: 30px; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:20px;">
             <div>
@@ -618,7 +624,7 @@ function afficherEcran() {
             <h3 style="font-size:20px; color:#0F172A; margin:0; font-weight:800;">Extraction de la matrice réglementaire</h3>
         </div>
         
-        ${anomalies.length > 0 ? `<div style="display:flex; justify-content:center; margin-bottom: 30px;"><canvas id="coutChart" width="250" height="250" style="max-width:250px;"></canvas></div>` : ''}
+        ${graphiqueHtml}
 
         <div class="table-responsive">
             <table style="width:100%; border-collapse:collapse;">
@@ -653,16 +659,21 @@ function afficherEcran() {
                     },
                     options: { 
                         animation: { animateScale: true }, 
-                        responsive: false, 
-                        plugins: { legend: { position: 'bottom' } },
-                        cutout: '70%'
+                        responsive: true, 
+                        maintainAspectRatio: false, // Permet de prendre toute la hauteur dispo
+                        plugins: { 
+                            legend: { 
+                                position: 'bottom',
+                                labels: { padding: 15, font: { size: 11, family: "'Inter', sans-serif" } }
+                            } 
+                        },
+                        cutout: '65%'
                     }
                 });
             }
         }, 100);
     }
     
-    // COPILOTE ETAPE 3
     updateCopilot(3);
 }
 
@@ -1118,7 +1129,7 @@ Bien cordialement,`;
 }
 
 // ==========================================================================
-// 13. EXPORT PDF PROFESSIONNEL (pdfMake)
+// 13. EXPORT PDF PROFESSIONNEL AVEC LE GRAPHIQUE INCLUS !
 // ==========================================================================
 function exporterPDF(action = 'download', targetWindow = null) {
     if (!donneesAudit) return showToast("Veuillez générer une analyse d'abord.", "error");
@@ -1157,6 +1168,16 @@ function exporterPDF(action = 'download', targetWindow = null) {
     let logoBlock = appSettings.logoBase64 
         ? { image: appSettings.logoBase64, fit: [150, 55], alignment: 'left' }
         : { text: appSettings.nomAgence.toUpperCase(), fontSize: 24, bold: true, color: appSettings.couleur, alignment: 'left', letterSpacing: 1 };
+
+    // Capture du graphique sous forme d'image pour l'intégrer au PDF
+    let chartBlock = [];
+    let canvasElement = document.getElementById('coutChart');
+    if (canvasElement && lignesDdt.length > 0) {
+        chartBlock = [
+            { text: 'RÉPARTITION DES COÛTS DE REMISE AUX NORMES', style: 'sectionTitle', color: appSettings.couleur, margin: [0, 20, 0, 10] },
+            { image: canvasElement.toDataURL("image/png"), width: 300, alignment: 'center', margin: [0, 0, 0, 30] }
+        ];
+    }
 
     let docDefinition = {
         pageSize: 'A4',
@@ -1222,6 +1243,10 @@ function exporterPDF(action = 'download', targetWindow = null) {
                 table: { widths: ['*'], body: [ [ { stack: [ { text: 'CONTEXTE MACRO-ÉCONOMIQUE', fontSize: 10, bold: true, color: '#fff', margin: [0, 0, 0, 6] }, { text: donneesAudit.impact_marche, fontSize: 9, color: '#F8FAFC', lineHeight: 1.4 } ], padding: 15, fillColor: appSettings.couleur, borderRadius: 8 } ] ] },
                 layout: 'noBorders', margin: [0, 0, 0, 40]
             },
+            
+            // INTÉGRATION DU GRAPHIQUE DANS LE PDF
+            ...chartBlock,
+
             { text: '2. MATRICE RÉGLEMENTAIRE (DDT)', style: 'sectionTitle', color: appSettings.couleur, margin: [0, 10, 0, 10] },
             {
                 table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody },
