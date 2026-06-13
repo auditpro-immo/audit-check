@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1005">
+    <link rel="stylesheet" href="style.css?v=1008">
 </head>
 <body>
 
@@ -521,7 +521,7 @@
                     <h3 style="color:#0F172A; text-align:center; margin-bottom:30px; font-size:24px;">Base de Connaissances Technique</h3>
                     <div class="faq-container">
                         <details><summary>1. La plateforme remplace-t-elle le diagnostiqueur certifié ?</summary><p><strong>Non.</strong> Seul le DDT réalisé par un technicien certifié détient une valeur légale opposable. L'application est un outil d'<strong>aide à l'évaluation budgétaire</strong>.</p></details>
-                        <details><summary>2. Modalités d'attribution de MaPrimeRénov' ?</summary><p>Les subventions sont allouées selon le revenu fiscal de référence (Profils Bleu, Jaune, Violet, Rose). Le chiffrage algorithmique présente un coût avant déduction des primes.</p></details>
+                        <details><summary>2. Modalités d'attribution de MaPrimeRénov' ?</summary><p>Les subventions sont allouées selon le revenu fiscal de référence (Profils Bleu, Jaune, Violet, Rose). Le chiffrage systémique présente un coût avant déduction des primes.</p></details>
                         <details><summary>3. Distinguer une "anomalie mineure" d'un "Danger Grave et Immédiat" (DGI) ?</summary><p>Une défaillance classique justifie une provision pour travaux. Un DGI implique l'interruption de la fourniture énergétique par le gestionnaire de réseau jusqu'à la mise en conformité.</p></details>
                         <details><summary>4. Impact de la localisation sur le chiffrage ?</summary><p>Le système intègre un index de tension du marché du bâtiment. L'indice pondère les prix des devis selon l'offre et la demande du Code Postal renseigné.</p></details>
                         <details><summary>5. Qu'est-ce que la méthode de calcul 3CL (DPE 2021) ?</summary><p>Évaluation de la consommation théorique basée sur les caractéristiques physiques du bâti (isolation, vitrages, système de chauffage), indépendamment des factures d'énergie des occupants.</p></details>
@@ -684,8 +684,9 @@
 
             <footer style="background-color: #0F172A; color: #94A3B8; text-align: center; padding: 40px 20px; font-size: 13px; margin-top: 60px; line-height: 1.8;">
                 © 2026 AuditPro. Tous droits réservés.<br>
-                Les données budgétaires issues de l'application sont indicatives (Index FFB ajusté selon tension géographique) et n'ont aucune force probatoire.<br>
-                <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" class="theme-text" style="text-decoration: underline; margin-top: 15px; display: inline-block; font-weight: 600;">Déclaration de Traitement des Données et Mentions Légales</a>
+                <strong>Sources certifiées :</strong> Les chiffrages s'appuient strictement sur la nomenclature de la <strong>Fédération Française du Bâtiment (FFB)</strong>.<br>
+                Les calculs énergétiques respectent la méthode officielle <strong>3CL-DPE 2021 (ADEME)</strong> et les ratios financiers appliquent les directives du <strong>Haut Conseil de Stabilité Financière (HCSF)</strong>.<br>
+                <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" class="theme-text" style="text-decoration: underline; margin-top: 15px; display: inline-block; font-weight: 600;">Déclaration de Fiabilité des Données & Mentions Légales</a>
             </footer>
 
         </main>
@@ -709,10 +710,35 @@
         </div>
 
         <div id="modalLegale" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.95); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
-            <div style="background: #fff; max-width: 800px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 50px; border-radius: 24px; position: relative;">
-                <button onclick="document.getElementById('modalLegale').style.display='none'" style="position: absolute; top: 25px; right: 25px; background: #F1F5F9; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 700;">Fermer ✕</button>
-                <h2 style="color: #0F172A; border-bottom: 2px solid #F1F5F9; padding-bottom: 15px;">Mentions Légales & RGPD</h2>
-                <p style="font-size: 14px; color: #64748B;">L'outil procède à un transfert chiffré du document pour son traitement informatique immédiat. Les fichiers de diagnostic ne font l'objet d'aucune politique de rétention sur nos serveurs distants.</p>
+            <div style="background: #fff; max-width: 900px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 50px; border-radius: 24px; position: relative;">
+                <button onclick="document.getElementById('modalLegale').style.display='none'" style="position: absolute; top: 25px; right: 25px; background: #F1F5F9; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 700; color:#0F172A;">Fermer ✕</button>
+                
+                <h2 style="color: #0F172A; border-bottom: 2px solid #F1F5F9; padding-bottom: 15px; margin-top:0;">Mentions Légales, Sources des Données & Politique RGPD</h2>
+                
+                <h3 style="color: #1E3A8A; font-size: 16px; margin-top: 20px;">1. Fiabilité et origines des données d'évaluation</h3>
+                <p style="font-size: 13px; color: #475569; line-height: 1.6;">Le système de chiffrage s'appuie exclusivement sur des bases de données professionnelles certifiées :</p>
+                <ul style="font-size: 13px; color: #475569; line-height: 1.6; padding-left: 20px;">
+                    <li><strong>Chiffrage des travaux :</strong> Barèmes médians nationaux issus des référentiels de la <strong>Fédération Française du Bâtiment (FFB)</strong> et des bordereaux de prix de la construction.</li>
+                    <li><strong>Indexation géographique :</strong> Application d'un système de pondération sur la main-d'œuvre et les matériaux, indexé sur le code postal selon les disparités de tension régionales.</li>
+                    <li><strong>Données énergétiques :</strong> Respect strict de la méthode de calcul <strong>3CL-DPE 2021</strong> éditée par le ministère de la Transition écologique et l'<strong>ADEME</strong>.</li>
+                    <li><strong>Normes bancaires :</strong> Actualisation des seuils de taux d'effort (35%) selon les recommandations du <strong>Haut Conseil de Stabilité Financière (HCSF)</strong> et de la <strong>Banque de France</strong>.</li>
+                </ul>
+
+                <h3 style="color: #1E3A8A; font-size: 16px; margin-top: 20px;">2. Cadre d'application et limites de responsabilité</h3>
+                <p style="font-size: 13px; color: #475569; line-height: 1.6;">La plateforme constitue un outil d'assistance à la décision, de pré-chiffrage et d'aide à l'évaluation du risque financier immobilier. Les montants générés sont indicatifs. La plateforme ne se substitue en aucun cas à :</p>
+                <ul style="font-size: 13px; color: #475569; line-height: 1.6; padding-left: 20px;">
+                    <li>Un devis définitif établi par un artisan ou une entreprise certifiée RGE (Reconnu Garant de l'Environnement).</li>
+                    <li>Une expertise juridique, notariale ou à un audit énergétique réglementaire opposable.</li>
+                </ul>
+                <p style="font-size: 13px; color: #475569; line-height: 1.6;">L'éditeur décline toute responsabilité quant à l'exactitude finale des devis réels obtenus sur le terrain par les utilisateurs.</p>
+
+                <h3 style="color: #1E3A8A; font-size: 16px; margin-top: 20px;">3. Confidentialité et Traitement des Données (RGPD)</h3>
+                <p style="font-size: 13px; color: #475569; line-height: 1.6;">L'architecture de la plateforme est conçue selon le principe du "Privacy by Design" :</p>
+                <ul style="font-size: 13px; color: #475569; line-height: 1.6; padding-left: 20px;">
+                    <li><strong>Analyse des documents :</strong> Les fichiers PDF importés transitent via une connexion sécurisée (chiffrement SSL/TLS 256-bit). Le traitement d'extraction s'effectue exclusivement en mémoire vive (RAM).</li>
+                    <li><strong>Zéro conservation :</strong> Les documents originaux et les données sensibles extraites sont systématiquement et définitivement détruits à l'issue de la requête. Aucun stockage n'est effectué sur les serveurs distants.</li>
+                    <li><strong>Données de sauvegarde :</strong> L'historique, les paramètres de marque blanche et le tableau de suivi (Kanban) sont enregistrés localement dans le stockage du navigateur web de l'utilisateur (LocalStorage), garantissant une totale souveraineté sur les données saisies.</li>
+                </ul>
             </div>
         </div>
 
@@ -723,7 +749,7 @@
         </div>
     </div> 
     
-    <script src="script.js?v=1005"></script>
+    <script src="script.js?v=1008"></script>
 </body>
 
 </html>
