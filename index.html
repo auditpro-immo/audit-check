@@ -13,15 +13,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1004">
+    <link rel="stylesheet" href="style.css?v=1005">
 </head>
 <body>
 
     <div id="welcome-portal">
         <div class="portal-content">
             <div class="portal-logo">Audit<span style="color: #3B82F6;">Pro</span></div>
-            <h1>Sélectionnez votre profil d'analyse</h1>
-            <p>L'algorithme s'adapte à votre stratégie immobilière.</p>
+            <h1>Sélection du profil d'utilisation</h1>
+            <p>Configuration de l'interface selon le profil d'activité.</p>
             
             <div class="portal-cards">
                 <div class="portal-card" onclick="entrerSurLeSite('particulier')">
@@ -32,7 +32,7 @@
                         </svg>
                     </div>
                     <h3>Acheteur & Investisseur</h3>
-                    <p>Analysez les diagnostics, anticipez les travaux, testez votre financement (HCSF) et modélisez votre rentabilité nette.</p>
+                    <p>Analyse des diagnostics, chiffrage des travaux, modélisation de la rentabilité nette et de la faisabilité bancaire (HCSF).</p>
                     <div class="card-action">Accéder au simulateur →</div>
                 </div>
                 
@@ -52,7 +52,7 @@
                         </svg>
                     </div>
                     <h3>Professionnel & Agence</h3>
-                    <p>Appuyez vos estimations sur des données factuelles, rassurez vos clients et éditez des bilans PDF en marque blanche.</p>
+                    <p>Support d'estimation factuel, suivi des dossiers clients et édition de bilans PDF en marque blanche.</p>
                     <div class="card-action">Accéder au tableau de bord →</div>
                 </div>
             </div>
@@ -96,31 +96,31 @@
                     <div class="hero-glow"></div>
                     <div class="hero-content">
                         <div id="hero-badge" class="theme-text" style="display: inline-block; background: #fff; border: 1px solid #E2E8F0; font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 20px; margin-bottom: 25px;">
-                            L'intelligence au service de l'immo
+                            L'expertise technique et financière
                         </div>
-                        <h1 id="hero-title">Sécurisez votre achat en chiffrant les travaux cachés.</h1>
-                        <p id="hero-desc">L'outil lit votre PDF de diagnostic (DPE/DDT), identifie les défauts, analyse le marché local via votre Code Postal et vous donne une estimation fiable des travaux de remise aux normes.</p>
+                        <h1 id="hero-title">Analyse et chiffrage des mises aux normes.</h1>
+                        <p id="hero-desc">La plateforme extrait les données des diagnostics obligatoires (DPE/DDT), identifie les non-conformités et établit une estimation des travaux indexée sur les tarifs régionaux du Bâtiment.</p>
                         
                         <div class="hero-features-grid">
                             <div class="feature-item">
                                 <div class="feature-icon" style="background:#EFF6FF; color:#2563EB;">📊</div>
                                 <div>
-                                    <strong>Lecture Automatisée</strong>
-                                    <span>Extraction OCR intelligente des données techniques du bien.</span>
+                                    <strong>Extraction des Données</strong>
+                                    <span>Traitement OCR des éléments clés du DPE, Amiante, Électricité.</span>
                                 </div>
                             </div>
                             <div class="feature-item">
                                 <div class="feature-icon" style="background:#F0FDF4; color:#16A34A;">📍</div>
                                 <div>
-                                    <strong>Intelligence Géographique</strong>
-                                    <span>Les prix s'adaptent automatiquement à la tension de votre Code Postal.</span>
+                                    <strong>Indexation Régionale</strong>
+                                    <span>Ajustement des coûts selon la tension artisanale du code postal.</span>
                                 </div>
                             </div>
                             <div class="feature-item">
                                 <div class="feature-icon" style="background:#FEF2F2; color:#DC2626;">⚖️</div>
                                 <div>
                                     <strong>Sécurisation Juridique</strong>
-                                    <span>Générez des rapports PDF carrés pour négocier ou rassurer la banque.</span>
+                                    <span>Génération de rapports PDF pour la négociation ou le financement.</span>
                                 </div>
                             </div>
                         </div>
@@ -131,7 +131,7 @@
                             Configuration de l'analyse
                             <span class="tooltip-container">
                                 <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                                <span class="tooltip-text">Fournis les données du bien ici. Le Code Postal est crucial : l'algorithme majore ou réduit les prix en fonction des artisans de ta région.</span>
+                                <span class="tooltip-text">Saisie des caractéristiques du bien. Le Code Postal permet l'indexation précise des coûts de travaux sur la région concernée.</span>
                             </span>
                         </h2>
                         <div class="form-group" style="margin-bottom: 25px;">
@@ -149,7 +149,7 @@
                         <div class="form-group" id="bloc-renov">
                             <label style="display: flex; justify-content: space-between; align-items: center;">
                                 <span>Profil MaPrimeRénov'</span>
-                                <a href="https://mesaides.france-renov.gouv.fr/" target="_blank" class="theme-text" style="font-size: 11px; text-decoration: none; font-weight: 700;">(Calculer)</a>
+                                <a href="https://mesaides.france-renov.gouv.fr/" target="_blank" class="theme-text" style="font-size: 11px; text-decoration: none; font-weight: 700;">(Barème)</a>
                             </label>
                             <select id="tauxRenov" class="form-control" onchange="if(donneesAudit) afficherEcran();">
                                 <option value="0">Standard (Pas d'aides / Investisseur)</option>
@@ -165,7 +165,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Code Postal (Impact sur le prix des travaux) *</label>
+                            <label>Code Postal (Indexation sectorielle) *</label>
                             <input type="text" inputmode="numeric" id="codePostal" class="form-control" placeholder="Ex : 56120" maxlength="5">
                         </div>
 
@@ -173,13 +173,13 @@
                             <label>Document (DDT ou DPE en PDF) *</label>
                             <div id="drop-zone" class="drop-zone theme-border-hover">
                                 <i class="fa-solid fa-cloud-arrow-up drop-icon theme-text" style="font-size: 32px; margin-bottom: 10px;"></i>
-                                <span class="drop-zone-text">Cliquez ou déposez votre fichier ici</span>
+                                <span class="drop-zone-text">Charger le document d'analyse</span>
                                 <input type="file" id="fichierPdf" class="drop-zone-input" accept="application/pdf">
                             </div>
                         </div>
                         
-                        <button class="btn-submit theme-bg" id="btnSubmit" onclick="envoyer()">Lancer l'audit technique</button>
-                        <button type="button" class="btn-demo" style="margin-top: 15px;" onclick="lancerDemo()">Tester avec un faux dossier (Démo)</button>
+                        <button class="btn-submit theme-bg" id="btnSubmit" onclick="envoyer()">Démarrer l'audit technique</button>
+                        <button type="button" class="btn-demo" style="margin-top: 15px;" onclick="lancerDemo()">Aperçu avec un dossier factice (Démo)</button>
                     </div>
                 </section>
 
@@ -191,7 +191,7 @@
                             <span><i class="fa-solid fa-pen-to-square theme-text"></i> Ajustement Manuel du Chiffrage</span>
                             <span class="tooltip-container" style="font-size:16px;">
                                 <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                                <span class="tooltip-text">Si tu as reçu de vrais devis d'artisans, tu peux modifier les montants de l'algorithme ici. Tout le reste du rapport se recalculera tout seul.</span>
+                                <span class="tooltip-text">Permet l'intégration de devis réels d'artisans. L'ensemble des métriques du rapport s'actualise automatiquement en fonction des montants saisis.</span>
                             </span>
                         </h3>
                         
@@ -216,7 +216,7 @@
                         
                         <div style="margin-top: 20px; display: flex; gap: 15px;">
                             <button class="btn-demo" style="width:auto;" onclick="ajouterLigneDevis()">
-                                <i class="fa-solid fa-plus"></i> Ajouter une ligne
+                                <i class="fa-solid fa-plus"></i> Insérer une ligne
                             </button>
                             <button class="btn-solid theme-bg" style="width:auto;" onclick="sauvegarderDevisManuel()">
                                 <i class="fa-solid fa-check"></i> Valider l'enveloppe
@@ -226,7 +226,7 @@
 
                     <div style="text-align: center; margin-top: 50px; padding-bottom: 60px;">
                         <button class="btn-solid theme-bg" id="btnExport" style="padding: 18px 40px; font-size: 16px; width: 100%; max-width: 400px;" onclick="exporterPDF()">
-                            <i class="fa-solid fa-file-pdf"></i> Télécharger le Bilan Pro (PDF)
+                            <i class="fa-solid fa-file-pdf"></i> Éditer le Rapport Officiel (PDF)
                         </button>
                     </div>
                 </div>
@@ -236,8 +236,8 @@
                 <div class="paywall-container" id="paywall-finance" style="display:none;">
                     <div class="paywall-box theme-border-top">
                         <h3 style="margin-top:0; color:#0F172A; font-size:20px;">🔒 Ingénierie Financière</h3>
-                        <p style="color:#64748B; font-size:14px; margin-bottom:25px;">Stress-test bancaire, simulateur LMNP et curseurs de négociation sont réservés aux abonnés.</p>
-                        <button class="btn-solid theme-bg" onclick="changerOnglet('#espace')">Débloquer les outils</button>
+                        <p style="color:#64748B; font-size:14px; margin-bottom:25px;">Le simulateur bancaire et l'analyse LMNP sont réservés aux comptes Premium.</p>
+                        <button class="btn-solid theme-bg" onclick="changerOnglet('#espace')">Accéder aux offres</button>
                     </div>
                 </div>
 
@@ -246,29 +246,29 @@
                         Ingénierie Financière & Bancaire
                         <span class="tooltip-container">
                             <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                            <span class="tooltip-text">Cette section calcule la rentabilité de ton projet et simule l'accord de la banque pour le prêt immobilier.</span>
+                            <span class="tooltip-text">Modélisation de la rentabilité de l'investissement et évaluation de la capacité d'emprunt auprès des établissements bancaires.</span>
                         </span>
                     </h2>
                     
                     <div id="finance-empty-state" class="empty-state">
-                        Veuillez analyser un bien (Onglet 1) en renseignant un "Loyer mensuel" pour modéliser sa rentabilité.
+                        Définir un "Loyer mensuel" dans le panneau de configuration (Onglet 1) pour débloquer l'analyse de rentabilité.
                     </div>
                     
                     <div id="finance-calculator-area" style="display:none;">
                         
                         <div style="background:#fff; padding:30px; border-radius:16px; border:1px solid #E2E8F0; margin-bottom:40px;">
                             <h3 style="margin-top:0; color:#0F172A; display:flex; align-items:center; gap:10px;">
-                                <span><i class="fa-solid fa-sliders theme-text"></i> Scénario de Négociation (What-If)</span>
+                                <span><i class="fa-solid fa-sliders theme-text"></i> Scénario de Négociation</span>
                                 <span class="tooltip-container">
                                     <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                                    <span class="tooltip-text">Baisse le curseur pour voir comment une négociation du prix d'achat booste ta rentabilité en temps réel.</span>
+                                    <span class="tooltip-text">Simulation dynamique : variation du prix d'achat pour observer les répercussions immédiates sur le rendement et l'endettement.</span>
                                 </span>
                             </h3>
                             
                             <div style="margin-top: 20px;">
                                 <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:700;">
-                                    <span>Prix Négocié : <span id="prix-nego-display" class="theme-text" style="font-size:18px;">0 €</span></span>
-                                    <span style="color:#DC2626;">Rabais simulé : <span id="rabais-display">0 €</span></span>
+                                    <span>Prix d'Acquisition : <span id="prix-nego-display" class="theme-text" style="font-size:18px;">0 €</span></span>
+                                    <span style="color:#DC2626;">Décote appliquée : <span id="rabais-display">0 €</span></span>
                                 </div>
                                 <input type="range" id="nego-slider" class="range-slider" min="0" max="100" value="100" oninput="updateSimulationFinance()">
                             </div>
@@ -276,28 +276,28 @@
 
                         <div style="background:#F8FAFC; padding:30px; border-radius:16px; border:1px solid #E2E8F0; margin-bottom:40px; border-left:4px solid #F59E0B;">
                             <h3 style="margin-top:0; color:#0F172A; display:flex; align-items:center; gap:10px;">
-                                <span><i class="fa-solid fa-building-columns" style="color:#F59E0B;"></i> Stress-Test Bancaire (Norme HCSF)</span>
+                                <span><i class="fa-solid fa-building-columns" style="color:#F59E0B;"></i> Critères d'Endettement (Norme HCSF)</span>
                                 <span class="tooltip-container">
                                     <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                                    <span class="tooltip-text">Les banques refusent de prêter si tes crédits dépassent 35% de tes revenus. Rentre ton salaire ici pour vérifier que le projet passe.</span>
+                                    <span class="tooltip-text">Test de solvabilité légal. Les directives de la Banque de France plafonnent le taux d'effort à 35% des revenus nets.</span>
                                 </span>
                             </h3>
                             
                             <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:20px;">
                                 <div style="flex:1; min-width:200px;">
-                                    <label style="font-size:13px; font-weight:600; display:block; margin-bottom:5px;">Revenus nets/mois (€)</label>
+                                    <label style="font-size:13px; font-weight:600; display:block; margin-bottom:5px;">Revenus mensuels nets (€)</label>
                                     <input type="text" id="hcsf-revenus" class="form-control price-input" value="4500" onchange="updateSimulationFinance()">
                                 </div>
                                 <div style="flex:1; min-width:200px;">
-                                    <label style="font-size:13px; font-weight:600; display:block; margin-bottom:5px;">Autres crédits/mois (€)</label>
+                                    <label style="font-size:13px; font-weight:600; display:block; margin-bottom:5px;">Charges de crédits existantes (€)</label>
                                     <input type="text" id="hcsf-credits" class="form-control price-input" value="0" onchange="updateSimulationFinance()">
                                 </div>
                             </div>
                             
                             <div style="background:#fff; padding:15px; border-radius:8px; border:1px solid #E2E8F0;">
                                 <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:13px; font-weight:700;">
-                                    <span>Taux d'endettement projeté : <span id="hcsf-valeur">0%</span></span>
-                                    <span id="hcsf-statut">Analyse...</span>
+                                    <span>Taux d'effort calculé : <span id="hcsf-valeur">0%</span></span>
+                                    <span id="hcsf-statut">En attente...</span>
                                 </div>
                                 <div style="width:100%; height:12px; background:#E2E8F0; border-radius:6px; overflow:hidden;">
                                     <div id="hcsf-jauge" style="height:100%; width:0%; background:#16A34A; transition:all 0.3s;"></div>
@@ -309,6 +309,10 @@
                             <div style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 16px; border: 1px solid #E2E8F0;">
                                 <h4 style="margin-top:0; border-bottom: 1px solid #F1F5F9; padding-bottom: 15px; color:#0F172A; display:flex; justify-content:space-between;">
                                     <span><i class="fa-solid fa-piggy-bank theme-text"></i> Financement Bancaire</span>
+                                    <span class="tooltip-container" style="font-size:16px;">
+                                        <i class="fa-solid fa-circle-info tooltip-icon"></i>
+                                        <span class="tooltip-text">Paramètres spécifiques du prêt immobilier (capital propre, durée d'amortissement et taux d'intérêts applicables).</span>
+                                    </span>
                                 </h4>
                                 <div style="display:flex; justify-content:space-between; margin-bottom: 15px;">
                                     <label style="font-size:13px; font-weight:600;">Apport Personnel (€)</label>
@@ -329,18 +333,22 @@
                             
                             <div style="flex: 1; min-width: 300px; background: #fff; padding: 30px; border-radius: 16px; border: 1px solid #E2E8F0;">
                                 <h4 style="margin-top:0; border-bottom: 1px solid #F1F5F9; padding-bottom: 15px; color:#0F172A; display:flex; justify-content:space-between;">
-                                    <span><i class="fa-solid fa-file-invoice-dollar theme-text"></i> Charges Annuelles</span>
+                                    <span><i class="fa-solid fa-file-invoice-dollar theme-text"></i> Dépenses d'Exploitation</span>
+                                    <span class="tooltip-container" style="font-size:16px;">
+                                        <i class="fa-solid fa-circle-info tooltip-icon"></i>
+                                        <span class="tooltip-text">Charges annuelles récurrentes liées à la détention du bien. Indicateurs indispensables au calcul de la rentabilité nette.</span>
+                                    </span>
                                 </h4>
                                 <div style="display:flex; justify-content:space-between; margin-bottom: 15px;">
                                     <label style="font-size:13px; font-weight:600;">Taxe Foncière (€/an)</label>
                                     <input type="text" id="fin-tf" class="form-control price-input" style="width: 120px; text-align:right;" value="800" onchange="updateSimulationFinance()">
                                 </div>
                                 <div style="display:flex; justify-content:space-between; margin-bottom: 15px;">
-                                    <label style="font-size:13px; font-weight:600;">Copro. (Non récup) €/an</label>
+                                    <label style="font-size:13px; font-weight:600;">Charges Copro. (€/an)</label>
                                     <input type="text" id="fin-copro" class="form-control price-input" style="width: 120px; text-align:right;" value="400" onchange="updateSimulationFinance()">
                                 </div>
                                 <div style="display:flex; justify-content:space-between; margin-bottom: 15px;">
-                                    <label style="font-size:13px; font-weight:600;">PNO & Vacance (%)</label>
+                                    <label style="font-size:13px; font-weight:600;">Assurance PNO & Vacance</label>
                                     <div style="display:flex; gap:5px; width:120px;">
                                         <input type="text" id="fin-pno" class="form-control price-input" value="150" onchange="updateSimulationFinance()">
                                         <input type="number" id="fin-vacance" class="form-control" value="5" onchange="updateSimulationFinance()">
@@ -358,25 +366,25 @@
                 <div class="paywall-container" id="paywall-pipeline" style="display:none;">
                     <div class="paywall-box theme-border-top">
                         <h3 style="margin-top:0; color:#0F172A; font-size:20px;">🔒 Suivi & Stratégie</h3>
-                        <p style="color:#64748B; font-size:14px; margin-bottom:25px;">La sauvegarde illimitée des audits et le Pipeline Kanban sont réservés aux abonnés.</p>
-                        <button class="btn-solid theme-bg" onclick="changerOnglet('#espace')">Voir les offres</button>
+                        <p style="color:#64748B; font-size:14px; margin-bottom:25px;">La sauvegarde et le système Kanban sont réservés aux comptes Premium.</p>
+                        <button class="btn-solid theme-bg" onclick="changerOnglet('#espace')">Options d'abonnement</button>
                     </div>
                 </div>
 
                 <section class="content-section" id="content-pipeline" style="max-width: 1400px;">
                     
                     <h2 class="section-title" style="margin-bottom: 40px;">
-                        Tableau de Comparaison Rapide
+                        Tableau de Comparaison
                         <span class="tooltip-container">
                             <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                            <span class="tooltip-text">Clique sur "Comparer l'audit actuel" pour sauvegarder le bien sur cette grille. C'est l'idéal pour comparer 2 ou 3 maisons entre elles.</span>
+                            <span class="tooltip-text">Sauvegarde des métriques du bien actuel afin d'évaluer et de comparer plusieurs opportunités d'investissement simultanément.</span>
                         </span>
                     </h2>
                     
                     <div style="margin-bottom: 60px;">
                         <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
                             <button class="btn-solid theme-bg" style="width:auto; border-radius: 8px;" onclick="ajouterComparateur()">
-                                <i class="fa-solid fa-thumbtack"></i> Épingler l'audit actuel au tableau
+                                <i class="fa-solid fa-thumbtack"></i> Épingler l'analyse au comparateur
                             </button>
                         </div>
                         <div id="comparateur-grid" style="display: flex; gap: 24px; flex-wrap: wrap; justify-content: flex-start;"></div>
@@ -387,16 +395,16 @@
                     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
                         <div>
                             <h2 class="section-title" style="margin-bottom: 0; justify-content: flex-start;">
-                                Mes Audits Sauvegardés (Pipeline)
+                                Suivi des Transactions (Kanban)
                                 <span class="tooltip-container">
                                     <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                                    <span class="tooltip-text">La vraie force d'AuditPro : prends la carte d'un de tes audits et glisse-la dans la bonne colonne pour savoir exactement où tu en es dans tes recherches.</span>
+                                    <span class="tooltip-text">Système de gestion visuelle de portefeuille. Organiser l'avancement des dossiers par simple glisser-déposer.</span>
                                 </span>
                             </h2>
-                            <p style="color: #64748B; font-size: 16px; margin-top: 5px;">Toutes vos analyses peuvent être glissées dans ce Kanban de suivi.</p>
+                            <p style="color: #64748B; font-size: 16px; margin-top: 5px;">Organisation de l'état d'avancement des projets immobiliers.</p>
                         </div>
                         <button class="btn-delete" style="width:auto; background:transparent; border:1px solid #E2E8F0; color:#64748B;" onclick="viderPipeline()">
-                            <i class="fa-solid fa-trash"></i> Vider le tableau
+                            <i class="fa-solid fa-trash"></i> Réinitialiser le tableau
                         </button>
                     </div>
 
@@ -410,7 +418,7 @@
                             <div class="kanban-zone" id="zone-visite"></div>
                         </div>
                         <div class="kanban-col">
-                            <div class="kanban-header" style="border-top-color: #EAB308;">3. Négo en cours <span class="badge" id="count-offre">0</span></div>
+                            <div class="kanban-header" style="border-top-color: #EAB308;">3. Négociation <span class="badge" id="count-offre">0</span></div>
                             <div class="kanban-zone" id="zone-offre"></div>
                         </div>
                         <div class="kanban-col">
@@ -418,6 +426,40 @@
                             <div class="kanban-zone" id="zone-compromis"></div>
                         </div>
                     </div>
+
+                    <hr style="border:none; border-top:1px solid #E2E8F0; margin: 60px 0;">
+                    
+                    <h2 class="section-title">
+                        Ressources Documentaires
+                        <span class="tooltip-container">
+                            <i class="fa-solid fa-circle-info tooltip-icon"></i>
+                            <span class="tooltip-text">Génération de documents et de modèles de clauses juridiques basés sur les résultats de l'analyse technique.</span>
+                        </span>
+                    </h2>
+                    <div class="info-grid" style="margin-bottom: 60px;">
+                        <div class="info-card">
+                            <h3 style="margin-top:0;"><i class="fa-solid fa-clipboard-check theme-text"></i> Grille de Visite</h3>
+                            <p style="color:#64748B; font-size:14px; margin-bottom: 25px;">Checklist d'inspection visuelle des défauts structurels in situ.</p>
+                            <a href="grille.html" target="_blank" class="btn-outline" style="text-decoration:none; display:inline-block; text-align:center; width: 100%;">Accéder à l'application</a>
+                        </div>
+                        <div class="info-card">
+                            <h3 style="margin-top:0;"><i class="fa-solid fa-shield-halved theme-text"></i> Clauses Suspensives</h3>
+                            <p style="color:#64748B; font-size:14px; margin-bottom: 25px;">Formulation juridique de protection en fonction du montant des travaux.</p>
+                            <button class="btn-outline" style="width: 100%;" onclick="genererClause()">Éditer la clause</button>
+                        </div>
+                        <div class="info-card">
+                            <h3 style="margin-top:0;"><i class="fa-regular fa-envelope theme-text"></i> Argumentaire Négociation</h3>
+                            <p style="color:#64748B; font-size:14px; margin-bottom: 25px;">Modèle de communication pour appuyer une révision du prix de vente.</p>
+                            <button class="btn-outline" style="width: 100%;" onclick="genererEmailBaisse()">Générer le modèle</button>
+                        </div>
+                    </div>
+                    
+                    <div id="box-outil-genere" style="display:none; margin-bottom:60px;">
+                        <h4 style="color:#0F172A;" id="titre-outil-genere">Document :</h4>
+                        <div class="script-box" id="texte-outil-genere"></div>
+                        <button class="btn-solid theme-bg" style="margin-top: 15px;" onclick="copierScript('texte-outil-genere')">Copier le document</button>
+                    </div>
+
                 </section>
             </div>
 
@@ -427,15 +469,15 @@
                         Veille Juridique & Conformité
                         <span class="tooltip-container">
                             <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                            <span class="tooltip-text">Les lois changent très vite dans l'immobilier. Retrouve ici un condensé des règles essentielles pour ne pas te faire piéger lors d'un achat.</span>
+                            <span class="tooltip-text">Synthèse des obligations légales et des échéances de la loi Climat concernant le parc immobilier français.</span>
                         </span>
                     </h2>
                     
                     <div style="background:#fff; padding:40px; border-radius:16px; border:1px solid #E2E8F0; margin-bottom:40px;">
                         <h3 style="color:#0F172A; margin-top:0; display:flex; align-items:center; gap:10px;">
-                            <i class="fa-solid fa-leaf" style="color:#16A34A;"></i> Calendrier "Loi Climat et Résilience"
+                            <i class="fa-solid fa-leaf" style="color:#16A34A;"></i> Calendrier d'Application "Climat et Résilience"
                         </h3>
-                        <p style="color:#64748B; font-size:14px;">La loi du 22 août 2021 impacte directement la rentabilité et la légalité de la mise en location des biens mal isolés.</p>
+                        <p style="color:#64748B; font-size:14px;">Interdictions de mise en location selon l'étiquette énergétique du DPE.</p>
                         
                         <div style="display:flex; justify-content:space-between; margin-top:30px; position:relative;">
                             <div style="position:absolute; top:20px; left:10%; right:10%; height:4px; background:#E2E8F0; z-index:1;"></div>
@@ -460,51 +502,57 @@
                     <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:60px;">
                         <div style="flex:1; min-width:300px; background:#fff; padding:30px; border-radius:12px; border:1px solid #E2E8F0; border-left:4px solid #F59E0B;">
                             <h4 style="margin-top:0;"><i class="fa-solid fa-file-signature" style="color:#F59E0B;"></i> L'Audit Énergétique Obligatoire</h4>
-                            <p style="font-size:13px; color:#475569; margin-bottom:0;">Depuis avril 2023, la vente d'un bien classé F ou G nécessite un Audit Énergétique complet en plus du DPE.</p>
+                            <p style="font-size:13px; color:#475569; margin-bottom:0;">La cession d'un bien classé F ou G nécessite un Audit Énergétique complet en plus du DPE (Depuis avril 2023).</p>
                         </div>
                         <div style="flex:1; min-width:300px; background:#fff; padding:30px; border-radius:12px; border:1px solid #E2E8F0; border-left:4px solid #8B5CF6;">
-                            <h4 style="margin-top:0;"><i class="fa-solid fa-house-lock" style="color:#8B5CF6;"></i> Le Permis de Louer</h4>
-                            <p style="font-size:13px; color:#475569; margin-bottom:0;">Certaines communes imposent une déclaration préalable avant mise en location. À vérifier en mairie.</p>
+                            <h4 style="margin-top:0;"><i class="fa-solid fa-house-lock" style="color:#8B5CF6;"></i> Permis de Louer</h4>
+                            <p style="font-size:13px; color:#475569; margin-bottom:0;">Certaines communes imposent une déclaration préalable avant la mise en location d'un bien.</p>
                         </div>
                         <div style="flex:1; min-width:300px; background:#fff; padding:30px; border-radius:12px; border:1px solid #E2E8F0; border-left:4px solid #EC4899;">
-                            <h4 style="margin-top:0;"><i class="fa-solid fa-chart-area" style="color:#EC4899;"></i> L'Encadrement des Loyers</h4>
-                            <p style="font-size:13px; color:#475569; margin-bottom:0;">Appliqué dans plusieurs agglomérations (Paris, Lille...), il plafonne le loyer maximum exigible hors charges.</p>
+                            <h4 style="margin-top:0;"><i class="fa-solid fa-chart-area" style="color:#EC4899;"></i> Encadrement des Loyers</h4>
+                            <p style="font-size:13px; color:#475569; margin-bottom:0;">Mesure de plafonnement du loyer maximum exigible hors charges (Zones tendues).</p>
                         </div>
                         <div style="flex:1; min-width:300px; background:#fff; padding:30px; border-radius:12px; border:1px solid #E2E8F0; border-left:4px solid #3B82F6;">
                             <h4 style="margin-top:0;"><i class="fa-regular fa-clock" style="color:#3B82F6;"></i> Délai de Rétractation</h4>
-                            <p style="font-size:13px; color:#475569; margin-bottom:0;">L'acquéreur non professionnel dispose d'un délai de 10 jours après notification du compromis pour se rétracter sans frais.</p>
+                            <p style="font-size:13px; color:#475569; margin-bottom:0;">Délai légal de 10 jours accordé à l'acquéreur non professionnel après notification du compromis (Loi SRU).</p>
                         </div>
                     </div>
 
-                    <h3 style="color:#0F172A; text-align:center; margin-bottom:30px; font-size:24px;">La Foire Aux Questions (20 Q/R Essentielles)</h3>
+                    <h3 style="color:#0F172A; text-align:center; margin-bottom:30px; font-size:24px;">Base de Connaissances Technique</h3>
                     <div class="faq-container">
-                        <details><summary>1. AuditPro remplace-t-il le notaire ou le diagnostiqueur certifié ?</summary><p><strong>Absolument pas.</strong> Seul le DDT réalisé par un technicien certifié a une valeur légale opposable. AuditPro est un outil d'<strong>aide à la décision</strong> qui traduit le DDT en chiffres.</p></details>
-                        <details><summary>2. Quelles sont les aides de l'État (MaPrimeRénov') ?</summary><p>Les aides favorisent la rénovation globale. Elles dépendent du revenu fiscal (Profil Bleu, Jaune, Violet, Rose). Notre outil chiffre le budget brut avant déduction des aides.</p></details>
-                        <details><summary>3. Électricité : Différence entre "anomalie mineure" et "Danger (DGI)" ?</summary><p>Un défaut de terre justifie une négociation mais n'empêche pas la vente. Un DGI (souvent Gaz ou fils dénudés) entraîne la coupure de la fourniture par l'opérateur jusqu'à réparation.</p></details>
-                        <details><summary>4. Comment l'outil prend-il en compte la zone géographique ?</summary><p>L'algorithme applique un <strong>modulateur de tension de marché</strong> (Base FFB) via le Code Postal. À Rennes (35000), la tension sur les artisans RGE impose une majoration des devis.</p></details>
-                        <details><summary>5. Qu'est-ce que le nouveau DPE (2021 / Méthode 3CL) ?</summary><p>Le nouveau DPE n'utilise plus vos factures. Il calcule la consommation théorique du bâtiment en analysant l'isolation, les vitrages et le chauffage.</p></details>
-                        <details><summary>6. Le DPE est-il opposable juridiquement ?</summary><p>Oui, depuis le 1er juillet 2021. Si le diagnostiqueur a commis une faute, l'acheteur peut se retourner contre le vendeur, qui se retournera contre le diagnostiqueur.</p></details>
-                        <details><summary>7. Peut-on louer une passoire thermique en Airbnb ?</summary><p>Actuellement, une tolérance existe selon les communes, mais le gouvernement travaille à aligner la législation des locations courtes durées sur celles des longues durées.</p></details>
-                        <details><summary>8. Qu'est-ce que le Déficit Foncier ?</summary><p>C'est un mécanisme fiscal permettant de déduire le montant des travaux de vos revenus fonciers existants, voire de votre revenu global.</p></details>
-                        <details><summary>9. Pourquoi privilégier le statut LMNP (au Réel) pour rénover ?</summary><p>Le Loueur Meublé Non Professionnel au régime Réel permet d'amortir comptablement la valeur du bâti ET le coût des travaux, ce qui annule l'impôt sur vos loyers.</p></details>
-                        <details><summary>10. Un DPE vierge est-il encore valable ?</summary><p>Non. Les DPE vierges réalisés avant le 1er juillet 2021 ne sont plus valables depuis le 1er janvier 2023.</p></details>
-                        <details><summary>11. Combien de temps est valable un DPE ?</summary><p>En règle générale, 10 ans. Attention, ceux réalisés entre 2013 et 2017 ne sont plus valables.</p></details>
-                        <details><summary>12. Quelle est la durée de validité du diagnostic Amiante ?</summary><p>Si le diagnostic a été réalisé après le 1er janvier 2013 et qu'il est négatif, sa durée de validité est illimitée.</p></details>
-                        <details><summary>13. Et pour le diagnostic Plomb (CREP) ?</summary><p>Pour une vente, il est valable 1 an si la présence de plomb dépasse les seuils, et illimité s'il est négatif.</p></details>
-                        <details><summary>14. Quelle validité pour l'Électricité et le Gaz ?</summary><p>Ces diagnostics sont valables 3 ans dans le cadre d'une vente, et 6 ans dans le cadre d'une mise en location.</p></details>
-                        <details><summary>15. Quelle est la règle pour les Termites et l'État Parasitaire ?</summary><p>Le diagnostic Termites n'est valable que 6 mois maximum.</p></details>
-                        <details><summary>16. Que faire si le devis de mon artisan RGE est plus cher que l'algorithme AuditPro ?</summary><p>C'est tout à fait normal. AuditPro base son calcul sur une médiane FFB. Il est impératif de multiplier les devis avant de signer le compromis.</p></details>
-                        <details><summary>17. Faut-il isoler par l'intérieur (ITI) ou l'extérieur (ITE) ?</summary><p>L'ITI est moins chère mais fait perdre des m². L'ITE supprime les ponts thermiques mais nécessite une autorisation d'urbanisme.</p></details>
-                        <details><summary>18. Qu'est-ce qu'une VMC double flux et pourquoi est-ce exigé ?</summary><p>Quand vous isolez massivement, le bâtiment devient étanche. Sans une bonne VMC, vos murs vont moisir.</p></details>
-                        <details><summary>19. La pompe à chaleur (PAC) est-elle obligatoire ?</summary><p>Non, mais elle est très fortement valorisée par le nouveau DPE. Son installation en copropriété nécessite l'accord de l'AG.</p></details>
-                        <details><summary>20. Peut-on annuler un achat si on se rend compte que les travaux sont trop chers ?</summary><p>Oui, si vous êtes dans le délai de rétractation SRU de 10 jours ou si vous aviez rédigé une clause suspensive spécifique.</p></details>
+                        <details><summary>1. La plateforme remplace-t-elle le diagnostiqueur certifié ?</summary><p><strong>Non.</strong> Seul le DDT réalisé par un technicien certifié détient une valeur légale opposable. L'application est un outil d'<strong>aide à l'évaluation budgétaire</strong>.</p></details>
+                        <details><summary>2. Modalités d'attribution de MaPrimeRénov' ?</summary><p>Les subventions sont allouées selon le revenu fiscal de référence (Profils Bleu, Jaune, Violet, Rose). Le chiffrage algorithmique présente un coût avant déduction des primes.</p></details>
+                        <details><summary>3. Distinguer une "anomalie mineure" d'un "Danger Grave et Immédiat" (DGI) ?</summary><p>Une défaillance classique justifie une provision pour travaux. Un DGI implique l'interruption de la fourniture énergétique par le gestionnaire de réseau jusqu'à la mise en conformité.</p></details>
+                        <details><summary>4. Impact de la localisation sur le chiffrage ?</summary><p>Le système intègre un index de tension du marché du bâtiment. L'indice pondère les prix des devis selon l'offre et la demande du Code Postal renseigné.</p></details>
+                        <details><summary>5. Qu'est-ce que la méthode de calcul 3CL (DPE 2021) ?</summary><p>Évaluation de la consommation théorique basée sur les caractéristiques physiques du bâti (isolation, vitrages, système de chauffage), indépendamment des factures d'énergie des occupants.</p></details>
+                        <details><summary>6. Le DPE est-il juridiquement opposable ?</summary><p>Oui, depuis 2021. En cas d'erreur substantielle du diagnostiqueur, la responsabilité juridique peut être engagée.</p></details>
+                        <details><summary>7. Statut des passoires thermiques en location courte durée ?</summary><p>Une harmonisation législative est en cours d'élaboration pour soumettre les locations touristiques aux mêmes exigences de performance énergétique que les locations longues durées.</p></details>
+                        <details><summary>8. Mécanisme du Déficit Foncier ?</summary><p>Dispositif fiscal permettant l'imputation du montant des travaux de rénovation sur les revenus fonciers, induisant une diminution de l'assiette imposable.</p></details>
+                        <details><summary>9. Avantages du statut LMNP (Régime Réel) ?</summary><p>Le statut de Loueur en Meublé Non Professionnel permet l'amortissement comptable de la valeur du bien et des dépenses de rénovation, neutralisant la fiscalité sur les recettes locatives.</p></details>
+                        <details><summary>10. Validité des DPE "vierges" ?</summary><p>Les diagnostics vierges édités avant le 1er juillet 2021 sont caducs depuis le 1er janvier 2023.</p></details>
+                        <details><summary>11. Durée de validité réglementaire d'un DPE ?</summary><p>Fixée à 10 ans en règle générale. Des exceptions existent pour les diagnostics antérieurs à 2021.</p></details>
+                        <details><summary>12. Durée de validité du diagnostic Amiante ?</summary><p>Validité illimitée pour les contrôles négatifs réalisés après le 1er janvier 2013. Un constat positif requiert des inspections périodiques.</p></details>
+                        <details><summary>13. Validité du Constat de Risque d'Exposition au Plomb (CREP) ?</summary><p>Validité illimitée en cas d'absence. Si détection : validité restreinte à 1 an pour une transaction, et 6 ans pour une mise en location.</p></details>
+                        <details><summary>14. Validité des états d'installations Électricité et Gaz ?</summary><p>Exigence de validité de 3 ans dans le cadre d'une cession, et de 6 ans pour l'établissement d'un bail locatif.</p></details>
+                        <details><summary>15. Exigences concernant le diagnostic Termites ?</summary><p>Validité strictement limitée à 6 mois. Nécessite fréquemment un renouvellement avant la réitération de l'acte authentique de vente.</p></details>
+                        <details><summary>16. Écart de chiffrage entre l'outil et les devis réels ?</summary><p>L'estimation repose sur une médiane FFB. Les contraintes spécifiques d'un chantier peuvent justifier des variations. La réalisation de devis contradictoires reste indispensable.</p></details>
+                        <details><summary>17. Arbitrage entre l'Isolation Thermique par l'Intérieur (ITI) et par l'Extérieur (ITE) ?</summary><p>L'ITI impacte la surface habitable. L'ITE traite les ponts thermiques structurels mais requiert une déclaration préalable de travaux auprès des services de l'urbanisme.</p></details>
+                        <details><summary>18. Nécessité de la Ventilation Mécanique Contrôlée (VMC) ?</summary><p>L'amélioration de l'étanchéité d'un bâtiment nécessite un renouvellement d'air optimisé pour prévenir le risque de pathologies du bâti (condensation, moisissures).</p></details>
+                        <details><summary>19. Obligation d'installation d'une Pompe à Chaleur (PAC) ?</summary><p>Non réglementée, mais fortement génératrice d'optimisation du DPE. Son implantation en copropriété est soumise à la validation de l'Assemblée Générale.</p></details>
+                        <details><summary>20. Rétractation liée au coût des travaux ?</summary><p>L'annulation d'une transaction est conditionnée au respect du délai légal de rétractation (10 jours) ou à l'insertion préalable d'une clause suspensive d'obtention de devis.</p></details>
                     </div>
                 </section>
             </div>
 
             <div id="espace-tab" class="tab-content">
                 <section class="content-section">
-                    <h2 class="section-title">Configuration & Abonnements</h2>
+                    <h2 class="section-title">
+                        Gestion de l'Abonnement & Paramètres
+                        <span class="tooltip-container">
+                            <i class="fa-solid fa-circle-info tooltip-icon"></i>
+                            <span class="tooltip-text">Administration du compte, des variables globales d'analyse et personnalisation des rapports PDF.</span>
+                        </span>
+                    </h2>
                     
                     <div style="display:flex; gap:40px; flex-wrap:wrap;">
                         <div style="flex:1; min-width:350px;">
@@ -513,7 +561,7 @@
                                     <span><i class="fa-solid fa-sliders theme-text"></i> Variables Globales</span>
                                     <span class="tooltip-container" style="font-size:16px;">
                                         <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                                        <span class="tooltip-text">Règle ici tes frais de notaire et ta marge de sécurité. Ils seront appliqués automatiquement à tous tes futurs calculs.</span>
+                                        <span class="tooltip-text">Définition des données financières appliquées par défaut lors de la création d'une nouvelle analyse.</span>
                                     </span>
                                 </h3>
                                 <div class="form-group">
@@ -524,7 +572,7 @@
                                     <label>Marge de sécurité travaux (%)</label>
                                     <input type="number" id="margeSecuriteInput" class="form-control" value="10">
                                 </div>
-                                <button class="btn-solid theme-bg" style="width:100%; margin-top:10px;" onclick="sauvegarderParametresParticulier()">Sauvegarder les variables</button>
+                                <button class="btn-solid theme-bg" style="width:100%; margin-top:10px;" onclick="sauvegarderParametresParticulier()">Sauvegarder les paramètres</button>
                             </div>
                             
                             <div class="card" style="padding: 30px; background:#fff; border-radius:16px; border:1px solid #E2E8F0; margin-top:30px; position:relative;">
@@ -539,36 +587,32 @@
                                     <span><i class="fa-solid fa-copyright theme-text"></i> Marque Blanche</span>
                                     <span class="tooltip-container" style="font-size:16px;">
                                         <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                                        <span class="tooltip-text">Personnalise le rapport PDF avec ton propre logo et tes couleurs d'agence pour faire plus professionnel auprès de tes clients.</span>
+                                        <span class="tooltip-text">Intégration du logo et de l'identité visuelle de l'entité sur les bilans PDF exportés.</span>
                                     </span>
                                 </h3>
                                 <div class="form-group">
-                                    <label>Nom de l'Agence / Entité</label>
-                                    <input type="text" id="nomAgenceInput" class="form-control" placeholder="Ex: Agence des Lilas">
+                                    <label>Nom de l'entité</label>
+                                    <input type="text" id="nomAgenceInput" class="form-control" placeholder="Ex: Cabinet Immobilier">
                                 </div>
                                 <div class="form-group">
-                                    <label>Couleur du thème (PDF et Site)</label>
+                                    <label>Couleur du thème de l'interface</label>
                                     <input type="color" id="couleurAgenceInput" value="#1E3A8A" class="color-picker-custom" onchange="changerCouleurParticulierTemporaire(this.value)">
                                 </div>
                                 <div class="form-group">
-                                    <label>Logo d'en-tête (PDF)</label>
+                                    <label>Logo d'en-tête (Export PDF)</label>
                                     <input type="file" id="logoUploadInput" accept="image/*" style="font-size:12px;">
                                     <img id="logo-preview" style="display: none; max-height: 40px; margin-top: 10px;">
                                 </div>
                                 <div style="display:flex; gap:10px; margin-top:20px;">
-                                    <button class="btn-outline" style="flex:1;" onclick="reinitialiserMarqueBlanche()">Reset</button>
-                                    <button class="btn-solid theme-bg" style="flex:2;" onclick="sauvegarderParametresPro()">Appliquer Design</button>
+                                    <button class="btn-outline" style="flex:1;" onclick="reinitialiserMarqueBlanche()">Réinitialiser</button>
+                                    <button class="btn-solid theme-bg" style="flex:2;" onclick="sauvegarderParametresPro()">Appliquer</button>
                                 </div>
                             </div>
                         </div>
 
                         <div style="flex:1.5; min-width:350px;">
                             <h3 style="text-align:center; font-family:'Merriweather'; color:#0F172A; font-size:24px; margin-bottom:30px; display:flex; align-items:center; justify-content:center; gap:8px;">
-                                Nos Offres
-                                <span class="tooltip-container" style="font-size:16px;">
-                                    <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                                    <span class="tooltip-text">Gère ton abonnement pour débloquer les outils professionnels (Calcul de rentabilité avancé, suivi des dossiers et design personnalisé).</span>
-                                </span>
+                                Offres de service
                             </h3>
                             <div style="display:flex; gap:15px; flex-wrap:wrap; justify-content:center;">
                                 
@@ -576,35 +620,35 @@
                                     <h3 style="margin:0; font-size:18px;">Découverte</h3>
                                     <div style="font-size:32px; font-weight:800; color:#0F172A; margin:15px 0;">0 €</div>
                                     <ul style="list-style:none; padding:0; text-align:left; font-size:13px; color:#475569; line-height:2;">
-                                        <li>✓ 3 analyses par mois</li>
-                                        <li>✓ Synthèse PDF basique</li>
-                                        <li>✓ Base juridique</li>
+                                        <li>✓ 3 analyses d'extraction</li>
+                                        <li>✓ Génération de bilan basique</li>
+                                        <li>✓ Accès ressources juridiques</li>
                                     </ul>
                                 </div>
 
                                 <div class="pricing-card popular" style="background:#fff; border-radius:16px; border:2px solid #2563EB; padding:30px 20px; text-align:center; flex:1; min-width:200px; position:relative; box-shadow:0 10px 30px rgba(37, 99, 235, 0.1);">
                                     <div style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#2563EB; color:#fff; padding:4px 12px; border-radius:12px; font-size:10px; font-weight:bold;">
-                                        INVESTISSEUR
+                                        ACCÈS ÉTENDU
                                     </div>
-                                    <h3 style="margin:0; font-size:18px;">Particulier</h3>
+                                    <h3 style="margin:0; font-size:18px;">Investisseur</h3>
                                     <div style="font-size:32px; font-weight:800; color:#0F172A; margin:15px 0;">9,99 €</div>
                                     <ul style="list-style:none; padding:0; text-align:left; font-size:13px; color:#475569; line-height:2;">
                                         <li>✓ Analyses illimitées</li>
-                                        <li>✓ Modélisation LMNP</li>
-                                        <li>✓ Pipeline de suivi Kanban</li>
+                                        <li>✓ Modélisation rentabilité</li>
+                                        <li>✓ Suivi des transactions</li>
                                     </ul>
-                                    <a href="https://buy.stripe.com/7sYaEYcY79Gq1WU3oIaR200" target="_blank" class="btn-solid theme-bg" style="display:block; width:100%; margin-top:15px; padding:10px; font-size:13px; text-decoration:none;">S'abonner</a>
+                                    <a href="https://buy.stripe.com/7sYaEYcY79Gq1WU3oIaR200" target="_blank" class="btn-solid theme-bg" style="display:block; width:100%; margin-top:15px; padding:10px; font-size:13px; text-decoration:none;">Activer la licence</a>
                                 </div>
 
                                 <div class="pricing-card" style="background:#0F172A; border-radius:16px; border:1px solid #1E293B; padding:30px 20px; text-align:center; flex:1; min-width:200px; color:#fff;">
                                     <h3 style="margin:0; font-size:18px; color:#fff;">Premium Pro</h3>
                                     <div style="font-size:32px; font-weight:800; color:#fff; margin:15px 0;">29,99 €</div>
                                     <ul style="list-style:none; padding:0; text-align:left; font-size:13px; color:#CBD5E1; line-height:2;">
-                                        <li>✓ Tout le plan Particulier</li>
-                                        <li>✓ <b>Marque Blanche</b></li>
-                                        <li>✓ Export PDF Agence</li>
+                                        <li>✓ Accès total aux outils</li>
+                                        <li>✓ <b>Option Marque Blanche</b></li>
+                                        <li>✓ Export PDF certifié</li>
                                     </ul>
-                                    <a href="https://buy.stripe.com/bJeaEY8HRaKu596f7qaR201" target="_blank" class="btn-solid" style="display:block; width:100%; margin-top:15px; padding:10px; font-size:13px; font-weight:bold; background-color:#fff !important; color:#0F172A !important; text-decoration:none;">S'abonner</a>
+                                    <a href="https://buy.stripe.com/bJeaEY8HRaKu596f7qaR201" target="_blank" class="btn-solid" style="display:block; width:100%; margin-top:15px; padding:10px; font-size:13px; font-weight:bold; background-color:#fff !important; color:#0F172A !important; text-decoration:none;">Activer la licence</a>
                                 </div>
 
                             </div>
@@ -612,20 +656,20 @@
                             <div class="card" style="margin-top:30px; padding:20px; background:#fff; border-radius:16px; border:1px solid #E2E8F0;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 15px; margin-bottom: 15px;">
                                     <h3 style="margin: 0; color: #0F172A; font-size: 16px; display:flex; align-items:center; gap:8px;">
-                                        Historique Local
+                                        Journal des Analyses
                                         <span class="tooltip-container" style="font-size:16px;">
                                             <i class="fa-solid fa-circle-info tooltip-icon"></i>
-                                            <span class="tooltip-text">Retrouve tes anciennes analyses ici. Elles sont sauvegardées localement dans la mémoire de ton navigateur.</span>
+                                            <span class="tooltip-text">Consultation des traitements antérieurs. Registre conservé dans la base de données locale du matériel.</span>
                                         </span>
                                     </h3>
-                                    <button onclick="viderHistorique()" class="btn-delete" style="padding:6px 12px; font-size:11px; border:1px solid #FCA5A5;">Purger</button>
+                                    <button onclick="viderHistorique()" class="btn-delete" style="padding:6px 12px; font-size:11px; border:1px solid #FCA5A5;">Effacer le registre</button>
                                 </div>
                                 <div class="table-responsive">
                                     <table style="width: 100%; font-size:12px;">
                                         <thead>
                                             <tr>
                                                 <th style="text-align:left;">Date</th>
-                                                <th style="text-align:left;">Réf/Ville</th>
+                                                <th style="text-align:left;">Référence de l'Audit</th>
                                                 <th style="text-align: right;">Action</th>
                                             </tr>
                                         </thead>
@@ -640,19 +684,19 @@
 
             <footer style="background-color: #0F172A; color: #94A3B8; text-align: center; padding: 40px 20px; font-size: 13px; margin-top: 60px; line-height: 1.8;">
                 © 2026 AuditPro. Tous droits réservés.<br>
-                L'ensemble des chiffrages sont indicatifs et basés sur des moyennes (Index FFB). L'algorithme applique une surcote régionale (Secteur tendu) ou décote selon le code postal fourni.<br>
-                <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" class="theme-text" style="text-decoration: underline; margin-top: 15px; display: inline-block; font-weight: 600;">Mentions Légales & Traitement des Données RGPD</a>
+                Les données budgétaires issues de l'application sont indicatives (Index FFB ajusté selon tension géographique) et n'ont aucune force probatoire.<br>
+                <a href="#" onclick="document.getElementById('modalLegale').style.display='flex'; return false;" class="theme-text" style="text-decoration: underline; margin-top: 15px; display: inline-block; font-weight: 600;">Déclaration de Traitement des Données et Mentions Légales</a>
             </footer>
 
         </main>
 
         <div id="copilot-widget" class="copilot-widget">
             <div class="copilot-header" onclick="toggleCopilot()">
-                <span><i class="fa-solid fa-robot" style="margin-right:8px;"></i> Assistant AuditPro</span>
+                <span><i class="fa-solid fa-compass" style="margin-right:8px;"></i> Guide d'utilisation</span>
                 <span id="copilot-toggle-icon">▼</span>
             </div>
             <div class="copilot-body" id="copilot-text">
-                👋 Bienvenue ! Commencez par taper le <strong>Code Postal</strong> du bien (crucial pour le calcul des prix locaux) et déposez un diagnostic PDF.
+                Indiquer le <strong>Code Postal</strong> du secteur (nécessaire à l'indexation financière) et charger le rapport de diagnostic PDF.
             </div>
             <div class="copilot-progress">
                 <div class="copilot-bar" id="copilot-progress-bar" style="width: 25%;"></div>
@@ -660,26 +704,26 @@
         </div>
 
         <div id="cookie-banner" class="theme-border-top" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 23, 42, 0.98); color: #fff; padding: 25px; z-index: 10000; text-align: center;">
-            <p style="margin: 0 0 15px 0; font-size: 14px;"><strong>Fonctionnement "Hybride Sécurisé" :</strong> Ce site utilise le stockage local de votre navigateur pour sauvegarder vos paramètres (Kanban, Marque Blanche). Acceptez-vous ce fonctionnement ?</p>
-            <button onclick="accepterCookies()" class="btn-solid theme-bg">Accepter & Continuer</button>
+            <p style="margin: 0 0 15px 0; font-size: 14px;"><strong>Avis de fonctionnement local :</strong> L'interface exploite le stockage du navigateur pour assurer la rétention des données de suivi. Accordez-vous l'utilisation de cette technologie ?</p>
+            <button onclick="accepterCookies()" class="btn-solid theme-bg">Accepter les conditions</button>
         </div>
 
         <div id="modalLegale" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.95); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
             <div style="background: #fff; max-width: 800px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 50px; border-radius: 24px; position: relative;">
                 <button onclick="document.getElementById('modalLegale').style.display='none'" style="position: absolute; top: 25px; right: 25px; background: #F1F5F9; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 700;">Fermer ✕</button>
                 <h2 style="color: #0F172A; border-bottom: 2px solid #F1F5F9; padding-bottom: 15px;">Mentions Légales & RGPD</h2>
-                <p style="font-size: 14px; color: #64748B;">Interface publique sécurisée. Votre fichier PDF est transmis de manière cryptée pour une lecture éphémère en mémoire vive. Il est <strong>immédiatement et définitivement détruit</strong> après l'extraction. Aucun document n'est sauvegardé sur nos disques.</p>
+                <p style="font-size: 14px; color: #64748B;">L'outil procède à un transfert chiffré du document pour son traitement informatique immédiat. Les fichiers de diagnostic ne font l'objet d'aucune politique de rétention sur nos serveurs distants.</p>
             </div>
         </div>
 
         <div id="toast-container"></div>
         <div id="loading-overlay">
             <div class="spinner"></div>
-            <h3 style="color: white; margin-top: 25px; font-weight: 700; font-size: 20px;" id="loading-text">Analyse géographique en cours...</h3>
+            <h3 style="color: white; margin-top: 25px; font-weight: 700; font-size: 20px;" id="loading-text">Analyse de l'environnement en cours...</h3>
         </div>
     </div> 
     
-    <script src="script.js?v=1004"></script>
+    <script src="script.js?v=1005"></script>
 </body>
 
 </html>
