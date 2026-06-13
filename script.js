@@ -17,7 +17,9 @@ function lireAcces() {
         let tk = localStorage.getItem('_ap_xtk_');
         if (!tk) return 'gratuit';
         return atob(tk).split('|')[0]; 
-    } catch(e) { return 'gratuit'; }
+    } catch(e) { 
+        return 'gratuit'; 
+    }
 }
 
 function definirAcces(niveau) {
@@ -107,7 +109,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (dropZone && fileInput) {
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+            dropZone.addEventListener(eventName, (e) => { 
+                e.preventDefault(); 
+                e.stopPropagation(); 
+            }, false);
         });
         
         dropZone.addEventListener('dragover', () => dropZone.style.borderColor = "var(--theme-accent)");
@@ -138,7 +143,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const headerLogo = document.querySelector('.logo');
     if (headerLogo) {
         headerLogo.addEventListener('click', function(e) {
-            if (!e.shiftKey) { logoClicks = 0; return; }
+            if (!e.shiftKey) { 
+                logoClicks = 0; 
+                return; 
+            }
             logoClicks++;
             if (logoClicks === 5) {
                 definirAcces('pro');
@@ -342,7 +350,10 @@ function appliquerSettings() {
     
     if(appSettings.logoBase64) {
         let lP = document.getElementById('logo-preview');
-        if(lP) { lP.src = appSettings.logoBase64; lP.style.display = 'block'; }
+        if(lP) { 
+            lP.src = appSettings.logoBase64; 
+            lP.style.display = 'block'; 
+        }
     }
 }
 
@@ -401,7 +412,10 @@ document.getElementById('logoUploadInput')?.addEventListener('change', function(
             appSettings.logoBase64 = e.target.result;
             localStorage.setItem('ap_logo', appSettings.logoBase64);
             let preview = document.getElementById('logo-preview');
-            if(preview) { preview.src = appSettings.logoBase64; preview.style.display = 'block'; }
+            if(preview) { 
+                preview.src = appSettings.logoBase64; 
+                preview.style.display = 'block'; 
+            }
         }
         reader.readAsDataURL(file);
     }
@@ -1045,9 +1059,10 @@ function chargerKanban() {
         dossiersCol.forEach(dossier => {
             const card = document.createElement('div');
             card.className = 'k-card';
-            card.setAttribute('draggable', 'true'); // ATTRIBUT OBLIGATOIRE POUR LE DRAG AND DROP
+            card.setAttribute('draggable', 'true');
             card.id = dossier.id;
             
+            // Fix drag and drop: pointer-events: none sur les enfants pour ne pas interférer
             card.innerHTML = `
                 <div class="k-card-title" style="display:flex; justify-content:space-between; align-items:center; pointer-events: none;">
                     <span>${dossier.ville}</span>
@@ -1150,7 +1165,7 @@ function viderPipeline() {
 }
 
 // ==========================================================================
-// 13. GÉNÉRATEURS DE TEXTES (CLAUSES & EMAILS)
+// 13. GÉNÉRATEURS DE TEXTES
 // ==========================================================================
 function genererClause() {
     if(!donneesAudit) return showToast("Analyse préalable requise.", "error");
@@ -1197,129 +1212,133 @@ Disponibilité confirmée pour une analyse conjointe de ces éléments.`;
 }
 
 // ==========================================================================
-// 14. EXPORT PDF PROFESSIONNEL (EXECUTION DIRECTE ET SYNCHRONE)
+// 14. EXPORT PDF PROFESSIONNEL (Exécution directe)
 // ==========================================================================
 function exporterPDF() {
     if (!donneesAudit) return showToast("Traitement initial requis.", "error");
 
     let btn = document.getElementById('btnExport');
+    let originalText = btn ? btn.innerHTML : '';
     if(btn) btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Édition en cours...";
 
-    try {
-        if (typeof pdfMake === 'undefined') throw new Error("Erreur de liaison PDF.");
-        if (typeof pdfFonts !== 'undefined') pdfMake.vfs = pdfFonts.pdfMake.vfs;
+    // Contournement du blocage de pop-up via une requête d'animation immédiate
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            try {
+                if (typeof pdfMake === 'undefined') throw new Error("Erreur de liaison PDF.");
+                if (typeof pdfFonts !== 'undefined') pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-        const valPrix = document.getElementById('prixInitial') ? document.getElementById('prixInitial').value : "0";
-        const prixInit = parseInputNumber(valPrix) || 0;
-        const travaux = calculerTotalDevis() || 0; 
-        const valeurNette = prixInit - travaux;
+                const valPrix = document.getElementById('prixInitial') ? document.getElementById('prixInitial').value : "0";
+                const prixInit = parseInputNumber(valPrix) || 0;
+                const travaux = calculerTotalDevis() || 0; 
+                const valeurNette = prixInit - travaux;
 
-        let tableBody = [
-            [
-                { text: 'DOMAINE CONTRÔLÉ', bold: true, fontSize: 8, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10] },
-                { text: 'STATUT', bold: true, fontSize: 8, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10], alignment: 'center' },
-                { text: 'CONSTAT RÉGLEMENTAIRE & ACTION', bold: true, fontSize: 8, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10] },
-                { text: 'BUDGET', bold: true, fontSize: 8, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10], alignment: 'right' }
-            ]
-        ];
-
-        let lignesDdt = donneesAudit.lignesDevis || [];
-        if (!lignesDdt.length && donneesAudit.diagnostics) {
-            lignesDdt = donneesAudit.diagnostics.filter(d => d.cout > 0);
-        }
-
-        if (lignesDdt.length === 0) {
-            tableBody.push([{ text: "Aucune non-conformité relevée.", colSpan: 4, alignment: 'center', margin: [0, 10, 0, 10] }, {}, {}, {}]);
-        } else {
-            lignesDdt.forEach((ligne, index) => {
-                let isAnomalie = ligne.cout > 0;
-                let rowColor = (index % 2 === 0) ? '#F8FAFC' : '#ffffff'; 
-                tableBody.push([
-                    { text: ligne.titre || 'Saisie Manuelle', bold: true, fontSize: 10, color: '#0F172A', fillColor: rowColor, margin: [0, 10, 0, 10] },
-                    { text: isAnomalie ? 'ANOMALIE' : 'CONFORME', bold: true, fontSize: 9, color: isAnomalie ? '#DC2626' : '#16A34A', alignment: 'center', fillColor: rowColor, margin: [0, 10, 0, 10] },
-                    { text: String(ligne.detail || "Validation d'ajustement"), fontSize: 9, color: '#334155', fillColor: rowColor, margin: [0, 10, 0, 10] },
-                    { text: isAnomalie ? '-' + formatNumber(ligne.cout) + ' €' : '0 €', bold: true, fontSize: 10, color: isAnomalie ? '#DC2626' : '#0F172A', alignment: 'right', fillColor: rowColor, margin: [0, 10, 0, 10] }
-                ]);
-            });
-        }
-
-        let nomAgenceStr = (appSettings.nomAgence || "AuditPro").toUpperCase();
-        let logoBlock = { text: nomAgenceStr, fontSize: 24, bold: true, color: appSettings.couleur || '#1E3A8A', alignment: 'left', letterSpacing: 1 };
-
-        let chartBlock = [];
-        try {
-            let canvasElement = document.getElementById('coutChart');
-            if (canvasElement && lignesDdt.length > 0) {
-                chartBlock = [
-                    { text: 'RÉPARTITION DES COÛTS DE REMISE AUX NORMES', fontSize: 13, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 20, 0, 10] },
-                    { image: canvasElement.toDataURL("image/png"), width: 300, alignment: 'center', margin: [0, 0, 0, 30] }
+                let tableBody = [
+                    [
+                        { text: 'DOMAINE CONTRÔLÉ', bold: true, fontSize: 8, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10] },
+                        { text: 'STATUT', bold: true, fontSize: 8, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10], alignment: 'center' },
+                        { text: 'CONSTAT RÉGLEMENTAIRE & ACTION', bold: true, fontSize: 8, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10] },
+                        { text: 'BUDGET', bold: true, fontSize: 8, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10], alignment: 'right' }
+                    ]
                 ];
-            }
-        } catch (canvasError) {
-            console.warn("Échec d'intégration visuelle.");
-        }
 
-        let docDefinition = {
-            pageSize: 'A4',
-            pageMargins: [ 40, 40, 40, 40 ], 
-            defaultStyle: { font: 'Helvetica' },
-            background: function() { return { canvas: [ { type: 'rect', x: 0, y: 0, w: 15, h: 842, color: appSettings.couleur || '#1E3A8A' } ] }; },
-            header: function(currentPage) {
-                if (currentPage > 1) {
-                    return { columns: [ { text: nomAgenceStr, bold: true, color: '#64748B', fontSize: 9 }, { text: 'Réf. ' + (currentDossierId || 'EXT'), alignment: 'right', color: '#64748B', fontSize: 9 } ], margin: [40, 20, 40, 0] };
+                let lignesDdt = donneesAudit.lignesDevis || [];
+                if (!lignesDdt.length && donneesAudit.diagnostics) {
+                    lignesDdt = donneesAudit.diagnostics.filter(d => d.cout > 0);
                 }
-            },
-            footer: function(currentPage, pageCount) {
-                return { columns: [ { text: 'Document généré à titre indicatif. Ne constitue pas un avis d\'expert.', fontSize: 8, color: '#94A3B8', italics: true }, { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#94A3B8', bold: true } ], margin: [40, 20, 40, 0] };
-            },
-            content: [
-                {
-                    columns: [
-                        { width: '45%', stack: [logoBlock], margin: [0, 5, 0, 0] },
+
+                if (lignesDdt.length === 0) {
+                    tableBody.push([{ text: "Aucune non-conformité relevée.", colSpan: 4, alignment: 'center', margin: [0, 10, 0, 10] }, {}, {}, {}]);
+                } else {
+                    lignesDdt.forEach((ligne, index) => {
+                        let isAnomalie = ligne.cout > 0;
+                        let rowColor = (index % 2 === 0) ? '#F8FAFC' : '#ffffff'; 
+                        tableBody.push([
+                            { text: ligne.titre || 'Saisie Manuelle', bold: true, fontSize: 10, color: '#0F172A', fillColor: rowColor, margin: [0, 10, 0, 10] },
+                            { text: isAnomalie ? 'ANOMALIE' : 'CONFORME', bold: true, fontSize: 9, color: isAnomalie ? '#DC2626' : '#16A34A', alignment: 'center', fillColor: rowColor, margin: [0, 10, 0, 10] },
+                            { text: String(ligne.detail || "Validation d'ajustement"), fontSize: 9, color: '#334155', fillColor: rowColor, margin: [0, 10, 0, 10] },
+                            { text: isAnomalie ? '-' + formatNumber(ligne.cout) + ' €' : '0 €', bold: true, fontSize: 10, color: isAnomalie ? '#DC2626' : '#0F172A', alignment: 'right', fillColor: rowColor, margin: [0, 10, 0, 10] }
+                        ]);
+                    });
+                }
+
+                let nomAgenceStr = (appSettings.nomAgence || "AuditPro").toUpperCase();
+                let logoBlock = { text: nomAgenceStr, fontSize: 24, bold: true, color: appSettings.couleur || '#1E3A8A', alignment: 'left', letterSpacing: 1 };
+
+                let chartBlock = [];
+                try {
+                    let canvasElement = document.getElementById('coutChart');
+                    if (canvasElement && lignesDdt.length > 0) {
+                        chartBlock = [
+                            { text: 'RÉPARTITION DES COÛTS DE REMISE AUX NORMES', fontSize: 13, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 20, 0, 10] },
+                            { image: canvasElement.toDataURL("image/png"), width: 300, alignment: 'center', margin: [0, 0, 0, 30] }
+                        ];
+                    }
+                } catch (canvasError) {
+                    console.warn("Échec d'intégration visuelle.");
+                }
+
+                let docDefinition = {
+                    pageSize: 'A4',
+                    pageMargins: [ 40, 40, 40, 40 ], 
+                    defaultStyle: { font: 'Helvetica' },
+                    background: function() { return { canvas: [ { type: 'rect', x: 0, y: 0, w: 15, h: 842, color: appSettings.couleur || '#1E3A8A' } ] }; },
+                    header: function(currentPage) {
+                        if (currentPage > 1) {
+                            return { columns: [ { text: nomAgenceStr, bold: true, color: '#64748B', fontSize: 9 }, { text: 'Réf. ' + (currentDossierId || 'EXT'), alignment: 'right', color: '#64748B', fontSize: 9 } ], margin: [40, 20, 40, 0] };
+                        }
+                    },
+                    footer: function(currentPage, pageCount) {
+                        return { columns: [ { text: 'Document généré à titre indicatif. Ne constitue pas un avis d\'expert.', fontSize: 8, color: '#94A3B8', italics: true }, { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#94A3B8', bold: true } ], margin: [40, 20, 40, 0] };
+                    },
+                    content: [
                         {
-                            width: '55%',
+                            columns: [
+                                { width: '45%', stack: [logoBlock], margin: [0, 5, 0, 0] },
+                                {
+                                    width: '55%',
+                                    table: {
+                                        widths: ['*', '*'],
+                                        body: [
+                                            [ { text: 'DONNÉES DU DOSSIER', colSpan: 2, fontSize: 10, bold: true, color: '#0F172A', alignment: 'right', margin: [0, 6, 0, 6] }, {} ],
+                                            [ { text: 'Édition :', fontSize: 9, bold: true, color: '#64748B', alignment: 'right' }, { text: String(donneesAudit.date_audit || 'N/A'), fontSize: 9, color: '#0F172A', bold: true } ],
+                                            [ { text: 'Localisation :', fontSize: 9, bold: true, color: '#64748B', alignment: 'right' }, { text: String(donneesAudit.localisation_exacte || 'N/D'), fontSize: 9, color: '#0F172A', bold: true } ]
+                                        ]
+                                    },
+                                    layout: 'lightHorizontalLines'
+                                }
+                            ], margin: [0, 0, 0, 40]
+                        },
+                        { text: 'RAPPORT D\'ÉVALUATION FINANCIÈRE', fontSize: 20, color: '#0F172A', bold: true, margin: [0, 0, 0, 5] },
+                        { text: '1. SYNTHÈSE DES VALORISATIONS', fontSize: 13, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 20, 0, 10] },
+                        {
                             table: {
                                 widths: ['*', '*'],
                                 body: [
-                                    [ { text: 'DONNÉES DU DOSSIER', colSpan: 2, fontSize: 10, bold: true, color: '#0F172A', alignment: 'right', margin: [0, 6, 0, 6] }, {} ],
-                                    [ { text: 'Édition :', fontSize: 9, bold: true, color: '#64748B', alignment: 'right' }, { text: String(donneesAudit.date_audit || 'N/A'), fontSize: 9, color: '#0F172A', bold: true } ],
-                                    [ { text: 'Localisation :', fontSize: 9, bold: true, color: '#64748B', alignment: 'right' }, { text: String(donneesAudit.localisation_exacte || 'N/D'), fontSize: 9, color: '#0F172A', bold: true } ]
+                                    [ { text: 'Valeur de présentation (FAI)', fontSize: 11 }, { text: formatNumber(prixInit) + ' €', fontSize: 14, bold: true, alignment: 'right' } ],
+                                    [ { text: 'Provision de travaux', fontSize: 11, color: '#DC2626' }, { text: '-' + formatNumber(travaux) + ' €', fontSize: 14, bold: true, color: '#DC2626', alignment: 'right' } ],
+                                    [ { text: 'Valeur Nette Opérationnelle', fontSize: 11, bold: true }, { text: formatNumber(valeurNette) + ' €', fontSize: 16, bold: true, color: appSettings.couleur || '#1E3A8A', alignment: 'right' } ]
                                 ]
-                            },
-                            layout: 'lightHorizontalLines'
-                        }
-                    ], margin: [0, 0, 0, 40]
-                },
-                { text: 'RAPPORT D\'ÉVALUATION FINANCIÈRE', fontSize: 20, color: '#0F172A', bold: true, margin: [0, 0, 0, 5] },
-                { text: '1. SYNTHÈSE DES VALORISATIONS', fontSize: 13, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 20, 0, 10] },
-                {
-                    table: {
-                        widths: ['*', '*'],
-                        body: [
-                            [ { text: 'Valeur de présentation (FAI)', fontSize: 11 }, { text: formatNumber(prixInit) + ' €', fontSize: 14, bold: true, alignment: 'right' } ],
-                            [ { text: 'Provision de travaux', fontSize: 11, color: '#DC2626' }, { text: '-' + formatNumber(travaux) + ' €', fontSize: 14, bold: true, color: '#DC2626', alignment: 'right' } ],
-                            [ { text: 'Valeur Nette Opérationnelle', fontSize: 11, bold: true }, { text: formatNumber(valeurNette) + ' €', fontSize: 16, bold: true, color: appSettings.couleur || '#1E3A8A', alignment: 'right' } ]
-                        ]
-                    }, layout: 'lightHorizontalLines', margin: [0, 0, 0, 30]
-                },
-                ...chartBlock,
-                { text: '2. MATRICE RÉGLEMENTAIRE', fontSize: 13, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10] },
-                { table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody }, margin: [0, 0, 0, 40] }
-            ]
-        };
+                            }, layout: 'lightHorizontalLines', margin: [0, 0, 0, 30]
+                        },
+                        ...chartBlock,
+                        { text: '2. MATRICE RÉGLEMENTAIRE', fontSize: 13, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10] },
+                        { table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody }, margin: [0, 0, 0, 40] }
+                    ]
+                };
 
-        // EXÉCUTION DIRECTE (Bypasse le bloqueur de Pop-Up)
-        let nomDossier = donneesAudit.localisation_exacte ? donneesAudit.localisation_exacte.split(' ')[0] : 'Audit';
-        pdfMake.createPdf(docDefinition).download(`AuditPro_Synthese_${nomDossier}.pdf`);
-        
-        showToast("Procédure d'export validée.", "success");
-        if(btn) btn.innerHTML = "<i class=\"fa-solid fa-file-pdf\"></i> Éditer le Rapport Officiel (PDF)";
-
-    } catch (error) {
-        console.error("Erreur de traitement d'édition.", error);
-        showToast("Erreur d'édition système.", "error");
-        if(btn) btn.innerHTML = "<i class=\"fa-solid fa-triangle-exclamation\"></i> Échec de l'export";
-    }
+                let nomDossier = donneesAudit.localisation_exacte ? donneesAudit.localisation_exacte.split(' ')[0] : 'Audit';
+                pdfMake.createPdf(docDefinition).download(`AuditPro_Synthese_${nomDossier}.pdf`);
+                showToast("Procédure d'export validée.", "success");
+                
+            } catch (error) {
+                console.error("Erreur de traitement d'édition.", error);
+                showToast("Erreur d'édition système.", "error");
+            } finally {
+                if(btn) btn.innerHTML = originalText;
+            }
+        });
+    });
 }
 
 // ==========================================================================
