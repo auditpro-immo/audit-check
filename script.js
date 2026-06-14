@@ -17,9 +17,7 @@ function lireAcces() {
         let tk = localStorage.getItem('_ap_xtk_');
         if (!tk) return 'gratuit';
         return atob(tk).split('|')[0]; 
-    } catch(e) { 
-        return 'gratuit'; 
-    }
+    } catch(e) { return 'gratuit'; }
 }
 
 function definirAcces(niveau) {
@@ -143,10 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const headerLogo = document.querySelector('.logo');
     if (headerLogo) {
         headerLogo.addEventListener('click', function(e) {
-            if (!e.shiftKey) { 
-                logoClicks = 0; 
-                return; 
-            }
+            if (!e.shiftKey) { logoClicks = 0; return; }
             logoClicks++;
             if (logoClicks === 5) {
                 definirAcces('pro');
@@ -412,10 +407,7 @@ document.getElementById('logoUploadInput')?.addEventListener('change', function(
             appSettings.logoBase64 = e.target.result;
             localStorage.setItem('ap_logo', appSettings.logoBase64);
             let preview = document.getElementById('logo-preview');
-            if(preview) { 
-                preview.src = appSettings.logoBase64; 
-                preview.style.display = 'block'; 
-            }
+            if(preview) { preview.src = appSettings.logoBase64; preview.style.display = 'block'; }
         }
         reader.readAsDataURL(file);
     }
@@ -1054,54 +1046,47 @@ function chargerKanban() {
         dossiersCol.forEach(dossier => {
             const card = document.createElement('div');
             card.className = 'k-card';
-            card.setAttribute('draggable', 'true');
+            card.draggable = true; 
             card.id = dossier.id;
             
-            // Intégration de la poignée de déplacement (grip-vertical) pour forcer le Drag&Drop
             card.innerHTML = `
                 <div class="k-card-title" style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <i class="fa-solid fa-grip-vertical" style="cursor: grab; color: #94A3B8; font-size: 16px; padding: 4px;" title="Maintenir pour déplacer"></i>
-                        <span style="pointer-events: none;">${dossier.ville}</span>
-                    </div>
+                    <span>${dossier.ville}</span>
                     <button class="btn-icon" style="width:24px; height:24px; border:none; background:transparent; padding:0; cursor:pointer;" onclick="supprimerDuPipeline('${dossier.id}')">
                         <i class="fa-solid fa-xmark" style="color:#DC2626;"></i>
                     </button>
                 </div>
-                <div style="font-size:16px; font-weight:800; color:var(--text-dark); margin-bottom:10px; pointer-events: none;">${formatNumber(dossier.prix)} €</div>
-                <div class="k-card-data" style="pointer-events: none;">
+                <div style="font-size:16px; font-weight:800; color:var(--text-dark); margin-bottom:10px;">${formatNumber(dossier.prix)} €</div>
+                <div class="k-card-data">
                     <span>Tvx: <strong style="color:#DC2626;">${formatNumber(dossier.travaux)} €</strong></span>
                     <span class="badge" style="background:#F1F5F9; color:#0F172A; border:1px solid #CBD5E1; padding:2px 6px; border-radius:6px; font-size:11px; font-weight:700;">DPE ${dossier.dpe}</span>
                 </div>
             `;
 
-            card.ondragstart = function(e) {
+            card.addEventListener('dragstart', (e) => {
                 e.dataTransfer.setData('text/plain', dossier.id);
-                e.dataTransfer.effectAllowed = 'move';
-                setTimeout(() => { this.style.opacity = '0.4'; }, 0);
-            };
+                setTimeout(() => { card.style.opacity = '0.5'; }, 0);
+            });
             
-            card.ondragend = function(e) {
-                this.style.opacity = '1';
-            };
+            card.addEventListener('dragend', () => {
+                card.style.opacity = '1';
+            });
 
             container.appendChild(card);
         });
 
-        // Sécurisation stricte des événements de survol pour forcer l'acceptation de la carte
-        container.ondragover = function(e) { 
+        container.addEventListener('dragover', (e) => { 
             e.preventDefault(); 
-            e.dataTransfer.dropEffect = 'move';
-            this.style.background = "#EFF6FF"; 
-        };
+            container.style.background = "#EFF6FF"; 
+        });
         
-        container.ondragleave = function(e) {
-            this.style.background = "transparent";
-        };
+        container.addEventListener('dragleave', () => {
+            container.style.background = "transparent";
+        });
         
-        container.ondrop = function(e) {
+        container.addEventListener('drop', (e) => {
             e.preventDefault();
-            this.style.background = "transparent";
+            container.style.background = "transparent";
             const draggedId = e.dataTransfer.getData('text/plain');
             if(!draggedId) return;
             
@@ -1111,7 +1096,7 @@ function chargerKanban() {
                 localStorage.setItem('auditpro_pipeline', JSON.stringify(pipelineDossiers));
                 chargerKanban();
             }
-        };
+        });
     });
 }
 
@@ -1211,13 +1196,13 @@ Disponibilité confirmée pour une analyse conjointe de ces éléments.`;
 }
 
 // ==========================================================================
-// 14. EXPORT PDF PROFESSIONNEL (EXECUTION DIRECTE ET SYNCHRONE)
+// 14. EXPORT PDF PROFESSIONNEL (Exécution Synchrone et Directe)
 // ==========================================================================
 function exporterPDF() {
     if (!donneesAudit) return showToast("Traitement initial requis.", "error");
 
     try {
-        if (typeof pdfMake === 'undefined') throw new Error("Module PDF inactif.");
+        if (typeof pdfMake === 'undefined') throw new Error("Erreur de liaison PDF.");
         if (typeof pdfFonts !== 'undefined') pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
         const valPrix = document.getElementById('prixInitial') ? document.getElementById('prixInitial').value : "0";
@@ -1319,15 +1304,16 @@ function exporterPDF() {
             ]
         };
 
-        // EXÉCUTION DIRECTE ET SYNCHRONE (Garantie de téléchargement sans blocage du navigateur)
         let nomDossier = donneesAudit.localisation_exacte ? donneesAudit.localisation_exacte.split(' ')[0] : 'Audit';
+        
+        // Exécution bloquante et immédiate : Le navigateur autorise le téléchargement instantanément
         pdfMake.createPdf(docDefinition).download(`AuditPro_Synthese_${nomDossier}.pdf`);
         
-        showToast("Édition et téléchargement du document achevés.", "success");
+        showToast("Procédure d'export validée.", "success");
 
     } catch (error) {
         console.error("Erreur de traitement d'édition.", error);
-        showToast("Échec de l'exportation du fichier.", "error");
+        showToast("Erreur d'édition système.", "error");
     }
 }
 
