@@ -11,7 +11,6 @@ let prixNegoActuel = 0;
 let comparateur = JSON.parse(localStorage.getItem('auditpro_comparateur')) || [];
 let pipelineDossiers = JSON.parse(localStorage.getItem('auditpro_pipeline')) || [];
 let currentDossierId = null;
-let currentDraggedCardId = null; // Variable de sécurité pour le glisser-déposer
 
 function lireAcces() {
     try {
@@ -45,7 +44,11 @@ let appSettings = {
 // ==========================================================================
 function analyserSecteurLocal(codePostal) {
     if (!codePostal || codePostal.length < 2) {
-        return { dep: "France", majo: 1.0, texte: "Traitement fondé sur la moyenne tarifaire nationale (Indice FFB). Code postal non renseigné." };
+        return { 
+            dep: "France", 
+            majo: 1.0, 
+            texte: "Traitement fondé sur la moyenne tarifaire nationale (Indice FFB). Code postal non renseigné." 
+        };
     }
 
     let dep = String(codePostal).substring(0, 2);
@@ -69,9 +72,17 @@ function analyserSecteurLocal(codePostal) {
     };
 
     if (baseGeographique[dep]) {
-        return { dep: baseGeographique[dep].nom, majo: baseGeographique[dep].tension, texte: baseGeographique[dep].msg };
+        return {
+            dep: baseGeographique[dep].nom,
+            majo: baseGeographique[dep].tension,
+            texte: baseGeographique[dep].msg
+        };
     } else {
-        return { dep: `Département ${dep}`, majo: 1.0, texte: `Marché continental équilibré. Application stricte du barème médian national (FFB).` };
+        return {
+            dep: `Département ${dep}`,
+            majo: 1.0,
+            texte: `Marché continental équilibré. Application stricte du barème médian national (FFB).`
+        };
     }
 }
 
@@ -104,8 +115,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }, false);
         });
         
-        dropZone.addEventListener('dragover', () => { dropZone.style.borderColor = "var(--theme-accent)"; });
-        dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = "#CBD5E1"; });
+        dropZone.addEventListener('dragover', () => dropZone.style.borderColor = "var(--theme-accent)");
+        dropZone.addEventListener('dragleave', () => dropZone.style.borderColor = "#CBD5E1");
         
         dropZone.addEventListener('drop', (e) => { 
             fileInput.files = e.dataTransfer.files; 
@@ -132,7 +143,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const headerLogo = document.querySelector('.logo');
     if (headerLogo) {
         headerLogo.addEventListener('click', function(e) {
-            if (!e.shiftKey) { logoClicks = 0; return; }
+            if (!e.shiftKey) { 
+                logoClicks = 0; 
+                return; 
+            }
             logoClicks++;
             if (logoClicks === 5) {
                 definirAcces('pro');
@@ -1030,27 +1044,71 @@ function renderComparateur() {
 function chargerKanban() {
     const zones = ['zone-etude', 'zone-visite', 'zone-offre', 'zone-compromis'];
     
-    zones.forEach((zoneId, colIndex) => {
+    zones.forEach(zoneId => {
         const container = document.getElementById(zoneId);
         const countSpan = document.getElementById(zoneId.replace('zone', 'count'));
         if (!container) return;
 
         container.innerHTML = '';
-        
-        // Sécurisation absolue des événements de glisser-déposer sur la colonne
-        container.ondragover = (e) => { 
+        const dossiersCol = pipelineDossiers.filter(d => d.status === zoneId);
+        if(countSpan) countSpan.innerText = dossiersCol.length;
+
+        dossiersCol.forEach(dossier => {
+            const card = document.createElement('div');
+            card.className = 'k-card';
+            card.setAttribute('draggable', 'true');
+            card.id = dossier.id;
+            
+            // Intégration de poignées de déplacement manuelles en cas de dysfonctionnement du glisser-déposer natif
+            card.innerHTML = `
+                <div class="k-card-title" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <i class="fa-solid fa-grip-vertical" style="color: #CBD5E1; cursor: grab;" title="Glisser pour déplacer"></i>
+                        <span>${dossier.ville}</span>
+                    </div>
+                    <button class="btn-icon" style="width:24px; height:24px; border:none; background:transparent; padding:0; cursor:pointer;" onclick="supprimerDuPipeline('${dossier.id}')">
+                        <i class="fa-solid fa-xmark text-danger" style="color:#DC2626;"></i>
+                    </button>
+                </div>
+                <div style="font-size:16px; font-weight:800; color:var(--text-dark); margin-bottom:10px;">${formatNumber(dossier.prix)} €</div>
+                <div class="k-card-data" style="margin-bottom:10px;">
+                    <span>Tvx: <strong style="color:#DC2626;">${formatNumber(dossier.travaux)} €</strong></span>
+                    <span class="badge" style="background:#F1F5F9; color:#0F172A; border:1px solid #CBD5E1; padding:2px 6px; border-radius:6px; font-size:11px; font-weight:700;">DPE ${dossier.dpe}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; border-top:1px solid #F1F5F9; padding-top:10px;">
+                    <button onclick="deplacerCarteManuellement('${dossier.id}', 'gauche')" style="border:none; background:none; cursor:pointer; color:#94A3B8; font-size:12px;"><i class="fa-solid fa-arrow-left"></i> Retour</button>
+                    <button onclick="deplacerCarteManuellement('${dossier.id}', 'droite')" style="border:none; background:none; cursor:pointer; color:#3B82F6; font-size:12px;">Suivant <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            `;
+
+            card.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', dossier.id);
+                e.dataTransfer.effectAllowed = 'move';
+                setTimeout(() => { card.style.opacity = '0.5'; }, 0);
+            });
+            
+            card.addEventListener('dragend', () => {
+                card.style.opacity = '1';
+            });
+
+            container.appendChild(card);
+        });
+
+        container.addEventListener('dragover', (e) => { 
             e.preventDefault(); 
+            e.dataTransfer.dropEffect = 'move';
             container.style.background = "#F1F5F9"; 
-        };
+        });
         
-        container.ondragleave = () => {
+        container.addEventListener('dragleave', () => {
             container.style.background = "transparent";
-        };
+        });
         
-        container.ondrop = (e) => {
+        container.addEventListener('drop', (e) => {
             e.preventDefault();
             container.style.background = "transparent";
-            let draggedId = e.dataTransfer.getData('text/plain') || currentDraggedCardId;
+            const draggedId = e.dataTransfer.getData('text/plain');
+            
             if(!draggedId) return;
             
             const dossierIndex = pipelineDossiers.findIndex(d => d.id === draggedId);
@@ -1059,62 +1117,20 @@ function chargerKanban() {
                 localStorage.setItem('auditpro_pipeline', JSON.stringify(pipelineDossiers));
                 chargerKanban();
             }
-        };
-
-        const dossiersCol = pipelineDossiers.filter(d => d.status === zoneId);
-        if(countSpan) countSpan.innerText = dossiersCol.length;
-
-        dossiersCol.forEach(dossier => {
-            const card = document.createElement('div');
-            card.className = 'k-card';
-            card.draggable = true; 
-            card.id = dossier.id;
-            
-            // Intégration des boutons de déplacement manuel pour pallier tout échec du navigateur
-            let btnGauche = colIndex > 0 ? `<button onclick="deplacerCarteManuelle('${dossier.id}', '${zones[colIndex-1]}')" style="border:none; background:none; cursor:pointer; color:#94A3B8; padding:5px;"><i class="fa-solid fa-chevron-left"></i></button>` : `<span style="width:26px;"></span>`;
-            let btnDroite = colIndex < 3 ? `<button onclick="deplacerCarteManuelle('${dossier.id}', '${zones[colIndex+1]}')" style="border:none; background:none; cursor:pointer; color:#94A3B8; padding:5px;"><i class="fa-solid fa-chevron-right"></i></button>` : `<span style="width:26px;"></span>`;
-
-            card.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid #F1F5F9; padding-bottom:5px;">
-                    <div style="display:flex; gap:5px;">${btnGauche}${btnDroite}</div>
-                    <button class="btn-icon" style="width:24px; height:24px; border:none; background:transparent; padding:0; cursor:pointer;" onclick="supprimerDuPipeline('${dossier.id}')">
-                        <i class="fa-solid fa-xmark text-danger" style="color:#DC2626;"></i>
-                    </button>
-                </div>
-                <div class="k-card-title" style="cursor: grab;">
-                    <i class="fa-solid fa-grip-vertical" style="color:#CBD5E1; margin-right:5px;"></i> ${dossier.ville}
-                </div>
-                <div style="font-size:16px; font-weight:800; color:var(--text-dark); margin-bottom:10px;">${formatNumber(dossier.prix)} €</div>
-                <div class="k-card-data">
-                    <span>Tvx: <strong style="color:#DC2626;">${formatNumber(dossier.travaux)} €</strong></span>
-                    <span class="badge" style="background:#F1F5F9; color:#0F172A; border:1px solid #CBD5E1; padding:2px 6px; border-radius:6px; font-size:11px; font-weight:700;">DPE ${dossier.dpe}</span>
-                </div>
-            `;
-
-            // Sécurisation absolue des événements de glisser-déposer sur la carte
-            card.ondragstart = (e) => {
-                currentDraggedCardId = dossier.id;
-                if(e.dataTransfer) {
-                    e.dataTransfer.setData('text/plain', dossier.id);
-                    e.dataTransfer.effectAllowed = 'move';
-                }
-                setTimeout(() => { card.style.opacity = '0.5'; }, 0);
-            };
-            
-            card.ondragend = () => {
-                card.style.opacity = '1';
-                currentDraggedCardId = null;
-            };
-
-            container.appendChild(card);
         });
     });
 }
 
-function deplacerCarteManuelle(id, nouvelleZone) {
+function deplacerCarteManuellement(id, direction) {
+    const zones = ['zone-etude', 'zone-visite', 'zone-offre', 'zone-compromis'];
     const index = pipelineDossiers.findIndex(d => d.id === id);
     if (index > -1) {
-        pipelineDossiers[index].status = nouvelleZone;
+        let currentZoneIndex = zones.indexOf(pipelineDossiers[index].status);
+        if (direction === 'droite' && currentZoneIndex < 3) {
+            pipelineDossiers[index].status = zones[currentZoneIndex + 1];
+        } else if (direction === 'gauche' && currentZoneIndex > 0) {
+            pipelineDossiers[index].status = zones[currentZoneIndex - 1];
+        }
         localStorage.setItem('auditpro_pipeline', JSON.stringify(pipelineDossiers));
         chargerKanban();
     }
@@ -1216,51 +1232,124 @@ Disponibilité confirmée pour une analyse conjointe de ces éléments.`;
 }
 
 // ==========================================================================
-// 14. EXPORT PDF PROFESSIONNEL (Rendu par capture d'écran HD)
+// 14. EXPORT PDF PROFESSIONNEL (TÉLÉCHARGEMENT DIRECT RESTAURÉ)
 // ==========================================================================
 function exporterPDF() {
-    if (!donneesAudit) {
-        showToast("Traitement initial requis.", "error");
-        return;
+    if (!donneesAudit) return showToast("Traitement initial requis.", "error");
+
+    try {
+        if (typeof pdfMake === 'undefined') throw new Error("Erreur de liaison PDF.");
+        if (typeof pdfFonts !== 'undefined') pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
+        const valPrix = document.getElementById('prixInitial') ? document.getElementById('prixInitial').value : "0";
+        const prixInit = parseInputNumber(valPrix) || 0;
+        const travaux = calculerTotalDevis() || 0; 
+        const valeurNette = prixInit - travaux;
+
+        let tableBody = [
+            [
+                { text: 'DOMAINE CONTRÔLÉ', bold: true, fontSize: 8, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10] },
+                { text: 'STATUT', bold: true, fontSize: 8, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10], alignment: 'center' },
+                { text: 'CONSTAT RÉGLEMENTAIRE & ACTION', bold: true, fontSize: 8, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10] },
+                { text: 'BUDGET', bold: true, fontSize: 8, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10], alignment: 'right' }
+            ]
+        ];
+
+        let lignesDdt = donneesAudit.lignesDevis || [];
+        if (!lignesDdt.length && donneesAudit.diagnostics) {
+            lignesDdt = donneesAudit.diagnostics.filter(d => d.cout > 0);
+        }
+
+        if (lignesDdt.length === 0) {
+            tableBody.push([{ text: "Aucune non-conformité relevée.", colSpan: 4, alignment: 'center', margin: [0, 10, 0, 10] }, {}, {}, {}]);
+        } else {
+            lignesDdt.forEach((ligne, index) => {
+                let isAnomalie = ligne.cout > 0;
+                let rowColor = (index % 2 === 0) ? '#F8FAFC' : '#ffffff'; 
+                tableBody.push([
+                    { text: ligne.titre || 'Saisie Manuelle', bold: true, fontSize: 10, color: '#0F172A', fillColor: rowColor, margin: [0, 10, 0, 10] },
+                    { text: isAnomalie ? 'ANOMALIE' : 'CONFORME', bold: true, fontSize: 9, color: isAnomalie ? '#DC2626' : '#16A34A', alignment: 'center', fillColor: rowColor, margin: [0, 10, 0, 10] },
+                    { text: String(ligne.detail || "Validation d'ajustement"), fontSize: 9, color: '#334155', fillColor: rowColor, margin: [0, 10, 0, 10] },
+                    { text: isAnomalie ? '-' + formatNumber(ligne.cout) + ' €' : '0 €', bold: true, fontSize: 10, color: isAnomalie ? '#DC2626' : '#0F172A', alignment: 'right', fillColor: rowColor, margin: [0, 10, 0, 10] }
+                ]);
+            });
+        }
+
+        let nomAgenceStr = (appSettings.nomAgence || "AuditPro").toUpperCase();
+        let logoBlock = { text: nomAgenceStr, fontSize: 24, bold: true, color: appSettings.couleur || '#1E3A8A', alignment: 'left', letterSpacing: 1 };
+
+        let chartBlock = [];
+        try {
+            let canvasElement = document.getElementById('coutChart');
+            if (canvasElement && lignesDdt.length > 0) {
+                chartBlock = [
+                    { text: 'RÉPARTITION DES COÛTS DE REMISE AUX NORMES', fontSize: 13, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 20, 0, 10] },
+                    { image: canvasElement.toDataURL("image/png"), width: 300, alignment: 'center', margin: [0, 0, 0, 30] }
+                ];
+            }
+        } catch (canvasError) {
+            console.warn("Échec d'intégration visuelle.");
+        }
+
+        let docDefinition = {
+            pageSize: 'A4',
+            pageMargins: [ 40, 40, 40, 40 ], 
+            defaultStyle: { font: 'Roboto' }, // Correction typographique majeure empêchant le bug "Page Blanche"
+            background: function() { return { canvas: [ { type: 'rect', x: 0, y: 0, w: 15, h: 842, color: appSettings.couleur || '#1E3A8A' } ] }; },
+            header: function(currentPage) {
+                if (currentPage > 1) {
+                    return { columns: [ { text: nomAgenceStr, bold: true, color: '#64748B', fontSize: 9 }, { text: 'Réf. ' + (currentDossierId || 'EXT'), alignment: 'right', color: '#64748B', fontSize: 9 } ], margin: [40, 20, 40, 0] };
+                }
+            },
+            footer: function(currentPage, pageCount) {
+                return { columns: [ { text: 'Document généré à titre indicatif. Ne constitue pas un avis d\'expert.', fontSize: 8, color: '#94A3B8', italics: true }, { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#94A3B8', bold: true } ], margin: [40, 20, 40, 0] };
+            },
+            content: [
+                {
+                    columns: [
+                        { width: '45%', stack: [logoBlock], margin: [0, 5, 0, 0] },
+                        {
+                            width: '55%',
+                            table: {
+                                widths: ['*', '*'],
+                                body: [
+                                    [ { text: 'DONNÉES DU DOSSIER', colSpan: 2, fontSize: 10, bold: true, color: '#0F172A', alignment: 'right', margin: [0, 6, 0, 6] }, {} ],
+                                    [ { text: 'Édition :', fontSize: 9, bold: true, color: '#64748B', alignment: 'right' }, { text: String(donneesAudit.date_audit || 'N/A'), fontSize: 9, color: '#0F172A', bold: true } ],
+                                    [ { text: 'Localisation :', fontSize: 9, bold: true, color: '#64748B', alignment: 'right' }, { text: String(donneesAudit.localisation_exacte || 'N/D'), fontSize: 9, color: '#0F172A', bold: true } ]
+                                ]
+                            },
+                            layout: 'lightHorizontalLines'
+                        }
+                    ], margin: [0, 0, 0, 40]
+                },
+                { text: 'RAPPORT D\'ÉVALUATION FINANCIÈRE', fontSize: 20, color: '#0F172A', bold: true, margin: [0, 0, 0, 5] },
+                { text: '1. SYNTHÈSE DES VALORISATIONS', fontSize: 13, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 20, 0, 10] },
+                {
+                    table: {
+                        widths: ['*', '*'],
+                        body: [
+                            [ { text: 'Valeur de présentation (FAI)', fontSize: 11 }, { text: formatNumber(prixInit) + ' €', fontSize: 14, bold: true, alignment: 'right' } ],
+                            [ { text: 'Provision de travaux', fontSize: 11, color: '#DC2626' }, { text: '-' + formatNumber(travaux) + ' €', fontSize: 14, bold: true, color: '#DC2626', alignment: 'right' } ],
+                            [ { text: 'Valeur Nette Opérationnelle', fontSize: 11, bold: true }, { text: formatNumber(valeurNette) + ' €', fontSize: 16, bold: true, color: appSettings.couleur || '#1E3A8A', alignment: 'right' } ]
+                        ]
+                    }, layout: 'lightHorizontalLines', margin: [0, 0, 0, 30]
+                },
+                ...chartBlock,
+                { text: '2. MATRICE RÉGLEMENTAIRE', fontSize: 13, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10] },
+                { table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody }, margin: [0, 0, 0, 40] }
+            ]
+        };
+
+        let nomDossier = donneesAudit.localisation_exacte ? donneesAudit.localisation_exacte.split(' ')[0] : 'Audit';
+        
+        // Téléchargement synchrone forcé
+        pdfMake.createPdf(docDefinition).download(`AuditPro_Synthese_${nomDossier}.pdf`);
+        showToast("Édition PDF réussie. Vérifiez vos téléchargements.", "success");
+
+    } catch (error) {
+        console.error("Erreur de traitement d'édition.", error);
+        showToast("Erreur système d'édition.", "error");
     }
-
-    let btn = document.getElementById('btnExport');
-    let originalText = btn ? btn.innerHTML : '';
-    if(btn) btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Édition en cours...";
-
-    // Capture directe de l'écran (Méthode infaillible et synchrone sans "pdfMake")
-    let element = document.getElementById('contenu-ecran');
-    let nomDossier = donneesAudit.localisation_exacte ? donneesAudit.localisation_exacte.split(' ')[0] : 'Audit';
-    
-    let opt = {
-        margin:       [10, 10, 10, 10], 
-        filename:     `AuditPro_Synthese_${nomDossier}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, logging: false },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    // Injection du nom de l'agence s'il est configuré
-    let nomAgenceStr = (appSettings.nomAgence && appSettings.nomAgence !== "AuditPro") ? appSettings.nomAgence.toUpperCase() : "";
-    let headerHTML = "";
-    if(nomAgenceStr !== "") {
-        headerHTML = `<div id="temp-pdf-header" style="text-align:left; color:${appSettings.couleur}; font-size:24px; font-weight:bold; margin-bottom:20px; padding-bottom:10px; border-bottom:2px solid ${appSettings.couleur};">${nomAgenceStr}</div>`;
-        element.insertAdjacentHTML('afterbegin', headerHTML);
-    }
-
-    // Exécution du téléchargement
-    html2pdf().set(opt).from(element).save().then(() => {
-        showToast("Rapport téléchargé avec succès.", "success");
-        if(btn) btn.innerHTML = originalText;
-        let tempHeader = document.getElementById('temp-pdf-header');
-        if(tempHeader) tempHeader.remove(); // Nettoyage
-    }).catch(err => {
-        console.error(err);
-        showToast("Échec de la création du fichier.", "error");
-        if(btn) btn.innerHTML = originalText;
-        let tempHeader = document.getElementById('temp-pdf-header');
-        if(tempHeader) tempHeader.remove(); // Nettoyage
-    });
 }
 
 // ==========================================================================
