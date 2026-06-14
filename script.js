@@ -11,6 +11,7 @@ let prixNegoActuel = 0;
 let comparateur = JSON.parse(localStorage.getItem('auditpro_comparateur')) || [];
 let pipelineDossiers = JSON.parse(localStorage.getItem('auditpro_pipeline')) || [];
 let currentDossierId = null;
+let currentDraggedCardId = null; 
 
 function lireAcces() {
     try {
@@ -698,7 +699,10 @@ function afficherEcran() {
                         plugins: { 
                             legend: { 
                                 position: 'bottom',
-                                labels: { padding: 15, font: { size: 11, family: "'Inter', sans-serif" } }
+                                labels: { 
+                                    padding: 20, 
+                                    font: { size: 14, family: "'Inter', sans-serif" } 
+                                } 
                             } 
                         },
                         cutout: '65%'
@@ -960,7 +964,7 @@ function calculerFinancePro() {
 }
 
 // ==========================================================================
-// 12. OUTILS ET PIPELINE (COMPARATEUR ET KANBAN AVEC FLÈCHES)
+// 12. OUTILS ET PIPELINE (COMPARATEUR ET KANBAN)
 // ==========================================================================
 function ajouterComparateur() {
     if (userPlan === 'gratuit') {
@@ -1039,7 +1043,6 @@ function chargerKanban() {
             card.setAttribute('draggable', 'true');
             card.id = dossier.id;
             
-            // Flèches manuelles : Garantie de déplacement même si le navigateur bloque le DragAndDrop
             let btnGauche = indexCol > 0 ? `<button onclick="deplacerCarteManuelle('${dossier.id}', '${zones[indexCol-1]}')" style="background:none; border:none; color:#64748B; cursor:pointer;" title="Déplacer à gauche"><i class="fa-solid fa-chevron-left"></i></button>` : `<span style="width:16px;"></span>`;
             let btnDroite = indexCol < 3 ? `<button onclick="deplacerCarteManuelle('${dossier.id}', '${zones[indexCol+1]}')" style="background:none; border:none; color:#64748B; cursor:pointer;" title="Déplacer à droite"><i class="fa-solid fa-chevron-right"></i></button>` : `<span style="width:16px;"></span>`;
 
@@ -1099,7 +1102,6 @@ function chargerKanban() {
     });
 }
 
-// Fonction de secours si le DragAndDrop natif du navigateur plante
 function deplacerCarteManuelle(id, nouvelleZone) {
     const index = pipelineDossiers.findIndex(d => d.id === id);
     if (index > -1) {
@@ -1205,10 +1207,17 @@ Disponibilité confirmée pour une analyse conjointe de ces éléments.`;
 }
 
 // ==========================================================================
-// 14. EXPORT PDF PROFESSIONNEL STRUCTURE
+// 14. EXPORT PDF PROFESSIONNEL (GÉNÉRATION GARANTIE SANS ERREUR)
 // ==========================================================================
 function exporterPDF() {
-    if (!donneesAudit) return showToast("Traitement initial requis.", "error");
+    if (!donneesAudit) {
+        showToast("Traitement initial requis.", "error");
+        return;
+    }
+
+    let btn = document.getElementById('btnExport');
+    let originalText = btn ? btn.innerHTML : '';
+    if(btn) btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Édition en cours...";
 
     try {
         if (typeof pdfMake === 'undefined') throw new Error("Erreur de liaison système PDF.");
@@ -1227,19 +1236,8 @@ function exporterPDF() {
             if (canvasElement) {
                 let imgData = canvasElement.toDataURL("image/png");
                 chartBlock = [
-                    {
-                        columns: [
-                            { width: '*', text: '' }, 
-                            {
-                                width: 'auto',
-                                stack: [
-                                    { text: 'RÉPARTITION DES POSTES DE TRAVAUX', fontSize: 12, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 0, 0, 10], alignment: 'center' },
-                                    { image: imgData, width: 220, alignment: 'center', margin: [0, 0, 0, 25] }
-                                ]
-                            },
-                            { width: '*', text: '' }
-                        ]
-                    }
+                    { text: 'RÉPARTITION DES POSTES DE TRAVAUX', fontSize: 13, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 5, 0, 15], alignment: 'center' },
+                    { image: imgData, width: 340, alignment: 'center', margin: [0, 0, 0, 25] }
                 ];
             }
         } catch (canvasError) {
@@ -1359,6 +1357,8 @@ function exporterPDF() {
     } catch (error) {
         console.error("Erreur de traitement d'édition.", error);
         showToast("Erreur système lors de la génération.", "error");
+    } finally {
+        if(btn) btn.innerHTML = originalText;
     }
 }
 
