@@ -11,6 +11,7 @@ let prixNegoActuel = 0;
 let comparateur = JSON.parse(localStorage.getItem('auditpro_comparateur')) || [];
 let pipelineDossiers = JSON.parse(localStorage.getItem('auditpro_pipeline')) || [];
 let currentDossierId = null;
+let currentDraggedCardId = null; 
 
 function lireAcces() {
     try {
@@ -44,11 +45,7 @@ let appSettings = {
 // ==========================================================================
 function analyserSecteurLocal(codePostal) {
     if (!codePostal || codePostal.length < 2) {
-        return { 
-            dep: "France", 
-            majo: 1.0, 
-            texte: "Traitement fondé sur la moyenne tarifaire nationale (Indice FFB). Code postal non renseigné." 
-        };
+        return { dep: "France", majo: 1.0, texte: "Traitement fondé sur la moyenne tarifaire nationale (Indice FFB). Code postal non renseigné." };
     }
 
     let dep = String(codePostal).substring(0, 2);
@@ -72,17 +69,9 @@ function analyserSecteurLocal(codePostal) {
     };
 
     if (baseGeographique[dep]) {
-        return {
-            dep: baseGeographique[dep].nom,
-            majo: baseGeographique[dep].tension,
-            texte: baseGeographique[dep].msg
-        };
+        return { dep: baseGeographique[dep].nom, majo: baseGeographique[dep].tension, texte: baseGeographique[dep].msg };
     } else {
-        return {
-            dep: `Département ${dep}`,
-            majo: 1.0,
-            texte: `Marché continental équilibré. Application stricte du barème médian national (FFB).`
-        };
+        return { dep: `Département ${dep}`, majo: 1.0, texte: `Marché continental équilibré. Application stricte du barème médian national (FFB).` };
     }
 }
 
@@ -115,8 +104,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }, false);
         });
         
-        dropZone.addEventListener('dragover', () => dropZone.style.borderColor = "var(--theme-accent)");
-        dropZone.addEventListener('dragleave', () => dropZone.style.borderColor = "#CBD5E1");
+        dropZone.addEventListener('dragover', () => { dropZone.style.borderColor = "var(--theme-accent)"; });
+        dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = "#CBD5E1"; });
         
         dropZone.addEventListener('drop', (e) => { 
             fileInput.files = e.dataTransfer.files; 
@@ -375,6 +364,46 @@ function sauvegarderParametresParticulier() {
     showToast("Application des variables validée.");
 }
 
+function sauvegarderParametresPro() {
+    const inputNom = document.getElementById('nomAgenceInput').value.trim();
+    appSettings.nomAgence = inputNom !== "" ? inputNom : "AuditPro";
+    appSettings.couleur = document.getElementById('couleurAgenceInput').value;
+    
+    localStorage.setItem('ap_nom', appSettings.nomAgence);
+    localStorage.setItem('ap_couleur', appSettings.couleur);
+    
+    appliquerSettings();
+    showToast("Paramètres d'export validés.");
+}
+
+function reinitialiserMarqueBlanche() {
+    localStorage.removeItem('ap_nom');
+    localStorage.removeItem('ap_couleur');
+    localStorage.removeItem('ap_logo');
+    
+    appSettings.nomAgence = 'AuditPro';
+    appSettings.couleur = '#1E3A8A';
+    appSettings.logoBase64 = null;
+    
+    document.getElementById('logo-preview').style.display = 'none';
+    appliquerSettings();
+    showToast("Réinitialisation de l'identité visuelle.");
+}
+
+document.getElementById('logoUploadInput')?.addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            appSettings.logoBase64 = e.target.result;
+            localStorage.setItem('ap_logo', appSettings.logoBase64);
+            let preview = document.getElementById('logo-preview');
+            if(preview) { preview.src = appSettings.logoBase64; preview.style.display = 'block'; }
+        }
+        reader.readAsDataURL(file);
+    }
+});
+
 // ==========================================================================
 // 7. HISTORIQUE LOCAL
 // ==========================================================================
@@ -465,7 +494,7 @@ function lancerDemo() {
         dpe_lettre: "F",
         ges_lettre: "F",
         diagnostics: [
-            {titre: "Électricité (Sécurité)", cout: Math.round(4500 * secteur.majo), detail: "Anomalies électriques relevées dans le document. (Base de calcul estimative : ~120 m²)", action: "Mise en sécurité à planifier.", statut: "Anomalie"},
+            {titre: "Électricité (Sécurité)", cout: Math.round(4500 * secteur.majo), detail: "Défaut de mise à la terre détecté sur l'installation principale.", action: "Mise en sécurité à planifier.", statut: "Anomalie"},
             {titre: "DPE (Loi Climat)", cout: Math.round(24200 * secteur.majo), detail: "Étiquette F constatée. Pertes d'énergie évaluées.", action: "Traitement de l'enveloppe thermique et système de chauffage.", statut: "Anomalie"},
             {titre: "Amiante", cout: 0, detail: "Absence de matériaux incriminés.", action: "Sans objet.", statut: "Conforme"},
             {titre: "Plomb", cout: 0, detail: "Seuils réglementaires respectés.", action: "Sans objet.", statut: "Conforme"}
@@ -932,7 +961,7 @@ function calculerFinancePro() {
 }
 
 // ==========================================================================
-// 12. OUTILS ET PIPELINE (COMPARATEUR ET KANBAN INTERACTIF)
+// 12. OUTILS ET PIPELINE (COMPARATEUR ET KANBAN)
 // ==========================================================================
 function ajouterComparateur() {
     if (userPlan === 'gratuit') {
@@ -1011,7 +1040,6 @@ function chargerKanban() {
             card.setAttribute('draggable', 'true');
             card.id = dossier.id;
             
-            // Intégration de boutons de secours fléchés pour éliminer tout bug de blocage
             let btnGauche = indexCol > 0 ? `<button onclick="deplacerCarte('${dossier.id}', '${zones[indexCol-1]}')" style="background:none; border:none; color:#64748B; cursor:pointer;" title="Déplacer à gauche"><i class="fa-solid fa-chevron-left"></i></button>` : `<span style="width:16px;"></span>`;
             let btnDroite = indexCol < 3 ? `<button onclick="deplacerCarte('${dossier.id}', '${zones[indexCol+1]}')" style="background:none; border:none; color:#64748B; cursor:pointer;" title="Déplacer à droite"><i class="fa-solid fa-chevron-right"></i></button>` : `<span style="width:16px;"></span>`;
 
@@ -1163,7 +1191,7 @@ function genererEmailBaisse() {
 
 Faisant suite à nos échanges, l'analyse approfondie du Dossier de Diagnostic Technique (DDT) révèle plusieurs éléments structurels nécessitant une intervention.
 
-Dans une logique de transparence et en adéquation avec les contraintes actuelles de financement bancaire (normes HCSF), le provisionnement nécessaire à la mise en conformité s'élève à : ${formatNumber(calculerTotalDevis())} €.
+Dans une logique de transparence et en adéquation avec les contraintes actuelles de financement bancaire (normes HCSF), le provisionnement nécessaire à la mise en conformité est évalué à : ${formatNumber(calculerTotalDevis())} €.
 
 L'évaluation porte principalement sur :
 ${anomaliesTxt}
@@ -1176,15 +1204,20 @@ Disponibilité confirmée pour une analyse conjointe de ces éléments.`;
 }
 
 // ==========================================================================
-// 14. EXPORT PDF PROFESSIONNEL COMPLET (SÉCURISÉ & ROBOTO)
+// 14. EXPORT PDF PROFESSIONNEL (GÉNÉRATION GARANTIE SANS ERREUR)
 // ==========================================================================
 function exporterPDF() {
     if (!donneesAudit) {
-        return showToast("Traitement initial requis.", "error");
+        showToast("Traitement initial requis.", "error");
+        return;
     }
 
+    let btn = document.getElementById('btnExport');
+    let originalText = btn ? btn.innerHTML : '';
+    if(btn) btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Édition en cours...";
+
     try {
-        if (typeof pdfMake === 'undefined') throw new Error("Erreur de liaison système PDF.");
+        if (typeof pdfMake === 'undefined') throw new Error("Erreur de liaison PDF.");
         if (typeof pdfFonts !== 'undefined') pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
         const valPrix = document.getElementById('prixInitial') ? document.getElementById('prixInitial').value : "0";
@@ -1193,27 +1226,28 @@ function exporterPDF() {
         const valeurNette = prixInit - travaux;
         let nomAgenceStr = (appSettings.nomAgence || "AuditPro").toUpperCase();
 
-        // Récupération synchrone sécurisée du graphique pour l'intégrer au PDF
+        // Récupération de l'image du graphique (dimensions ajustées)
         let chartBlock = [];
         try {
             let canvasElement = document.getElementById('coutChart');
             if (canvasElement) {
                 let imgData = canvasElement.toDataURL("image/png");
                 chartBlock = [
-                    { text: 'RÉPARTITION DES POSTES DE TRAVAUX (ESTIMATIF)', fontSize: 13, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 20, 0, 10], alignment: 'center' },
-                    { image: imgData, width: 280, alignment: 'center', margin: [0, 0, 0, 20] }
+                    { text: 'RÉPARTITION DES POSTES DE TRAVAUX', fontSize: 14, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 20, 0, 10] },
+                    { image: imgData, width: 220, alignment: 'center', margin: [0, 10, 0, 20] } 
                 ];
             }
         } catch (canvasError) {
             console.warn("Échec d'intégration visuelle du graphique.");
         }
 
+        // Tableau Matrice
         let tableBody = [
             [
-                { text: 'DOMAINE CONTRÔLÉ', bold: true, fontSize: 9, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10] },
-                { text: 'STATUT', bold: true, fontSize: 9, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10], alignment: 'center' },
-                { text: 'CONSTAT RÉGLEMENTAIRE & ACTION', bold: true, fontSize: 9, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10] },
-                { text: 'BUDGET EST.', bold: true, fontSize: 9, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10], alignment: 'right' }
+                { text: 'DOMAINE CONTRÔLÉ', bold: true, fontSize: 10, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 8, 0, 8] },
+                { text: 'STATUT', bold: true, fontSize: 10, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 8, 0, 8], alignment: 'center' },
+                { text: 'CONSTAT RÉGLEMENTAIRE & ACTION', bold: true, fontSize: 10, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 8, 0, 8] },
+                { text: 'BUDGET EST.', bold: true, fontSize: 10, color: '#ffffff', fillColor: appSettings.couleur || '#1E3A8A', margin: [0, 8, 0, 8], alignment: 'right' }
             ]
         ];
 
@@ -1229,87 +1263,100 @@ function exporterPDF() {
                 let isAnomalie = ligne.cout > 0;
                 let rowColor = (index % 2 === 0) ? '#F8FAFC' : '#ffffff'; 
                 tableBody.push([
-                    { text: ligne.titre || 'Saisie Manuelle', bold: true, fontSize: 10, color: '#0F172A', fillColor: rowColor, margin: [0, 10, 0, 10] },
-                    { text: isAnomalie ? 'ANOMALIE' : 'CONFORME', bold: true, fontSize: 9, color: isAnomalie ? '#DC2626' : '#16A34A', alignment: 'center', fillColor: rowColor, margin: [0, 10, 0, 10] },
-                    { text: String(ligne.detail || "Validation d'ajustement"), fontSize: 9, color: '#334155', fillColor: rowColor, margin: [0, 10, 0, 10] },
-                    { text: isAnomalie ? '-' + formatNumber(ligne.cout) + ' €' : '0 €', bold: true, fontSize: 10, color: isAnomalie ? '#DC2626' : '#0F172A', alignment: 'right', fillColor: rowColor, margin: [0, 10, 0, 10] }
+                    { text: ligne.titre || 'Saisie Manuelle', bold: true, fontSize: 10, color: '#0F172A', fillColor: rowColor, margin: [0, 8, 0, 8] },
+                    { text: isAnomalie ? 'ANOMALIE' : 'CONFORME', bold: true, fontSize: 9, color: isAnomalie ? '#DC2626' : '#16A34A', alignment: 'center', fillColor: rowColor, margin: [0, 8, 0, 8] },
+                    { text: String(ligne.detail || "Validation d'ajustement"), fontSize: 9, color: '#334155', fillColor: rowColor, margin: [0, 8, 0, 8] },
+                    { text: isAnomalie ? '-' + formatNumber(ligne.cout) + ' €' : '0 €', bold: true, fontSize: 10, color: isAnomalie ? '#DC2626' : '#0F172A', alignment: 'right', fillColor: rowColor, margin: [0, 8, 0, 8] }
                 ]);
             });
         }
 
+        // Configuration du Document PDF (Correction Roboto)
         let docDefinition = {
             pageSize: 'A4',
             pageMargins: [40, 60, 40, 60],
-            defaultStyle: { font: 'Roboto' }, // Utilisation obligatoire de la police native pdfMake (Corrige l'erreur ERR_FAILED)
+            defaultStyle: { font: 'Roboto', fontSize: 10, color: '#334155', lineHeight: 1.4 },
             background: function() { 
                 return { canvas: [ { type: 'rect', x: 0, y: 0, w: 15, h: 842, color: appSettings.couleur || '#1E3A8A' } ] }; 
             },
             header: function(currentPage) {
                 if (currentPage > 1) {
-                    return { text: nomAgenceStr + ' - Réf: ' + (currentDossierId || 'EXT'), margin: [40, 20, 40, 0], fontSize: 9, color: '#94A3B8', alignment: 'right' };
+                    return { text: nomAgenceStr + ' - Réf: ' + (currentDossierId || 'EXT'), margin: [40, 20, 40, 0], fontSize: 8, color: '#94A3B8', alignment: 'right' };
                 }
             },
             footer: function(currentPage, pageCount) {
-                return { columns: [ { text: 'AuditPro - Étude technique et budgétaire.', fontSize: 8, color: '#94A3B8' }, { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#94A3B8' } ], margin: [40, 20, 40, 0] };
+                return { columns: [ { text: 'Document généré à titre indicatif. Ne remplace pas un audit réglementaire.', fontSize: 8, color: '#94A3B8' }, { text: 'Page ' + currentPage.toString() + ' / ' + pageCount, alignment: 'right', fontSize: 8, color: '#94A3B8' } ], margin: [40, 20, 40, 0] };
             },
             content: [
-                // ---------------- PAGE 1 : PAGE DE GARDE PROFESSIONNELLE ----------------
-                { text: nomAgenceStr, fontSize: 32, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 120, 0, 20], alignment: 'center', letterSpacing: 1 },
-                { text: 'RAPPORT D\'ÉVALUATION FINANCIÈRE', fontSize: 22, bold: true, color: '#0F172A', alignment: 'center', margin: [0, 0, 0, 60] },
+                // PAGE 1 : COUVERTURE
+                { text: nomAgenceStr, fontSize: 28, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 80, 0, 20], alignment: 'center', letterSpacing: 2 },
+                { text: 'RAPPORT D\'ÉVALUATION FINANCIÈRE', fontSize: 22, bold: true, color: '#0F172A', alignment: 'center', margin: [0, 0, 0, 50] },
                 {
                     table: {
-                        widths: ['35%', '65%'],
+                        widths: ['40%', '60%'],
                         body: [
-                            [{ text: 'Date de l\'évaluation :', bold: true, color: '#64748B', fontSize: 11 }, { text: String(donneesAudit.date_audit || 'N/A'), bold: true, fontSize: 11 }],
-                            [{ text: 'Localisation du bien :', bold: true, color: '#64748B', fontSize: 11 }, { text: String(donneesAudit.localisation_exacte || 'Non communiquée'), bold: true, fontSize: 11 }],
-                            [{ text: 'Indice de tension régionale :', bold: true, color: '#64748B', fontSize: 11 }, { text: String(donneesAudit.impact_marche || 'Standard national'), italics: true, color: '#475569', fontSize: 11 }]
+                            [{ text: 'Date de l\'évaluation :', bold: true, color: '#64748B', fontSize: 11, border: [false, false, false, true] }, { text: String(donneesAudit.date_audit || 'N/A'), bold: true, fontSize: 11, border: [false, false, false, true] }],
+                            [{ text: 'Localisation du bien :', bold: true, color: '#64748B', fontSize: 11, border: [false, false, false, true] }, { text: String(donneesAudit.localisation_exacte || 'Non communiquée'), bold: true, fontSize: 11, border: [false, false, false, true] }],
+                            [{ text: 'Indice de tension régionale :', bold: true, color: '#64748B', fontSize: 11, border: [false, false, false, false] }, { text: String(donneesAudit.impact_marche || 'Standard national'), italics: true, color: '#475569', fontSize: 10, border: [false, false, false, false] }]
                         ]
                     },
-                    layout: 'noBorders',
-                    margin: [40, 0, 0, 0]
+                    layout: {
+                        hLineColor: function () { return '#E2E8F0'; },
+                        vLineColor: function () { return '#E2E8F0'; },
+                        paddingTop: function () { return 10; },
+                        paddingBottom: function () { return 10; }
+                    },
+                    margin: [20, 0, 20, 0],
+                    pageBreak: 'after' // Force la page suivante
                 },
 
-                // ---------------- PAGE 2 : SYNTHÈSE ÉCONOMIQUE & VISUELLE ----------------
-                { text: '1. SYNTHÈSE DES VALORISATIONS', fontSize: 15, bold: true, color: appSettings.couleur || '#1E3A8A', pageBreak: 'before', margin: [0, 0, 0, 20] },
+                // PAGE 2 : SYNTHÈSE & GRAPHIQUE
+                { text: '1. SYNTHÈSE DES VALORISATIONS', fontSize: 16, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 0, 0, 15] },
                 {
                     table: {
                         widths: ['*', '*'],
                         body: [
                             [ { text: 'Prix de présentation (FAI)', fontSize: 11, margin: [0, 8, 0, 8] }, { text: formatNumber(prixInit) + ' €', fontSize: 13, bold: true, alignment: 'right', margin: [0, 8, 0, 8] } ],
                             [ { text: 'Enveloppe Travaux Globale (Sécurisée)', fontSize: 11, color: '#DC2626', margin: [0, 8, 0, 8] }, { text: '-' + formatNumber(travaux) + ' €', fontSize: 13, bold: true, color: '#DC2626', alignment: 'right', margin: [0, 8, 0, 8] } ],
-                            [ { text: 'Valeur Nette Opérationnelle', fontSize: 11, bold: true, margin: [0, 12, 0, 12] }, { text: formatNumber(valeurNette) + ' €', fontSize: 16, bold: true, color: appSettings.couleur || '#1E3A8A', alignment: 'right', margin: [0, 12, 0, 12] } ]
+                            [ { text: 'Valeur Nette Opérationnelle', fontSize: 12, bold: true, margin: [0, 12, 0, 12] }, { text: formatNumber(valeurNette) + ' €', fontSize: 16, bold: true, color: appSettings.couleur || '#1E3A8A', alignment: 'right', margin: [0, 12, 0, 12] } ]
                         ]
-                    }, layout: 'lightHorizontalLines', margin: [0, 0, 0, 30]
+                    }, 
+                    layout: 'lightHorizontalLines', 
+                    margin: [0, 0, 0, 20]
                 },
                 ...chartBlock,
+                { text: '', pageBreak: 'after' },
 
-                // ---------------- PAGE 3 : TABLEAU TECHNIQUE REGLEMENTAIRE ----------------
-                { text: '2. MATRICE RÉGLEMENTAIRE TECHNIQUE (DDT)', fontSize: 15, bold: true, color: appSettings.couleur || '#1E3A8A', pageBreak: 'before', margin: [0, 0, 0, 20] },
-                { table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody }, margin: [0, 0, 0, 30] },
-                { text: 'Avertissement : Les présents montants sont issus d\'estimations statistiques fondées sur l\'Indice FFB et pondérées selon le Code Postal. Ils doivent faire l\'objet de devis de confirmation par des entreprises du bâtiment agréées RGE avant engagement.', fontSize: 9, color: '#94A3B8', italics: true },
+                // PAGE 3 : MATRICE RÉGLEMENTAIRE
+                { text: '2. MATRICE RÉGLEMENTAIRE TECHNIQUE (DDT)', fontSize: 16, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 0, 0, 15] },
+                { table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody }, margin: [0, 0, 0, 15] },
+                { text: 'Avertissement : Les montants indiqués sont issus d\'estimations statistiques fondées sur l\'Indice FFB pondéré. Ils doivent être confirmés par des devis d\'entreprises agréées RGE.', fontSize: 9, color: '#94A3B8', italics: true, margin: [0, 0, 0, 0] },
+                { text: '', pageBreak: 'after' },
 
-                // ---------------- PAGE 4 : ANNEXES REGLEMENTAIRES ET CADRE LEGAL ----------------
-                { text: '3. CADRE RÉGLEMENTAIRE & ANNEXES', fontSize: 15, bold: true, color: appSettings.couleur || '#1E3A8A', pageBreak: 'before', margin: [0, 0, 0, 20] },
-                { text: 'Dispositions de la Loi Climat & Résilience', bold: true, fontSize: 12, margin: [0, 10, 0, 4], color: '#0F172A' },
-                { text: 'La législation française encadre strictement la mise en location des passoires énergétiques. Depuis le 1er janvier 2025, les logements classés G sont interdits à la location. Cette interdiction s\'étendra aux logements classés F en 2028 et E en 2034. L\'évaluation budgétaire des travaux est essentielle pour pérenniser l\'exploitation d\'un actif immobilier.', fontSize: 10, color: '#475569', margin: [0, 0, 0, 15], lineHeight: 1.5 },
+                // PAGE 4 : CADRE LÉGAL
+                { text: '3. CADRE RÉGLEMENTAIRE & ANNEXES', fontSize: 16, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 0, 0, 20] },
                 
-                { text: 'Directives de Financement du HCSF', bold: true, fontSize: 12, margin: [0, 0, 0, 4], color: '#0F172A' },
-                { text: 'Le Haut Conseil de Stabilité Financière (HCSF) impose un plafond strict de taux d\'effort fixé à 35% des revenus nets des emprunteurs. L\'intégration de l\'enveloppe de rénovation dans le plan de financement initial est un prérequis indispensable pour l\'acceptation des dossiers d\'engagements bancaires.', fontSize: 10, color: '#475569', margin: [0, 0, 0, 15], lineHeight: 1.5 },
+                { text: 'Dispositions de la Loi Climat & Résilience', bold: true, fontSize: 12, margin: [0, 0, 0, 5], color: '#0F172A' },
+                { text: 'La législation française encadre strictement la mise en location des passoires énergétiques. Depuis le 1er janvier 2025, les logements classés G sont interdits à la location. Cette interdiction s\'étendra aux logements classés F en 2028 et E en 2034. Un Audit Énergétique réglementaire est obligatoire pour la vente des biens F et G.', margin: [0, 0, 0, 15], alignment: 'justify' },
                 
-                { text: 'Traitement des données & Confidentialité (RGPD)', bold: true, fontSize: 12, margin: [0, 0, 0, 4], color: '#0F172A' },
-                { text: 'Les documents transmis pour analyse font l\'objet d\'un traitement crypté en mémoire vive et sont immédiatement détruits après extraction. Aucune donnée personnelle ou contractuelle issue du Dossier de Diagnostic Technique n\'est conservée sur des infrastructures distantes.', fontSize: 10, color: '#475569', margin: [0, 0, 0, 15], lineHeight: 1.5 }
+                { text: 'Directives de Financement du HCSF', bold: true, fontSize: 12, margin: [0, 0, 0, 5], color: '#0F172A' },
+                { text: 'Le Haut Conseil de Stabilité Financière (HCSF) impose un plafond strict de taux d\'effort fixé à 35% des revenus nets des emprunteurs. L\'intégration de l\'enveloppe de rénovation dans le plan de financement initial est indispensable pour l\'acceptation des dossiers d\'engagements bancaires.', margin: [0, 0, 0, 15], alignment: 'justify' },
+                
+                { text: 'Traitement des données & Confidentialité (RGPD)', bold: true, fontSize: 12, margin: [0, 0, 0, 5], color: '#0F172A' },
+                { text: 'Les documents transmis pour analyse font l\'objet d\'un traitement crypté en mémoire vive et sont immédiatement détruits après extraction. Aucune donnée personnelle ou contractuelle issue du Dossier de Diagnostic Technique n\'est conservée sur des infrastructures distantes.', margin: [0, 0, 0, 0], alignment: 'justify' }
             ]
         };
 
         let nomDossier = donneesAudit.localisation_exacte ? donneesAudit.localisation_exacte.split(' ')[0] : 'Audit';
         
-        // Exécution synchrone stricte : Téléchargement instantané sur l'ordinateur de l'utilisateur
         pdfMake.createPdf(docDefinition).download(`AuditPro_Synthese_${nomDossier}.pdf`);
         showToast("Édition PDF réussie. Fichier enregistré.", "success");
-
+        
     } catch (error) {
-        console.error("Erreur critique de génération PDF :", error);
-        showToast("Échec de l'exportation du document.", "error");
+        console.error("Erreur d'édition du PDF :", error);
+        showToast("Erreur système lors de l'export.", "error");
+    } finally {
+        if(btn) btn.innerHTML = originalText;
     }
 }
 
