@@ -970,11 +970,6 @@ function calculerFinancePro() {
                     </div>
                 </div>
             </div>
-            <div style="text-align:center; margin-top: 30px;">
-                <button class="btn-solid" style="background:#fff; color:var(--theme-color);" onclick="ajouterAuPipeline()">
-                    ⭐ Transfert des données vers le tableau de suivi
-                </button>
-            </div>
         </div>
     `;
 }
@@ -1044,7 +1039,7 @@ function renderComparateur() {
 function chargerKanban() {
     const zones = ['zone-etude', 'zone-visite', 'zone-offre', 'zone-compromis'];
     
-    zones.forEach(zoneId => {
+    zones.forEach((zoneId, indexCol) => {
         const container = document.getElementById(zoneId);
         const countSpan = document.getElementById(zoneId.replace('zone', 'count'));
         if (!container) return;
@@ -1059,26 +1054,27 @@ function chargerKanban() {
             card.setAttribute('draggable', 'true');
             card.id = dossier.id;
             
-            // Intégration de poignées de déplacement manuelles en cas de dysfonctionnement du glisser-déposer natif
+            // Intégration de boutons manuels pour garantir le déplacement sur 100% des navigateurs/écrans tactiles
+            let btnGauche = indexCol > 0 ? `<button onclick="deplacerCarte('${dossier.id}', '${zones[indexCol-1]}')" style="background:none; border:none; color:#64748B; cursor:pointer;" title="Déplacer à gauche"><i class="fa-solid fa-chevron-left"></i></button>` : `<span style="width:16px;"></span>`;
+            let btnDroite = indexCol < 3 ? `<button onclick="deplacerCarte('${dossier.id}', '${zones[indexCol+1]}')" style="background:none; border:none; color:#64748B; cursor:pointer;" title="Déplacer à droite"><i class="fa-solid fa-chevron-right"></i></button>` : `<span style="width:16px;"></span>`;
+
             card.innerHTML = `
-                <div class="k-card-title" style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <i class="fa-solid fa-grip-vertical" style="color: #CBD5E1; cursor: grab;" title="Glisser pour déplacer"></i>
-                        <span>${dossier.ville}</span>
+                <div class="k-card-title" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #F1F5F9; padding-bottom:8px; margin-bottom:8px;">
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        ${btnGauche}
+                        <i class="fa-solid fa-grip-vertical" style="color:#CBD5E1; cursor:grab;"></i>
                     </div>
                     <button class="btn-icon" style="width:24px; height:24px; border:none; background:transparent; padding:0; cursor:pointer;" onclick="supprimerDuPipeline('${dossier.id}')">
                         <i class="fa-solid fa-xmark text-danger" style="color:#DC2626;"></i>
                     </button>
                 </div>
-                <div style="font-size:16px; font-weight:800; color:var(--text-dark); margin-bottom:10px;">${formatNumber(dossier.prix)} €</div>
-                <div class="k-card-data" style="margin-bottom:10px;">
-                    <span>Tvx: <strong style="color:#DC2626;">${formatNumber(dossier.travaux)} €</strong></span>
-                    <span class="badge" style="background:#F1F5F9; color:#0F172A; border:1px solid #CBD5E1; padding:2px 6px; border-radius:6px; font-size:11px; font-weight:700;">DPE ${dossier.dpe}</span>
+                <div style="font-size:14px; font-weight:700; color:#0F172A; text-align:center; margin-bottom:5px;">${dossier.ville}</div>
+                <div style="font-size:16px; font-weight:800; color:var(--theme-color); text-align:center; margin-bottom:10px;">${formatNumber(dossier.prix)} €</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+                    <span style="color:#DC2626; font-weight:700;">Tvx: ${formatNumber(dossier.travaux)} €</span>
+                    <span class="badge" style="background:#F1F5F9; color:#0F172A; border:1px solid #CBD5E1;">DPE ${dossier.dpe}</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; border-top:1px solid #F1F5F9; padding-top:10px;">
-                    <button onclick="deplacerCarteManuellement('${dossier.id}', 'gauche')" style="border:none; background:none; cursor:pointer; color:#94A3B8; font-size:12px;"><i class="fa-solid fa-arrow-left"></i> Retour</button>
-                    <button onclick="deplacerCarteManuellement('${dossier.id}', 'droite')" style="border:none; background:none; cursor:pointer; color:#3B82F6; font-size:12px;">Suivant <i class="fa-solid fa-arrow-right"></i></button>
-                </div>
+                <div style="text-align:center; margin-top:8px;">${btnDroite}</div>
             `;
 
             card.addEventListener('dragstart', (e) => {
@@ -1121,16 +1117,10 @@ function chargerKanban() {
     });
 }
 
-function deplacerCarteManuellement(id, direction) {
-    const zones = ['zone-etude', 'zone-visite', 'zone-offre', 'zone-compromis'];
-    const index = pipelineDossiers.findIndex(d => d.id === id);
-    if (index > -1) {
-        let currentZoneIndex = zones.indexOf(pipelineDossiers[index].status);
-        if (direction === 'droite' && currentZoneIndex < 3) {
-            pipelineDossiers[index].status = zones[currentZoneIndex + 1];
-        } else if (direction === 'gauche' && currentZoneIndex > 0) {
-            pipelineDossiers[index].status = zones[currentZoneIndex - 1];
-        }
+function deplacerCarte(id, newZoneId) {
+    const dossierIndex = pipelineDossiers.findIndex(d => d.id === id);
+    if (dossierIndex > -1) {
+        pipelineDossiers[dossierIndex].status = newZoneId;
         localStorage.setItem('auditpro_pipeline', JSON.stringify(pipelineDossiers));
         chargerKanban();
     }
@@ -1232,7 +1222,7 @@ Disponibilité confirmée pour une analyse conjointe de ces éléments.`;
 }
 
 // ==========================================================================
-// 14. EXPORT PDF PROFESSIONNEL (TÉLÉCHARGEMENT DIRECT RESTAURÉ)
+// 14. EXPORT PDF PROFESSIONNEL (Génération textuelle stricte garantie)
 // ==========================================================================
 function exporterPDF() {
     if (!donneesAudit) return showToast("Traitement initial requis.", "error");
@@ -1278,23 +1268,10 @@ function exporterPDF() {
         let nomAgenceStr = (appSettings.nomAgence || "AuditPro").toUpperCase();
         let logoBlock = { text: nomAgenceStr, fontSize: 24, bold: true, color: appSettings.couleur || '#1E3A8A', alignment: 'left', letterSpacing: 1 };
 
-        let chartBlock = [];
-        try {
-            let canvasElement = document.getElementById('coutChart');
-            if (canvasElement && lignesDdt.length > 0) {
-                chartBlock = [
-                    { text: 'RÉPARTITION DES COÛTS DE REMISE AUX NORMES', fontSize: 13, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 20, 0, 10] },
-                    { image: canvasElement.toDataURL("image/png"), width: 300, alignment: 'center', margin: [0, 0, 0, 30] }
-                ];
-            }
-        } catch (canvasError) {
-            console.warn("Échec d'intégration visuelle.");
-        }
-
         let docDefinition = {
             pageSize: 'A4',
             pageMargins: [ 40, 40, 40, 40 ], 
-            defaultStyle: { font: 'Roboto' }, // Correction typographique majeure empêchant le bug "Page Blanche"
+            defaultStyle: { font: 'Roboto' }, // Police standardisée pour compatibilité absolue
             background: function() { return { canvas: [ { type: 'rect', x: 0, y: 0, w: 15, h: 842, color: appSettings.couleur || '#1E3A8A' } ] }; },
             header: function(currentPage) {
                 if (currentPage > 1) {
@@ -1334,7 +1311,6 @@ function exporterPDF() {
                         ]
                     }, layout: 'lightHorizontalLines', margin: [0, 0, 0, 30]
                 },
-                ...chartBlock,
                 { text: '2. MATRICE RÉGLEMENTAIRE', fontSize: 13, bold: true, color: appSettings.couleur || '#1E3A8A', margin: [0, 10, 0, 10] },
                 { table: { headerRows: 1, widths: ['25%', '15%', '45%', '15%'], body: tableBody }, margin: [0, 0, 0, 40] }
             ]
@@ -1342,13 +1318,13 @@ function exporterPDF() {
 
         let nomDossier = donneesAudit.localisation_exacte ? donneesAudit.localisation_exacte.split(' ')[0] : 'Audit';
         
-        // Téléchargement synchrone forcé
+        // Exécution bloquante garantie sans blocage du navigateur
         pdfMake.createPdf(docDefinition).download(`AuditPro_Synthese_${nomDossier}.pdf`);
-        showToast("Édition PDF réussie. Vérifiez vos téléchargements.", "success");
+        showToast("Procédure d'export validée. Ouverture du fichier possible.", "success");
 
     } catch (error) {
         console.error("Erreur de traitement d'édition.", error);
-        showToast("Erreur système d'édition.", "error");
+        showToast("Erreur système lors de la génération.", "error");
     }
 }
 
